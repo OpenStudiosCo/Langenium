@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link href="styles/engine.css" rel="stylesheet">
+  </head>
+  <title>Langenium Test Page</title>
+  <body>
+	<div  style="width: 100%; height: 100%; position: fixed;">
+		<div id="latency" style="z-index: 2; position: fixed;"></div>
+		<canvas id="chart" width="200" height="50" style="z-index: 1; position: fixed; opacity: 0.8;"></canvas>
+	</div>
+    
+    <div id="container"></div>
+    <div id="cockpit">
+      <div id="controls">
+        <div id="speed"></div>
+        <div id="altitude"></div>
+        <div id="targets"></div>
+        
+      </div>
+    </div>
+  </body>
+  <script src="libs/jquery.min.js"></script>
+  <script src="libs/socket.io.min.js"></script>
+  <script src="libs/three.min.js"></script>
+  <script src="libs/tween.min.js"></script>
+
+	<script src="libs/BleachBypassShader.js"></script>
+	<script src="libs/BlendShader.js"></script>
+	<script src="libs/ConvolutionShader.js"></script>
+	<script src="libs/CopyShader.js"></script>
+	<script src="libs/FXAAShader.js"></script>
+	<script src="libs/HorizontalTiltShiftShader.js"></script>
+	<script src="libs/VerticalTiltShiftShader.js"></script>
+	<script src="libs/TriangleBlurShader.js"></script>
+	<script src="libs/VignetteShader.js"></script>
+
+	<script src="libs/EffectComposer.js"></script>
+	<script src="libs/RenderPass.js"></script>
+	<script src="libs/BloomPass.js"></script>
+	<script src="libs/ShaderPass.js"></script>
+	<script src="libs/MaskPass.js"></script>
+	<script src="libs/SavePass.js"></script>
+
+  
+  <script src="libs/TrackballControls.js"></script>
+  <script src="libs/THREEx.KeyboardState.js"></script>
+  <script src="libs/Stats.js"></script> 
+  <script src="libs/smoothie.js"></script> 
+  <script src="scripts/engine_core.js"></script>
+  <script src="scripts/engine_events.js"></script>
+  <script src="scripts/engine_instructions.js"></script>
+  <script>
+	function getParameter(name)
+	{
+	  name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+	  var regexS = "[\\?&]" + name + "=([^&#]*)";
+	  var regex = new RegExp(regexS);
+	  var results = regex.exec(window.location.search);
+	  if(results == null)
+		return "";
+	  else
+		return decodeURIComponent(results[1].replace(/\+/g, " "));
+	}
+	var username = "Mercenary";
+	if (getParameter("username").length > 0){
+		username = getParameter("username");
+	}
+	
+	var socket = setEventHandlers(),  	// engine_events.js
+			instruction_queue = [], // for animation to access it
+			cache = [];
+	// engine_core.js
+	init();
+	animate();
+	
+
+	
+	
+  </script>
+</html>

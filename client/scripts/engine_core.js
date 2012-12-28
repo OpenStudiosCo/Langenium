@@ -166,9 +166,10 @@ function createScene() {
  /* Player input
  --------------------------------------------------------------------------------------------------------------------------------*/
 function playerInput(){
-	var delta = clock.getDelta();
-	var keyboardInput = { d: delta, pZ: 0, pY: 0, rY: 0 };
-	var move = false;
+	var 	delta = clock.getDelta(),
+			keyboardInput = { d: delta, pZ: 0, pY: 0, rY: 0 },
+			move = false;
+	
 	if (keyboard.pressed("W")){
 		move = true;
 		keyboardInput.pZ = 1;

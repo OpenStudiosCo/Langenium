@@ -13,7 +13,7 @@
  
  /* Camera variables
  --------------------------------------------------------------------------------------------------------------------------------*/
-var $container = $('#container'), winW, winH;
+var $container = $('#container'), $canvas, winW, winH;
 var camera, scene, renderer, stats;
 var hblur, vblur;
 var geometry, material, mesh;
@@ -92,7 +92,6 @@ function init() {
 	hblur.uniforms[ 'r' ].value = .55;
 	vblur.uniforms[ 'r' ].value = .5;
 
-	
 	effectVignette.uniforms[ "offset" ].value = 0;
 	effectVignette.uniforms[ "darkness" ].value = 0;
 
@@ -109,9 +108,8 @@ function init() {
 	composer.addPass( renderModel );
 	composer.addPass( effectFXAA );
 	composer.addPass( effectSave );
+	composer.addPass( effectBlend );
 	composer.addPass( effectBloom );
-
-
 
 	composer.addPass( effectVignette );
 }
@@ -201,10 +199,10 @@ function playerInput(){
 	}
 }
 
-$container.mousedown(function(event) {
+$(document).bind("mousedown", function(event) {
     switch (event.which) {
         case 1:
-            //shoot
+            console.log("pew");
             break;
         case 2:
             //zoom IGNORE
@@ -215,10 +213,20 @@ $container.mousedown(function(event) {
     }
 });
 
-$container.mouseup(function(event){
-	if ((!resetXPosition)&&(!resetYPosition)&&(!resetZPosition)) {
-		resetCamera();
-	}
+$(document).bind("mouseup", function(event){
+    switch (event.which) {
+        case 1:
+            //shoot
+            break;
+        case 2:
+            //zoom IGNORE
+            break;
+        case 3:
+            if ((!resetXPosition)&&(!resetYPosition)&&(!resetZPosition)) {
+				resetCamera();
+			}
+            break;
+    }
 });
 
 var resetXPosition, resetYPosition, resetZPosition;

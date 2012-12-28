@@ -127,7 +127,7 @@ THREE.TrackballControls = function ( object, domElement ) {
 		var angle = Math.acos( _rotateStart.dot( _rotateEnd ) / _rotateStart.length() / _rotateEnd.length() );
 
 		if ( angle ) {
-var newX = ( new THREE.Vector3() ).cross( _rotateStart, _rotateEnd ).normalize().x * 2;
+			var newX = ( new THREE.Vector3() ).cross( _rotateStart, _rotateEnd ).normalize().x * 2;
 			var newY = ( new THREE.Vector3() ).cross( _rotateStart, _rotateEnd ).normalize().y;
 			
 			if (newY > 2) { newY = 2; }

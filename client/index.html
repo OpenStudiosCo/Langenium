@@ -70,9 +70,12 @@
 	var socket = setEventHandlers(),  	// engine_events.js
 			instruction_queue = [], // for animation to access it
 			cache = [];
-	// engine_core.js
-	init();
-	animate();
+			
+	$(document).ready(function(){
+		init();
+		animate();
+	});
+	
 	
 
 	

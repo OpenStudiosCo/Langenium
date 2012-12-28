@@ -2,12 +2,12 @@ var url = window.location.href;
 if (url.indexOf("langenium") > 0)
 {
 	url = "http://langenium.jit.su:80";
-	url = "langenium.ap01.aws.af.cm";
+	//url = "langenium.ap01.aws.af.cm";
 }
 else {
 	url = "http://localhost:80";
 }
-socket = io.connect(url, {'transports': ['jsonp-polling']});
+socket = io.connect(url);
 
 var 	playerLatency = new TimeSeries(),
 		chart = new SmoothieChart();

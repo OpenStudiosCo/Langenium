@@ -12,23 +12,23 @@ function moveShip(ship, isPlayer, instruction) {
 
 	if (rotate > 0){
 		if (ship.rotation.z < .5) {
-			camera.rotation.z -= rotate / 3; 
+			if (isPlayer == true) { camera.rotation.z -= rotate / 3; }
 			ship.rotation.z += rotate / 3;
 		}
 		else 
 		{
-			camera.rotation.z -= rotate / 4; 
+			if (isPlayer == true) { camera.rotation.z -= rotate / 4; }
 			ship.rotation.z += rotate / 4;
 		}
 		ship.rotation.y += rotate;
 	}
 	if (rotate < 0){
 		if (ship.rotation.z > -.5) {
-			camera.rotation.z -= rotate / 3; 
+			if (isPlayer == true) { camera.rotation.z -= rotate / 3; }
 			ship.rotation.z += rotate / 3;
 		}
 		else {
-			camera.rotation.z -= rotate / 4; 
+			if (isPlayer == true) { camera.rotation.z -= rotate / 4; }
 			ship.rotation.z += rotate / 4;
 		}
 		ship.rotation.y += rotate;

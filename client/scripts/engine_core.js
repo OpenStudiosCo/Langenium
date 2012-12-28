@@ -286,16 +286,10 @@ function animate() {
 	TWEEN.update();
 	var shipsMoving = false;
 	if (player) {
+		playerInput();
 		player.updateMatrix();
-		var 	interval = new Date().getTime(),
-				intervalDelta = interval - player.moveInterval;
-				
-		player.rotation.x = Math.sin(interval/5000)/15;
-	
-		if (intervalDelta >= player.latency / intervalDelta) {
-			playerInput();
-			player.moveInterval = interval;
-		}
+
+		player.rotation.x = Math.sin(new Date().getTime()/5000)/15;
 		if (player.position.y < 50) {
 			player.position.y += 3;
 		}

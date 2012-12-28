@@ -292,7 +292,7 @@ function animate() {
 				
 		player.rotation.x = Math.sin(interval/5000)/15;
 	
-		if (intervalDelta >= player.latency / 20) {
+		if (intervalDelta >= player.latency / intervalDelta) {
 			playerInput();
 			player.moveInterval = interval;
 		}

@@ -278,21 +278,19 @@ var resetPlayerZCheck = setInterval(function(){
 	}
 }, 500);
 
-var lastInterval = 0;
-
 function animate() {
 	TWEEN.update();
 	var shipsMoving = false;
 	if (player) {
 		player.updateMatrix();
 		var 	interval = new Date,
-				intervalDelta = interval - lastInterval;
+				intervalDelta = interval - player.moveInterval;
 				
-		lastInterval = interval;
 		player.rotation.x = Math.sin(interval/5000)/15;
 		
 		if (intervalDelta >= player.latency / 20) {
 			playerInput();
+			player.moveInterval = interval;
 		}
 		if (player.position.y < 50) {
 			player.position.y += 3;

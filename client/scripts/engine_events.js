@@ -52,7 +52,6 @@ function updateClient(data) {
 
 function removeShip(data) {
 	$("#playerList").html("");
-	$("#playerList").append("<li>" + player.username + "</li>");
 	ships.forEach(function(ship, index){
 		if (ship.username == data.username) {
 			scene.remove(ships[index]);

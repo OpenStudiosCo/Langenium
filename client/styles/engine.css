@@ -1,49 +1,148 @@
+/* CSS reset */
+ul {
+	padding: 0;
+}
 html, body {
 	background: #000;
-	color: #FFF;
-	font-family: "Lucida Console", "Verdana", "Arial";
-	font-size: 9pt;
+	color: #CCC;
+	font-family: "Verdana", "Arial";
+	font-size: 9px;
 	overflow: hidden;
 }
-h2 {
-	width: auto;
+
+a {
+	color: #FFF;
 }
-#main, #bar {
-	float: left;
-}
-#bar {
-	padding: 0 0 0 1em;
-}
-#content {
-	p
-}
+
 #container {
+	position: relative;
+	z-index: 1;
 	text-align: center;
 	margin: 0 auto;
 	overflow: hidden;
 }
-#cockpit {
+
+.boxes {
 	position: absolute;
-	width: 100%;
-	height: 50px;
-	bottom: 20px;
-	background: #4c4c4c; /* Old browsers */
-	background: -moz-linear-gradient(top,  #4c4c4c 0%, #595959 12%, #666666 25%, #474747 39%, #2c2c2c 50%, #000000 51%, #111111 60%, #2b2b2b 76%, #1c1c1c 91%, #131313 100%); /* FF3.6+ */
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#4c4c4c), color-stop(12%,#595959), color-stop(25%,#666666), color-stop(39%,#474747), color-stop(50%,#2c2c2c), color-stop(51%,#000000), color-stop(60%,#111111), color-stop(76%,#2b2b2b), color-stop(91%,#1c1c1c), color-stop(100%,#131313)); /* Chrome,Safari4+ */
-	background: -webkit-linear-gradient(top,  #4c4c4c 0%,#595959 12%,#666666 25%,#474747 39%,#2c2c2c 50%,#000000 51%,#111111 60%,#2b2b2b 76%,#1c1c1c 91%,#131313 100%); /* Chrome10+,Safari5.1+ */
-	background: -o-linear-gradient(top,  #4c4c4c 0%,#595959 12%,#666666 25%,#474747 39%,#2c2c2c 50%,#000000 51%,#111111 60%,#2b2b2b 76%,#1c1c1c 91%,#131313 100%); /* Opera 11.10+ */
-	background: -ms-linear-gradient(top,  #4c4c4c 0%,#595959 12%,#666666 25%,#474747 39%,#2c2c2c 50%,#000000 51%,#111111 60%,#2b2b2b 76%,#1c1c1c 91%,#131313 100%); /* IE10+ */
-	background: linear-gradient(to bottom,  #4c4c4c 0%,#595959 12%,#666666 25%,#474747 39%,#2c2c2c 50%,#000000 51%,#111111 60%,#2b2b2b 76%,#1c1c1c 91%,#131313 100%); /* W3C */
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4c4c4c', endColorstr='#131313',GradientType=0 ); /* IE6-9 */
+	z-index: 2;
+	top: 10px;
 }
-#cockpit #controls div {
-	background: none transparent!important;
+
+.boxes.left {
+	left: 10px;
 }
-#cockpit #controls {
-	width: 80%;
-	margin: 0px auto;
-	
+
+.boxes.right {
+	right: 10px;
 }
-ol {
+
+.box {
+	overflow: hidden;
+	width: 180px;
+	height: 100%;
+	clear: both;
+	padding: 1em;
+	margin: .25em .5em;
+	background-color: #111111;
+	opacity: 0.8;
+}
+.box > h2 {
+	background-color: #000000;
+	padding: 0.5em;
+	margin: -1em -1em 1em -1em;
+}
+.box.wide {
+	width: 250px;
+}
+
+.boxes.left .box {
+	float: left;
+}
+.boxes.right .box {
+	float: right;
+}
+
+.box h2,
+.box p { 
+	font-weight: normal;
+	font-size: 1em;
+}
+
+.box h3{
+	font-size: 1.2em;
+}
+
+.box p {
 	text-align: center;
+}
+.box .minimize {
+	position: absolute;
+	top: 0px;
+	right: 5px;
+}
+.box .minimize:hover {
+	cursor: pointer;
+}
+
+
+#stats .player.info,
+#stats .ship.info {
+	position: absolute;
+}
+
+#stats #shipHealth  {
+	float: right;
+}
+#stats .player.info img {
+	position: absolute;
+}
+#stats .player.info .username {
+	margin-left: 30px;
+	font-weight: bold;
+	font-size: 1.2em;
+	float: left;
+	clear: right;
+}
+
+#stats .player.info .job {
+	margin-left: 30px;
+	font-weight: normal;
+	font-size: 1em;
+	float: left;
+	clear: both;
+}
+#stats .ship.info {
+	top: 55px;
+}
+
+#stats .ship.info li {
+	margin: .25em 0;
+	list-style: outside none;
+	display: block;
+}
+#stats .ship.info li span {
+	float: right;
+	display: inline-block;
+	margin-left: 15px;
+	background-color: #FFFF00;
+	width: 95px;
+	height: 1.2em;
+}
+#stats .ship.info li span.ship-health { background-color: #00871C; }
+#stats .ship.info li span.ship-power { background-color: #F15A24; }
+#stats .ship.info li span.ship-exp { background-color: #0000FF; }
+
+#playerList {
+	margin: 0 -0.5em;
+}
+#playerList li {
+	padding: 1em 1em 1em 4em;
+	background: #333333 url(../assets/mugshot.png) no-repeat 3px 3px;
+}
+#playerList li:hover {
+	cursor: pointer;
+	background-color: #666666;
+}
+#playerList li.selected {
+	background-color: #999999;
 }

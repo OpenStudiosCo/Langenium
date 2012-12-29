@@ -157,7 +157,9 @@ function renderObject(object, instruction) {
 		player.rotation.y = instruction.details.position.rotationY;
 		player.add(camera);
 		scene.add(player);
-	
+		ships.push(player);
+		$("#stats .player.info .username").html(player.username);
+		$("#playerList").append("<li>" + player.username + "</li>");
 	}
 	if (instruction.details.type == "ship") {
 		var ship = object;
@@ -165,5 +167,7 @@ function renderObject(object, instruction) {
 		ship.rotation.y = instruction.details.position.rotationY;
 		ships.push(ship);
 		scene.add(ships[ships.length-1]);
+		$("#playerList").append("<li>" + ship.username + "</li>");
+		$("#players h2").html("Players online (" + ships.length + ")");
 	}
 }

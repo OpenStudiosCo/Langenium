@@ -43,7 +43,7 @@ function init() {
 		winW = window.innerWidth;
 		winH = window.innerHeight;
 	}
-	camera = new THREE.PerspectiveCamera( 45, (winW - 50) / (winH - 50), 10, M );
+	camera = new THREE.PerspectiveCamera( 45, (winW) / (winH), 10, M );
 	camera.position.y = 6;
 	camera.position.z = 40;
 
@@ -53,16 +53,13 @@ function init() {
 	controls.staticMoving = true;
 
 	stats = new Stats();
-	stats.domElement.style.position = 'absolute';
-	stats.domElement.style.top = '0px';
-	stats.domElement.style.left = winW - 100 + 'px';
-	stats.domElement.style.zIndex = 100;
-	$container.append(stats.domElement);
+	stats.domElement.style.float = "left"
+	$("#diagnostics").append(stats.domElement);
 	
 	renderer = new THREE.WebGLRenderer({
 		antialias : true
 	});
-	renderer.setSize( window.innerWidth - 50, window.innerHeight - 50);
+	renderer.setSize( winW, winH);
 	$container.append(renderer.domElement);
 	
 	renderer.autoClear = false;
@@ -117,6 +114,7 @@ function init() {
  /* Create basic scene objects - sky, etc
  --------------------------------------------------------------------------------------------------------------------------------*/
 function createScene() {
+
 	scene = new THREE.Scene();
 	
 	var skyGeo = new THREE.CubeGeometry(M, M, M);
@@ -280,16 +278,22 @@ var resetPlayerZCheck = setInterval(function(){
 	}
 }, 500);
 
-var sixtyFPS = 1000/60; 
+var lastInterval = 0;
 
 function animate() {
 	TWEEN.update();
 	var shipsMoving = false;
 	if (player) {
-		playerInput();
 		player.updateMatrix();
-
-		player.rotation.x = Math.sin(new Date().getTime()/5000)/15;
+		var 	interval = new Date,
+				intervalDelta = interval - lastInterval;
+				
+		lastInterval = interval;
+		player.rotation.x = Math.sin(interval/5000)/15;
+		
+		if (intervalDelta >= player.latency / 20) {
+			playerInput();
+		}
 		if (player.position.y < 50) {
 			player.position.y += 3;
 		}
@@ -311,7 +315,9 @@ function animate() {
 			ship.rotation.z -= ship.rotation.z / 50;
 		}	
 	});
+	
 	requestAnimationFrame( animate );
+	
 	//renderer.render( scene, camera );
 	render();
 	controls.update();

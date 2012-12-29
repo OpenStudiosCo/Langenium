@@ -1,26 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <link href="styles/engine.css" rel="stylesheet">
+    <link href="styles/jquery-ui-1.9.2.custom.css" rel="stylesheet">
+	<link href="styles/engine.css" rel="stylesheet">
   </head>
   <title>Langenium Test Page</title>
   <body>
-	<div  style="width: 100%; height: 100%; position: fixed;">
-		<div id="latency" style="z-index: 2; position: fixed;"></div>
-		<canvas id="chart" width="200" height="50" style="z-index: 1; position: fixed; opacity: 0.8;"></canvas>
-	</div>
-    
-    <div id="container"></div>
-    <div id="cockpit">
-      <div id="controls">
-        <div id="speed"></div>
-        <div id="altitude"></div>
-        <div id="targets"></div>
-        
-      </div>
-    </div>
+	  <div class="boxes left">
+		  <div id="about" class="box wide collapsible">
+		  <h2>About</h2>
+			<p>
+				<img src="assets/logo.png" alt="Langenium logo" />
+			</p>
+			<p>Welcome to Langenium, a web based MMORPG currently in development.</p>
+			<p>More information is available at <a href="http://www.langenium.com">the website</a>.</p>
+			<p>
+					<strong>W</strong>&nbsp;-&nbsp;FORWARD<br />
+					<strong>S</strong>&nbsp;-&nbsp;BACK<br />
+					<strong>A</strong>&nbsp;-&nbsp;UP<br />
+					<strong>D</strong>&nbsp;-&nbsp;RIGHT<br />
+					<strong>SHIFT</strong>&nbsp;-&nbsp;UP<br />
+					<strong>SPACE</strong>&nbsp;-&nbsp;DOWN<br />
+					<strong>Hold Right-Click</strong>&nbsp;-&nbsp;Rotate Camera<br />
+			</p>
+		  </div>
+		  <div id="stats" class="box wide">
+		  <h2>Stats</h2>
+			<div class="player info">
+				<img src="assets/mugshot.png" width="25" height="25" alt="Langenium logo" />
+				<span class="username">Username</span>
+				<span class="job">Mercenary</span>
+			</div>
+			<div class="ship info">
+				<ul>
+					<li>HP<span class="ship-health"></span></li>
+					<li>PWR<span class="ship-power"></span></li>
+					<li>EXP<span class="ship-exp"></span></li>
+				</ul>
+			</div>
+			<div class="ship health">
+				<img src="assets/mercenary_health.png" alt="Langenium logo" align="right" />
+			</div>
+		  </div>
+	  </div>
+	  <div class="boxes right">
+		  <div id="diagnostics" class="box collapsible">
+			<h2>Diagnostics</h2>
+			<div id="latencyLabel" style="position: absolute; margin-left: 80px;"></div>
+			<canvas id="latencyBox" width="97" height="43" style="display: inline-block;"></canvas>
+
+		  </div>
+		  <div id="selected" class="box">
+			<h2>Currently selected</h2>
+			<div id="selectedItem"></div>
+		  </div>
+		  <div id="players" class="box collapsible">
+			<h2>Players online</h2>
+			<ul id="playerList"></ul>
+		  </div>
+	  </div>
+	  <div id="container"></div>
   </body>
   <script src="libs/jquery.min.js"></script>
+  <script src="libs/jquery-ui-1.9.2.custom.min.js"></script>
   <script src="libs/socket.io.min.js"></script>
   <script src="libs/three.min.js"></script>
   <script src="libs/tween.min.js"></script>
@@ -70,10 +112,31 @@
 	var socket = setEventHandlers(),  	// engine_events.js
 			instruction_queue = [], // for animation to access it
 			cache = [];
-			
+	
+	
+	
 	$(document).ready(function(){
+		$("#stats .player.info .job").html(username);
+		$(".box").draggable();
+		
+		$(".collapsible").each(function(){
+			$(this).append("<a class='minimize ui-icon ui-icon-minus'></a>");
+		});
+		$(".minimize").live("click",function(){
+			if ($(this).hasClass('ui-icon-minus') == true) {
+				$(this).parent().animate( { height: '0px' }, 500);
+				$(this).removeClass('ui-icon-minus');
+				$(this).addClass('ui-icon-plus');
+			}
+			else {
+				$(this).parent().animate( { height: '100%' }, 500);
+				$(this).removeClass('ui-icon-plus');
+				$(this).addClass('ui-icon-minus');
+			}
+		});
 		init();
 		animate();
+
 	});
 	
 	

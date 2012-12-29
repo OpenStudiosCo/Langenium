@@ -90,9 +90,6 @@ a {
 	position: absolute;
 }
 
-#stats #shipHealth  {
-	float: right;
-}
 #stats .player.info img {
 	position: absolute;
 }
@@ -116,7 +113,7 @@ a {
 }
 
 #stats .ship.info li {
-	margin: .25em 0;
+	margin: .8em 0;
 	list-style: outside none;
 	display: block;
 }
@@ -132,10 +129,15 @@ a {
 #stats .ship.info li span.ship-power { background-color: #F15A24; }
 #stats .ship.info li span.ship-exp { background-color: #0000FF; }
 
+#stats .ship.health {
+	padding: 2em 0;
+}
+
 #playerList {
 	margin: 0 -0.5em;
 }
 #playerList li {
+	margin: 0.5em 0;
 	padding: 1em 1em 1em 4em;
 	background: #333333 url(../assets/mugshot.png) no-repeat 3px 3px;
 }

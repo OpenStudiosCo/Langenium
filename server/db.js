@@ -1,4 +1,6 @@
 module.exports.getLoadInstructions = getLoadInstructions;
+module.exports.getObject = getObject;
+
 var THREE = require('three');
 /*///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	Scene Loader
@@ -27,6 +29,9 @@ function getMap(location) {
 	return map;
 }
 
+/*///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	Bounding box builder
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 var urlPrefix = "http://localhost:8080/";
 var objectTypes = {
 	ship: 	{
@@ -41,26 +46,36 @@ var objectTypes = {
 
 for (var objectType in objectTypes) {
 	for (var object in objectTypes[objectType]) {
-		var 	loader =  new THREE.JSONLoader(),
-				url = objectTypes[objectType][object].url;
-				
-		loader.load(urlPrefix + url, function(geometry, materials){
-			var mesh = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial( materials ) );
-			console.log(mesh);
-		});
+		loadMesh(objectType, object);
 	}
 }
-
+function loadMesh(objectType, object) {
+	var 	urlPrefix = "http://localhost:8080/",
+			loader =  new THREE.JSONLoader(),
+			url = objectTypes[objectType][object].url;
+			
+	loader.load(urlPrefix + url, function(geometry, materials){
+			objectTypes[objectType][object].geometry = geometry;
+			objectTypes[objectType][object].materials = materials;
+		});
+}
 /*///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	Object builder
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
-
+function getObject(type) {
+	var retObject;
+	for (var objectType in objectTypes) {
+		for (var object in objectTypes[objectType]) {
+			if (type[objectType] == object) {
+				retObject = objectTypes[objectType][object];
+			}
+		}
+	}
+	return retObject;
+}
 function buildObject(role, type, position, scale) {
 	var retObject;
-	
-
-	
 	for (var objectType in objectTypes) {
 		for (var object in objectTypes[objectType]) {
 			if (type[objectType] == object) {
@@ -73,7 +88,6 @@ function buildObject(role, type, position, scale) {
 			}
 		}
 	}
-	
 	return retObject;
 }
 
@@ -118,7 +132,7 @@ function getDummyEnemies() {
 
 function getDummyMap() {
 	var map = [];
-	map.push({ name: "load", details: buildObject('platform', { scene: 'platform' }, { x: -8500, y: 500, z: -7000 }, 0) });
+	map.push({ name: "load", details: buildObject('platform', { scene: 'platform' }, { x: -8500, y: 500, z: -5000 }, 0) });
 	map.push({ name: "load", details: buildObject('island', { scene: 'island' }, { x: 5500, y: -1500, z: -75000 }, 2500) });
 	map.push({ name: "load", details: buildObject('island', { scene: 'island' }, { x: 18000, y: -500, z: -65000 }, 2800) });
 	map.push({ name: "load", details: buildObject('island', { scene: 'island' }, { x: 50000, y: -1500, z: -25000 }, 2800) });

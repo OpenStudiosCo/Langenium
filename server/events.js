@@ -16,7 +16,7 @@ function movePlayer(rotationY, data) {
 	if (data.rY < 0) { data.rY = -rotateAngle; }					// right
 	if (data.pY > 0) { data.pY = velocityChange / 2; } 			// up
 	if (data.pY < 0) { data.pY = -(velocityChange / 2); } 		// down
-	
+		
 	data.rY = (data.rY + data.rY * Math.PI / 180);
 
 	data.pX = velocity * Math.sin(rotationY);

@@ -8,7 +8,8 @@ var app = require('http').createServer(function (request, response) { if (url.pa
   , jade = require('jade')
   , url = require('url')
   , db = require("./db.js")
-  , events = require("./events.js");
+  , events = require("./events.js")
+  , THREE = require('three');
   
 app.listen(80);
 
@@ -18,6 +19,11 @@ app.listen(80);
 io.set('log level', 2);
 
 io.sockets.on('connection', function (socket) {
+	var scene = new THREE.Scene();
+	var camera = new THREE.PerspectiveCamera( 45, (1280) / (1024), 10, 100000 );
+	scene.add(camera);
+	camera.position.y = 6;
+	camera.position.z = 40;
 	
 	socket.emit("ping", { time: new Date().getTime(), latency: 0});
 	socket.on("pong", function(data){
@@ -50,12 +56,47 @@ io.sockets.on('connection', function (socket) {
 	});
 	
 	socket.on('move', function(data){
-	
 		players_online.forEach(function(player, index){
 			if (player.sessionId == socket.id) {
-				
+	
 				var playerMovement = events.movePlayer(players_online[index].position.rotationY, data);
 				
+				var platform = db.getObject({scene: 'platform'});
+			
+				var platformMesh = new THREE.Mesh(platform.geometry, new THREE.MeshFaceMaterial( platform.materials ) );
+				platformMesh.scale = new THREE.Vector3(platform.scale,platform.scale,platform.scale);
+				platformMesh.position.x = -8500;
+				platformMesh.position.y = 500;
+				platformMesh.position.z = -5000;
+				platformMesh.matrixAutoUpdate = true;
+				platformMesh.updateMatrix();
+				scene.add(platformMesh);
+				
+				var moveVector = new THREE.Vector3(playerMovement.instruction.details.pX, playerMovement.instruction.details.pY, playerMovement.instruction.details.pZ);
+				
+				var playerObj = db.getObject({ship: 'mercenary'});
+				var playerMesh = new THREE.Mesh(playerObj.geometry, new THREE.MeshFaceMaterial( playerObj.materials ) );
+				playerMesh.scale = new THREE.Vector3(playerObj.scale,playerObj.scale,playerObj.scale);
+				playerMesh.position = new THREE.Vector3(players_online[index].position.x, players_online[index].position.y, players_online[index].position.z);
+				playerMesh.matrixAutoUpdate = true;
+				playerMesh.updateMatrix();
+				scene.add(playerMesh);
+				
+				scene.updateMatrixWorld();
+				var ray = new THREE.Raycaster(playerMesh.position, moveVector.clone().subSelf(playerMesh.position).normalize());
+				var intersects = ray.intersectObject(platformMesh);
+		
+				var util = require('util');
+				//console.log(util.inspect(platformMesh.matrixWorld, true, null));
+				//console.log(intersects);
+				if (intersects.length > 0) {
+					intersects.forEach(function(obj, index) {
+						console.log(obj.point);
+						console.log(obj.distance);
+					});
+				}
+				scene.remove(playerMesh);
+				scene.remove(platform);
 				players_online[index].position.rotationY +=  playerMovement.instruction.details.rY;
 				players_online[index].position.y += playerMovement.instruction.details.pY;
 				players_online[index].position.x += playerMovement.instruction.details.pX; 

@@ -1,4 +1,22 @@
 function moveShip(ship, isPlayer, instruction) {
+
+	var platform = platforms[0];
+	
+	var playerMesh = player;
+	
+	var moveVector = new THREE.Vector3(instruction.details.pX, instruction.details.pY, instruction.details.pZ);
+	$("#selected").html("x:" + player.position.x + " y: " + player.position.y + " z: " + player.position.z);
+	var ray = new THREE.Raycaster(playerMesh.position, moveVector.clone().subSelf(playerMesh.position).normalize());
+	console.log(platforms[0].matrixWorld.elements);
+	var intersects = ray.intersectObject(platform, true);
+	
+	//console.log(intersects);
+	if (intersects.length > 0) {
+		intersects.forEach(function(obj, index) {
+			console.log(obj.point);
+			console.log(obj.distance);
+		});
+	}
 	
 	if (instruction.details.pY != 0){
 		ship.position.y += instruction.details.pY;
@@ -57,13 +75,15 @@ function loadObject(instruction) {
 	else {
 		loader.load(instruction.details.url, function(geometry, materials) {
 			object = makeObjectMesh(instruction.details.type, geometry, materials, x, y, z , scale);
+			console.log(object);
 			var cachedObject = { url: instruction.details.url, geometry: geometry, materials: materials};
 			cache.push(cachedObject);	
 			renderObject(object, instruction);
 		});
 	}
 }
-var islands = [];
+var 	islands = [],
+		platforms = [];
 function makeObjectMesh(objectType, geometry, materials, x, y, z, scale) {
 	var useVertexOverrides = false;
 	if ((objectType != "ship")&&(objectType != "player")) {
@@ -127,6 +147,7 @@ function makeObjectMesh(objectType, geometry, materials, x, y, z, scale) {
 		}
 	});
 	object = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial( materials ) );
+	object.name = objectType;
 	object.position.set(x, y, z);
 	object.scale.set(scale, scale, scale);
 	object.matrixAutoUpdate = true;
@@ -143,8 +164,8 @@ function renderObject(object, instruction) {
 			scale = instruction.details.position.scale;
 	
 	if (instruction.details.type == "platform") {
-		object.rotation.y = -3.3;
-		scene.add(object);
+		platforms.push(object);
+		scene.add(platforms[platforms.length-1]);
 	}
 	if (instruction.details.type == "island") {
 		islands.push(object);

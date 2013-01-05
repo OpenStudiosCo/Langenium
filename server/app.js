@@ -72,39 +72,39 @@ function buildWorldMap(){
 	});
 }
 
-
+var time = new Date();		
+function updateWorld() {
+	var 	newTime = new Date(),
+			delta = newTime = time;
+			
+	var velocityChange = -5;
+	bots.forEach(function(bot, index){
+		var 	newX = 0,
+				newY = 0,
+				newZ = 0,
+				newRY = 0;
+			
+		newRY = Math.cos(delta/1000)/(Math.random() * 100 - 200);
+		
+		newX = velocityChange * Math.sin(bot.rotation.y + newRY);
+		newZ = velocityChange * Math.cos(bot.rotation.y + newRY);
+		newY = Math.cos(delta/1000)/(1000*Math.random() );
+		
+		
+		bots[index].position.x += newX;
+		bots[index].position.y += newY;
+		bots[index].position.z += newZ;
+		bots[index].rotation.y += newRY;
+		
+		var data = { pX: newX, pY: newY, pZ: newZ, rY: newRY, username: bot.username };
+		//console.log(data);
+		io.sockets.emit('update', { instruction: { name: "move", type: "bot", details: data } });
+	});
+	time = newTime;	
+}
+var tick = setInterval(updateWorld, 1000 / 33);
 
 io.sockets.on('connection', function (socket) {
-	var time = new Date();		
-	function updateWorld() {
-		var 	newTime = new Date(),
-				delta = newTime = time;
-				
-		var velocityChange = 5;
-		bots.forEach(function(bot, index){
-			var 	newX = 0,
-					newY = 0,
-					newZ = 0,
-					newRY = 0;
-					
-			newX = velocityChange * Math.sin(bot.rotation.y);
-			newZ = velocityChange * Math.cos(bot.rotation.y);
-			newY = Math.cos(delta/1000)/(1000*Math.random() );
-			newRY =  Math.cos(delta/1000)/(1000*Math.random() );
-			
-			bots[index].position.x += newX;
-			bots[index].position.y += newY;
-			bots[index].position.z += newZ;
-			bots[index].rotation.y += newRY;
-			
-			var data = { pX: newX, pY: newY, pZ: newZ, rY: newRY, username: bot.username };
-			//console.log(data);
-			socket.emit('update', { instruction: { name: "move", type: "bot", details: data } });
-		});
-		time = newTime;	
-	}
-	var tick = setInterval(updateWorld, 1000 / 60);
-	
 	socket.emit("ping", { time: new Date().getTime(), latency: 0});
 	socket.on("pong", function(data){
 		var time = new Date().getTime(); 
@@ -186,12 +186,12 @@ io.sockets.on('connection', function (socket) {
 // ENGINE VARIABLES
 var players_online = [];
 var players = [ 
-		{ username: "Mercenary", id: "1", type: { ship: "player" }, url: "assets/mercenary.js", position: { x: -8122, y: 3656, z: -1740 , scale: 10, rotationY: 0 }},
+		{ username: "Mercenary", id: "1", type: { ship: "player" }, url: "assets/mercenary.js", position: { x: -8500, y: 3900, z: -1740 , scale: 10, rotationY: 3.14 }},
 		//{ username: "Pirate", uid: "2", type: "player", url: "assets/pirate.js", position: { x: -1000, y: 3000, z: 5500 , scale: 10, rotationY: 0 }}
 		{ username: "Pirate", id: "2", type: { ship: "player" }, url: "assets/pirate.js", position: { x: 0, y: 0, z: 0 , scale: 10, rotationY: 0 }}
 	];
 	
-/*///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// w//////////////////////
 	Client Events
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 function loginPlayer(sessionId, username) {

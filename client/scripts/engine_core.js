@@ -18,7 +18,7 @@ var camera, scene, renderer, stats;
 var hblur, vblur;
 var geometry, material, mesh;
 var controls;
-var player, ships = [];
+var player, ships = [], bots = [];
 var keyboard = new THREEx.KeyboardState(), clock = new THREE.Clock();
 var M = 10000 * 1000;
 var composer;
@@ -62,53 +62,6 @@ function init() {
 	renderer.setSize( winW, winH);
 	$container.append(renderer.domElement);
 	
-	renderer.autoClear = false;
-
-	renderTargetParameters = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBFormat, stencilBuffer: false };
-	renderTarget = new THREE.WebGLRenderTarget( winW, winH, renderTargetParameters );
-
-	effectSave = new THREE.SavePass( new THREE.WebGLRenderTarget( winW, winH, renderTargetParameters ) );
-
-	effectBlend = new THREE.ShaderPass( THREE.BlendShader, "tDiffuse1" );
-
-	effectFXAA = new THREE.ShaderPass( THREE.FXAAShader );
-	var effectVignette = new THREE.ShaderPass( THREE.VignetteShader );
-	effectBloom = new THREE.BloomPass( 0.5 );
-
-	effectFXAA.uniforms[ 'resolution' ].value.set( 1 / winW, 1 / winH );
-
-	// tilt shift
-
-	hblur = new THREE.ShaderPass( THREE.HorizontalTiltShiftShader );
-	vblur = new THREE.ShaderPass( THREE.VerticalTiltShiftShader );
-
-	var bluriness = 1;
-
-	hblur.uniforms[ 'h' ].value = bluriness / winW;
-	vblur.uniforms[ 'v' ].value = bluriness / winH;
-	hblur.uniforms[ 'r' ].value = .55;
-	vblur.uniforms[ 'r' ].value = .5;
-
-	effectVignette.uniforms[ "offset" ].value = 0;
-	effectVignette.uniforms[ "darkness" ].value = 0;
-
-	// motion blur
-
-	effectBlend.uniforms[ 'tDiffuse2' ].value = effectSave.renderTarget;
-	effectBlend.uniforms[ 'mixRatio' ].value = 0.65;
-
-	var renderModel = new THREE.RenderPass( scene, camera );
-
-	effectVignette.renderToScreen = true;
-
-	composer = new THREE.EffectComposer( renderer, renderTarget );
-	composer.addPass( renderModel );
-	composer.addPass( effectFXAA );
-	composer.addPass( effectSave );
-	composer.addPass( effectBlend );
-	composer.addPass( effectBloom );
-
-	composer.addPass( effectVignette );
 }
 
  /* Create basic scene objects - sky, etc
@@ -315,20 +268,19 @@ function animate() {
 		}	
 	});
 	
+	bots.forEach(function(bot,index){
+		if (bot.position.y < 50) {
+			bot.position.y += 3;
+		}
+		if (bot.rotation.z != 0) {
+			bot.rotation.z -= bot.rotation.z / 50;
+		}	
+	});
+	
 	requestAnimationFrame( animate );
 	
-	//renderer.render( scene, camera );
-	render();
+	renderer.render( scene, camera );
 	controls.update();
 	stats.update();
 }
-function render(){
-		renderer.autoClear = false;
-		renderer.shadowMapEnabled = true;
-		renderer.autoUpdateObjects = true;
 
-		renderer.clearTarget( null );
-		composer.render( 1 );
-
-		renderer.shadowMapEnabled = false;
-}

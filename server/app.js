@@ -17,12 +17,13 @@ app.listen(80);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 io.set('log level', 2);
 
-var world = [];
-buildWorld();
-function buildWorld(){
-	var world_builder = db.getDummyMap();
-	world_builder.forEach(function(sceneObj, index){
-		
+var 	worldMap = [],
+		bots = [];
+
+buildWorldMap();
+function buildWorldMap(){
+	var map_builder = db.getDummyMap();
+	map_builder.forEach(function(sceneObj, index){
 		var 	type = sceneObj.type,
 				object = db.getObject(type),
 				scale = sceneObj.scale || object.scale,
@@ -41,7 +42,32 @@ function buildWorld(){
 			objMesh.matrixAutoUpdate = true;
 			objMesh.updateMatrix();
 			objMesh.updateMatrixWorld();
-			world.push(objMesh);
+			worldMap.push(objMesh);
+		});	
+	});
+	
+	var bot_builder = db.getDummyEnemies();
+	bot_builder.forEach(function(obj, index){
+		var 	type = obj.type,
+				object = db.getObject(type),
+				scale = obj.scale || object.scale,
+				urlPrefix = "http://langenium.com/play/",
+				loader =  new THREE.JSONLoader(),
+				url = object.url;
+				
+		loader.load(urlPrefix + url, function(geometry, materials){
+			var objMesh = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial( materials ) );
+			objMesh.geometry.computeBoundingBox();
+			
+			objMesh.scale = new THREE.Vector3(scale,scale,scale);
+			objMesh.position.x = obj.position.x,
+			objMesh.position.y = obj.position.y,
+			objMesh.position.z = obj.position.z,
+			objMesh.matrixAutoUpdate = true;
+			objMesh.updateMatrix();
+			objMesh.updateMatrixWorld();
+			objMesh.username = obj.id;
+			bots.push(objMesh);
 		});	
 	});
 }
@@ -49,6 +75,35 @@ function buildWorld(){
 
 
 io.sockets.on('connection', function (socket) {
+	var time = new Date();		
+	function updateWorld() {
+		var 	newTime = new Date(),
+				delta = newTime = time;
+				
+		var velocityChange = 5;
+		bots.forEach(function(bot, index){
+			var 	newX = 0,
+					newY = 0,
+					newZ = 0,
+					newRY = 0;
+					
+			newX = velocityChange * Math.sin(bot.rotation.y);
+			newZ = velocityChange * Math.cos(bot.rotation.y);
+			newY = Math.cos(delta/1000)/(1000*Math.random() );
+			newRY =  Math.cos(delta/1000)/(1000*Math.random() );
+			
+			bots[index].position.x += newX;
+			bots[index].position.y += newY;
+			bots[index].position.z += newZ;
+			bots[index].rotation.y += newRY;
+			
+			var data = { pX: newX, pY: newY, pZ: newZ, rY: newRY, username: bot.username };
+			//console.log(data);
+			socket.emit('update', { instruction: { name: "move", type: "bot", details: data } });
+		});
+		time = newTime;	
+	}
+	var tick = setInterval(updateWorld, 1000 / 60);
 	
 	socket.emit("ping", { time: new Date().getTime(), latency: 0});
 	socket.on("pong", function(data){
@@ -93,12 +148,12 @@ io.sockets.on('connection', function (socket) {
 				var playerMesh = new THREE.Vector3(players_online[index].position.x, players_online[index].position.y, players_online[index].position.z);
 				
 				var raycaster = new THREE.Raycaster(playerMesh, moveVector.normalize());
-				var intersects = raycaster.intersectObjects(world);
+				var intersects = raycaster.intersectObjects(worldMap);
 		
 				var util = require('util');
 				if (intersects.length > 0) {
 					intersects.forEach(function(obj, index){
-						if (obj.distance < 80) {
+						if (obj.distance < 100) {
 							if (players_online[index].position.rotationY > 0) 
 								{ playerMovement.instruction.details.rY += obj.distance / 10000; }
 							else 
@@ -123,7 +178,6 @@ io.sockets.on('connection', function (socket) {
 				players_online[index].position.rotationY +=  playerMovement.instruction.details.rY;
 				socket.emit('update', playerMovement); 
 				socket.broadcast.emit('update', playerMovement); 
-				
 			}
 		});
 	});
@@ -159,6 +213,7 @@ function initializeClient(activePlayer) {
 	var initial_instructions = [];
 	
 	db.getLoadInstructions("map").forEach(function(instruction){ instruction.name = "load"; initial_instructions.push(instruction);});
+	db.getLoadInstructions("ships").forEach(function(instruction){ instruction.name = "load"; initial_instructions.push(instruction);});
 	
 	//getLoadInstructions("ships").forEach(function(instruction){initial_instructions.push(instruction);});
 

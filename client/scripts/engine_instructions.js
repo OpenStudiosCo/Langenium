@@ -80,7 +80,7 @@ var 	islands = [],
 		platforms = [];
 function makeObjectMesh(objectType, geometry, materials, x, y, z, scale) {
 	var useVertexOverrides = false;
-	if ((objectType != "ship")&&(objectType != "player")) {
+	if ((objectType != "ship")&&(objectType != "player")&&(objectType != "bot")) {
 		useVertexOverrides = true;
 	}
 	materials.forEach(function(material, index){
@@ -185,5 +185,14 @@ function renderObject(mesh, category, type, instruction) {
 		scene.add(ships[ships.length-1]);
 		$("#playerList").append("<li>" + ship.username + "</li>");
 		$("#players h2").html("Players online (" + ships.length + ")");
+	}
+	if (type == "bot") {
+		var bot = mesh;
+		bot.username = instruction.id;
+		bot.rotation.y = instruction.position.rotationY;
+		bots.push(bot);
+		scene.add(bots[bots.length-1]);
+		$("#botList").append("<li>" + bot.username + "</li>");
+		$("#bots h2").html("Enemies detected (" + bots.length + ")");
 	}
 }

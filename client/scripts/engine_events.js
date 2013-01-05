@@ -36,14 +36,17 @@ function updateClient(data) {
 	if (data.instruction.name == "move") {
 		if (data.instruction.details.username == socket.socket.sessionid) {
 			moveShip(player, true, data.instruction);
-			$("#cockpit #speed").html("<div><strong>Player</strong><br />pX:&nbsp;"+player.position.x+"<br />pY:&nbsp;"+player.position.y+"<br />pZ:&nbsp;"+player.position.z+"<br />rY:&nbsp;"+player.rotation.y+"</div>");
+			$("#selectedItem").html("<div><strong>Player</strong><br />pX:&nbsp;"+player.position.x+"<br />pY:&nbsp;"+player.position.y+"<br />pZ:&nbsp;"+player.position.z+"<br />rY:&nbsp;"+player.rotation.y+"</div>");
 		}
 		else {
-			$("#cockpit #targets").html("");
 			ships.forEach(function(ship,index){
 				if (data.instruction.details.username == ship.username) {
 					moveShip(ships[index], false, data.instruction);
-					$("#cockpit #targets").append("<div><strong>"+ship.username+"&nbsp;&nbsp;</strong><br />pX:&nbsp;"+ship.position.x+"&nbsp;pY:&nbsp;"+ship.position.y+"&nbsp;pZ:&nbsp;"+ship.position.z+"&nbsp;rY:&nbsp;"+ship.rotation.y+"</div>");
+				}
+			});
+			bots.forEach(function(bot,index){
+				if (data.instruction.details.username == bot.username) {
+					moveShip(bots[index], false, data.instruction);
 				}
 			});
 		}

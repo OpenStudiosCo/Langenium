@@ -1,6 +1,7 @@
 module.exports.getLoadInstructions = getLoadInstructions;
 module.exports.getObject = getObject;
 module.exports.getDummyMap = getDummyMap;
+module.exports.getDummyEnemies = getDummyEnemies;
 
 var THREE = require('three');
 
@@ -22,7 +23,14 @@ function getLoadInstructions(set) {
 }
 
 function buildEnemies(location) {
-	var enemies = getDummyEnemies();
+	var 	enemyDetails = getDummyEnemies(),
+			enemies = [];
+	enemyDetails.forEach(function(objDetails, index) {
+		var obj = buildObject(objDetails.id, objDetails.type, objDetails.position, objDetails.scale);
+		obj.type = { ship: "bot" };
+		obj.id = objDetails.id;
+		enemies.push(obj);
+	});
 	return enemies;
 }
 
@@ -114,11 +122,12 @@ function buildObject(role, type, position, scale) {
 
 function getDummyEnemies() {
 	var enemies = [];
-	enemies.push({ id: 'monster1', type: { ship: 'pirate' }, position: { x: -2000, y: 2200, z: -3800 }, scale: 0 });
-	enemies.push({ id: 'monster2', type: { ship: 'pirate' }, position: { x: -1000, y: 1800, z: -2900 }, scale: 0 });
-	enemies.push({ id: 'monster3', type: { ship: 'pirate' }, position: { x: -1000, y: 2000, z: -2700 }, scale: 0 });
-	enemies.push({ id: 'monster4', type: { ship: 'pirate' }, position: { x: -3000, y: 2100, z: -5000 }, scale: 0 });
-	enemies.push({ id: 'monster5', type: { ship: 'pirate' }, position: { x: -3000, y: 1800, z: -4000 }, scale: 0 });
+	
+	enemies.push({ id: 'monster1', type: { ship: 'mercenary' }, position: { x: -8500, y: 4000, z: -3000, rotationY: 0 }, scale: 10 });
+	enemies.push({ id: 'monster2', type: { ship: 'pirate' }, position: { x: -8500, y: 5500, z: -2500, rotationY: 0 }, scale: 10 });
+	enemies.push({ id: 'monster3', type: { ship: 'pirate' }, position: { x: -8500, y: 4000, z: -1000, rotationY: 0 }, scale: 10 });
+	enemies.push({ id: 'monster4', type: { ship: 'pirate' }, position: { x: -8500, y: 5500, z: -3500, rotationY: 0 }, scale: 10 });
+	enemies.push({ id: 'monster5', type: { ship: 'pirate' }, position: { x: -8500, y: 4000, z: -4500, rotationY: 0 }, scale: 10 });
 	return enemies;
 }
 

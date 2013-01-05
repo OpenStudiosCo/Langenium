@@ -22,7 +22,7 @@ function movePlayer(rotationY, data) {
 	data.pX = velocity * Math.sin(rotationY);
 	data.pZ = velocity * Math.cos(rotationY);
 	
-	retval = { instruction: { name: "move", details: data } };
+	retval = { instruction: { name: "move", type: "player", details: data } };
 	
 	return retval;
 }

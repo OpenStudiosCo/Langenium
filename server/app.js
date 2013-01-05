@@ -186,7 +186,7 @@ io.sockets.on('connection', function (socket) {
 // ENGINE VARIABLES
 var players_online = [];
 var players = [ 
-		{ username: "Mercenary", id: "1", type: { ship: "player" }, url: "assets/mercenary.js", position: { x: -8500, y: 3900, z: -1740 , scale: 10, rotationY: 3.14 }},
+		{ username: "Mercenary", id: "1", type: { ship: "player" }, url: "assets/mercenary.js", position: { x: -8500, y: 3900, z: -1740 , scale: 10, rotationY: 0 }},
 		//{ username: "Pirate", uid: "2", type: "player", url: "assets/pirate.js", position: { x: -1000, y: 3000, z: 5500 , scale: 10, rotationY: 0 }}
 		{ username: "Pirate", id: "2", type: { ship: "player" }, url: "assets/pirate.js", position: { x: 0, y: 0, z: 0 , scale: 10, rotationY: 0 }}
 	];
@@ -213,7 +213,20 @@ function initializeClient(activePlayer) {
 	var initial_instructions = [];
 	
 	db.getLoadInstructions("map").forEach(function(instruction){ instruction.name = "load"; initial_instructions.push(instruction);});
-	db.getLoadInstructions("ships").forEach(function(instruction){ instruction.name = "load"; initial_instructions.push(instruction);});
+	db.getLoadInstructions("bots").forEach(function(instruction){ 
+		instruction.name = "load"; 
+		if (bots.length > 0) {
+			bots.forEach(function(bot, index) {
+				if (bot.username == instruction.id) {
+					instruction.position.x = bots[index].position.x;
+					instruction.position.y = bots[index].position.y;
+					instruction.position.z = bots[index].position.z;
+					instruction.position.rotationY = bots[index].rotation.y;
+				}
+			});
+		}
+		initial_instructions.push(instruction);
+	});
 	
 	//getLoadInstructions("ships").forEach(function(instruction){initial_instructions.push(instruction);});
 

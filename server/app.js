@@ -63,8 +63,9 @@ io.sockets.on('connection', function (socket) {
 			socket.emit('load', { instructions: initializeClient(player) });
 			
 			var ship = cloneObject(player);
-			ship.type = "ship";
-			socket.broadcast.emit('load', { instructions: [ {name: "load", details: ship} ] });
+			ship.type = {ship: "ship"}
+			
+			socket.broadcast.emit('load', { instructions: [ {name: "load", username: ship.username, type: ship.type, url: ship.url, position: ship.position, scale: ship.position.scale, rotationY: ship.position.rotationY} ] });
 		}
 		else {
 			console.log("Login failure");
@@ -166,10 +167,10 @@ function initializeClient(activePlayer) {
 			// had to do this to de-reference player so that changing .type didn't override 
 			var ship = cloneObject(player);
 			ship.type = { ship: "ship" };
-			initial_instructions.push({name: "load", type: ship.type , details: ship });
+			initial_instructions.push({name: "load", username: ship.username, type: ship.type, url: ship.url, position: ship.position, scale: ship.position.scale, rotationY: ship.position.rotationY});
 		}
 		else {
-			initial_instructions.push({name: "load", type: player.type, url: player.url, position: player.position, scale: player.position.scale, rotationY: player.position.rotationY});
+			initial_instructions.push({name: "load", username: player.username, type: player.type, url: player.url, position: player.position, scale: player.position.scale, rotationY: player.position.rotationY});
 		}
 	});
 	return initial_instructions;

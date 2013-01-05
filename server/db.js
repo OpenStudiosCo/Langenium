@@ -1,7 +1,9 @@
 module.exports.getLoadInstructions = getLoadInstructions;
 module.exports.getObject = getObject;
+module.exports.getDummyMap = getDummyMap;
 
 var THREE = require('three');
+
 /*///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	Scene Loader
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
@@ -10,27 +12,32 @@ function getLoadInstructions(set) {
 	var location;
 	switch (set) {
 		case "map":
-			res = getMap();
+			res = buildMap();
 			break;
 		case "ships":
-			res = getEnemies(location);
+			res = buildEnemies(location);
 			break;
 	}
 	return res; 
 }
 
-function getEnemies(location) {
+function buildEnemies(location) {
 	var enemies = getDummyEnemies();
 	return enemies;
 }
 
-function getMap(location) {
-	var map = getDummyMap();
+function buildMap(location) {
+	var 	mapDetails = getDummyMap(),
+			map = [];
+	mapDetails.forEach(function(objDetails, index) {
+		var obj = buildObject(objDetails.id, objDetails.type, objDetails.position, objDetails.scale);
+		map.push(obj);
+	});
 	return map;
 }
 
 /*///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	Bounding box builder
+	Object cacher
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 var urlPrefix = "http://localhost:8080/";
 var objectTypes = {
@@ -39,26 +46,11 @@ var objectTypes = {
 					pirate: 			{  url: "assets/pirate.js", scale: 10 }
 				},
 	scene:	{
-					platform: 		{ url: "assets/union-platform-plain.js" , scale: 1000},
+					platform: 		{ url: "assets/union-platform2.js" , scale: 1000},
 					island: 			{ url: "assets/island.js" , scale: 10}
-				}
+				} 
 };
 
-for (var objectType in objectTypes) {
-	for (var object in objectTypes[objectType]) {
-		loadMesh(objectType, object);
-	}
-}
-function loadMesh(objectType, object) {
-	var 	urlPrefix = "http://localhost:8080/",
-			loader =  new THREE.JSONLoader(),
-			url = objectTypes[objectType][object].url;
-			
-	loader.load(urlPrefix + url, function(geometry, materials){
-			objectTypes[objectType][object].geometry = geometry;
-			objectTypes[objectType][object].materials = materials;
-		});
-}
 /*///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	Object builder
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
@@ -81,7 +73,7 @@ function buildObject(role, type, position, scale) {
 			if (type[objectType] == object) {
 				position.scale = scale || objectTypes[objectType][object].scale;
 				retObject = 	{
-										type: role,
+										type: type,
 										url: objectTypes[objectType][object].url,
 										position: position
 									};
@@ -122,24 +114,24 @@ function buildObject(role, type, position, scale) {
 
 function getDummyEnemies() {
 	var enemies = [];
-	enemies.push({ name: "load", details: buildObject('monster', { ship: 'pirate' }, { x: -2000, y: 2200, z: -3800 }, 0) });
-	enemies.push({ name: "load", details: buildObject('monster', { ship: 'pirate' }, { x: -1000, y: 1800, z: -2900 }, 0) });
-	enemies.push({ name: "load", details: buildObject('monster', { ship: 'pirate' }, { x: -1000, y: 2000, z: -2700 }, 0) });
-	enemies.push({ name: "load", details: buildObject('monster', { ship: 'pirate' }, { x: -3000, y: 2100, z: -5000 }, 0) });
-	enemies.push({ name: "load", details: buildObject('monster', { ship: 'pirate' }, { x: -3000, y: 1800, z: -4000 }, 0) });
+	enemies.push({ id: 'monster1', type: { ship: 'pirate' }, position: { x: -2000, y: 2200, z: -3800 }, scale: 0 });
+	enemies.push({ id: 'monster2', type: { ship: 'pirate' }, position: { x: -1000, y: 1800, z: -2900 }, scale: 0 });
+	enemies.push({ id: 'monster3', type: { ship: 'pirate' }, position: { x: -1000, y: 2000, z: -2700 }, scale: 0 });
+	enemies.push({ id: 'monster4', type: { ship: 'pirate' }, position: { x: -3000, y: 2100, z: -5000 }, scale: 0 });
+	enemies.push({ id: 'monster5', type: { ship: 'pirate' }, position: { x: -3000, y: 1800, z: -4000 }, scale: 0 });
 	return enemies;
 }
 
 function getDummyMap() {
 	var map = [];
-	map.push({ name: "load", details: buildObject('platform', { scene: 'platform' }, { x: -8500, y: 500, z: -5000 }, 0) });
-	map.push({ name: "load", details: buildObject('island', { scene: 'island' }, { x: 5500, y: -1500, z: -75000 }, 2500) });
-	map.push({ name: "load", details: buildObject('island', { scene: 'island' }, { x: 18000, y: -500, z: -65000 }, 2800) });
-	map.push({ name: "load", details: buildObject('island', { scene: 'island' }, { x: 50000, y: -1500, z: -25000 }, 2800) });
-	map.push({ name: "load", details: buildObject('island', { scene: 'island' }, { x: 57000, y: -500, z: -15000 }, 2000) });
-	map.push({ name: "load", details: buildObject('island', { scene: 'island' }, { x: -5500, y: -1500, z: -75000 }, 2500) });
-	map.push({ name: "load", details: buildObject('island', { scene: 'island' }, { x: -18000, y: -500, z: -65000 }, 2800) });
-	map.push({ name: "load", details: buildObject('island', { scene: 'island' }, { x: -50000, y: -1500, z: 25000 }, 2800) });
-	map.push({ name: "load", details: buildObject('island', { scene: 'island' }, { x: -45000, y: -500, z: 15000 }, 2000) });
+	map.push({ id: 'platform', type: { scene: 'platform' }, position: { x: -8500, y: 500, z: -5000 }, scale: 0 });
+	map.push({ id: 'island1', type: { scene: 'island' }, position: { x: 5500, y: -1500, z: -75000 }, scale: 2500 });
+	map.push({ id: 'island2', type: { scene: 'island' }, position: { x: 18000, y: -500, z: -65000 }, scale: 2800 });
+	map.push({ id: 'island3', type: { scene: 'island' }, position: { x: 50000, y: -1500, z: -25000 }, scale: 2800 });
+	map.push({ id: 'island4', type: { scene: 'island' }, position: { x: 57000, y: -500, z: -15000 }, scale: 2000 });
+	map.push({ id: 'island5', type: { scene: 'island' }, position: { x: -5500, y: -1500, z: -75000 }, scale: 2500 });
+	map.push({ id: 'island6', type: { scene: 'island' }, position: { x: -18000, y: -500, z: -65000 }, scale: 2800 });
+	map.push({ id: 'island7', type: { scene: 'island' }, position: { x: -50000, y: -1500, z: 25000 }, scale: 2800 });
+	map.push({ id: 'island8', type: { scene: 'island' }, position: { x: -45000, y: -500, z: 15000 }, scale: 2000 });
 	return map;
 }

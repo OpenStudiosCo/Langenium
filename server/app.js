@@ -18,6 +18,37 @@ app.listen(80);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 io.set('log level', 2);
 
+var world = [];
+buildWorld();
+function buildWorld(){
+	var world_builder = db.getDummyMap();
+	world_builder.forEach(function(sceneObj, index){
+		
+		var 	type = sceneObj.type,
+				object = db.getObject(type),
+				scale = sceneObj.scale || object.scale,
+				urlPrefix = "http://localhost:8080/",
+				loader =  new THREE.JSONLoader(),
+				url = object.url;
+				
+		loader.load(urlPrefix + url, function(geometry, materials){
+			var objMesh = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial( materials ) );
+			objMesh.geometry.computeBoundingBox();
+			
+			objMesh.scale = new THREE.Vector3(scale,scale,scale);
+			objMesh.position.x = sceneObj.position.x,
+			objMesh.position.y = sceneObj.position.y,
+			objMesh.position.z = sceneObj.position.z,
+			objMesh.matrixAutoUpdate = true;
+			objMesh.updateMatrix();
+			objMesh.updateMatrixWorld();
+			world.push(objMesh);
+		});	
+	});
+}
+
+
+
 io.sockets.on('connection', function (socket) {
 	
 	socket.emit("ping", { time: new Date().getTime(), latency: 0});
@@ -56,46 +87,32 @@ io.sockets.on('connection', function (socket) {
 	
 				var playerMovement = events.movePlayer(players_online[index].position.rotationY, data);
 				
-				var platform = db.getObject({scene: 'platform'});
-			
-				var platformMesh = new THREE.Mesh(platform.geometry, new THREE.MeshFaceMaterial( platform.materials ) );
-				platformMesh.geometry.computeBoundingBox();
-				platformMesh.scale = new THREE.Vector3(platform.scale,platform.scale,platform.scale);
-				platformMesh.position.x = -8500;
-				platformMesh.position.y = 500;
-				platformMesh.position.z = -5000;
-				platformMesh.matrixAutoUpdate = true;
-				platformMesh.updateMatrix();
-				platformMesh.updateMatrixWorld();
-				
 				var moveVector = new THREE.Vector3(playerMovement.instruction.details.pX, playerMovement.instruction.details.pY, playerMovement.instruction.details.pZ);
 				
 				var playerObj = db.getObject({ship: 'mercenary'});
 				var playerMesh = new THREE.Vector3(players_online[index].position.x, players_online[index].position.y, players_online[index].position.z);
 				
-				
 				var raycaster = new THREE.Raycaster(playerMesh, moveVector.normalize());
-				var intersects = raycaster.intersectObject(platformMesh);
+				var intersects = raycaster.intersectObjects(world);
 		
 				var util = require('util');
-				//console.log(util.inspect(platformMesh.matrixWorld, true, null));
-				//console.log(intersects);
 				if (intersects.length > 0) {
 					intersects.forEach(function(obj, index){
-						if (obj.distance < 70) {
+						if (obj.distance < 80) {
+							if (players_online[index].position.rotationY > 0) 
+								{ playerMovement.instruction.details.rY += obj.distance / 10000; }
+							else 
+								{ playerMovement.instruction.details.rY -= obj.distance / 10000; }
+							
 							if (playerMovement.instruction.details.pX != 0) {
-								playerMovement.instruction.details.pX *= -.5;
+								playerMovement.instruction.details.pX *= -.1;
 							}
 							if (playerMovement.instruction.details.pY != 0) {
-								playerMovement.instruction.details.pY *= -.5;
+								playerMovement.instruction.details.pY *= -.1;
 							}
 							if (playerMovement.instruction.details.pZ != 0) {
-								playerMovement.instruction.details.pZ *= -.25;
+								playerMovement.instruction.details.pZ *= -.1;
 							}
-							console.log("==========");
-							console.log("Distance: " + obj.distance);
-							console.log("Origin: " + raycaster.ray.origin.x + "," + raycaster.ray.origin.y + "," + raycaster.ray.origin.z);				
-							console.log("Point: " + obj.point.x + "," + obj.point.y + "," + obj.point.z);
 						}
 					});		
 				}
@@ -115,9 +132,9 @@ io.sockets.on('connection', function (socket) {
 // ENGINE VARIABLES
 var players_online = [];
 var players = [ 
-		{ username: "Mercenary", uid: "1", type: "player", url: "assets/mercenary.js", position: { x: -8122, y: 3656, z: -1740 , scale: 10, rotationY: 0 }},
+		{ username: "Mercenary", id: "1", type: { ship: "player" }, url: "assets/mercenary.js", position: { x: -8122, y: 3656, z: -1740 , scale: 10, rotationY: 0 }},
 		//{ username: "Pirate", uid: "2", type: "player", url: "assets/pirate.js", position: { x: -1000, y: 3000, z: 5500 , scale: 10, rotationY: 0 }}
-		{ username: "Pirate", uid: "2", type: "player", url: "assets/pirate.js", position: { x: 0, y: 0, z: 0 , scale: 10, rotationY: 0 }}
+		{ username: "Pirate", id: "2", type: { ship: "player" }, url: "assets/pirate.js", position: { x: 0, y: 0, z: 0 , scale: 10, rotationY: 0 }}
 	];
 	
 /*///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -141,7 +158,7 @@ function loginPlayer(sessionId, username) {
 function initializeClient(activePlayer) {
 	var initial_instructions = [];
 	
-	db.getLoadInstructions("map").forEach(function(instruction){initial_instructions.push(instruction);});
+	db.getLoadInstructions("map").forEach(function(instruction){ instruction.name = "load"; initial_instructions.push(instruction);});
 	
 	//getLoadInstructions("ships").forEach(function(instruction){initial_instructions.push(instruction);});
 
@@ -149,11 +166,11 @@ function initializeClient(activePlayer) {
 		if (player.username != activePlayer.username) {		
 			// had to do this to de-reference player so that changing .type didn't override 
 			var ship = cloneObject(player);
-			ship.type = "ship";
-			initial_instructions.push({name: "load", details: ship});
+			ship.type = { ship: "ship" };
+			initial_instructions.push({name: "load", type: ship.type , details: ship });
 		}
 		else {
-			initial_instructions.push({name: "load", details: player});
+			initial_instructions.push({name: "load", type: player.type, url: player.url, position: player.position, scale: player.position.scale, rotationY: player.position.rotationY});
 		}
 	});
 	return initial_instructions;

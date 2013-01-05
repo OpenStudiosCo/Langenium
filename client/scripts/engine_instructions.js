@@ -4,38 +4,6 @@ function moveShip(ship, isPlayer, instruction) {
 	
 	var playerMesh = player;
 	
-	var moveVector = new THREE.Vector3(instruction.details.pX, instruction.details.pY, instruction.details.pZ);
-	//console.log(moveVector.normalize());
-	$("#selected").html("x:" + player.position.x + " y: " + player.position.y + " z: " + player.position.z);
-	var raycaster = new THREE.Raycaster(playerMesh.position, moveVector.normalize());
-	var intersects = raycaster.intersectObject(platform);
-
-	if (intersects.length > 0) {
-
-		intersects.forEach(function(obj, index) {
-			if (obj.distance < 100) {
-			/*
-				var	radius = 50,
-				segments = 16,
-				rings = 16;
-				var sphereMaterial = new THREE.MeshLambertMaterial({  color: 0xCC0000, opacity: 0.5 });
-				var sphere = new THREE.Mesh( new THREE.SphereGeometry( radius, segments, rings), sphereMaterial);
-
-				// add the sphere to the scene
-				sphere.position =  obj.point;
-		
-				scene.add(sphere);
-			*/
-				console.log("==========");
-				console.log(raycaster);
-				console.log(obj);
-				//console.log("Distance: " + obj.distance);
-				//console.log("Origin: " + raycaster.ray.origin.x + "," + raycaster.ray.origin.y + "," + raycaster.ray.origin.z);				
-				//console.log("Point: " + obj.point.x + "," + obj.point.y + "," + obj.point.z);
-			}
-		});
-	}
-	
 	if (instruction.details.pY != 0){
 		ship.position.y += instruction.details.pY;
 	}
@@ -79,23 +47,32 @@ function loadInstructions(data) {
 function loadObject(instruction) {
 	var loader = new THREE.JSONLoader();
 	var cacheIndex = -1;
-	cache.forEach(function(cachedObject, index){ if (instruction.details.url == cachedObject.url) { cacheIndex = index;} });
+	cache.forEach(function(cachedObject, index){ if (instruction.url == cachedObject.url) { cacheIndex = index;} });
 
-	var  x = instruction.details.position.x,
-		y = instruction.details.position.y,
-		z = instruction.details.position.z,
-		scale = instruction.details.position.scale;
+	var  x = instruction.position.x,
+		y = instruction.position.y,
+		z = instruction.position.z,
+		scale = instruction.position.scale,
+		category,
+		type;
+	
+	// it looks dodgy but this only loops once.
+	for (var objectType in instruction.type) {
+		type = instruction.type[objectType]; 
+		category = objectType;
+	}
+	
 	if (cacheIndex >= 0) {
 		var cachedObject = cache[cacheIndex];
-		object = makeObjectMesh(instruction.details.type, cachedObject.geometry, cachedObject.materials, x, y, z , scale);
-		renderObject(object, instruction);
+		mesh = makeObjectMesh(type, cachedObject.geometry, cachedObject.materials, x, y, z , scale);
+		renderObject(mesh, category, type, instruction);
 	}
 	else {
-		loader.load(instruction.details.url, function(geometry, materials) {
-			object = makeObjectMesh(instruction.details.type, geometry, materials, x, y, z , scale);
-			var cachedObject = { url: instruction.details.url, geometry: geometry, materials: materials};
+		loader.load(instruction.url, function(geometry, materials) {
+			mesh = makeObjectMesh(type, geometry, materials, x, y, z , scale);
+			var cachedObject = { url: instruction.url, geometry: geometry, materials: materials};
 			cache.push(cachedObject);	
-			renderObject(object, instruction);
+			renderObject(mesh, category, type, instruction);
 		});
 	}
 }
@@ -174,36 +151,36 @@ function makeObjectMesh(objectType, geometry, materials, x, y, z, scale) {
 	return object;
 }
 
-function renderObject(object, instruction) {
-	object.uid = instruction.details.uid;
-	var  x = instruction.details.position.x,
-			y = instruction.details.position.y,
-			z = instruction.details.position.z,
-			scale = instruction.details.position.scale;
-	
-	if (instruction.details.type == "platform") {
-		platforms.push(object);
+function renderObject(mesh, category, type, instruction) {
+	mesh.uid = instruction.id;
+	var  x = instruction.position.x,
+			y = instruction.position.y,
+			z = instruction.position.z,
+			scale = instruction.position.scale;
+
+	if (type == "platform") {
+		platforms.push(mesh);
 		scene.add(platforms[platforms.length-1]);
 	}
-	if (instruction.details.type == "island") {
-		islands.push(object);
+	if (type ==  "island") {
+		islands.push(mesh);
 		scene.add(islands[islands.length-1]);
 	}
-	if (instruction.details.type == "player") {	
-		player = object;
+	if (type == "player") {	
+		player = mesh;
 		player.moveInterval = new Date().getTime();
-		player.username = instruction.details.username;
-		player.rotation.y = instruction.details.position.rotationY;
+		player.username = instruction.username;
+		player.rotation.y = instruction.position.rotationY;
 		player.add(camera);
 		scene.add(player);
 		ships.push(player);
 		$("#stats .player.info .username").html(player.username);
 		$("#playerList").append("<li>" + player.username + "</li>");
 	}
-	if (instruction.details.type == "ship") {
-		var ship = object;
-		ship.username = instruction.details.username;
-		ship.rotation.y = instruction.details.position.rotationY;
+	if (type == "ship") {
+		var ship = mesh;
+		ship.username = instruction.username;
+		ship.rotation.y = instruction.position.rotationY;
 		ships.push(ship);
 		scene.add(ships[ships.length-1]);
 		$("#playerList").append("<li>" + ship.username + "</li>");

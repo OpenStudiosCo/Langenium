@@ -26,7 +26,7 @@ function buildWorld(){
 		var 	type = sceneObj.type,
 				object = db.getObject(type),
 				scale = sceneObj.scale || object.scale,
-				urlPrefix = "http://langenium.com/",
+				urlPrefix = "http://langenium.com/play/",
 				loader =  new THREE.JSONLoader(),
 				url = object.url;
 				

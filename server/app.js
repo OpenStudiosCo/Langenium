@@ -5,7 +5,6 @@
 var app = require('http').createServer(function (request, response) { if (url.parse(request.url).pathname.indexOf("socket.io") <= 0)  { response.writeHead(301, { 'Location': 'http://langenium.com/play' }); } response.end(); })
   , io = require('socket.io').listen(app)
   , fs = require('fs')
-  , jade = require('jade')
   , url = require('url')
   , db = require("./db.js")
   , events = require("./events.js")

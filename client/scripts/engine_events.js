@@ -1,7 +1,7 @@
 var url = window.location.href;
 if (url.indexOf("langenium") > 0)
 {
-	url = "http://54.251.34.82";
+	url = "http://54.252.102.111";
 	//url = "langenium.ap01.aws.af.cm";
 }
 else {

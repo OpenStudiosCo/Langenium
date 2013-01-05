@@ -19,11 +19,6 @@ app.listen(80);
 io.set('log level', 2);
 
 io.sockets.on('connection', function (socket) {
-	var scene = new THREE.Scene();
-	var camera = new THREE.PerspectiveCamera( 45, (1280) / (1024), 10, 100000 );
-	scene.add(camera);
-	camera.position.y = 6;
-	camera.position.z = 40;
 	
 	socket.emit("ping", { time: new Date().getTime(), latency: 0});
 	socket.on("pong", function(data){
@@ -64,48 +59,54 @@ io.sockets.on('connection', function (socket) {
 				var platform = db.getObject({scene: 'platform'});
 			
 				var platformMesh = new THREE.Mesh(platform.geometry, new THREE.MeshFaceMaterial( platform.materials ) );
+				platformMesh.geometry.computeBoundingBox();
 				platformMesh.scale = new THREE.Vector3(platform.scale,platform.scale,platform.scale);
 				platformMesh.position.x = -8500;
 				platformMesh.position.y = 500;
 				platformMesh.position.z = -5000;
 				platformMesh.matrixAutoUpdate = true;
 				platformMesh.updateMatrix();
-				scene.add(platformMesh);
+				platformMesh.updateMatrixWorld();
 				
 				var moveVector = new THREE.Vector3(playerMovement.instruction.details.pX, playerMovement.instruction.details.pY, playerMovement.instruction.details.pZ);
 				
 				var playerObj = db.getObject({ship: 'mercenary'});
-				var playerMesh = new THREE.Mesh(playerObj.geometry, new THREE.MeshFaceMaterial( playerObj.materials ) );
-				playerMesh.scale = new THREE.Vector3(playerObj.scale,playerObj.scale,playerObj.scale);
-				playerMesh.position = new THREE.Vector3(players_online[index].position.x, players_online[index].position.y, players_online[index].position.z);
-				playerMesh.matrixAutoUpdate = true;
-				playerMesh.updateMatrix();
-				scene.add(playerMesh);
+				var playerMesh = new THREE.Vector3(players_online[index].position.x, players_online[index].position.y, players_online[index].position.z);
 				
-				scene.updateMatrixWorld();
-				var ray = new THREE.Raycaster(playerMesh.position, moveVector.clone().subSelf(playerMesh.position).normalize());
-				var intersects = ray.intersectObject(platformMesh);
+				
+				var raycaster = new THREE.Raycaster(playerMesh, moveVector.normalize());
+				var intersects = raycaster.intersectObject(platformMesh);
 		
 				var util = require('util');
 				//console.log(util.inspect(platformMesh.matrixWorld, true, null));
 				//console.log(intersects);
 				if (intersects.length > 0) {
-					intersects.forEach(function(obj, index) {
-						console.log(obj.point);
-						console.log(obj.distance);
-					});
+					intersects.forEach(function(obj, index){
+						if (obj.distance < 70) {
+							if (playerMovement.instruction.details.pX != 0) {
+								playerMovement.instruction.details.pX *= -.5;
+							}
+							if (playerMovement.instruction.details.pY != 0) {
+								playerMovement.instruction.details.pY *= -.5;
+							}
+							if (playerMovement.instruction.details.pZ != 0) {
+								playerMovement.instruction.details.pZ *= -.25;
+							}
+							console.log("==========");
+							console.log("Distance: " + obj.distance);
+							console.log("Origin: " + raycaster.ray.origin.x + "," + raycaster.ray.origin.y + "," + raycaster.ray.origin.z);				
+							console.log("Point: " + obj.point.x + "," + obj.point.y + "," + obj.point.z);
+						}
+					});		
 				}
-				scene.remove(playerMesh);
-				scene.remove(platform);
-				players_online[index].position.rotationY +=  playerMovement.instruction.details.rY;
 				players_online[index].position.y += playerMovement.instruction.details.pY;
 				players_online[index].position.x += playerMovement.instruction.details.pX; 
 				players_online[index].position.z += playerMovement.instruction.details.pZ;
-				
 				playerMovement.instruction.details.username = socket.id;
-						
+				players_online[index].position.rotationY +=  playerMovement.instruction.details.rY;
 				socket.emit('update', playerMovement); 
 				socket.broadcast.emit('update', playerMovement); 
+				
 			}
 		});
 	});
@@ -114,7 +115,7 @@ io.sockets.on('connection', function (socket) {
 // ENGINE VARIABLES
 var players_online = [];
 var players = [ 
-		{ username: "Mercenary", uid: "1", type: "player", url: "assets/mercenary.js", position: { x: -8000, y: 3000, z: 000 , scale: 10, rotationY: 0 }},
+		{ username: "Mercenary", uid: "1", type: "player", url: "assets/mercenary.js", position: { x: -8122, y: 3656, z: -1740 , scale: 10, rotationY: 0 }},
 		//{ username: "Pirate", uid: "2", type: "player", url: "assets/pirate.js", position: { x: -1000, y: 3000, z: 5500 , scale: 10, rotationY: 0 }}
 		{ username: "Pirate", uid: "2", type: "player", url: "assets/pirate.js", position: { x: 0, y: 0, z: 0 , scale: 10, rotationY: 0 }}
 	];

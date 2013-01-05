@@ -5,16 +5,34 @@ function moveShip(ship, isPlayer, instruction) {
 	var playerMesh = player;
 	
 	var moveVector = new THREE.Vector3(instruction.details.pX, instruction.details.pY, instruction.details.pZ);
+	//console.log(moveVector.normalize());
 	$("#selected").html("x:" + player.position.x + " y: " + player.position.y + " z: " + player.position.z);
-	var ray = new THREE.Raycaster(playerMesh.position, moveVector.clone().subSelf(playerMesh.position).normalize());
-	console.log(platforms[0].matrixWorld.elements);
-	var intersects = ray.intersectObject(platform, true);
-	
-	//console.log(intersects);
+	var raycaster = new THREE.Raycaster(playerMesh.position, moveVector.normalize());
+	var intersects = raycaster.intersectObject(platform);
+
 	if (intersects.length > 0) {
+
 		intersects.forEach(function(obj, index) {
-			console.log(obj.point);
-			console.log(obj.distance);
+			if (obj.distance < 100) {
+			/*
+				var	radius = 50,
+				segments = 16,
+				rings = 16;
+				var sphereMaterial = new THREE.MeshLambertMaterial({  color: 0xCC0000, opacity: 0.5 });
+				var sphere = new THREE.Mesh( new THREE.SphereGeometry( radius, segments, rings), sphereMaterial);
+
+				// add the sphere to the scene
+				sphere.position =  obj.point;
+		
+				scene.add(sphere);
+			*/
+				console.log("==========");
+				console.log(raycaster);
+				console.log(obj);
+				//console.log("Distance: " + obj.distance);
+				//console.log("Origin: " + raycaster.ray.origin.x + "," + raycaster.ray.origin.y + "," + raycaster.ray.origin.z);				
+				//console.log("Point: " + obj.point.x + "," + obj.point.y + "," + obj.point.z);
+			}
 		});
 	}
 	
@@ -75,7 +93,6 @@ function loadObject(instruction) {
 	else {
 		loader.load(instruction.details.url, function(geometry, materials) {
 			object = makeObjectMesh(instruction.details.type, geometry, materials, x, y, z , scale);
-			console.log(object);
 			var cachedObject = { url: instruction.details.url, geometry: geometry, materials: materials};
 			cache.push(cachedObject);	
 			renderObject(object, instruction);
@@ -147,6 +164,7 @@ function makeObjectMesh(objectType, geometry, materials, x, y, z, scale) {
 		}
 	});
 	object = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial( materials ) );
+	object.geometry.computeBoundingBox();
 	object.name = objectType;
 	object.position.set(x, y, z);
 	object.scale.set(scale, scale, scale);

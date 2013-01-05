@@ -146,10 +146,11 @@ function createScene() {
 		color: 0x003366,
 		shading: THREE.SmoothShading, 
 		side: THREE.DoubleSide, 
-		overdraw: true 
+		overdraw: true
 	} );
 
 	var plane = new THREE.Mesh( geometry, material );
+
 	scene.add( plane );
 	
 	hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 1 );
@@ -201,7 +202,7 @@ function playerInput(){
 $(document).bind("mousedown", function(event) {
     switch (event.which) {
         case 1:
-            console.log("pew");
+            //console.log("pew");
             break;
         case 2:
             //zoom IGNORE

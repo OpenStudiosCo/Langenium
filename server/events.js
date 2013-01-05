@@ -5,7 +5,7 @@ module.exports.movePlayer = movePlayer;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
 function movePlayer(rotationY, data) {
-	var velocityChange = 300 * data.d;
+	var velocityChange = 600 * data.d;
 	var rotateAngle = .045;
 	var retval;
 	var velocity = 0;

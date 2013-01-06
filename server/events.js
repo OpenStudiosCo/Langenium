@@ -10,7 +10,7 @@ var 	time = new Date(),
 
 function moveBot(bot, world_map) {
 	//console.log(world_map);
-	var	moveDistance = -5,
+	var	moveDistance = -10,
 			newTime = new Date(),
 			delta = newTime - time, 
 			tX = 0, tY = 0, tZ = 0, rY = 0; 			

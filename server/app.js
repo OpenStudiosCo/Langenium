@@ -85,19 +85,26 @@ function updateWorld() {
 		var data = { d: 33, rY: 0, pY: 0 }; // faking it for now
 		if (players_online[index].velocity > 0) {
 			data.pZ = 1;
-			players_online[index].velocity -= .001;
-		};
-		if (players_online[index].velocity < 0) { 
-			data.pZ = -1;
-			players_online[index].velocity += .001;
-		};
-		
+		}
+		else {
+			if (players_online[index].velocity < 0) { 
+				data.pZ = -1;
+			}
+			else {
+				data.pZ = 0;
+			}
+		}
+				
 		var playerMovement = events.movePlayer(players_online[index].velocity, players_online[index].position, world_map, data);
 		players_online[index].position.y += playerMovement.instruction.details.pY;
 		players_online[index].position.x += playerMovement.instruction.details.pX; 
 		players_online[index].position.z += playerMovement.instruction.details.pZ;
 		playerMovement.instruction.details.username = players_online[index].sessionId;
 		players_online[index].position.rotationY +=  playerMovement.instruction.details.rY;
+		
+		if (players_online[index].velocity != 0) {
+			players_online[index].velocity *= .99;
+		}
 		update_queue.push(playerMovement);
 	});
 	update_queue.forEach(function(update, index){

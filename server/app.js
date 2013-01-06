@@ -72,6 +72,8 @@ function buildWorldMap(){
 	});
 }
 
+var update_queue = [];
+
 var time = new Date();		
 function updateWorld() {
 	var 	newTime = new Date(),
@@ -90,7 +92,6 @@ function updateWorld() {
 		newZ = velocityChange * Math.cos(bot.rotation.y + newRY);
 		newY = Math.cos(delta/1000)/(1000*Math.random() );
 		
-		
 		bots[index].position.x += newX;
 		bots[index].position.y += newY;
 		bots[index].position.z += newZ;
@@ -98,11 +99,16 @@ function updateWorld() {
 		
 		var data = { pX: newX, pY: newY, pZ: newZ, rY: newRY, username: bot.username };
 		//console.log(data);
-		io.sockets.emit('update', { instruction: { name: "move", type: "bot", details: data } });
+		update_queue.push({ instruction: { name: "move", type: "bot", details: data } });
 	});
 	time = newTime;	
+	update_queue.forEach(function(update, index){
+		io.sockets.emit("update", update);
+		update_queue.splice(index, 1);
+	});
 }
-var tick = setInterval(updateWorld, 1000 / 33);
+
+var tick = setInterval(updateWorld, 1000 / 66);
 
 io.sockets.on('connection', function (socket) {
 	socket.emit("ping", { time: new Date().getTime(), latency: 0});
@@ -176,8 +182,7 @@ io.sockets.on('connection', function (socket) {
 				players_online[index].position.z += playerMovement.instruction.details.pZ;
 				playerMovement.instruction.details.username = socket.id;
 				players_online[index].position.rotationY +=  playerMovement.instruction.details.rY;
-				socket.emit('update', playerMovement); 
-				socket.broadcast.emit('update', playerMovement); 
+				update_queue.push(playerMovement);
 			}
 		});
 	});

@@ -18,16 +18,17 @@ chart.streamTo(document.getElementById("latencyBox"), 500);
 var setEventHandlers = function() {
 	console.log("Client connected");
 	socket.emit("login", { username: username });
+	socket.on("update", function(data) {
+		data.forEach(function(updateData, index) {
+			updateClient(updateData);
+		});
+	});
 	socket.on("load", loadInstructions);
 	socket.on("playerDisconnected", removeShip);
 	socket.on("ping", function(data){
 		if (player) {
 			player.latency = data.latency;
 		}
-		data.buffer.forEach(function(updateData, index) {
-			updateClient(updateData);
-		});
-		data.input = playerInput();
 		playerLatency.append(new Date().getTime(), data.latency);
 		$("#latencyLabel").html("<h3>&nbsp;" + data.latency + "ms</h3>");
 		socket.emit("pong", data);

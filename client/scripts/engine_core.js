@@ -147,7 +147,9 @@ function playerInput(){
 		move = true;
 		keyboardInput.pY = -1;
 	}
-	return keyboardInput;
+	if (move == true) {
+		socket.emit('move', keyboardInput);
+	}
 }
 
 $(document).bind("mousedown", function(event) {

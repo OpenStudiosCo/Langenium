@@ -64,7 +64,7 @@ function moveBot(bot, world_map) {
 function movePlayer(velocity, playerPosition, world_map, data) {
 
 	var 	velocityZChange = velocity * data.d,
-			velocityYChange = 150 * data.d,
+			velocityYChange = 200 * data.d,
 			rotateAngle = .045,
 			retval;
 	

@@ -107,10 +107,12 @@ function updateWorld() {
 		}
 		update_queue.push(playerMovement);
 	});
+	var update_buffer = [];
 	update_queue.forEach(function(update, index){
-		io.sockets.emit("update", update);
+		update_buffer.push(update);
 		update_queue.splice(index, 1);
 	});
+	io.sockets.emit("update", update_buffer);
 }
 
 var tick = setInterval(updateWorld, 1000 / 66);

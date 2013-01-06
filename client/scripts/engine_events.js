@@ -18,7 +18,11 @@ chart.streamTo(document.getElementById("latencyBox"), 500);
 var setEventHandlers = function() {
 	console.log("Client connected");
 	socket.emit("login", { username: username });
-	socket.on("update", updateClient);
+	socket.on("update", function(data) {
+		data.forEach(function(updateData, index) {
+			updateClient(updateData);
+		});
+	});
 	socket.on("load", loadInstructions);
 	socket.on("playerDisconnected", removeShip);
 	socket.on("ping", function(data){

@@ -133,6 +133,14 @@ function getDummyEnemies() {
 	enemies.push({ id: 'Pirate 6', type: { ship: 'pirate' }, position: { x: -7500, y: 4000, z: -2000, rotationY: 0 }, scale: 10 });
 	enemies.push({ id: 'Pirate 7', type: { ship: 'pirate' }, position: { x: -8500, y: 5500, z: -3500, rotationY: 0 }, scale: 10 });
 	enemies.push({ id: 'Pirate 8', type: { ship: 'pirate' }, position: { x: -10500, y: 4000, z: -4500, rotationY: 0 }, scale: 10 });
+	enemies.push({ id: 'Pirate 9', type: { ship: 'pirate' }, position: { x: -6500, y: 5500, z: -2500, rotationY: 0 }, scale: 10 });
+	enemies.push({ id: 'Pirate 10', type: { ship: 'pirate' }, position: { x: -7500, y: 4000, z: -2000, rotationY: 0 }, scale: 10 });
+	enemies.push({ id: 'Pirate 11', type: { ship: 'pirate' }, position: { x: -8500, y: 5500, z: -3500, rotationY: 0 }, scale: 10 });
+	enemies.push({ id: 'Pirate 12', type: { ship: 'pirate' }, position: { x: -10500, y: 4000, z: -4500, rotationY: 0 }, scale: 10 });
+	enemies.push({ id: 'Pirate 13', type: { ship: 'pirate' }, position: { x: -6500, y: 5500, z: -2500, rotationY: 0 }, scale: 10 });
+	enemies.push({ id: 'Pirate 14', type: { ship: 'pirate' }, position: { x: -7500, y: 4000, z: -2000, rotationY: 0 }, scale: 10 });
+	enemies.push({ id: 'Pirate 15', type: { ship: 'pirate' }, position: { x: -8500, y: 5500, z: -3500, rotationY: 0 }, scale: 10 });
+	enemies.push({ id: 'Pirate 16', type: { ship: 'pirate' }, position: { x: -10500, y: 4000, z: -4500, rotationY: 0 }, scale: 10 });
 	return enemies;
 }
 

@@ -17,7 +17,7 @@ app.listen(80);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 io.set('log level', 2);
 
-var 	worldMap = [],
+var 	world_map = [],
 		bots = [];
 
 buildWorldMap();
@@ -42,7 +42,7 @@ function buildWorldMap(){
 			objMesh.matrixAutoUpdate = true;
 			objMesh.updateMatrix();
 			objMesh.updateMatrixWorld();
-			worldMap.push(objMesh);
+			world_map.push(objMesh);
 		});	
 	});
 	
@@ -56,59 +56,57 @@ function buildWorldMap(){
 				url = object.url;
 				
 		loader.load(urlPrefix + url, function(geometry, materials){
-			var objMesh = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial( materials ) );
-			objMesh.geometry.computeBoundingBox();
+			var bot = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial( materials ) );
+			bot.geometry.computeBoundingBox();
 			
-			objMesh.scale = new THREE.Vector3(scale,scale,scale);
-			objMesh.position.x = obj.position.x,
-			objMesh.position.y = obj.position.y,
-			objMesh.position.z = obj.position.z,
-			objMesh.matrixAutoUpdate = true;
-			objMesh.updateMatrix();
-			objMesh.updateMatrixWorld();
-			objMesh.username = obj.id;
-			bots.push(objMesh);
+			bot.scale = new THREE.Vector3(scale,scale,scale);
+			bot.position.x = obj.position.x,
+			bot.position.y = obj.position.y,
+			bot.position.z = obj.position.z,
+			bot.matrixAutoUpdate = true;
+			bot.updateMatrix();
+			bot.updateMatrixWorld();
+			bot.username = obj.id;
+			bot.movement_queue = [];
+			bots.push(bot);
 		});	
 	});
 }
 
-var update_queue = [];
+var 	update_queue = [];
 
-var time = new Date();		
-function updateWorld() {
-	var 	newTime = new Date(),
-			delta = newTime = time;
-			
-	var velocityChange = -5;
+function updateWorld() {			
 	bots.forEach(function(bot, index){
-		var 	newX = 0,
-				newY = 0,
-				newZ = 0,
-				newRY = 0;
-			
-		newRY = Math.cos(delta/1000)/(Math.random() * 100 - 200);
-		
-		newX = velocityChange * Math.sin(bot.rotation.y + newRY);
-		newZ = velocityChange * Math.cos(bot.rotation.y + newRY);
-		newY = Math.cos(delta/1000)/(1000*Math.random() );
-		
-		bots[index].position.x += newX;
-		bots[index].position.y += newY;
-		bots[index].position.z += newZ;
-		bots[index].rotation.y += newRY;
-		
-		var data = { pX: newX, pY: newY, pZ: newZ, rY: newRY, username: bot.username };
-		//console.log(data);
-		update_queue.push({ instruction: { name: "move", type: "bot", details: data } });
+		var movement = events.moveBot(bots[index], world_map);
+		update_queue.push(movement);
 	});
-	time = newTime;	
+	
+	players_online.forEach(function(player, index){
+		var data = { d: 33, rY: 0, pY: 0 }; // faking it for now
+		if (players_online[index].velocity > 0) {
+			data.pZ = 1;
+			players_online[index].velocity -= .001;
+		};
+		if (players_online[index].velocity < 0) { 
+			data.pZ = -1;
+			players_online[index].velocity += .001;
+		};
+		
+		var playerMovement = events.movePlayer(players_online[index].velocity, players_online[index].position, world_map, data);
+		players_online[index].position.y += playerMovement.instruction.details.pY;
+		players_online[index].position.x += playerMovement.instruction.details.pX; 
+		players_online[index].position.z += playerMovement.instruction.details.pZ;
+		playerMovement.instruction.details.username = players_online[index].sessionId;
+		players_online[index].position.rotationY +=  playerMovement.instruction.details.rY;
+		update_queue.push(playerMovement);
+	});
 	update_queue.forEach(function(update, index){
 		io.sockets.emit("update", update);
 		update_queue.splice(index, 1);
 	});
 }
 
-var tick = setInterval(updateWorld, 1000 / 33);
+var tick = setInterval(updateWorld, 1000 / 66);
 
 io.sockets.on('connection', function (socket) {
 	socket.emit("ping", { time: new Date().getTime(), latency: 0});
@@ -145,38 +143,15 @@ io.sockets.on('connection', function (socket) {
 	socket.on('move', function(data){
 		players_online.forEach(function(player, index){
 			if (player.sessionId == socket.id) {
-	
-				var playerMovement = events.movePlayer(players_online[index].position.rotationY, data);
 				
-				var moveVector = new THREE.Vector3(playerMovement.instruction.details.pX, playerMovement.instruction.details.pY, playerMovement.instruction.details.pZ);
+				if ((data.pZ > 0)&&(players_online[index].velocity > -.5)){ 
+					players_online[index].velocity -= .02; 
+				} 			
+				if  ((data.pZ < 0)&&(players_online[index].velocity < .25)) { 
+					players_online[index].velocity  += .02; 
+				}			
 				
-				var playerObj = db.getObject({ship: 'mercenary'});
-				var playerMesh = new THREE.Vector3(players_online[index].position.x, players_online[index].position.y, players_online[index].position.z);
-				
-				var raycaster = new THREE.Raycaster(playerMesh, moveVector.normalize());
-				var intersects = raycaster.intersectObjects(worldMap);
-		
-				var util = require('util');
-				if (intersects.length > 0) {
-					intersects.forEach(function(obj, index){
-						if (obj.distance < 100) {
-							if (players_online[index].position.rotationY > 0) 
-								{ playerMovement.instruction.details.rY += obj.distance / 10000; }
-							else 
-								{ playerMovement.instruction.details.rY -= obj.distance / 10000; }
-							
-							if (playerMovement.instruction.details.pX != 0) {
-								playerMovement.instruction.details.pX *= -.1;
-							}
-							if (playerMovement.instruction.details.pY != 0) {
-								playerMovement.instruction.details.pY *= -.1;
-							}
-							if (playerMovement.instruction.details.pZ != 0) {
-								playerMovement.instruction.details.pZ *= -.1;
-							}
-						}
-					});		
-				}
+				var playerMovement = events.movePlayer(players_online[index].velocity, players_online[index].position, world_map, data);
 				players_online[index].position.y += playerMovement.instruction.details.pY;
 				players_online[index].position.x += playerMovement.instruction.details.pX; 
 				players_online[index].position.z += playerMovement.instruction.details.pZ;
@@ -206,6 +181,8 @@ function loginPlayer(sessionId, username) {
 			var online_player = cloneObject(player);
 			online_player.username = sessionId; 
 			online_player.sessionId = sessionId;
+			online_player.velocity = 0;
+			online_player.maxVelocity = 600;
 			players_online.push(online_player);
 			players_online[players_online.length-1].sessionId = sessionId;
 			retval = online_player;

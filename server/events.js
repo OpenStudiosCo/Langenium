@@ -87,7 +87,7 @@ function movePlayer(velocity, playerPosition, world_map, data) {
 	var collisions = detectCollision(playerPositionVector, moveVector, world_map);
 
 	if (collisions.length > 0) {
-		if (collisions[0].distance < 100) {
+		if (collisions[0].distance < 80) {
 			if (playerPosition.rotationY > 0) 
 				{ data.rY += collisions[0].distance / 10000; }
 			if (playerPosition.rotationY < 0) 

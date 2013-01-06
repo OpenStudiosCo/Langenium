@@ -103,26 +103,46 @@ function updateWorld() {
 		players_online[index].position.rotationY +=  playerMovement.instruction.details.rY;
 		
 		if (players_online[index].velocity != 0) {
-			players_online[index].velocity *= .99;
+			players_online[index].velocity *= .999;
 		}
 		update_queue.push(playerMovement);
 	});
-	var update_buffer = [];
-	update_queue.forEach(function(update, index){
-		update_buffer.push(update);
-		update_queue.splice(index, 1);
-	});
-	io.sockets.emit("update", update_buffer);
 }
 
 var tick = setInterval(updateWorld, 1000 / 66);
 
 io.sockets.on('connection', function (socket) {
-	socket.emit("ping", { time: new Date().getTime(), latency: 0});
+	socket.emit("ping", { time: new Date().getTime(), latency: 0, buffer: []});
 	socket.on("pong", function(data){
 		var time = new Date().getTime(); 
 		var latency = time - data.time;
-		socket.emit("ping", { time: new Date().getTime(), latency: latency});
+		
+		players_online.forEach(function(player, index){
+			if (player.sessionId == socket.id) {
+				var input = data.input;
+				
+				if ((input.pZ > 0)&&(players_online[index].velocity > -.3)){ 
+					players_online[index].velocity -= .02; 
+				} 			
+				if  ((input.pZ < 0)&&(players_online[index].velocity < .15)) { 
+					players_online[index].velocity  += .02; 
+				}			
+				
+				var playerMovement = events.movePlayer(players_online[index].velocity, players_online[index].position, world_map, input);
+				players_online[index].position.y += playerMovement.instruction.details.pY;
+				players_online[index].position.x += playerMovement.instruction.details.pX; 
+				players_online[index].position.z += playerMovement.instruction.details.pZ;
+				playerMovement.instruction.details.username = socket.id;
+				players_online[index].position.rotationY +=  playerMovement.instruction.details.rY;
+				update_queue.push(playerMovement);
+			}
+		});
+		var update_buffer = [];
+		update_queue.forEach(function(update, index){
+			update_buffer.push(update);
+			update_queue.splice(index, 1);
+		});
+		socket.emit("ping", { time: new Date().getTime(), latency: latency, buffer: update_buffer});
 	});
 	
 	socket.on("login", function(data){
@@ -149,27 +169,6 @@ io.sockets.on('connection', function (socket) {
 		delete socket;
 	});
 	
-	socket.on('move', function(data){
-		players_online.forEach(function(player, index){
-			if (player.sessionId == socket.id) {
-				
-				if ((data.pZ > 0)&&(players_online[index].velocity > -.5)){ 
-					players_online[index].velocity -= .02; 
-				} 			
-				if  ((data.pZ < 0)&&(players_online[index].velocity < .25)) { 
-					players_online[index].velocity  += .02; 
-				}			
-				
-				var playerMovement = events.movePlayer(players_online[index].velocity, players_online[index].position, world_map, data);
-				players_online[index].position.y += playerMovement.instruction.details.pY;
-				players_online[index].position.x += playerMovement.instruction.details.pX; 
-				players_online[index].position.z += playerMovement.instruction.details.pZ;
-				playerMovement.instruction.details.username = socket.id;
-				players_online[index].position.rotationY +=  playerMovement.instruction.details.rY;
-				update_queue.push(playerMovement);
-			}
-		});
-	});
 }); 
 
 // ENGINE VARIABLES
@@ -191,7 +190,7 @@ function loginPlayer(sessionId, username) {
 			online_player.username = sessionId; 
 			online_player.sessionId = sessionId;
 			online_player.velocity = 0;
-			online_player.maxVelocity = 600;
+			online_player.velocityChange = 0;
 			players_online.push(online_player);
 			players_online[players_online.length-1].sessionId = sessionId;
 			retval = online_player;

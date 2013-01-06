@@ -108,7 +108,7 @@ function updateWorld() {
 	});
 }
 
-var tick = setInterval(updateWorld, 1000 / 66);
+var tick = setInterval(updateWorld, 1000 / 33);
 
 io.sockets.on('connection', function (socket) {
 	socket.emit("ping", { time: new Date().getTime(), latency: 0});

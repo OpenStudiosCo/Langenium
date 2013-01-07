@@ -107,13 +107,19 @@ function updateWorld() {
 		playerMovement.instruction.details.username = players_online[index].sessionId;
 		players_online[index].position.rotationY +=  playerMovement.instruction.details.rY;
 		
+		update_queue.forEach(function(update, index){
+			if ((update.instruction.name == "move")&&(update.instruction.details.username == player.sessionId)){
+				if (update.instruction.details.pZ == 0) {
+					if (player.velocity > 0) {
+						player.velocity -= .0001;
+					}
+					if (player.velocity < 0) {
+						player.velocity += .0001;
+					}
+				}
+			}
+		});
 	
-		if (players_online[index].velocity > 0) {
-			players_online[index].velocity -= .01;
-		}
-		if (players_online[index].velocity < 0) {
-			players_online[index].velocity += .01;
-		}
 		update_queue.push(playerMovement);
 	});
 	var update_buffer = [];

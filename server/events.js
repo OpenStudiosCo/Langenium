@@ -83,22 +83,27 @@ function movePlayer(velocity, playerPosition, world_map, data) {
 	var collisions = detectCollision(playerPositionVector, moveVector, world_map);
 
 	if (collisions.length > 0) {
-		if (collisions[0].distance < 80) {
-			if (playerPosition.rotationY > 0) 
-				{ data.rY += collisions[0].distance / 10000; }
-			if (playerPosition.rotationY < 0) 
-				{ data.rY -= collisions[0].distance / 10000; }
+		collisions.forEach(function(collision, index){
 			
-			if (data.pX != 0) {
-				data.pX *= -.001;
+			if (collision.distance < 90) {
+		
+				if (collision.point.x > playerPosition.x) 
+					{ data.rY -= collision.distance / 10000; }
+				if (collision.point.x < playerPosition.x) 
+					{ data.rY += collision.distance / 10000; }
+				
+				if (data.pX != 0) {
+					data.pX *= -.001;
+				}
+				if (data.pY != 0) {
+					data.pY *= -.001;
+				}
+				if (data.pZ != 0) {
+					data.pZ *= -.001;
+				}
 			}
-			if (data.pY != 0) {
-				data.pY *= -.001;
-			}
-			if (data.pZ != 0) {
-				data.pZ *= -.001;
-			}
-		}
+		});
+		
 	}
 	retval = { instruction: { name: "move", type: "player", details: data } };
 	

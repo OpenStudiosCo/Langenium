@@ -183,7 +183,7 @@ io.sockets.on('connection', function (socket) {
 // ENGINE VARIABLES
 var players_online = [];
 var players = [ 
-		{ username: "Mercenary", id: "1", type: { ship: "player" }, url: "assets/mercenary.js", position: { x: -8500, y: 5500, z: -1740 , scale: 10, rotationY: 0 }},
+		{ username: "Mercenary", id: "1", type: { ship: "player" }, url: "assets/mercenary.js", position: { x: -8500, y: 5000, z: -1740 , scale: 10, rotationY: 0 }},
 		//{ username: "Pirate", uid: "2", type: "player", url: "assets/pirate.js", position: { x: -1000, y: 3000, z: 5500 , scale: 10, rotationY: 0 }}
 		{ username: "Pirate", id: "2", type: { ship: "player" }, url: "assets/pirate.js", position: { x: 0, y: 0, z: 0 , scale: 10, rotationY: 0 }}
 	];

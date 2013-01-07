@@ -5,14 +5,11 @@ module.exports.moveBot = moveBot;
 	Movement and location
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
-var 	time = new Date(),
-		THREE = require('three');
+var 	THREE = require('three');
 
-function moveBot(bot, world_map) {
-	//console.log(world_map);
-	var	moveDistance = -10,
-			newTime = new Date(),
-			delta = newTime - time, 
+function moveBot(delta, bot, world_map) {
+	delta = delta || 10;
+	var	moveDistance = -.3 * delta,
 			tX = 0, tY = 0, tZ = 0, rY = 0; 			
 	
 	
@@ -20,11 +17,11 @@ function moveBot(bot, world_map) {
 	
 	tX = moveDistance * Math.sin(bot.rotation.y + rY);
 	tZ = moveDistance * Math.cos(bot.rotation.y + rY);
-	tY = delta / 10;
+	tY = Math.cos(delta/1000)/(Math.random() * 100 - 200);
 	
 	var moveVector = new THREE.Vector3(tX, tY, tZ);
 	var botPositionVector = new THREE.Vector3(bot.position.x, bot.position.y, bot.position.z);
-	/************************************************************************************
+	/******************************d******************************************************
 	Commented this out for now as pathfinding AI will change when this is called (per target instead of per 15ms!!)
 	*************************************************************************************
 	var collisions = detectCollision(botPositionVector, moveVector, world_map);
@@ -55,7 +52,6 @@ function moveBot(bot, world_map) {
 	
 	var data = { pX: tX, pY: tY, pZ: tZ, rY: rY, username: bot.username };
 	//console.log(data);
-	time = newTime;	
 		
 	return { instruction: { name: "move", type: "bot", details: data } };
 
@@ -63,7 +59,7 @@ function moveBot(bot, world_map) {
 
 function movePlayer(velocity, playerPosition, world_map, data) {
 
-	var 	velocityZChange = velocity * data.d,
+	var 	velocityZChange = velocity,
 			velocityYChange = 200 * data.d,
 			rotateAngle = .045,
 			retval;

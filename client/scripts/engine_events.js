@@ -39,8 +39,10 @@ var setEventHandlers = function() {
 function updateClient(data) {
 	if (data.instruction.name == "move") {
 		if (data.instruction.details.username == socket.socket.sessionid) {
-			moveShip(player, true, data.instruction);
-			$("#selectedItem").html("<div><strong>Player</strong><br />pX:&nbsp;"+player.position.x+"<br />pY:&nbsp;"+player.position.y+"<br />pZ:&nbsp;"+player.position.z+"<br />rY:&nbsp;"+player.rotation.y+"</div>");
+			if (player) {
+				moveShip(player, true, data.instruction);
+				$("#selectedItem").html("<div><strong>Player</strong><br />pX:&nbsp;"+player.position.x+"<br />pY:&nbsp;"+player.position.y+"<br />pZ:&nbsp;"+player.position.z+"<br />rY:&nbsp;"+player.rotation.y+"</div>");
+			}
 		}
 		else {
 			ships.forEach(function(ship,index){

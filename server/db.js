@@ -124,13 +124,13 @@ function buildObject(role, type, position, scale) {
 
 function getDummyEnemies() {
 	var enemies = [];
-	enemies.push({ id: 'Pirate 1', type: { ship: 'mercenary' }, position: { x: -10500, y: 5500, z: -2500, rotationY: 0 }, scale: 10 });
-	enemies.push({ id: 'Pirate 2', type: { ship: 'pirate' }, position: { x: -10500, y: 6500, z: -2000, rotationY: 0 }, scale: 10 });
-	enemies.push({ id: 'Pirate 3', type: { ship: 'pirate' }, position: { x: -10500, y: 6500, z: -2500, rotationY: 0 }, scale: 10 });
-	enemies.push({ id: 'Pirate 4', type: { ship: 'pirate' }, position: { x: -6500, y: 6500, z: -2500, rotationY: 0 }, scale: 10 });
-	enemies.push({ id: 'Pirate 5', type: { ship: 'mercenary' }, position: { x: -8500, y: 5500, z: -3500, rotationY: 0 }, scale: 10 });
-	enemies.push({ id: 'Pirate 6', type: { ship: 'pirate' }, position: { x: -6500, y: 7500, z: -2500, rotationY: 0 }, scale: 10 });
-	enemies.push({ id: 'Pirate 7', type: { ship: 'pirate' }, position: { x: -8500, y: 7500, z: -3500, rotationY: 0 }, scale: 10 });
+	enemies.push({ id: 'Pirate 1', type: { ship: 'mercenary' }, position: { x: -10500, y: 4500, z: -2500, rotationY: 0 }, scale: 10 });
+	enemies.push({ id: 'Pirate 2', type: { ship: 'pirate' }, position: { x: -10500, y: 4500, z: -2000, rotationY: 0 }, scale: 10 });
+	enemies.push({ id: 'Pirate 3', type: { ship: 'pirate' }, position: { x: -10500, y: 4500, z: -2500, rotationY: 0 }, scale: 10 });
+	enemies.push({ id: 'Pirate 4', type: { ship: 'pirate' }, position: { x: -6500, y: 4500, z: -2500, rotationY: 0 }, scale: 10 });
+	enemies.push({ id: 'Pirate 5', type: { ship: 'mercenary' }, position: { x: -8500, y: 4500, z: -3500, rotationY: 0 }, scale: 10 });
+	enemies.push({ id: 'Pirate 6', type: { ship: 'pirate' }, position: { x: -6500, y: 4500, z: -2500, rotationY: 0 }, scale: 10 });
+	enemies.push({ id: 'Pirate 7', type: { ship: 'pirate' }, position: { x: -8500, y: 4500, z: -3500, rotationY: 0 }, scale: 10 });
 	return enemies;
 }
 

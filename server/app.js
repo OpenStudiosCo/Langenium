@@ -73,16 +73,21 @@ function buildWorldMap(){
 	});
 }
 
-var 	update_queue = [];
+var 	time = new Date(),
+		update_queue = [];
 
 function updateWorld() {			
 	bots.forEach(function(bot, index){
-		var movement = events.moveBot(bots[index], world_map);
-		update_queue.push(movement);
-	});
+		var 
+			delta = (new Date()) - time;
+			movement = events.moveBot(delta, bots[index], world_map);
 	
+		update_queue.push(movement);
+		
+	});
+	time = new Date();
 	players_online.forEach(function(player, index){
-		var data = { d: 33, rY: 0, pY: 0 }; // faking it for now
+		var data = { d: 0, rY: 0, pY: 0 }; // faking it for now
 		if (players_online[index].velocity > 0) {
 			data.pZ = 1;
 		}
@@ -102,8 +107,12 @@ function updateWorld() {
 		playerMovement.instruction.details.username = players_online[index].sessionId;
 		players_online[index].position.rotationY +=  playerMovement.instruction.details.rY;
 		
-		if (players_online[index].velocity != 0) {
-			players_online[index].velocity *= .993;
+	
+		if (players_online[index].velocity > 0) {
+			players_online[index].velocity -= .01;
+		}
+		if (players_online[index].velocity < 0) {
+			players_online[index].velocity += .01;
 		}
 		update_queue.push(playerMovement);
 	});
@@ -153,13 +162,12 @@ io.sockets.on('connection', function (socket) {
 		players_online.forEach(function(player, index){
 			if (player.sessionId == socket.id) {
 				
-				if ((data.pZ > 0)&&(players_online[index].velocity > -.3)){ 
-					players_online[index].velocity -= .02; 
+				if ((data.pZ > 0)&&(players_online[index].velocity > -3)){ 
+					players_online[index].velocity -= 3 * data.d; 
 				} 			
-				if  ((data.pZ < 0)&&(players_online[index].velocity < .15)) { 
-					players_online[index].velocity  += .02; 
+				if  ((data.pZ < 0)&&(players_online[index].velocity < 1.5)) { 
+					players_online[index].velocity  += 1.5 * data.d; 
 				}			
-				
 				var playerMovement = events.movePlayer(players_online[index].velocity, players_online[index].position, world_map, data);
 				players_online[index].position.y += playerMovement.instruction.details.pY;
 				players_online[index].position.x += playerMovement.instruction.details.pX; 
@@ -175,7 +183,7 @@ io.sockets.on('connection', function (socket) {
 // ENGINE VARIABLES
 var players_online = [];
 var players = [ 
-		{ username: "Mercenary", id: "1", type: { ship: "player" }, url: "assets/mercenary.js", position: { x: -8500, y: 3900, z: -1740 , scale: 10, rotationY: 0 }},
+		{ username: "Mercenary", id: "1", type: { ship: "player" }, url: "assets/mercenary.js", position: { x: -8500, y: 5500, z: -1740 , scale: 10, rotationY: 0 }},
 		//{ username: "Pirate", uid: "2", type: "player", url: "assets/pirate.js", position: { x: -1000, y: 3000, z: 5500 , scale: 10, rotationY: 0 }}
 		{ username: "Pirate", id: "2", type: { ship: "player" }, url: "assets/pirate.js", position: { x: 0, y: 0, z: 0 , scale: 10, rotationY: 0 }}
 	];

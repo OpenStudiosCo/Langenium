@@ -18,7 +18,7 @@ app.listen(80);
 io.set('log level', 2);
 
 var 	world_map = [],
-		bots = [];
+			bots = [];
 
 buildWorldMap();
 function buildWorldMap(){
@@ -78,49 +78,35 @@ var 	time = new Date(),
 
 function updateWorld() {			
 	bots.forEach(function(bot, index){
-		var 
-			delta = (new Date()) - time;
-			movement = events.moveBot(delta, bots[index], world_map);
+		var 	delta = (new Date()) - time;
+				movement = events.moveBot(delta, bots[index], world_map);
 	
 		update_queue.push(movement);
 		
 	});
 	time = new Date();
-	players_online.forEach(function(player, index){
-		var data = { d: 0, rY: 0, pY: 0 }; // faking it for now
-		if (players_online[index].velocity > 0) {
-			data.pZ = 1;
+	players_online.forEach(function(player){
+		var 	playerMovement, 
+				inputData;
+		if (player.inputUpdates.length > 0) {
+			inputData = player.inputUpdates.shift();
 		}
 		else {
-			if (players_online[index].velocity < 0) { 
-				data.pZ = -1;
-			}
-			else {
-				data.pZ = 0;
-			}
+			inputData = { d: 0, pZ: 0, pY: 0, rY: 0};
 		}
-				
-		var playerMovement = events.movePlayer(players_online[index].velocity, players_online[index].position, world_map, data);
-		players_online[index].position.y += playerMovement.instruction.details.pY;
-		players_online[index].position.x += playerMovement.instruction.details.pX; 
-		players_online[index].position.z += playerMovement.instruction.details.pZ;
-		playerMovement.instruction.details.username = players_online[index].sessionId;
-		players_online[index].position.rotationY +=  playerMovement.instruction.details.rY;
-		
-		update_queue.forEach(function(update, index){
-			if ((update.instruction.name == "move")&&(update.instruction.details.username == player.sessionId)){
-				if (update.instruction.details.pZ == 0) {
-					if (player.velocity > 0) {
-						player.velocity -= .0001;
-					}
-					if (player.velocity < 0) {
-						player.velocity += .0001;
-					}
-				}
-			}
-		});
-	
+		playerMovement = events.movePlayer(player.velocity, player.position, world_map, inputData);	
+		player.position.y += playerMovement.instruction.details.pY;
+		player.position.x += playerMovement.instruction.details.pX; 
+		player.position.z += playerMovement.instruction.details.pZ;
+		player.position.rotationY +=  playerMovement.instruction.details.rY;
+		playerMovement.instruction.details.username = player.sessionId;
 		update_queue.push(playerMovement);
+		if (player.velocity > 0) {
+			player.velocity -= .1;
+		}
+		if (player.velocity < 0) {
+			player.velocity += .1;
+		}
 	});
 	var update_buffer = [];
 	update_queue.forEach(function(update, index){
@@ -168,19 +154,13 @@ io.sockets.on('connection', function (socket) {
 		players_online.forEach(function(player, index){
 			if (player.sessionId == socket.id) {
 				
-				if ((data.pZ > 0)&&(players_online[index].velocity > -3)){ 
-					players_online[index].velocity -= 3 * data.d; 
+				if ((data.pZ > 0)&&(player.velocity > -12)){ 
+					player.velocity -= 12 * data.d; 
 				} 			
-				if  ((data.pZ < 0)&&(players_online[index].velocity < 1.5)) { 
-					players_online[index].velocity  += 1.5 * data.d; 
+				if  ((data.pZ < 0)&&(player.velocity < 4)) { 
+					player.velocity  += 4 * data.d; 
 				}			
-				var playerMovement = events.movePlayer(players_online[index].velocity, players_online[index].position, world_map, data);
-				players_online[index].position.y += playerMovement.instruction.details.pY;
-				players_online[index].position.x += playerMovement.instruction.details.pX; 
-				players_online[index].position.z += playerMovement.instruction.details.pZ;
-				playerMovement.instruction.details.username = socket.id;
-				players_online[index].position.rotationY +=  playerMovement.instruction.details.rY;
-				update_queue.push(playerMovement);
+				player.inputUpdates.push(data);
 			}
 		});
 	});
@@ -202,6 +182,7 @@ function loginPlayer(sessionId, username) {
 	players.forEach(function(player){
 		if (player.username == username) {
 			var online_player = cloneObject(player);
+			online_player.inputUpdates = []; 
 			online_player.username = sessionId; 
 			online_player.sessionId = sessionId;
 			online_player.velocity = 0;

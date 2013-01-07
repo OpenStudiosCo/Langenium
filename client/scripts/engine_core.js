@@ -232,10 +232,31 @@ var resetPlayerZCheck = setInterval(function(){
 	}
 }, 500);
 
+// model animations
+var duration = 100,
+	keyframes = 5,
+	animOffset = 0,
+	interpolation = duration / keyframes,
+	lastKeyframe = 0, currentKeyframe = 0;
+	
 function animate() {
+	var animTime = new Date().getTime() % duration;
+	var keyframe = Math.floor( animTime / interpolation ) + animOffset;
+	
 	TWEEN.update();
 	var shipsMoving = false;
 	if (player) {
+		if ( keyframe != currentKeyframe ) {
+			player.morphTargetInfluences[ lastKeyframe ] = 0;
+			player.morphTargetInfluences[ currentKeyframe ] = 1;
+			player.morphTargetInfluences[ keyframe ] = 0;
+
+			lastKeyframe = currentKeyframe;
+			currentKeyframe = keyframe;
+		}
+
+		player.morphTargetInfluences[ keyframe ] = ( animTime % interpolation ) / interpolation;
+		player.morphTargetInfluences[ lastKeyframe ] = 1 - player.morphTargetInfluences[ keyframe ];
 		player.updateMatrix();
 		var 	interval = new Date,
 				intervalDelta = interval - player.moveInterval;

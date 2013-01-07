@@ -60,20 +60,18 @@ function moveBot(delta, bot, world_map) {
 function movePlayer(velocity, playerPosition, world_map, data) {
 
 	var 	velocityZChange = velocity,
-			velocityYChange = 200 * data.d,
-			rotateAngle = .045,
-			retval;
-	
-	if (data.pZ > 0) { velocity = -velocityZChange; } 				// forward
-	if (data.pZ < 0) { velocity = velocityZChange / 4; }			// back
+				velocityYChange = 200 * data.d,
+				rotateAngle = .045,
+				retval;
+
 	if (data.rY > 0) { data.rY = rotateAngle; }						// left
 	if (data.rY < 0) { data.rY = -rotateAngle; }					// right
+	data.rY = (data.rY + data.rY * Math.PI / 180);
+	
 	if (data.pY > 0) { data.pY = velocityYChange; } 			// up
 	if (data.pY < 0) { data.pY = -(velocityYChange); } 		// down
 
-		
-	data.rY = (data.rY + data.rY * Math.PI / 180);
-
+	
 	data.pX = velocityZChange * Math.sin(playerPosition.rotationY);
 	data.pZ = velocityZChange * Math.cos(playerPosition.rotationY);
 	

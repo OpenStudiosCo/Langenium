@@ -171,6 +171,9 @@ function renderObject(mesh, category, type, instruction) {
 		player.moveInterval = new Date().getTime();
 		player.username = instruction.username;
 		player.rotation.y = instruction.position.rotationY;
+		player.material.materials.forEach(function(material,index){
+			player.material.materials[index].morphTargets = true;
+		});
 		player.add(camera);
 		scene.add(player);
 		ships.push(player);

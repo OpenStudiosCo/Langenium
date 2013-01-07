@@ -52,12 +52,12 @@ function buildMap(location) {
 var urlPrefix = "http://localhost:8080/";
 var objectTypes = {
 	ship: 	{
-					mercenary:	{  url: "assets/mercenary.js", scale: 10 },
-					pirate: 			{  url: "assets/pirate.js", scale: 10 }
+					mercenary:	{  url: "assets/mercenary.js?nocache", scale: 10 },
+					pirate: 			{  url: "assets/pirate.js?nocache", scale: 10 }
 				},
 	scene:	{
-					platform: 		{ url: "assets/union-platform2.js" , scale: 1000},
-					island: 			{ url: "assets/island.js" , scale: 10}
+					platform: 		{ url: "assets/union-platform2.js?nocache" , scale: 1000},
+					island: 			{ url: "assets/island.js?nocache" , scale: 10}
 				} 
 };
 

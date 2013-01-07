@@ -102,10 +102,10 @@ function updateWorld() {
 		playerMovement.instruction.details.username = player.sessionId;
 		update_queue.push(playerMovement);
 		if (player.velocity > 0) {
-			player.velocity -= .1;
+			player.velocity -= .05;
 		}
 		if (player.velocity < 0) {
-			player.velocity += .1;
+			player.velocity += .05;
 		}
 	});
 	var update_buffer = [];
@@ -154,11 +154,11 @@ io.sockets.on('connection', function (socket) {
 		players_online.forEach(function(player, index){
 			if (player.sessionId == socket.id) {
 				
-				if ((data.pZ > 0)&&(player.velocity > -12)){ 
-					player.velocity -= 12 * data.d; 
+				if ((data.pZ > 0)&&(player.velocity > -6)){ 
+					player.velocity -= 15 * data.d; 
 				} 			
-				if  ((data.pZ < 0)&&(player.velocity < 4)) { 
-					player.velocity  += 4 * data.d; 
+				if  ((data.pZ < 0)&&(player.velocity < 3)) { 
+					player.velocity  += 7.5 * data.d; 
 				}			
 				player.inputUpdates.push(data);
 			}

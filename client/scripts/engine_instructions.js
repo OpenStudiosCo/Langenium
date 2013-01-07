@@ -184,6 +184,9 @@ function renderObject(mesh, category, type, instruction) {
 		var ship = mesh;
 		ship.username = instruction.username;
 		ship.rotation.y = instruction.position.rotationY;
+			ship.material.materials.forEach(function(material,index){
+			ship.material.materials[index].morphTargets = true;
+		});
 		ships.push(ship);
 		scene.add(ships[ships.length-1]);
 		$("#playerList").append("<li>" + ship.username + "</li>");

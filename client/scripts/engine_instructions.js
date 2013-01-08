@@ -168,6 +168,7 @@ function renderObject(mesh, category, type, instruction) {
 	}
 	if (type == "player") {	
 		player = mesh;
+		player.bullets = [];
 		player.moveInterval = new Date().getTime();
 		player.username = instruction.username;
 		player.rotation.y = instruction.position.rotationY;
@@ -182,6 +183,7 @@ function renderObject(mesh, category, type, instruction) {
 	}
 	if (type == "ship") {
 		var ship = mesh;
+		ship.bullets = [];
 		ship.username = instruction.username;
 		ship.rotation.y = instruction.position.rotationY;
 			ship.material.materials.forEach(function(material,index){

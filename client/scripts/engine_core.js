@@ -117,9 +117,8 @@ function createScene() {
 
  /* Player input
  --------------------------------------------------------------------------------------------------------------------------------*/
-function playerInput(){
-	var 	delta = clock.getDelta(),
-			keyboardInput = { d: delta, pZ: 0, pY: 0, rY: 0 },
+function playerInput(delta){
+	var keyboardInput = { d: delta, pZ: 0, pY: 0, rY: 0 },
 			move = false;
 	
 	if (keyboard.pressed("W")){
@@ -151,11 +150,11 @@ function playerInput(){
 		socket.emit('move', keyboardInput);
 	}
 }
-
+var isFiring = false;
 $(document).bind("mousedown", function(event) {
     switch (event.which) {
         case 1:
-            //console.log("pew");
+            isFiring = true;
             break;
         case 2:
             //zoom IGNORE
@@ -169,7 +168,7 @@ $(document).bind("mousedown", function(event) {
 $(document).bind("mouseup", function(event){
     switch (event.which) {
         case 1:
-            //shoot
+            isFiring = false;
             break;
         case 2:
             //zoom IGNORE
@@ -240,6 +239,8 @@ var duration = 100,
 	lastKeyframe = 0, currentKeyframe = 0;
 	
 function animate() {
+	var delta = clock.getDelta();
+	handleBullets(delta);
 	var animTime = new Date().getTime() % duration;
 	var keyframe = Math.floor( animTime / interpolation ) + animOffset;
 	
@@ -264,7 +265,7 @@ function animate() {
 		player.rotation.x = Math.sin(interval/5000)/15;
 		
 		if (intervalDelta >= player.latency / 20) {
-			playerInput();
+			playerInput(delta);
 			player.moveInterval = interval;
 		}
 		if (player.position.y < 50) {
@@ -305,3 +306,68 @@ function animate() {
 	stats.update();
 }
 
+function handleBullets(delta){
+	counter += delta;
+	if (counter >= INTERVAL) {
+		counter -= INTERVAL;
+		isFiring && addBullet();
+	}
+	if (player&&(player.children.length > 1)) {
+		player.bullets.forEach(function(bullet, index){
+			player.bullets[index].translateZ(-SPEED);
+			player.bullets[index]._lifetime += delta;
+			console.log(player.bullets[index]._lifetime);
+			if (player.bullets[index]._lifetime > MAX_LIFETIME) {
+				//toRemove.push(index);
+				player.remove(bullet);
+				player.bullets.splice(index, 1);
+			}
+		});
+	}
+}
+
+function addBullet() {
+
+	var geometry = new THREE.CubeGeometry(.25, .25, 5);
+	
+	for ( var i = 0; i < geometry.faces.length; i ++ ) {
+		geometry.faces[ i ].color.setHex( 0xFFFF00 );
+	}
+	console.log(player.bullets);
+	var material = new THREE.MeshBasicMaterial( { vertexColors: THREE.FaceColors } );
+	
+	var 	lBullet = makeBullet(2, geometry, material),
+				rBullet = makeBullet(-2, geometry, material);
+				
+	player.bullets.push(lBullet);
+	player.add(player.bullets[player.bullets.length-1]);
+	player.bullets.push(rBullet);
+	player.add(player.bullets[player.bullets.length-1]);
+
+}
+
+var	counter = 0,
+		vector = new THREE.Vector3(), 
+		projector = new THREE.Projector(),
+		SPEED = 8, 
+		INTERVAL = .1, 
+		MAX_LIFETIME = 1;
+		
+function makeBullet(shifter,geometry, material) {
+
+	var bullet = new THREE.Mesh(geometry, material);
+	bullet.opacity = .8;
+	bullet.position.x = (shifter);
+	bullet.position.y = 1;
+	vector.set(player.position);
+	vector.scale = .1;
+	// no need to reset the projector
+	projector.unprojectVector(vector, camera);
+	
+	var target = vector;
+	bullet.direction = target;
+	$("#hits").html(target);
+	bullet._lifetime = 0;
+
+	return bullet;
+}

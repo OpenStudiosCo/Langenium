@@ -316,7 +316,7 @@ function handleBullets(delta){
 		player.bullets.forEach(function(bullet, index){
 			player.bullets[index].translateZ(-SPEED);
 			player.bullets[index]._lifetime += delta;
-			console.log(player.bullets[index]._lifetime);
+			
 			if (player.bullets[index]._lifetime > MAX_LIFETIME) {
 				//toRemove.push(index);
 				player.remove(bullet);
@@ -333,7 +333,7 @@ function addBullet() {
 	for ( var i = 0; i < geometry.faces.length; i ++ ) {
 		geometry.faces[ i ].color.setHex( 0xFFFF00 );
 	}
-	console.log(player.bullets);
+	
 	var material = new THREE.MeshBasicMaterial( { vertexColors: THREE.FaceColors } );
 	
 	var 	lBullet = makeBullet(2, geometry, material),

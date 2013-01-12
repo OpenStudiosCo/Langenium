@@ -7,54 +7,39 @@ module.exports.moveBot = moveBot;
 
 var 	THREE = require('three');
 
-function moveBot(delta, bot, world_map) {
-	delta = delta || 10;
-	var	moveDistance = -.3 * delta,
-			tX = 0, tY = 0, tZ = 0, rY = 0; 			
-	
-	
-	rY = Math.cos(delta/1000)/(Math.random() * 100 - 200);
-	
-	tX = moveDistance * Math.sin(bot.rotation.y + rY);
-	tZ = moveDistance * Math.cos(bot.rotation.y + rY);
-	tY = Math.cos(delta/1000)/(Math.random() * 100 - 200);
-	
-	var moveVector = new THREE.Vector3(tX, tY, tZ);
-	var botPositionVector = new THREE.Vector3(bot.position.x, bot.position.y, bot.position.z);
-	/******************************d******************************************************
-	Commented this out for now as pathfinding AI will change when this is called (per target instead of per 15ms!!)
-	*************************************************************************************
-	var collisions = detectCollision(botPositionVector, moveVector, world_map);
+function moveBot(bot, destination, distance, world_map) {
 
-	if (collisions.length > 0) {
-		if (collisions[0].distance < 100) {
-			if (bot.rotation.y > 0) 
-				{ rY += collisions[0].distance / 10000; }
-			if (bot.rotation.y < 0) 
-				{ rY -= collisions[0].distance / 10000; }
+	var movementArray = [];
+	
+	movementArray = makeBotMovementArray(bot, destination, distance);
+	
+	return movementArray;
+}
+
+function makeBotMovementArray(bot, destination, distance) {
+	var moveDistance = -6;
+	var angle = Math.atan2((bot.position.x - destination.x),(bot.position.z - destination.z));
+	angle = (angle + angle * Math.PI / 180);
+	var movementArray = [];
+	var movements = distance / -moveDistance;
+	
+	for (var i = 1; i < movements; i++) {
+			var rY = (angle / movements);
 			
-			if (tX != 0) {
-				tX *= -.001;
-			}
-			if (tY != 0) {
-				tY *= -.001;
-			}
-			if (tZ != 0) {
-				tZ *= -.001;
-			}
-		}   
-	}
-	************************************************************************************/
-	bot.position.x += tX;
-	bot.position.y += tY;
-	bot.position.z += tZ;
-	bot.rotation.y += rY;
-	
-	var data = { pX: tX, pY: tY, pZ: tZ, rY: rY, username: bot.username };
-	//console.log(data);
-		
-	return { instruction: { name: "move", type: "bot", details: data } };
+			var rotationVariance = bot.rotation.y +  (rY* i);
 
+			var 	tX = moveDistance * Math.sin(rotationVariance),
+					tY =  (destination.y - bot.position.y ) / (movements),
+					tZ = moveDistance * Math.cos(rotationVariance);
+			
+			var data = { pX: tX, pY: tY, pZ: tZ, rY: rY, username: bot.username };
+			
+			var movement = { instruction: { name: "move", type: "bot", details: data } };
+			
+			movementArray.push(movement);
+
+		}
+	return movementArray;
 }
 
 function movePlayer(velocity, playerPosition, world_map, data) {

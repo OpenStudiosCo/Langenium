@@ -51,14 +51,13 @@ function buildWorldMap(){
 		var 	type = obj.type,
 				object = db.getObject(type),
 				scale = obj.scale || object.scale,
-				urlPrefix = "http://langenium.com/play/",
+				urlPrefix = "http://localhost:8080/",
 				loader =  new THREE.JSONLoader(),
 				url = object.url;
 				
 		loader.load(urlPrefix + url, function(geometry, materials){
 			var bot = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial( materials ) );
 			bot.geometry.computeBoundingBox();
-			
 			bot.scale = new THREE.Vector3(scale,scale,scale);
 			bot.position.x = obj.position.x,
 			bot.position.y = obj.position.y,
@@ -78,11 +77,30 @@ var 	time = new Date(),
 
 function updateWorld() {			
 	bots.forEach(function(bot, index){
-		var 	delta = (new Date()) - time;
-				movement = events.moveBot(delta, bots[index], world_map);
-	
-		update_queue.push(movement);
-		
+		var movement;
+		if (bot.movement_queue.length > 0) {
+			movement = bot.movement_queue.shift();
+			
+			bots[index].position.x += movement.instruction.details.pX;
+			bots[index].position.y += movement.instruction.details.pY;
+			bots[index].position.z += movement.instruction.details.pZ;
+			
+			bots[index].rotation.y += movement.instruction.details.rY;
+			update_queue.push(movement);
+		}
+		else {
+			if (players_online.length > 0) {
+				var player = players_online[0];
+				var destination = player.position;	
+				var 	disX = (destination.x - bot.position.x),
+				disZ = (destination.z - bot.position.z);
+				
+				var distance = Math.sqrt((disX * disX) + (disZ * disZ));
+				if (distance > 500) {
+					bots[index].movement_queue = events.moveBot(bots[index], destination, distance, world_map);		
+				}
+			}
+		}
 	});
 	time = new Date();
 	players_online.forEach(function(player){

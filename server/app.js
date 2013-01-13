@@ -51,7 +51,8 @@ function buildWorldMap(){
 		var 	type = obj.type,
 				object = db.getObject(type),
 				scale = obj.scale || object.scale,
-				urlPrefix = "http://localhost:8080/",
+				//urlPrefix = "http://localhost:8080/",
+				urlPrefix = "http://langenium.com/play/",
 				loader =  new THREE.JSONLoader(),
 				url = object.url;
 				

@@ -17,7 +17,7 @@ function moveBot(bot, destination, distance, world_map) {
 }
 
 function makeBotMovementArray(bot, destination, distance) {
-	var moveDistance = -6;
+	var moveDistance = -30;
 	var angle = Math.atan2((bot.position.x - destination.x),(bot.position.z - destination.z));
 	angle = (angle + angle * Math.PI / 180);
 	var movementArray = [];
@@ -26,7 +26,19 @@ function makeBotMovementArray(bot, destination, distance) {
 	for (var i = 1; i < movements; i++) {
 			var rY = (angle / movements);
 			
-			var rotationVariance = bot.rotation.y +  (rY* i);
+			var rotationVariance = (rY* i);
+			
+			if (angle > 0) {
+				if (rotationVariance > angle) {
+					rotationVariance = 0;
+				}
+			}
+			else {
+				if (rotationVariance < angle) {
+					rotationVariance = 0;
+				}
+			}
+			rotationVariance += bot.rotation.y ;
 
 			var 	tX = moveDistance * Math.sin(rotationVariance),
 					tY =  (destination.y - bot.position.y ) / (movements),

@@ -92,12 +92,30 @@ function updateWorld() {
 			if (players_online.length > 0) {
 				var player = players_online[0];
 				var destination = player.position;	
-				var 	disX = (destination.x - bot.position.x),
-				disZ = (destination.z - bot.position.z);
+				var deltaX = (destination.x - bots[index].position.x ),
+				deltaZ = (destination.z - bots[index].position.z);
 				
-				var distance = Math.sqrt((disX * disX) + (disZ * disZ));
+				var distance = Math.sqrt((deltaX * deltaX) + (deltaZ * deltaZ));
 				if (distance > 500) {
 					bots[index].movement_queue = events.moveBot(bots[index], destination, distance, world_map);		
+				}
+				else {
+					var angle = Math.atan2(deltaX, deltaZ) * 180 / Math.PI;
+					console.log(angle);
+					if ((angle > 10)||(angle < -10)){
+						var rY = .001; 
+						if (angle < 0) {
+							rY = -rY;
+						}
+						
+						(angle > 10)||(angle < -10)
+						bots[index].rotation.y += rY
+						var data = { pX: 0, pY: 0, pZ: 0, rY: rY, username: bots[index].username };
+						var movement = { instruction: { name: "move", type: "bot", details: data } };
+						
+								
+						update_queue.push(movement);
+					}
 				}
 			}
 		}

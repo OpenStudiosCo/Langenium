@@ -77,47 +77,52 @@ var 	time = new Date(),
 
 function updateWorld() {			
 	bots.forEach(function(bot, index){
-
 		if (players_online.length > 0) {
 			var player = players_online[0];
-			var destination = new THREE.Vector3(player.position.x, player.position.y, player.position.z);	
-			var 	deltaX = (destination.x - bots[index].position.x),
-					deltaZ = (destination.z - bots[index].position.z);
 			
-			var distance = Math.sqrt((deltaX * deltaX) + (deltaZ * deltaZ));
-			
-			if (distance < 250) {
-				bots[index].movement_queue = [];
-				var angle = Math.atan2(( distance ), ( bot.position.z - destination.z));
-				var rotate = false;
-				var rY = .01;
-				if (angle > 0) { rY = -rY; rotate = true; }
-				if (angle < 0) { rotate = true; }
+			if (bot.movement_queue.length > 0) {
+				var movement = bot.movement_queue.shift();
 				
-				if ( rotate == true ) {
-					var data = { pX: 0, pY: 0, pZ: 0, rY: rY, username: bot.username };
-					var movement = { instruction: { name: "move", type: "bot", details: data } };
-					bots[index].rotation.y += rY;
-					update_queue.push(movement);
-				}
+				bots[index].position.x += movement.instruction.details.pX;
+				bots[index].position.y += movement.instruction.details.pY;
+				bots[index].position.z += movement.instruction.details.pZ;
+				
+				bots[index].rotation.y += movement.instruction.details.rY;
+				update_queue.push(movement);
 			}
 			else {
-				if (bot.movement_queue.length > 0) {
-					var movement = bot.movement_queue.shift();
+				var destination = new THREE.Vector3(player.position.x, player.position.y, player.position.z);	
+				var 	deltaX = (destination.x - bots[index].position.x),
+						deltaY = (destination.y - bots[index].position.y),
+						deltaZ = (destination.z - bots[index].position.z);
+				
+				var distance = Math.sqrt((deltaX * deltaX) + (deltaY * deltaY) + (deltaZ * deltaZ));
+				
+				if (distance < 250) {
+					var 	vX = Math.random() * 1000 - 500,
+							vZ = Math.random() * 1000 - 500;
+							
+					if (bots[index].position.x < destination.x) { vX = -vX; }
+					if (bots[index].position.z < destination.z) { vZ = -vZ; }
+					var 	tX = bots[index].position.x + vX,
+							tY = destination.y,
+							tZ = bots[index].position.z + vZ;
 					
-					bots[index].position.x += movement.instruction.details.pX;
-					bots[index].position.y += movement.instruction.details.pY;
-					bots[index].position.z += movement.instruction.details.pZ;
-					
-					bots[index].rotation.y += movement.instruction.details.rY;
-					update_queue.push(movement);
+					destination = new THREE.Vector3(tX, tY, tZ);
+					var 	deltaX = (destination.x - bots[index].position.x),
+							deltaZ = (destination.z - bots[index].position.z);
+				
+					distance = Math.sqrt((deltaX * deltaX) + (deltaY * deltaY) + (deltaZ * deltaZ));
+					bots[index].movement_queue = events.moveBot(bots[index], destination, distance, world_map);
 				}
 				else {
 					bots[index].movement_queue = events.moveBot(bots[index], destination, distance, world_map);
 				}
 			}
 		}
-		
+		else {
+			bots[index].movement_queue = [];
+		}
 	});
 	time = new Date();
 	players_online.forEach(function(player){

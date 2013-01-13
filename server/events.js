@@ -11,37 +11,50 @@ function moveBot(bot, destination, distance, world_map) {
 
 	var movementArray = [];
 	
-	movementArray = makeBotMovementArray(bot, destination, distance);
-	
+	var 	botVector = new THREE.Vector3(bot.position.x, bot.position.y, bot.position.z),
+			destVector = new THREE.Vector3(destination.x, destination.y, destination.z);
+			
+	var collisions = detectCollision(botVector, destVector, world_map);
+	if (collisions.length>0) { 
+		//console.log(collisions); 
+	}
+	else {
+		movementArray = makeBotMovementArray(bot, destination, distance);
+	}
 	return movementArray;
 }
 
 function makeBotMovementArray(bot, destination, distance) {
-	var moveDistance = -30;
+	var moveDistance = -6;
 
 	var angle = Math.atan2(( distance ), ( bot.position.x - destination.x));
 
 	var movementArray = [];
 	var movements = distance / -moveDistance;
 	
-	for (var i = 0; i < movements; i++) {
+	for (var i = 1; i < movements; i++) {
 			var rY = (angle / movements);
 			
 			var rotationVariance = (rY* i);
 			
 			if (angle > 0) {
-				if (rotationVariance >= angle) {
-					rotationVariance = angle;
+				if (rotationVariance > angle) {
+					rotationVariance = 0;
 					rY = 0;
+				}
+				else {
+					rotationVariance += bot.rotation.y;
 				}
 			}
 			else {
-				if (rotationVariance <= angle) {
-					rotationVariance = angle;
+				if (rotationVariance < angle) {
+					rotationVariance = 0;
 					rY = 0;
 				}
+				else {
+					rotationVariance += bot.rotation.y;
+				}
 			}
-			rotationVariance += bot.rotation.y ;
 
 			var 	tX = moveDistance * Math.sin(rotationVariance),
 					tY =  (destination.y - bot.position.y ) / (movements),

@@ -14,7 +14,7 @@ function moveBot(bot, destination, distance, world_map) {
 	var 	botVector = new THREE.Vector3(bot.position.x, bot.position.y, bot.position.z),
 			destVector = new THREE.Vector3(destination.x, destination.y, destination.z);
 			
-	var collisions = detectCollision(botVector, destVector, world_map);
+	var collisions = 0; //detectCollision(botVector, destVector, world_map);
 	if (collisions.length>0) { 
 		//console.log(collisions); 
 	}
@@ -28,11 +28,11 @@ function makeBotMovementArray(bot, destination, distance) {
 	var moveDistance = -6;
 
 	var angle = Math.atan2(( distance ), ( bot.position.x - destination.x));
-
+	//angle *= -1;
 	var movementArray = [];
 	var movements = distance / -moveDistance;
 	
-	for (var i = 1; i < movements; i++) {
+	for (var i = 0; i < movements; i++) {
 			var rY = (angle / movements);
 			
 			var rotationVariance = (rY* i);

@@ -19,14 +19,13 @@ function moveShip(ship, isPlayer, instruction) {
 			if (isPlayer == true) { camera.rotation.z -= rotate / 3; }
 			ship.rotation.z += rotate / 3;
 		}
-		else 
-		{
+		else {
 			if (isPlayer == true) { camera.rotation.z -= rotate / 4; }
 			ship.rotation.z += rotate / 4;
 		}
 		ship.rotation.y += rotate;
 	}
-	if (rotate < 0){
+	if (rotate < 0) {
 		if (ship.rotation.z > -.5) {
 			if (isPlayer == true) { camera.rotation.z -= rotate / 3; }
 			ship.rotation.z += rotate / 3;
@@ -196,6 +195,7 @@ function renderObject(mesh, category, type, instruction) {
 	}
 	if (type == "bot") {
 		var bot = mesh;
+		bot.bullets = [];
 		bot.username = instruction.id;
 		bot.rotation.y = instruction.position.rotationY;
 		bots.push(bot);

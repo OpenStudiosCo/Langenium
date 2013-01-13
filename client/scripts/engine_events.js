@@ -52,6 +52,9 @@ function updateClient(data) {
 			});
 			bots.forEach(function(bot,index){
 				if (data.instruction.details.username == bot.username) {
+					if (data.instruction.details.fire == 1) {
+						addBullet(bots[index]); 
+					}
 					moveShip(bots[index], false, data.instruction);
 				}
 			});

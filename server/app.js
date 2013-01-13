@@ -73,12 +73,22 @@ function buildWorldMap(){
 }
 
 var 	time = new Date(),
-		update_queue = [];
+		update_queue = [],	
+		counter = 0,
+		INTERVAL = 100;
 
-function updateWorld() {			
+function updateWorld() {
+	counter += 1000 / 66;
 	bots.forEach(function(bot, index){
 		if (players_online.length > 0) {
 			var player = players_online[0];
+			
+			var destination = new THREE.Vector3(player.position.x, player.position.y, player.position.z);	
+			var 	deltaX = (destination.x - bots[index].position.x),
+					deltaY = (destination.y - bots[index].position.y),
+					deltaZ = (destination.z - bots[index].position.z);
+			
+			var distance = Math.sqrt((deltaX * deltaX) + (deltaY * deltaY) + (deltaZ * deltaZ));
 			
 			if (bot.movement_queue.length > 0) {
 				var movement = bot.movement_queue.shift();
@@ -88,19 +98,22 @@ function updateWorld() {
 				bots[index].position.z += movement.instruction.details.pZ;
 				
 				bots[index].rotation.y += movement.instruction.details.rY;
+				var angle = Math.atan2(( distance ), ( bots[index].position.x - destination.x));
+				angle * .5;
+				
+				if (counter >= INTERVAL) {
+					if (angle < 2) {
+						counter -= INTERVAL;
+						movement.instruction.details.fire = 1;
+					}
+				}
+
 				update_queue.push(movement);
 			}
 			else {
-				var destination = new THREE.Vector3(player.position.x, player.position.y, player.position.z);	
-				var 	deltaX = (destination.x - bots[index].position.x),
-						deltaY = (destination.y - bots[index].position.y),
-						deltaZ = (destination.z - bots[index].position.z);
-				
-				var distance = Math.sqrt((deltaX * deltaX) + (deltaY * deltaY) + (deltaZ * deltaZ));
-				
 				if (distance < 250) {
-					var 	vX = Math.random() * 1000 - 500,
-							vZ = Math.random() * 1000 - 500;
+					var 	vX = 500,
+							vZ = 500;
 							
 					if (bots[index].position.x < destination.x) { vX = -vX; }
 					if (bots[index].position.z < destination.z) { vZ = -vZ; }

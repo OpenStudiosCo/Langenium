@@ -310,7 +310,7 @@ function handleBullets(delta){
 	counter += delta;
 	if (counter >= INTERVAL) {
 		counter -= INTERVAL;
-		isFiring && addBullet();
+		isFiring && addBullet(player);
 	}
 	if (player&&(player.children.length > 1)) {
 		player.bullets.forEach(function(bullet, index){
@@ -324,9 +324,20 @@ function handleBullets(delta){
 			}
 		});
 	}
+	bots.forEach(function(bot, index){
+		bots[index].bullets.forEach(function(bullet, bulletIndex){
+			bots[index].bullets[bulletIndex].translateZ(-SPEED);
+			bots[index].bullets[bulletIndex]._lifetime += delta;
+			
+			if (bots[index].bullets[bulletIndex]._lifetime > MAX_LIFETIME) {
+				bots[index].remove(bullet);
+				bots[index].bullets.splice(bulletIndex, 1);
+			}
+		});
+	});
 }
 
-function addBullet() {
+function addBullet(ship) {
 
 	var geometry = new THREE.CubeGeometry(.25, .25, 5);
 	
@@ -335,14 +346,15 @@ function addBullet() {
 	}
 	
 	var material = new THREE.MeshBasicMaterial( { vertexColors: THREE.FaceColors } );
+	var pVector = new THREE.Vector3(ship.position.x, ship.position.y, ship.position.z);
 	
-	var 	lBullet = makeBullet(2, geometry, material),
-				rBullet = makeBullet(-2, geometry, material);
+	var 	lBullet = makeBullet(pVector, 2, geometry, material),
+			rBullet = makeBullet(pVector, -2, geometry, material);
 				
-	player.bullets.push(lBullet);
-	player.add(player.bullets[player.bullets.length-1]);
-	player.bullets.push(rBullet);
-	player.add(player.bullets[player.bullets.length-1]);
+	ship.bullets.push(lBullet);
+	ship.add(ship.bullets[ship.bullets.length-1]);
+	ship.bullets.push(rBullet);
+	ship.add(ship.bullets[ship.bullets.length-1]);
 
 }
 
@@ -353,13 +365,13 @@ var	counter = 0,
 		INTERVAL = .1, 
 		MAX_LIFETIME = 1;
 		
-function makeBullet(shifter,geometry, material) {
+function makeBullet(pVector, shifter,geometry, material) {
 
 	var bullet = new THREE.Mesh(geometry, material);
 	bullet.opacity = .8;
 	bullet.position.x = (shifter);
 	bullet.position.y = 1;
-	vector.set(player.position);
+	vector.set(pVector);
 	vector.scale = .1;
 	// no need to reset the projector
 	projector.unprojectVector(vector, camera);

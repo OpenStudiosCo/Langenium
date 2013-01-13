@@ -77,48 +77,47 @@ var 	time = new Date(),
 
 function updateWorld() {			
 	bots.forEach(function(bot, index){
-		var movement;
-		if (bot.movement_queue.length > 0) {
-			movement = bot.movement_queue.shift();
+
+		if (players_online.length > 0) {
+			var player = players_online[0];
+			var destination = new THREE.Vector3(player.position.x, player.position.y, player.position.z);	
+			var 	deltaX = (destination.x - bots[index].position.x),
+					deltaZ = (destination.z - bots[index].position.z);
 			
-			bots[index].position.x += movement.instruction.details.pX;
-			bots[index].position.y += movement.instruction.details.pY;
-			bots[index].position.z += movement.instruction.details.pZ;
+			var distance = Math.sqrt((deltaX * deltaX) + (deltaZ * deltaZ));
 			
-			bots[index].rotation.y += movement.instruction.details.rY;
-			update_queue.push(movement);
-		}
-		else {
-			if (players_online.length > 0) {
-				var player = players_online[0];
-				var destination = player.position;	
-				var deltaX = (destination.x - bots[index].position.x ),
-				deltaZ = (destination.z - bots[index].position.z);
+			if (distance < 250) {
+				bots[index].movement_queue = [];
+				var angle = Math.atan2(( distance ), ( bot.position.z - destination.z));
+				var rotate = false;
+				var rY = .01;
+				if (angle > 0) { rY = -rY; rotate = true; }
+				if (angle < 0) { rotate = true; }
 				
-				var distance = Math.sqrt((deltaX * deltaX) + (deltaZ * deltaZ));
-				if (distance > 500) {
-					bots[index].movement_queue = events.moveBot(bots[index], destination, distance, world_map);		
+				if ( rotate == true ) {
+					var data = { pX: 0, pY: 0, pZ: 0, rY: rY, username: bot.username };
+					var movement = { instruction: { name: "move", type: "bot", details: data } };
+					bots[index].rotation.y += rY;
+					update_queue.push(movement);
+				}
+			}
+			else {
+				if (bot.movement_queue.length > 0) {
+					var movement = bot.movement_queue.shift();
+					
+					bots[index].position.x += movement.instruction.details.pX;
+					bots[index].position.y += movement.instruction.details.pY;
+					bots[index].position.z += movement.instruction.details.pZ;
+					
+					bots[index].rotation.y += movement.instruction.details.rY;
+					update_queue.push(movement);
 				}
 				else {
-					var angle = Math.atan2(deltaX, deltaZ) * 180 / Math.PI;
-					console.log(angle);
-					if ((angle > 10)||(angle < -10)){
-						var rY = .001; 
-						if (angle < 0) {
-							rY = -rY;
-						}
-						
-						(angle > 10)||(angle < -10)
-						bots[index].rotation.y += rY
-						var data = { pX: 0, pY: 0, pZ: 0, rY: rY, username: bots[index].username };
-						var movement = { instruction: { name: "move", type: "bot", details: data } };
-						
-								
-						update_queue.push(movement);
-					}
+					bots[index].movement_queue = events.moveBot(bots[index], destination, distance, world_map);
 				}
 			}
 		}
+		
 	});
 	time = new Date();
 	players_online.forEach(function(player){

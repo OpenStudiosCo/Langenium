@@ -5,7 +5,7 @@ if (url.indexOf("langenium") > 0)
 	//url = "langenium.ap01.aws.af.cm";
 }
 else {
-	url = "http://10.1.1.88:80";
+	url = "http://localhost:80";
 }
 socket = io.connect(url);
 

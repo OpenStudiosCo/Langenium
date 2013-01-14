@@ -76,7 +76,7 @@ function buildWorldMap(){
 var 	time = new Date(),
 		update_queue = [],	
 		counter = 0,
-		INTERVAL = 100;
+		INTERVAL = 100 * 66;
 
 function updateWorld() {
 	counter += 1000 / 66;
@@ -99,6 +99,9 @@ function updateWorld() {
 				bots[index].position.z += movement.instruction.details.pZ;
 				
 				bots[index].rotation.y += movement.instruction.details.rY;
+				
+				/* Commented until correct angle is determined.... < 2 doesn't seem to work correctly
+				******************
 				var angle = Math.atan2(( distance ), ( bots[index].position.x - destination.x));
 				angle * .5;
 				
@@ -108,7 +111,7 @@ function updateWorld() {
 						movement.instruction.details.fire = 1;
 					}
 				}
-
+				*/
 				update_queue.push(movement);
 			}
 			else {

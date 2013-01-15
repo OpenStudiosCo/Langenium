@@ -76,65 +76,42 @@ function buildWorldMap(){
 var 	time = new Date(),
 		update_queue = [],	
 		counter = 0,
-		INTERVAL = 100 * 66;
+		INTERVAL = 100;
 
 function updateWorld() {
-	counter += 1000 / 66;
+	counter += 15;
 	bots.forEach(function(bot, index){
 		if (players_online.length > 0) {
 			var player = players_online[0];
-			
 			var destination = new THREE.Vector3(player.position.x, player.position.y, player.position.z);	
 			var 	deltaX = (destination.x - bots[index].position.x),
 					deltaY = (destination.y - bots[index].position.y),
 					deltaZ = (destination.z - bots[index].position.z);
-			
+
 			var distance = Math.sqrt((deltaX * deltaX) + (deltaY * deltaY) + (deltaZ * deltaZ));
 			
 			if (bot.movement_queue.length > 0) {
-				var movement = bot.movement_queue.shift();
-				
-				bots[index].position.x += movement.instruction.details.pX;
-				bots[index].position.y += movement.instruction.details.pY;
-				bots[index].position.z += movement.instruction.details.pZ;
-				
-				bots[index].rotation.y += movement.instruction.details.rY;
-				
-				/* Commented until correct angle is determined.... < 2 doesn't seem to work correctly
-				******************
-				var angle = Math.atan2(( distance ), ( bots[index].position.x - destination.x));
-				angle * .5;
-				
-				if (counter >= INTERVAL) {
-					if (angle < 2) {
+					var movement = bot.movement_queue.shift();
+					
+					var angle = Math.atan2(-deltaX, deltaZ);
+					if (angle < 0) { angle += 2; }
+					angle *= 180 / Math.PI;
+	
+					
+					if ((counter >= INTERVAL) && (distance < 2000) && ((angle < 15) && (angle > -15))) {
 						counter -= INTERVAL;
 						movement.instruction.details.fire = 1;
 					}
-				}
-				*/
-				update_queue.push(movement);
+					bots[index].position.x += movement.instruction.details.pX;
+					bots[index].position.y += movement.instruction.details.pY;
+					bots[index].position.z += movement.instruction.details.pZ;
+					bots[index].rotation.y += movement.instruction.details.rY;
+					update_queue.push(movement);
+				
 			}
 			else {
-				if (distance < 250) {
-					var 	vX = 500,
-							vZ = 500;
-							
-					if (bots[index].position.x < destination.x) { vX = -vX; }
-					if (bots[index].position.z < destination.z) { vZ = -vZ; }
-					var 	tX = bots[index].position.x + vX,
-							tY = destination.y,
-							tZ = bots[index].position.z + vZ;
-					
-					destination = new THREE.Vector3(tX, tY, tZ);
-					var 	deltaX = (destination.x - bots[index].position.x),
-							deltaZ = (destination.z - bots[index].position.z);
-				
-					distance = Math.sqrt((deltaX * deltaX) + (deltaY * deltaY) + (deltaZ * deltaZ));
-					bots[index].movement_queue = events.moveBot(bots[index], destination, distance, world_map);
-				}
-				else {
-					bots[index].movement_queue = events.moveBot(bots[index], destination, distance, world_map);
-				}
+			
+				bots[index].movement_queue = events.moveBot(bots[index], destination, distance, world_map);
 			}
 		}
 		else {

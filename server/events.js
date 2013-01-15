@@ -28,9 +28,10 @@ function makeBotMovementArray(bot, destination, distance) {
 	var moveDistance = -6;
 
 	var angle = Math.atan2(( distance ), ( bot.position.x - destination.x));
-	//angle *= -1;
+	angle *= 1.8 / Math.PI;
+	angle *= (Math.floor(Math.random() * 2) - 2);
 	var movementArray = [];
-	var movements = distance / -moveDistance;
+	var movements = 66;
 	
 	for (var i = 0; i < movements; i++) {
 			var rY = (angle / movements);

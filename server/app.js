@@ -84,19 +84,17 @@ function updateWorld() {
 		if (players_online.length > 0) {
 			var player = players_online[0];
 			var destination = new THREE.Vector3(player.position.x, player.position.y, player.position.z);	
-			var 	deltaX = (destination.x - bots[index].position.x),
-					deltaY = (destination.y - bots[index].position.y),
-					deltaZ = (destination.z - bots[index].position.z);
+			var 	deltaX = (players_online[0].position.x - bots[index].position.x),
+					deltaY = (players_online[0].position.y - bots[index].position.y),
+					deltaZ = (players_online[0].position.z - bots[index].position.z);
 
 			var distance = Math.sqrt((deltaX * deltaX) + (deltaY * deltaY) + (deltaZ * deltaZ));
+			var angle = Math.atan2(-deltaX, deltaZ);
+			if (angle < 0) { angle += 2; }
+			angle *= 180 / Math.PI;
 			
 			if (bot.movement_queue.length > 0) {
 					var movement = bot.movement_queue.shift();
-					
-					var angle = Math.atan2(-deltaX, deltaZ);
-					if (angle < 0) { angle += 2; }
-					angle *= 180 / Math.PI;
-	
 					
 					if ((counter >= INTERVAL) && (distance < 2000) && ((angle < 15) && (angle > -15))) {
 						counter -= INTERVAL;
@@ -110,8 +108,7 @@ function updateWorld() {
 				
 			}
 			else {
-			
-				bots[index].movement_queue = events.moveBot(bots[index], destination, distance, world_map);
+				bots[index].movement_queue = events.moveBot(bots[index], destination, distance, angle, world_map);
 			}
 		}
 		else {

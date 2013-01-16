@@ -7,8 +7,8 @@ module.exports.moveBot = moveBot;
 
 var 	THREE = require('three');
 
-function moveBot(bot, destination, distance, world_map) {
-
+function moveBot(bot, destination, distance, angle, world_map) {
+	
 	var movementArray = [];
 	
 	var 	botVector = new THREE.Vector3(bot.position.x, bot.position.y, bot.position.z),
@@ -19,28 +19,28 @@ function moveBot(bot, destination, distance, world_map) {
 		//console.log(collisions); 
 	}
 	else {
-		movementArray = makeBotMovementArray(bot, destination, distance);
+		movementArray = makeBotMovementArray(bot, destination, angle, distance);
 	}
 	return movementArray;
 }
 
-function makeBotMovementArray(bot, destination, distance) {
+function makeBotMovementArray(bot, destination, angle, distance) {
+
 	var moveDistance = -6;
 
-	var angle = Math.atan2(( distance ), ( bot.position.x - destination.x));
-	angle *= 1.8 / Math.PI;
-	angle *= (Math.floor(Math.random() * 2) - 2);
 	var movementArray = [];
-	var movements = 66;
 	
-	for (var i = 0; i < movements; i++) {
-			var rY = (angle / movements);
+	var movements = 5000 / 66;
+	
+	for (var i = 1; i < movements; i++) {
+			var rY = angle / (distance / -moveDistance) * .045;
 			
 			var rotationVariance = (rY* i);
+			var tX, tY, tZ;
 			
 			if (angle > 0) {
 				if (rotationVariance > angle) {
-					rotationVariance = 0;
+					rotationVariance = angle;
 					rY = 0;
 				}
 				else {
@@ -49,7 +49,7 @@ function makeBotMovementArray(bot, destination, distance) {
 			}
 			else {
 				if (rotationVariance < angle) {
-					rotationVariance = 0;
+					rotationVariance = angle;
 					rY = 0;
 				}
 				else {
@@ -57,10 +57,10 @@ function makeBotMovementArray(bot, destination, distance) {
 				}
 			}
 
-			var 	tX = moveDistance * Math.sin(rotationVariance),
-					tY =  (destination.y - bot.position.y ) / (movements),
-					tZ = moveDistance * Math.cos(rotationVariance);
-			
+			tX = moveDistance * Math.sin(rotationVariance);
+			tY =  (destination.y - bot.position.y ) / (movements);
+			tZ = moveDistance * Math.cos(rotationVariance);
+					
 			var data = { pX: tX, pY: tY, pZ: tZ, rY: rY, username: bot.username };
 			
 			var movement = { instruction: { name: "move", type: "bot", details: data } };
@@ -68,6 +68,8 @@ function makeBotMovementArray(bot, destination, distance) {
 			movementArray.push(movement);
 
 		}
+		
+		
 	return movementArray;
 }
 

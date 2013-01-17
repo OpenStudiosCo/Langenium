@@ -65,6 +65,7 @@ function getDistance(position1, position2) {
 
 function getAngle(position1, position2) {
 	var angle = Math.atan2(-(position1.position.x - position2.position.x), (position1.position.z - position2.position.z));
+	angle *= 180 / Math.PI;
 	return angle;
 }
 

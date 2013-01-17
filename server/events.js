@@ -1,5 +1,6 @@
 module.exports.movePlayer = movePlayer;
 module.exports.moveBot = moveBot;
+module.exports.makeBotMovementBuffer = moveBot;
 
 /*///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	Movement and location
@@ -8,29 +9,25 @@ module.exports.moveBot = moveBot;
 var 	THREE = require('three');
 
 function moveBot(bot, destination, distance, angle, world_map) {
-	
-	var movementArray = [];
-	
-	var 	botVector = new THREE.Vector3(bot.position.x, bot.position.y, bot.position.z),
-			destVector = new THREE.Vector3(destination.x, destination.y, destination.z);
-			
-	var collisions = 0; //detectCollision(botVector, destVector, world_map);
-	if (collisions.length>0) { 
-		//console.log(collisions); 
+
+	return makeBotMovementArray(bot, destination, angle, distance);
+}
+
+function makeBotMovementBuffer(bot, destination, angle, distance) {
+	return { 
+		xBuffer: distance * Math.sin(angle),
+		yBuffer: destination.y - bot.position.y,
+		zBuffer: distance * Math.cos(angle),
+		yRotateBuffer: angle
 	}
-	else {
-		movementArray = makeBotMovementArray(bot, destination, angle, distance);
-	}
-	return movementArray;
 }
 
 function makeBotMovementArray(bot, destination, angle, distance) {
 
+	var movementArray = [];
 	var moveDistance = -6;
 
-	var movementArray = [];
-	
-	var movements = 5000 / 66;
+	var movements = distance / -moveDistance;
 	
 	for (var i = 1; i < movements; i++) {
 			var rY = angle / (distance / -moveDistance) * .045;

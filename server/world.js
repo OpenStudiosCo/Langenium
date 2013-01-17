@@ -55,35 +55,23 @@ function makeWorld(db, bots, THREE) {
 	return world_map;
 };
 
-function updateWorld(update_queue, bots, events, players_online, THREE, world_map) {
-	bots.forEach(function(bot, index){
-		if (players_online.length > 0) {
-			var player = players_online[0];
-			var destination = new THREE.Vector3(player.position.x, player.position.y, player.position.z);	
-			var 	deltaX = (players_online[0].position.x - bots[index].position.x),
-					deltaY = (players_online[0].position.y - bots[index].position.y),
-					deltaZ = (players_online[0].position.z - bots[index].position.z);
+function getDistance(position1, position2) {
+	return Math.sqrt(
+		((position1.position.x - position2.position.x) * (position1.position.x - position2.position.x)) + 
+		((position1.position.y - position2.position.y) * (position1.position.y - position2.position.y)) + 
+		((position1.position.z - position2.position.z) * (position1.position.z - position2.position.z))
+	);
+}
 
-			var distance = Math.sqrt((deltaX * deltaX) + (deltaY * deltaY) + (deltaZ * deltaZ));
-			var angle = Math.atan2(-deltaX, deltaZ);
-			if (angle < 0) { angle += 2; }
-			angle *= 180 / Math.PI;
-			
-			if (bot.movement_queue.length > 0) {
-				var movement = bot.movement_queue.shift();
-				bots[index].position.y += movement.instruction.details.pY;
-				bots[index].position.z += movement.instruction.details.pZ;
-				bots[index].rotation.y += movement.instruction.details.rY;
-				update_queue.push(movement);
-			}
-			else {
-				bots[index].movement_queue = events.moveBot(bots[index], destination, distance, angle, world_map);
-			}
-		}
-		else {
-			bots[index].movement_queue = [];
-		}
-	});
+function getAngle(position1, position2) {
+	var angle = Math.atan2(-(position1.position.x - position2.position.x), (position1.position.z - position2.position.z));
+	//if (angle < 0) { angle += 2; }
+	angle *= 180 / Math.PI + 180;
+	return angle;
+}
+
+function updateWorld(update_queue, bots, events, players_online, THREE, world_map) {
+	updateBotsFromBuffer(update_queue, bots, events, players_online, THREE, world_map);
 	time = new Date();
 	players_online.forEach(function(player){
 		var 	playerMovement, 
@@ -116,6 +104,129 @@ function updateWorld(update_queue, bots, events, players_online, THREE, world_ma
 	return update_buffer;
 };
 
+function updateBotsFromQueue(update_queue, bots, events, players_online, THREE, world_map) {
+	bots.forEach(function(bot, index){
+		if (players_online.length > 0) {
+			if (bots[index].movement_queue.length > 0) {
+				var movement = bots[index].movement_queue.shift();
+				bots[index].position.y += movement.instruction.details.pY;
+				bots[index].position.z += movement.instruction.details.pZ;
+				bots[index].rotation.y += movement.instruction.details.rY;
+				update_queue.push(movement);
+			}
+			else {
+				var destination = new THREE.Vector3(players_online[0].position.x, players_online[0].position.y, players_online[0].position.z);	
+				bots[index].movement_queue = events.moveBot(bots[index], destination, getDistance(players_online[0], bots[index]), getAngle(players_online[0], bots[index]), world_map);
+			}
+		}
+		else {
+			bots[index].movement_queue = [];
+		}
+	});
+}
+
+function updateBotsFromBuffer(update_queue, bots, events, players_online, THREE, world_map) {
+	bots.forEach(function(bot, index){
+		if (players_online.length > 0) {
+			if ((bots[index].movement_buffer)&&
+				((bots[index].movement_buffer.xBuffer != 0)||
+				(bots[index].movement_buffer.yBuffer != 0)||
+				(bots[index].movement_buffer.zBuffer != 0)
+				))
+			{
+			var 	tX = 0, 
+						tY = 0, 	
+						tZ = 0, 
+						rY = 0,
+						radian = Math.PI / 100;
+				/*
+				if (bots[index].movement_buffer.yRotateBuffer != 0) {
+					if (bots[index].movement_buffer.yRotateBuffer > 0) {
+						if (bots[index].movement_buffer.yRotateBuffer > radian) {
+							bots[index].rotation.y += radian;	rY += radian; 
+							bots[index].movement_buffer.yRotateBuffer -= radian;
+						}
+						else {
+							bots[index].rotation.y += bots[index].movement_buffer.yRotateBuffer;	
+							rY += bots[index].movement_buffer.yRotateBuffer; 
+							bots[index].movement_buffer.yRotateBuffer = 0;
+						}
+					}
+					else { 
+						if (bots[index].movement_buffer.yRotateBuffer  < radian) {
+							bots[index].rotation.y -= radian;	rY -= radian; 
+							bots[index].movement_buffer.yRotateBuffer += radian;
+						}
+						else {
+							bots[index].rotation.y -= bots[index].movement_buffer.yRotateBuffer;	
+							rY -= bots[index].movement_buffer.yRotateBuffer; 
+							bots[index].movement_buffer.yRotateBuffer = 0;
+						}
+					}
+				}
+				*/
+				
+				if (bots[index].movement_buffer.xBuffer != 0) {
+					if (bots[index].movement_buffer.xBuffer > 0) {
+						if (bots[index].movement_buffer.xBuffer > 6) 
+							{	bots[index].position.x += 6;	tX += 6;	bots[index].movement_buffer.xBuffer -= 6;	}
+						else 
+							{	bots[index].position.x += bots[index].movement_buffer.xBuffer;	tX += bots[index].movement_buffer.xBuffer;	bots[index].movement_buffer.xBuffer = 0;	}
+					}
+					else { 
+						if (bots[index].movement_buffer.xBuffer < -6) 
+							{	bots[index].position.x -= 6;	tX -= 6;	bots[index].movement_buffer.xBuffer += 6;	}
+						else 
+							{	bots[index].position.x -= bots[index].movement_buffer.xBuffer;	tX -= bots[index].movement_buffer.xBuffer;	bots[index].movement_buffer.xBuffer = 0;	}
+					}
+				}
+				if (bots[index].movement_buffer.yBuffer != 0) {
+					if (bots[index].movement_buffer.yBuffer > 0) {
+						if (bots[index].movement_buffer.yBuffer > 6) 
+							{	bots[index].position.y += 6;	tY += 6;	bots[index].movement_buffer.yBuffer -= 6;	}
+						else 
+							{	bots[index].position.y += bots[index].movement_buffer.yBuffer;	tY += bots[index].movement_buffer.yBuffer;	bots[index].movement_buffer.yBuffer = 0;	}
+					}
+					else { 
+						if (bots[index].movement_buffer.yBuffer < -6) 
+							{	bots[index].position.y -= 6;	tY -= 6;	bots[index].movement_buffer.yBuffer += 6;	}
+						else 
+							{	bots[index].position.y -= bots[index].movement_buffer.yBuffer;	tY -= bots[index].movement_buffer.yBuffer;	bots[index].movement_buffer.yBuffer = 0;	}
+					}
+				}
+				if (bots[index].movement_buffer.zBuffer != 0) {
+					if (bots[index].movement_buffer.zBuffer > 0) {
+						if (bots[index].movement_buffer.zBuffer > 6) 
+							{	bots[index].position.z += 6;	tZ += 6;	bots[index].movement_buffer.zBuffer -= 6;	}
+						else 
+							{	bots[index].position.z += bots[index].movement_buffer.zBuffer;	tZ += bots[index].movement_buffer.zBuffer;	bots[index].movement_buffer.zBuffer = 0;	}
+					}
+					else { 
+						if (bots[index].movement_buffer.zBuffer < -6) 
+							{	bots[index].position.z -= 6;	tZ -= 6;	bots[index].movement_buffer.zBuffer += 6;	}
+						else 
+							{	bots[index].position.z -= bots[index].movement_buffer.zBuffer;	tZ -= bots[index].movement_buffer.zBuffer;	bots[index].movement_buffer.zBuffer = 0;	}
+					}
+				}
+				
+				var fire = 0;
+				if ((getAngle(players_online[0], bots[index]) < 10)&&(getAngle(players_online[0], bots[index]) > -10))
+				{
+					fire = 1;
+				}
+				
+				
+				update_queue.push(
+					{ instruction: { name: "move", type: "bot", details: { fire: fire, pX: tX, pY: tY, pZ: tZ, rY: rY, username: bots[index].username } } }
+				);
+			}
+			else {
+				var destination = new THREE.Vector3(players_online[0].position.x, players_online[0].position.y, players_online[0].position.z);	
+				bots[index].movement_buffer = events.makeBotMovementBuffer(bots[index], destination, getAngle(players_online[0], bots[index]), getDistance(bots[index], players_online[0]));
+			}
+		}
+	});
+}
 
 
 

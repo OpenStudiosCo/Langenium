@@ -33,7 +33,6 @@ var 	time = new Date(),
 		update_queue = [],	
 		INTERVAL = 100;
 
-console.log(world);
 var world_map = world.makeWorld(db, bots, THREE);
 
 

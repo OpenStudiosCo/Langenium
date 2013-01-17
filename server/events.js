@@ -1,6 +1,5 @@
 module.exports.movePlayer = movePlayer;
-module.exports.moveBot = moveBot;
-module.exports.makeBotMovementBuffer = moveBot;
+module.exports.makeBotMovementBuffer = makeBotMovementBuffer;
 
 /*///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	Movement and location
@@ -8,17 +7,12 @@ module.exports.makeBotMovementBuffer = moveBot;
 
 var 	THREE = require('three');
 
-function moveBot(bot, destination, distance, angle, world_map) {
-
-	return makeBotMovementArray(bot, destination, angle, distance);
-}
-
 function makeBotMovementBuffer(bot, destination, angle, distance) {
 	return { 
-		xBuffer: distance * Math.sin(angle),
+		xBuffer: distance * Math.sin(angle) ,
 		yBuffer: destination.y - bot.position.y,
 		zBuffer: distance * Math.cos(angle),
-		yRotateBuffer: angle
+		yRotateBuffer: angle - 90
 	}
 }
 
@@ -65,8 +59,7 @@ function makeBotMovementArray(bot, destination, angle, distance) {
 			movementArray.push(movement);
 
 		}
-		
-		
+
 	return movementArray;
 }
 

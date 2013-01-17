@@ -12,7 +12,7 @@ function makeBotMovementBuffer(bot, destination, angle, distance) {
 		xBuffer: distance * Math.sin(angle) ,
 		yBuffer: destination.y - bot.position.y,
 		zBuffer: distance * Math.cos(angle),
-		yRotateBuffer: angle - 90
+		yRotateBuffer: angle * Math.PI / 180
 	}
 }
 

@@ -12,7 +12,8 @@ function makeBotMovementBuffer(bot, destination, angle, distance) {
 	return { 
 		xBuffer: distance * Math.sin(angle) ,
 		yBuffer: destination.y - bot.position.y,
-		zBuffer: distance * Math.cos(angle)
+		zBuffer: distance * Math.cos(angle),
+		distance: distance
 	}
 }
 function moveBot(buffer) {

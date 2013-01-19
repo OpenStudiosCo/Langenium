@@ -71,10 +71,8 @@ function getAngle(position1, position2) {
 
 function getTheta(position1, position2) {
 	var theta = Math.atan2(-(position1.position.x - position2.position.x), (position1.position.z - position2.position.z));
-	if (theta < 0) { theta -= Math.PI / 180; }
-	else { theta += Math.PI / 180; }
-	
-	return theta;
+	theta *= 180 / Math.PI / 66;
+	return -theta;
 }
 
 function updateWorld(update_queue, bots, events, players_online, THREE, world_map) {
@@ -147,7 +145,7 @@ function updateBotsFromBuffer(update_queue, bots, events, players_online, THREE,
 			var theta = getTheta(bots[index], players_online[0]);		
 
 			var 	fire = 0,
-					radian = Math.PI / 180;
+					radian = 180 / Math.PI / 66;
 					
 			var angle = getAngle(bots[index], players_online[0]);		
 			if 	((getDistance(bots[index], players_online[0]) < 500) &&((theta * 180 / Math.PI) < 15)&&((theta * 180 / Math.PI) > -15)) {
@@ -155,7 +153,9 @@ function updateBotsFromBuffer(update_queue, bots, events, players_online, THREE,
 				fire = 1;
 			}
 
-			if (bots[index].movement_buffer&&(checkMovementBuffer(bots[index].movement_buffer) == true))
+			if (bots[index].movement_buffer&&(getDistance(bots[index], players_online[0]) - bots[index].movement_buffer.distance < 500)
+			&&(checkMovementBuffer(bots[index].movement_buffer) == true)
+			)
 			{
 		
 			var 	tX = events.moveBot(bots[index].movement_buffer.xBuffer), 

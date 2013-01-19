@@ -94,7 +94,7 @@ function updateBotsFromBuffer(update_queue, bots, events, players_online, THREE,
 		if (players_online.length > 0) {
 
 			var 	fire = 0,
-					radian = 0.01744444444444444444444444444444;
+					radian = 0.01744444444444444444444444444444 * 4;
 			
 			if (bots[index].movement_buffer&&
 			(getDistance(bots[index], players_online[0]) - bots[index].movement_buffer.distance < 250)&&
@@ -111,9 +111,9 @@ function updateBotsFromBuffer(update_queue, bots, events, players_online, THREE,
 						(getTheta(bots[index], players_online[0]) < -radian + bot.rotation.y)
 					)
 				{
-					bots[index].movement_buffer.xBuffer /= 5;
-					bots[index].movement_buffer.yBuffer /= 5;
-					bots[index].movement_buffer.zBuffer /= 5;
+					bots[index].movement_buffer.xBuffer /= 1.5;
+					bots[index].movement_buffer.yBuffer /= 1.5;
+					bots[index].movement_buffer.zBuffer /= 1.5;
 					
 					if (bots[index].rotation.y  > getTheta(bots[index], players_online[0])) {
 						if (bots[index].rotation.y - radian < getTheta(bots[index], players_online[0])) { }
@@ -134,22 +134,26 @@ function updateBotsFromBuffer(update_queue, bots, events, players_online, THREE,
 						else { bots[index].rotation.y += radian;	rY+= radian; }
 					}
 					if (tX.instruction != 0) { bots[index].position.x += tX.instruction; bots[index].movement_buffer.xBuffer = tX.buffer; }
-					if (tY.instruction != 0) { bots[index].position.y += tY.instruction; bots[index].movement_buffer.yBuffer = tY.buffer; }
+					if (tY.instruction != 0) { bots[index].position.y += tY.instruction * .7; bots[index].movement_buffer.yBuffer = tY.buffer + (tY.instruction * .3); }
 					if (tZ.instruction != 0) { bots[index].position.z += tZ.instruction; bots[index].movement_buffer.zBuffer = tZ.buffer; }
 				}
 		
 			
 				
-				if ((getDistance(bots[index], players_online[0]) < 1000) &&
+				if ((getDistance(bots[index], players_online[0]) < 2000) &&
 						(
-							(bots[index].rotation.y - getTheta(bots[index], players_online[0]) < .5)&&
-							(bots[index].rotation.y - getTheta(bots[index], players_online[0]) > -.5)
+							(bots[index].rotation.y - getTheta(bots[index], players_online[0]) < .05)&&
+							(bots[index].rotation.y - getTheta(bots[index], players_online[0]) > -.05)
+						) &&
+						(
+							(players_online[0].position.y - bot.position.y < 50)&&
+							(players_online[0].position.y - bot.position.y > -50)
 						)
 				) {
 					fire = 1;
 				}
 				update_queue.push(
-					{ instruction: { name: "move", type: "bot", details: { fire: fire, pX: tX.instruction, pY: tY.instruction, pZ: tZ.instruction, rY: rY, username: bots[index].username } } }
+					{ instruction: { name: "move", type: "bot", details: { fire: fire, pX: tX.instruction, pY: tY.instruction * .7, pZ: tZ.instruction, rY: rY, username: bots[index].username } } }
 				);
 			}
 			else {
@@ -184,7 +188,7 @@ function getAngle(position1, position2) {
 	var angle = Math.atan2(-(position1.position.x - position2.position.x), 
 											(position1.position.z - position2.position.z));
 	angle *= 180 / Math.PI;
-	return angle;
+	return -angle;
 }
 
 function getTheta(position1, position2) {

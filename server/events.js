@@ -1,5 +1,6 @@
 module.exports.movePlayer = movePlayer;
 module.exports.makeBotMovementBuffer = makeBotMovementBuffer;
+module.exports.moveBot = moveBot;
 
 /*///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	Movement and location
@@ -14,52 +15,23 @@ function makeBotMovementBuffer(bot, destination, angle, distance) {
 		zBuffer: distance * Math.cos(angle)
 	}
 }
-
-function makeBotMovementArray(bot, destination, angle, distance) {
-
-	var movementArray = [];
-	var moveDistance = -6;
-
-	var movements = distance / -moveDistance;
-	
-	for (var i = 1; i < movements; i++) {
-			var rY = angle / (distance / -moveDistance) * .045;
-			
-			var rotationVariance = (rY* i);
-			var tX, tY, tZ;
-			
-			if (angle > 0) {
-				if (rotationVariance > angle) {
-					rotationVariance = angle;
-					rY = 0;
-				}
-				else {
-					rotationVariance += bot.rotation.y;
-				}
-			}
-			else {
-				if (rotationVariance < angle) {
-					rotationVariance = angle;
-					rY = 0;
-				}
-				else {
-					rotationVariance += bot.rotation.y;
-				}
-			}
-
-			tX = moveDistance * Math.sin(rotationVariance);
-			tY =  (destination.y - bot.position.y ) / (movements);
-			tZ = moveDistance * Math.cos(rotationVariance);
-					
-			var data = { pX: tX, pY: tY, pZ: tZ, rY: rY, username: bot.username };
-			
-			var movement = { instruction: { name: "move", type: "bot", details: data } };
-			
-			movementArray.push(movement);
-
+function moveBot(buffer) {
+	var instruction = 0;
+	if (buffer != 0) {
+		if (buffer > 0) {
+			if (buffer > 6) 
+				{	instruction += 6;	buffer -= 6;	}
+			else 
+				{	instruction += buffer;	buffer = 0;	}
 		}
-
-	return movementArray;
+		else { 
+			if (buffer < -6) 
+				{	instruction -= 6;	buffer += 6;	}
+			else 
+				{	instruction -= buffer;	buffer = 0;	}
+		}
+	}
+	return { instruction: instruction, buffer: buffer };
 }
 
 function movePlayer(velocity, playerPosition, world_map, data) {

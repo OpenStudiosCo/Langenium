@@ -71,8 +71,10 @@ function getAngle(position1, position2) {
 
 function getTheta(position1, position2) {
 	var theta = Math.atan2(-(position1.position.x - position2.position.x), (position1.position.z - position2.position.z));
-	theta *= Math.PI / 2;
-	return Math.cos(theta);
+	if (theta < 0) { theta -= Math.PI / 180; }
+	else { theta += Math.PI / 180; }
+	
+	return theta;
 }
 
 function updateWorld(update_queue, bots, events, players_online, THREE, world_map) {
@@ -130,6 +132,14 @@ function updateBotsFromQueue(update_queue, bots, events, players_online, THREE, 
 	});
 }
 
+function checkMovementBuffer(bufferObject) {
+	if ((bufferObject.xBuffer != 0)||
+		(bufferObject.yBuffer != 0)||
+		(bufferObject.zBuffer != 0) )
+	{ return true; }
+	else { return false; }
+}
+
 function updateBotsFromBuffer(update_queue, bots, events, players_online, THREE, world_map) {
 	bots.forEach(function(bot, index){
 		if (players_online.length > 0) {
@@ -140,91 +150,35 @@ function updateBotsFromBuffer(update_queue, bots, events, players_online, THREE,
 					radian = Math.PI / 180;
 					
 			var angle = getAngle(bots[index], players_online[0]);		
-			if ((angle < 15)&&(angle > -15)) {
+			if 	((getDistance(bots[index], players_online[0]) < 500) &&((theta * 180 / Math.PI) < 15)&&((theta * 180 / Math.PI) > -15)) {
 				
 				fire = 1;
 			}
-			
-			//console.log("Angle: " + angle);
-			//console.log("Theta: " + theta);
-			//console.log("RotationY: " + bot.rotation.y);
-			//console.log("=======================");
-			if ((bots[index].movement_buffer)&&
-				((bots[index].movement_buffer.xBuffer != 0)||
-				(bots[index].movement_buffer.yBuffer != 0)||
-				(bots[index].movement_buffer.zBuffer != 0)||				
-				((theta > .1)||(theta < -.1))
-				))
+
+			if (bots[index].movement_buffer&&(checkMovementBuffer(bots[index].movement_buffer) == true))
 			{
-			var 	tX = 0, 
-					tY = 0, 	
-					tZ = 0, 
+		
+			var 	tX = events.moveBot(bots[index].movement_buffer.xBuffer), 
+					tY = events.moveBot(bots[index].movement_buffer.yBuffer), 	
+					tZ = events.moveBot(bots[index].movement_buffer.zBuffer), 
 					rY = 0;
 
-				if (bots[index].movement_buffer.xBuffer != 0) {
-					if (bots[index].movement_buffer.xBuffer > 0) {
-						if (bots[index].movement_buffer.xBuffer > 6) 
-							{	bots[index].position.x += 6;	tX += 6;	bots[index].movement_buffer.xBuffer -= 6;	}
-						else 
-							{	bots[index].position.x += bots[index].movement_buffer.xBuffer;	tX += bots[index].movement_buffer.xBuffer;	bots[index].movement_buffer.xBuffer = 0;	}
-					}
-					else { 
-						if (bots[index].movement_buffer.xBuffer < -6) 
-							{	bots[index].position.x -= 6;	tX -= 6;	bots[index].movement_buffer.xBuffer += 6;	}
-						else 
-							{	bots[index].position.x -= bots[index].movement_buffer.xBuffer;	tX -= bots[index].movement_buffer.xBuffer;	bots[index].movement_buffer.xBuffer = 0;	}
-					}
-				}
-				if (bots[index].movement_buffer.yBuffer != 0) {
-					if (bots[index].movement_buffer.yBuffer > 0) {
-						if (bots[index].movement_buffer.yBuffer > 6) 
-							{	bots[index].position.y += 6;	tY += 6;	bots[index].movement_buffer.yBuffer -= 6;	}
-						else 
-							{	bots[index].position.y += bots[index].movement_buffer.yBuffer;	tY += bots[index].movement_buffer.yBuffer;	bots[index].movement_buffer.yBuffer = 0;	}
-					}
-					else { 
-						if (bots[index].movement_buffer.yBuffer < -6) 
-							{	bots[index].position.y -= 6;	tY -= 6;	bots[index].movement_buffer.yBuffer += 6;	}
-						else 
-							{	bots[index].position.y -= bots[index].movement_buffer.yBuffer;	tY -= bots[index].movement_buffer.yBuffer;	bots[index].movement_buffer.yBuffer = 0;	}
-					}
-				}
-				if (bots[index].movement_buffer.zBuffer != 0) {
-					if (bots[index].movement_buffer.zBuffer > 0) {
-						if (bots[index].movement_buffer.zBuffer > 6) 
-							{	bots[index].position.z += 6;	tZ += 6;	bots[index].movement_buffer.zBuffer -= 6;	}
-						else 
-							{	bots[index].position.z += bots[index].movement_buffer.zBuffer;	tZ += bots[index].movement_buffer.zBuffer;	bots[index].movement_buffer.zBuffer = 0;	}
-					}
-					else { 
-						if (bots[index].movement_buffer.zBuffer < -6) 
-							{	bots[index].position.z -= 6;	tZ -= 6;	bots[index].movement_buffer.zBuffer += 6;	}
-						else 
-							{	bots[index].position.z -= bots[index].movement_buffer.zBuffer;	tZ -= bots[index].movement_buffer.zBuffer;	bots[index].movement_buffer.zBuffer = 0;	}
-					}
-				}
-				
+				if (tX.instruction != 0) { bots[index].position.x += tX.instruction; bots[index].movement_buffer.xBuffer = tX.buffer; }
+				if (tY.instruction != 0) { bots[index].position.y += tY.instruction; bots[index].movement_buffer.yBuffer = tY.buffer; }
+				if (tZ.instruction != 0) { bots[index].position.z += tZ.instruction; bots[index].movement_buffer.zBuffer = tZ.buffer; }
 
+				
 				if (bots[index].rotation.y  > theta) {
-					if (bots[index].rotation.y - radian < theta) {
-						// do nothing
-					}
-					else {
-						bots[index].rotation.y -= radian;	rY -= radian; 
-					}
+					if (bots[index].rotation.y - radian < theta) { }
+					else { bots[index].rotation.y -= radian;	rY -= radian; }
 				}
 				else {
-					if (bots[index].rotation.y + radian > theta) {
-						// do nothing
-					}
-					else {
-						bots[index].rotation.y += radian;	rY+= radian; 
-					}
+					if (bots[index].rotation.y + radian > theta) { }
+					else { bots[index].rotation.y += radian;	rY+= radian; }
 				}
-				
 			
 				update_queue.push(
-					{ instruction: { name: "move", type: "bot", details: { fire: fire, pX: tX, pY: tY, pZ: tZ, rY: rY, username: bots[index].username } } }
+					{ instruction: { name: "move", type: "bot", details: { fire: fire, pX: tX.instruction, pY: tY.instruction, pZ: tZ.instruction, rY: rY, username: bots[index].username } } }
 				);
 			}
 			else {

@@ -66,7 +66,7 @@ function getDistance(position1, position2) {
 function getAngle(position1, position2) {
 	var angle = Math.atan2(-(position1.position.x - position2.position.x), (position1.position.z - position2.position.z));
 	angle *= 180 / Math.PI ;
-	return angle;
+	return -angle;
 }
 
 function getTheta(position1, position2) {
@@ -144,22 +144,20 @@ function updateBotsFromBuffer(update_queue, bots, events, players_online, THREE,
 
 			var 	fire = 0,
 					radian = Math.PI / 180;
+					
 			
-		
+			
 			if (bots[index].movement_buffer&&
-			(getDistance(bots[index], players_online[0]) - bots[index].movement_buffer.distance < 10)&&
+			(getDistance(bots[index], players_online[0]) - bots[index].movement_buffer.distance < 250)&&
 			(checkMovementBuffer(bots[index].movement_buffer) == true))
 			{
 				var 	tX = events.moveBot(bots[index].movement_buffer.xBuffer), 
 						tY = events.moveBot(bots[index].movement_buffer.yBuffer), 	
-						tZ = events.moveBot(bots[index].movement_buffer.zBuffer), 
+						tZ = events.moveBot(bots[index].movement_buffer.zBuffer),
 						rY = 0;
-						
-				if  (((getTheta(bots[index], players_online[0]) > 0)&&(getTheta(bots[index], players_online[0]) > 1))||
-				((getTheta(bots[index], players_online[0]) < 0)&&(getTheta(bots[index], players_online[0]) < -1)))  {
-					tX.instruction = 0;
-					tY.instruction = 0;
-					tZ.instruction = 0;
+		
+				if  (((getTheta(bots[index], players_online[0]) > 0.1))||
+				((getTheta(bots[index], players_online[0]) < -0.1)))  {
 					if (bots[index].rotation.y  > getTheta(bots[index], players_online[0])) {
 						if (bots[index].rotation.y - radian < getTheta(bots[index], players_online[0])) { }
 						else { bots[index].rotation.y -= radian;	rY -= radian; }
@@ -169,11 +167,11 @@ function updateBotsFromBuffer(update_queue, bots, events, players_online, THREE,
 						else { bots[index].rotation.y += radian;	rY+= radian; }
 					}
 				}
-				else {
-					if (tX.instruction != 0) { bots[index].position.x += tX.instruction; bots[index].movement_buffer.xBuffer = tX.buffer; }
-					if (tY.instruction != 0) { bots[index].position.y += (tY.instruction)/2; bots[index].movement_buffer.yBuffer = tY.buffer - (tY.instruction)/2; }
-					if (tZ.instruction != 0) { bots[index].position.z += tZ.instruction; bots[index].movement_buffer.zBuffer = tZ.buffer; }
-				}
+		
+				if (tX.instruction != 0) { bots[index].position.x += tX.instruction; bots[index].movement_buffer.xBuffer = tX.buffer; }
+				if (tY.instruction != 0) { bots[index].position.y += (tY.instruction)/2; bots[index].movement_buffer.yBuffer = tY.buffer - (tY.instruction)/2; }
+				if (tZ.instruction != 0) { bots[index].position.z += tZ.instruction; bots[index].movement_buffer.zBuffer = tZ.buffer; }
+				
 				if ((getDistance(bots[index], players_online[0]) < 500) &&(getAngle(bots[index], players_online[0]) < 15)&&(getAngle(bots[index], players_online[0]) > -15)) {
 					fire = 1;
 				}

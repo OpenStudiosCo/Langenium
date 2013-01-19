@@ -71,8 +71,7 @@ function getAngle(position1, position2) {
 
 function getTheta(position1, position2) {
 	var theta = Math.atan2(-(position1.position.x - position2.position.x), (position1.position.z - position2.position.z));
-	theta *= 180 / Math.PI / 66;
-	return -theta;
+	return Math.min(-theta);
 }
 
 function updateWorld(update_queue, bots, events, players_online, THREE, world_map) {
@@ -138,45 +137,46 @@ function checkMovementBuffer(bufferObject) {
 	else { return false; }
 }
 
+
 function updateBotsFromBuffer(update_queue, bots, events, players_online, THREE, world_map) {
 	bots.forEach(function(bot, index){
 		if (players_online.length > 0) {
-			
-			var theta = getTheta(bots[index], players_online[0]);		
 
 			var 	fire = 0,
-					radian = 180 / Math.PI / 66;
-					
-			var angle = getAngle(bots[index], players_online[0]);		
-			if 	((getDistance(bots[index], players_online[0]) < 500) &&((theta * 180 / Math.PI) < 15)&&((theta * 180 / Math.PI) > -15)) {
-				
-				fire = 1;
-			}
-
-			if (bots[index].movement_buffer&&(getDistance(bots[index], players_online[0]) - bots[index].movement_buffer.distance < 500)
-			&&(checkMovementBuffer(bots[index].movement_buffer) == true)
-			)
-			{
+					radian = Math.PI / 180;
+			
 		
-			var 	tX = events.moveBot(bots[index].movement_buffer.xBuffer), 
-					tY = events.moveBot(bots[index].movement_buffer.yBuffer), 	
-					tZ = events.moveBot(bots[index].movement_buffer.zBuffer), 
-					rY = 0;
-
-				if (tX.instruction != 0) { bots[index].position.x += tX.instruction; bots[index].movement_buffer.xBuffer = tX.buffer; }
-				if (tY.instruction != 0) { bots[index].position.y += tY.instruction; bots[index].movement_buffer.yBuffer = tY.buffer; }
-				if (tZ.instruction != 0) { bots[index].position.z += tZ.instruction; bots[index].movement_buffer.zBuffer = tZ.buffer; }
-
-				
-				if (bots[index].rotation.y  > theta) {
-					if (bots[index].rotation.y - radian < theta) { }
-					else { bots[index].rotation.y -= radian;	rY -= radian; }
+			if (bots[index].movement_buffer&&
+			(getDistance(bots[index], players_online[0]) - bots[index].movement_buffer.distance < 10)&&
+			(checkMovementBuffer(bots[index].movement_buffer) == true))
+			{
+				var 	tX = events.moveBot(bots[index].movement_buffer.xBuffer), 
+						tY = events.moveBot(bots[index].movement_buffer.yBuffer), 	
+						tZ = events.moveBot(bots[index].movement_buffer.zBuffer), 
+						rY = 0;
+						
+				if  (((getTheta(bots[index], players_online[0]) > 0)&&(getTheta(bots[index], players_online[0]) > 1))||
+				((getTheta(bots[index], players_online[0]) < 0)&&(getTheta(bots[index], players_online[0]) < -1)))  {
+					tX.instruction = 0;
+					tY.instruction = 0;
+					tZ.instruction = 0;
+					if (bots[index].rotation.y  > getTheta(bots[index], players_online[0])) {
+						if (bots[index].rotation.y - radian < getTheta(bots[index], players_online[0])) { }
+						else { bots[index].rotation.y -= radian;	rY -= radian; }
+					}
+					else {
+						if (bots[index].rotation.y + radian > getTheta(bots[index], players_online[0])) { }
+						else { bots[index].rotation.y += radian;	rY+= radian; }
+					}
 				}
 				else {
-					if (bots[index].rotation.y + radian > theta) { }
-					else { bots[index].rotation.y += radian;	rY+= radian; }
+					if (tX.instruction != 0) { bots[index].position.x += tX.instruction; bots[index].movement_buffer.xBuffer = tX.buffer; }
+					if (tY.instruction != 0) { bots[index].position.y += (tY.instruction)/2; bots[index].movement_buffer.yBuffer = tY.buffer - (tY.instruction)/2; }
+					if (tZ.instruction != 0) { bots[index].position.z += tZ.instruction; bots[index].movement_buffer.zBuffer = tZ.buffer; }
 				}
-			
+				if ((getDistance(bots[index], players_online[0]) < 500) &&(getAngle(bots[index], players_online[0]) < 15)&&(getAngle(bots[index], players_online[0]) > -15)) {
+					fire = 1;
+				}
 				update_queue.push(
 					{ instruction: { name: "move", type: "bot", details: { fire: fire, pX: tX.instruction, pY: tY.instruction, pZ: tZ.instruction, rY: rY, username: bots[index].username } } }
 				);

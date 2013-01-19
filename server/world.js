@@ -71,6 +71,7 @@ function getAngle(position1, position2) {
 
 function getTheta(position1, position2) {
 	var theta = Math.atan2(-(position1.position.x - position2.position.x), (position1.position.z - position2.position.z));
+	theta *= Math.PI / 2;
 	return Math.cos(theta);
 }
 
@@ -134,10 +135,13 @@ function updateBotsFromBuffer(update_queue, bots, events, players_online, THREE,
 		if (players_online.length > 0) {
 			
 			var theta = getTheta(bots[index], players_online[0]);		
+
 			var 	fire = 0,
 					radian = Math.PI / 180;
+					
 			var angle = getAngle(bots[index], players_online[0]);		
 			if ((angle < 15)&&(angle > -15)) {
+				
 				fire = 1;
 			}
 			
@@ -149,7 +153,7 @@ function updateBotsFromBuffer(update_queue, bots, events, players_online, THREE,
 				((bots[index].movement_buffer.xBuffer != 0)||
 				(bots[index].movement_buffer.yBuffer != 0)||
 				(bots[index].movement_buffer.zBuffer != 0)||				
-				((theta < -radian)||(theta > radian))
+				((theta > .1)||(theta < -.1))
 				))
 			{
 			var 	tX = 0, 
@@ -200,18 +204,24 @@ function updateBotsFromBuffer(update_queue, bots, events, players_online, THREE,
 					}
 				}
 				
-				if (theta < bots[index].rotation.y ) {
-					if (theta > bots[index].rotation.y - radian) {
-						bots[index].rotation.y += radian;	rY += radian; 
+
+				if (bots[index].rotation.y  > theta) {
+					if (bots[index].rotation.y - radian < theta) {
+						// do nothing
 					}
-			
-				}
-				else {
-					if (bots[index].rotation.y - radian > -theta)  { 
+					else {
 						bots[index].rotation.y -= radian;	rY -= radian; 
 					}
-	
 				}
+				else {
+					if (bots[index].rotation.y + radian > theta) {
+						// do nothing
+					}
+					else {
+						bots[index].rotation.y += radian;	rY+= radian; 
+					}
+				}
+				
 			
 				update_queue.push(
 					{ instruction: { name: "move", type: "bot", details: { fire: fire, pX: tX, pY: tY, pZ: tZ, rY: rY, username: bots[index].username } } }

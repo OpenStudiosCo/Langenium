@@ -68,9 +68,13 @@ function updateWorld(bullets, delta, update_queue, bots, events, players_online,
 				inputData;
 		if (player.inputUpdates.length > 0) {
 			inputData = player.inputUpdates.shift();
-			if ((delta > 10)&&(inputData.fire == true)) {
+	
+			if ((delta >12)&&(inputData.fire == true)) {
 				bullets.push(addBullet(player.username, player.position, player.position.rotationY, 20, THREE));
 				bullets.push(addBullet(player.username, player.position, player.position.rotationY, -20, THREE));
+			}
+			else {
+				inputData.fire = false;
 			}
 		}
 		else {
@@ -129,21 +133,22 @@ function addBullet(username, position, rotation, shifter, THREE) {
 }
 
 function handleBullets(bullets, bots, players_online, delta, update_queue){
+	
 	bullets.forEach(function(bullet, index){
-		if (bullets[index]._lifetime > 200) {
+		if (bullet._lifetime > 2000) {
 			bullets.splice(index, 1);
 		}
 		else {
-			bullets[index].translateZ(-0.3030303030303030303030303030303);
-			bullets[index]._lifetime += delta;
+			bullet.translateZ(-0.3030303030303030303030303030303);
+			bullet._lifetime += delta;
 			bots.forEach(function(bot, botIndex){
-				var distance = getDistance(bots[botIndex], bullets[index]) ;
-				if ((bots[botIndex].id != bullet.username)&&(distance< 150)) {
-					console.log("Hit!");
-					bots[botIndex].health -= 5;
-					if (bots[botIndex].health < 0) {
+				if ((bot.id != bullet.username)&&(getDistance(bot, bullet)< 150)) {
+					
+		
+					bot.health -= 5;
+					if (bot.health < 0) {
 						update_queue.push(
-							{ instruction: { name: "kill", type: "bot", id: bots[botIndex].id } }
+							{ instruction: { name: "kill", type: "bot", id: bot.id } }
 						);
 						bots.splice(botIndex, 1);		
 						return;
@@ -159,7 +164,7 @@ function updateBotsFromBuffer(bullets, delta, update_queue, bots, events, player
 		if (players_online.length > 0) {
 
 			var 	fire = 0,
-					radian = .0333,
+					radian = .0314,
 					rY = 0;	
 			
 			if (bot.rotation.y  > getTheta(bot, players_online[0])) {
@@ -173,9 +178,8 @@ function updateBotsFromBuffer(bullets, delta, update_queue, bots, events, player
 			
 			if (
 					bot.movement_buffer &&
-					(
-						checkMovementBuffer(bot.movement_buffer) == true
-					)
+					checkMovementBuffer(bot.movement_buffer) == true
+					
 				)
 				{
 				var 	tX = events.moveBot(bot.movement_buffer.xBuffer), 
@@ -193,7 +197,7 @@ function updateBotsFromBuffer(bullets, delta, update_queue, bots, events, player
 							(players_online[0].position.y - bot.position.y < 50)&&
 							(players_online[0].position.y - bot.position.y > -50)
 						) &&
-						delta > 10
+						delta > 12
 				) {
 					fire = 1;
 				}
@@ -233,7 +237,7 @@ function getAngle(position1, position2) {
 	var angle = Math.atan2(-(position1.position.x - position2.position.x), 
 											(position1.position.z - position2.position.z));
 	angle *= 180 / Math.PI;
-	return angle;
+	return -angle;
 }
 
 function getTheta(position1, position2) {

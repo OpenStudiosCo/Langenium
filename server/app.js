@@ -60,9 +60,6 @@ io.sockets.on('connection', function (socket) {
 			
 			socket.broadcast.emit('load', { instructions: [ {name: "load", username: ship.username, type: ship.type, url: ship.url, position: ship.position, scale: ship.position.scale, rotationY: ship.position.rotationY} ] });
 		}
-		else {
-			console.log("Login failure");
-		}
 	});
 	socket.on("disconnect" , function ()  {
 		players_online.forEach(function(player, index){

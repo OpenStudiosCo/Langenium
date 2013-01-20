@@ -157,7 +157,7 @@ function renderObject(mesh, category, type, instruction) {
 			z = instruction.position.z,
 			scale = instruction.position.scale;
 
-	if (type == "platform") {
+	if (type == "platform") { 
 		platforms.push(mesh);
 		scene.add(platforms[platforms.length-1]);
 	}

@@ -36,7 +36,7 @@ function handleParticles(delta){
 		}
 	});
 }
-
+  
 function teleportEffect(position){
 		var particleCount = 1000,
 				particles = new THREE.Geometry(),

@@ -1,21 +1,28 @@
 
 function handleBullets(delta){
 	counter += delta;
-	if (counter >= INTERVAL) {
-		counter -= INTERVAL;
-		isFiring && addBullet(player);
-	}
-	if (bullets.length > 1) {
-		bullets.forEach(function(bullet, index){
-			bullets[index].translateZ(-SPEED);
-			bullets[index]._lifetime += delta;
-			
-			if (bullets[index]._lifetime > MAX_LIFETIME) {
-				scene.remove(bullet);
-				bullets.splice(index, 1);
+
+	bullets.forEach(function(bullet, index){
+		bullets[index].translateZ(-SPEED);
+		bullets[index]._lifetime += delta;
+		
+		if (bullets[index]._lifetime > MAX_LIFETIME) {
+			scene.remove(bullets[index]);
+			bullets.splice(index, 1);
+		}
+		bots.forEach(function(bot, botIndex){
+			if ((bot.id != bullet.username)&&(getDistance(bot, bullet)< 150)) {
+				
+				bots[botIndex].health -= 5;
+				if (bot.health < 0) {
+					teleportEffect(bot.position);
+					scene.remove(bot);
+					bots.splice(botIndex, 1);		
+					return;
+				}
 			}
 		});
-	}
+	});
 }
  
 function addBullet(ship) {
@@ -40,8 +47,6 @@ function addBullet(ship) {
 }
 
 var	counter = 0,
-		vector = new THREE.Vector3(), 
-		projector = new THREE.Projector(),
 		SPEED = 30, 
 		INTERVAL = .1, 
 		MAX_LIFETIME = 1;
@@ -50,26 +55,17 @@ function makeBullet(position, pVector, rotation, shifter,geometry, material) {
 	var bullet = new THREE.Mesh(geometry, material);
 	
 	bullet.opacity = .8;
-	bullet.position.x = position.x + shifter;
+	bullet.position.x = position.x;
 	bullet.position.y = position.y + 10;
-	bullet.position.z = position.z + shifter;
+	bullet.position.z = position.z;
 	bullet.rotation.y = rotation;
 
-	rotation *= 180 / Math.PI;
 	var xRot = position.x + Math.sin(rotation) * shifter + Math.cos(rotation) * shifter;
 	var zRot = position.z + Math.cos(rotation) * shifter - Math.sin(rotation) * shifter;
 	
 	bullet.position.x = xRot;
 	bullet.position.z = zRot;
 	
-	vector.set(pVector);
-	vector.scale = 10;
-	// no need to reset the projector
-	projector.unprojectVector(vector, camera);
-	
-	var target = vector;
-	bullet.direction = target;
-	$("#hits").html(target);
 	bullet._lifetime = 0;
 	bullet.updateMatrix();
 	return bullet;

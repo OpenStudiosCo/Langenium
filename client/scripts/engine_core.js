@@ -277,7 +277,7 @@ function animate() {
 		if (resetPlayerZ == true) {
 			if (player.rotation.z != 0) {
 				player.rotation.z -=  player.rotation.z / 50; 
-			}
+			} 
 			else {
 				resetPlayerZ = false;
 			}

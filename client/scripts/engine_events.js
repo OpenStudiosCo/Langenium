@@ -16,7 +16,6 @@ chart.addTimeSeries(playerLatency, { strokeStyle: 'rgba(0, 255, 0, 1)', fillStyl
 chart.streamTo(document.getElementById("latencyBox"), 500);
 
 var setEventHandlers = function() {
-	console.log("Client connected");
 	socket.emit("login", { username: username });
 	socket.on("update", function(data) {
 		data.forEach(function(updateData, index) {
@@ -33,7 +32,7 @@ var setEventHandlers = function() {
 		$("#latencyLabel").html("<h3>&nbsp;" + data.latency + "ms</h3>");
 		socket.emit("pong", data);
 	});
-	return socket; 
+	return socket;  
 };
 
 function updateClient(data) {
@@ -54,6 +53,7 @@ function updateClient(data) {
 		if (data.instruction.details.username == socket.socket.sessionid) {
 			if (player) {
 				if (data.instruction.details.fire == 1) {
+						
 						addBullet(player); 
 				}
 				moveShip(player, true, data.instruction);

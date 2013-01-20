@@ -1,3 +1,4 @@
+module.exports.buildObject = buildObject;
 module.exports.getLoadInstructions = getLoadInstructions;
 module.exports.getObject = getObject;
 module.exports.getDummyMap = getDummyMap;
@@ -74,13 +75,14 @@ function getObject(type) {
 	}
 	return retObject;
 }
-function buildObject(role, type, position, scale) {
+function buildObject(id, type, position, scale) {
 	var retObject; 
 	for (var objectType in objectTypes) {
 		for (var object in objectTypes[objectType]) {
 			if (type[objectType] == object) {
 				position.scale = scale || objectTypes[objectType][object].scale;
 				retObject = 	{
+										id: id,
 										type: type,
 										url: objectTypes[objectType][object].url,
 										position: position

@@ -36,12 +36,15 @@ var setEventHandlers = function() {
 };
 
 function updateClient(data) {
+	if (data.instruction.name == "load") {
+		loadObject(data.instruction);
+	}
 	if (data.instruction.name == "kill") {
 		if (data.instruction.type == "bot") {
 			bots.forEach(function(bot, index){
 				if (bot.id == data.instruction.id) {
 					teleportEffect(bot.position);
-					scene.remove(bot);
+					scene.remove(bots[index]);
 					bots.splice(index, 1);
 				}
 			});

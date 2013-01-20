@@ -1,6 +1,9 @@
 module.exports.makeWorld = makeWorld;
 module.exports.updateWorld = updateWorld;
 
+var urlPrefix = urlPrefix = "http://localhost:8080/";
+				//urlPrefix = "http://langenium.com/play/",
+
 function makeWorld(db, bots, THREE) {
 	var world_map = [];
 	var map_builder = db.getDummyMap();
@@ -8,8 +11,6 @@ function makeWorld(db, bots, THREE) {
 		var  type = sceneObj.type,
 				object = db.getObject(type),
 				scale = sceneObj.scale || object.scale,
-				//urlPrefix = "http://localhost:8080/",
-				urlPrefix = "http://langenium.com/play/",
 				loader =  new THREE.JSONLoader(),
 				url = object.url;
 				
@@ -33,36 +34,39 @@ function makeWorld(db, bots, THREE) {
 		var 	type = obj.type,
 				object = db.getObject(type),
 				scale = obj.scale || object.scale,
-				//urlPrefix = "http://localhost:8080/",
-				urlPrefix = "http://langenium.com/play/", 
-				loader =  new THREE.JSONLoader(),
-				url = object.url;
+				url = urlPrefix + object.url;
 				
-		loader.load(urlPrefix + url, function(geometry, materials){
-			var bot = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial( materials ) );
-			bot.geometry.computeBoundingBox();
-			bot.scale = new THREE.Vector3(scale,scale,scale);
-			bot.health = 100;
-			bot.position.x = obj.position.x,
-			bot.position.y = obj.position.y,
-			bot.position.z = obj.position.z,
-			bot.matrixAutoUpdate = true;
-			bot.updateMatrix();
-			bot.updateMatrixWorld();
-			bot.id = obj.id;
-			bot.url = url;
-			bot.type = { ship: "bot" };
-			bot.movement_queue = [];
-			bots.push(bot); 
-		});	
+		makeBotMesh(url, scale, bots, obj, THREE);
 	});
 	return world_map;
 };
 
+
+
+function makeBotMesh(url, scale, bots, obj, THREE) {
+var  loader =  new THREE.JSONLoader();
+	loader.load(url, function(geometry, materials){
+		var bot = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial( materials ) );
+		bot.geometry.computeBoundingBox();
+		bot.scale = new THREE.Vector3(scale,scale,scale);
+		bot.health = 100;
+		bot.position.x = obj.position.x,
+		bot.position.y = obj.position.y,
+		bot.position.z = obj.position.z,
+		bot.matrixAutoUpdate = true;
+		bot.updateMatrix();
+		bot.updateMatrixWorld();
+		bot.id = obj.id;
+		bot.url = url;
+		bot.type = { ship: "bot" };
+		bot.movement_queue = [];
+		bots.push(bot); 
+	});	
+}
+
 function updateWorld(bullets, delta, update_queue, bots, events, players_online, THREE, world_map) {
-	handleBullets(bullets, bots, players_online, delta, update_queue);
+	handleBullets(bullets, bots, players_online, delta, update_queue, THREE);
 	updateBotsFromBuffer(bullets, delta, update_queue, bots, events, players_online, THREE, world_map);
-	time = new Date();
 	players_online.forEach(function(player){
 		var 	playerMovement, 
 				inputData;
@@ -103,6 +107,18 @@ function updateWorld(bullets, delta, update_queue, bots, events, players_online,
 	return update_buffer;
 };
 
+function addBot(bots, delta, THREE){
+	var db = require("./db.js");
+	var obj = db.buildObject(("Pirate " + (new Date().getTime()) * Math.random()), { ship: 'pirate' }, { x: -8500, y: 5000, z: -3500, rotationY: 0 }, 10);
+	
+	makeBotMesh(urlPrefix + obj.url, obj.scale, bots, obj, THREE);
+
+	obj.name = "load";
+	obj.type = { ship: "bot" };
+	
+	return { instruction: {name: "load", id: obj.id, type: obj.type, url: obj.url, position: { x: obj.position.x,  y: obj.position.y,  z: obj.position.z, rotationY: obj.position.rotationY , scale: obj.position.scale } } };
+}
+
 function addBullet(username, position, rotation, shifter, THREE) {
 	
 	var bullet = new THREE.Mesh(new THREE.CubeGeometry(1, 1, 30), new THREE.MeshBasicMaterial());
@@ -126,7 +142,7 @@ function addBullet(username, position, rotation, shifter, THREE) {
 	return bullet;
 }
 
-function handleBullets(bullets, bots, players_online, delta, update_queue){
+function handleBullets(bullets, bots, players_online, delta, update_queue, THREE){
 	bullets.forEach(function(bullet, index){
 		if (bullet._lifetime > 2000) {
 			bullets.splice(index, 1);
@@ -138,16 +154,14 @@ function handleBullets(bullets, bots, players_online, delta, update_queue){
 				if ((bot.id != bullet.username)&&(getDistance(bot, bullet)< 150)) {
 					bot.health -= 5;
 					if (bot.health < 0) {
-						update_queue.push(
-							{ instruction: { name: "kill", type: "bot", id: bot.id } }
-						);
+						update_queue.push( addBot(bots, delta, THREE) );
+						update_queue.push( addBot(bots, delta, THREE) );
+						update_queue.push( { instruction: { name: "kill", type: "bot", id: bot.id } } );
 						bots.splice(botIndex, 1);		
 						return;
 					}
 					else {
-						update_queue.push(
-							{ instruction: { name: "hit", type: "bot", id: bot.id } }
-						);
+						update_queue.push( { instruction: { name: "hit", type: "bot", id: bot.id } } );
 					}
 				}
 			});

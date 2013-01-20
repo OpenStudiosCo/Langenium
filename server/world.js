@@ -94,7 +94,7 @@ function updateBotsFromBuffer(update_queue, bots, events, players_online, THREE,
 		if (players_online.length > 0) {
 
 			var 	fire = 0,
-					radian = 0.01744444444444444444444444444444 * 4;
+					radian = 0.01744444444444444444444444444444 * 3;
 			
 			if (bots[index].movement_buffer&&
 			(getDistance(bots[index], players_online[0]) - bots[index].movement_buffer.distance < 250)&&
@@ -104,27 +104,29 @@ function updateBotsFromBuffer(update_queue, bots, events, players_online, THREE,
 				var 	tX = events.moveBot(bots[index].movement_buffer.xBuffer), 
 						tY = events.moveBot(bots[index].movement_buffer.yBuffer), 	
 						tZ = events.moveBot(bots[index].movement_buffer.zBuffer),
-						rY = 0;
+						rY = 0,
+						theta = getTheta(bots[index], players_online[0]);
 			
 				if  (
-						(getTheta(bots[index], players_online[0]) > radian + bot.rotation.y)||
-						(getTheta(bots[index], players_online[0]) < -radian + bot.rotation.y)
+						(theta > radian + bot.rotation.y)||
+						(theta < -radian + bot.rotation.y)
 					)
 				{
-					bots[index].movement_buffer.xBuffer *= .9;
-					bots[index].movement_buffer.yBuffer *= .9;
-					bots[index].movement_buffer.zBuffer *= .9;
+					bots[index].movement_buffer.xBuffer *= .999;
+					bots[index].movement_buffer.yBuffer *= .999;
+					bots[index].movement_buffer.zBuffer *= .999;
 					
-					if (bots[index].rotation.y  > getTheta(bots[index], players_online[0])) {
-						if (bots[index].rotation.y - radian < getTheta(bots[index], players_online[0])) { }
+					if (bots[index].rotation.y  > theta) {
+						if (bots[index].rotation.y - radian < theta) { }
 						else { bots[index].rotation.y -= radian;	rY -= radian; }
 					}
 					else {
-						if (bots[index].rotation.y + radian > getTheta(bots[index], players_online[0])) { }
+						if (bots[index].rotation.y + radian > theta) { }
 						else { bots[index].rotation.y += radian;	rY+= radian; }
 					}
 				}
 				else {
+			
 					if (tX.instruction != 0) { bots[index].position.x += tX.instruction; bots[index].movement_buffer.xBuffer = tX.buffer; }
 					if (tY.instruction != 0) { bots[index].position.y += tY.instruction; bots[index].movement_buffer.yBuffer = tY.buffer; }
 					if (tZ.instruction != 0) { bots[index].position.z += tZ.instruction; bots[index].movement_buffer.zBuffer = tZ.buffer; }
@@ -132,17 +134,16 @@ function updateBotsFromBuffer(update_queue, bots, events, players_online, THREE,
 		
 			
 				
-				if ((getDistance(bots[index], players_online[0]) < 2000) &&
+				if ((getDistance(bots[index], players_online[0]) < 1500) &&
 						(
-							(bots[index].rotation.y - getTheta(bots[index], players_online[0]) < .05)&&
-							(bots[index].rotation.y - getTheta(bots[index], players_online[0]) > -.05)
+							(bots[index].rotation.y - theta < .0314)
 						) &&
 						(
 							(players_online[0].position.y - bot.position.y < 50)&&
 							(players_online[0].position.y - bot.position.y > -50)
 						)
 				) {
-					fire = 1;
+					//fire = 1;
 				}
 				update_queue.push(
 					{ instruction: { name: "move", type: "bot", details: { fire: fire, pX: tX.instruction, pY: tY.instruction * .7, pZ: tZ.instruction, rY: rY, username: bots[index].username } } }
@@ -180,7 +181,7 @@ function getAngle(position1, position2) {
 	var angle = Math.atan2(-(position1.position.x - position2.position.x), 
 											(position1.position.z - position2.position.z));
 	angle *= 180 / Math.PI;
-	return -angle;
+	return angle;
 }
 
 function getTheta(position1, position2) {

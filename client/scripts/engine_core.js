@@ -18,7 +18,7 @@ var camera, scene, renderer, stats;
 var hblur, vblur;
 var geometry, material, mesh;
 var controls;
-var player, ships = [], bots = [];
+var player, ships = [], bots = [], bullets = [];
 var keyboard = new THREEx.KeyboardState(), clock = new THREE.Clock();
 var M = 10000 * 1000;
 var composer;
@@ -224,10 +224,8 @@ function resetCamera(){
 }
 var resetPlayerZ = false;
 var resetPlayerZCheck = setInterval(function(){
-	if (player) {
-		if (player.rotation.z != 0) {
-				resetPlayerZ = true;
-		}
+	if ((player)&&(player.rotation.z != 0)) {
+		resetPlayerZ = true;
 	}
 }, 500);
 
@@ -291,95 +289,12 @@ function animate() {
 	});
 	
 	bots.forEach(function(bot,index){
-		if (bot.position.y < 50) {
-			bot.position.y += 3;
-		}
-		if (bot.rotation.z != 0) {
-			bot.rotation.z -= bot.rotation.z / 50;
-		}	
+		if (bot.position.y < 50) { bot.position.y += 3; }
+		if (bot.rotation.z != 0) { bot.rotation.z -= bot.rotation.z / 50; }	
 	});
 	
 	requestAnimationFrame( animate );
-	
 	renderer.render( scene, camera );
 	controls.update();
 	stats.update();
-}
-
-function handleBullets(delta){
-	counter += delta;
-	if (counter >= INTERVAL) {
-		counter -= INTERVAL;
-		isFiring && addBullet(player);
-	}
-	if (player&&(player.children.length > 1)) {
-		player.bullets.forEach(function(bullet, index){
-			player.bullets[index].translateZ(-SPEED);
-			player.bullets[index]._lifetime += delta;
-			
-			if (player.bullets[index]._lifetime > MAX_LIFETIME) {
-				//toRemove.push(index);
-				player.remove(bullet);
-				player.bullets.splice(index, 1);
-			}
-		});
-	}
-	bots.forEach(function(bot, index){
-		bots[index].bullets.forEach(function(bullet, bulletIndex){
-			bots[index].bullets[bulletIndex].translateZ(-SPEED);
-			bots[index].bullets[bulletIndex]._lifetime += delta;
-			
-			if (bots[index].bullets[bulletIndex]._lifetime > MAX_LIFETIME) {
-				bots[index].remove(bullet);
-				bots[index].bullets.splice(bulletIndex, 1);
-			}
-		});
-	});
-}
-
-function addBullet(ship) {
-
-	var geometry = new THREE.CubeGeometry(.25, .25, 5);
-	
-	for ( var i = 0; i < geometry.faces.length; i ++ ) {
-		geometry.faces[ i ].color.setHex( 0xFFFF00 );
-	}
-	
-	var material = new THREE.MeshBasicMaterial( { vertexColors: THREE.FaceColors } );
-	var pVector = new THREE.Vector3(ship.position.x, ship.position.y, ship.position.z);
-	
-	var 	lBullet = makeBullet(pVector, 2, geometry, material),
-			rBullet = makeBullet(pVector, -2, geometry, material);
-				
-	ship.bullets.push(lBullet);
-	ship.add(ship.bullets[ship.bullets.length-1]);
-	ship.bullets.push(rBullet);
-	ship.add(ship.bullets[ship.bullets.length-1]);
-
-}
-
-var	counter = 0,
-		vector = new THREE.Vector3(), 
-		projector = new THREE.Projector(),
-		SPEED = 8, 
-		INTERVAL = .1, 
-		MAX_LIFETIME = 1;
-		
-function makeBullet(pVector, shifter,geometry, material) {
-
-	var bullet = new THREE.Mesh(geometry, material);
-	bullet.opacity = .8;
-	bullet.position.x = (shifter);
-	bullet.position.y = 1;
-	vector.set(pVector);
-	vector.scale = .1;
-	// no need to reset the projector
-	projector.unprojectVector(vector, camera);
-	
-	var target = vector;
-	bullet.direction = target;
-	$("#hits").html(target);
-	bullet._lifetime = 0;
-
-	return bullet;
 }

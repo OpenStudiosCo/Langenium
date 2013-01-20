@@ -29,15 +29,16 @@ var players = [
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 io.set('log level', 2);
 
-var 	time = new Date(),
-		update_queue = [],	
-		INTERVAL = 100;
+var 	update_queue = [];
 
 var world_map = world.makeWorld(db, bots, THREE);
 
+var worldTime = new Date().getTime(); 
 
 var tick = setInterval(function(){
-	io.sockets.emit("update", world.updateWorld(update_queue, bots, events, players_online, THREE, world_map));
+	var newTime = new Date().getTime(); 
+	io.sockets.emit("update", world.updateWorld(newTime - worldTime, update_queue, bots, events, players_online, THREE, world_map));
+	worldTime = newTime; 
 }, 1000 / 66);
 
 io.sockets.on('connection', function (socket) {

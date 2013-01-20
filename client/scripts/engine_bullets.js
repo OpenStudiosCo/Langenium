@@ -5,30 +5,17 @@ function handleBullets(delta){
 		counter -= INTERVAL;
 		isFiring && addBullet(player);
 	}
-	if (player&&(player.children.length > 1)) {
-		player.bullets.forEach(function(bullet, index){
-			console.log(bullet);
-			player.bullets[index].translateZ(-SPEED);
-			player.bullets[index]._lifetime += delta;
+	if (bullets.length > 1) {
+		bullets.forEach(function(bullet, index){
+			bullets[index].translateZ(-SPEED);
+			bullets[index]._lifetime += delta;
 			
-			if (player.bullets[index]._lifetime > MAX_LIFETIME) {
-				//toRemove.push(index);
-				player.remove(bullet);
-				player.bullets.splice(index, 1);
+			if (bullets[index]._lifetime > MAX_LIFETIME) {
+				scene.remove(bullet);
+				bullets.splice(index, 1);
 			}
 		});
 	}
-	bots.forEach(function(bot, index){
-		bots[index].bullets.forEach(function(bullet, bulletIndex){
-			bots[index].bullets[bulletIndex].translateZ(-SPEED);
-			bots[index].bullets[bulletIndex]._lifetime += delta;
-			
-			if (bots[index].bullets[bulletIndex]._lifetime > MAX_LIFETIME) {
-				bots[index].remove(bullet);
-				bots[index].bullets.splice(bulletIndex, 1);
-			}
-		});
-	});
 }
 
 function addBullet(ship) {
@@ -45,19 +32,19 @@ function addBullet(ship) {
 	var 	lBullet = makeBullet(ship.position, pVector, ship.rotation.y, 20, geometry, material),
 			rBullet = makeBullet(ship.position, pVector, ship.rotation.y, -20, geometry, material);
 				
-	ship.bullets.push(lBullet);
-	scene.add(ship.bullets[ship.bullets.length-1]);
-	ship.bullets.push(rBullet);
-	scene.add(ship.bullets[ship.bullets.length-1]);
+	bullets.push(lBullet);
+	scene.add(bullets[bullets.length-1]);
+	bullets.push(rBullet);
+	scene.add(bullets[bullets.length-1]);
 
 }
 
 var	counter = 0,
 		vector = new THREE.Vector3(), 
 		projector = new THREE.Projector(),
-		SPEED = 8, 
-		INTERVAL = .1, 
-		MAX_LIFETIME = .5;
+		SPEED = 15, 
+		INTERVAL = .01, 
+		MAX_LIFETIME = 1;
 		
 function makeBullet(position, pVector, rotation, shifter,geometry, material) {
 	var bullet = new THREE.Mesh(geometry, material);

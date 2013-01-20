@@ -55,8 +55,8 @@ function makeWorld(db, bots, THREE) {
 	return world_map;
 };
 
-function updateWorld(update_queue, bots, events, players_online, THREE, world_map) {
-	updateBotsFromBuffer(update_queue, bots, events, players_online, THREE, world_map);
+function updateWorld(delta, update_queue, bots, events, players_online, THREE, world_map) {
+	updateBotsFromBuffer(delta, update_queue, bots, events, players_online, THREE, world_map);
 	time = new Date();
 	players_online.forEach(function(player){
 		var 	playerMovement, 
@@ -89,7 +89,7 @@ function updateWorld(update_queue, bots, events, players_online, THREE, world_ma
 	return update_buffer;
 };
 
-function updateBotsFromBuffer(update_queue, bots, events, players_online, THREE, world_map) {
+function updateBotsFromBuffer(delta, update_queue, bots, events, players_online, THREE, world_map) {
 	bots.forEach(function(bot, index){
 		if (players_online.length > 0) {
 
@@ -131,19 +131,19 @@ function updateBotsFromBuffer(update_queue, bots, events, players_online, THREE,
 					if (tY.instruction != 0) { bots[index].position.y += tY.instruction; bots[index].movement_buffer.yBuffer = tY.buffer; }
 					if (tZ.instruction != 0) { bots[index].position.z += tZ.instruction; bots[index].movement_buffer.zBuffer = tZ.buffer; }
 				}
-		
-			
-				
-				if ((getDistance(bots[index], players_online[0]) < 1500) &&
+
+				if (
+						(getDistance(bots[index], players_online[0]) < 1500) &&
 						(
 							(bots[index].rotation.y - theta < .0314)
 						) &&
 						(
 							(players_online[0].position.y - bot.position.y < 50)&&
 							(players_online[0].position.y - bot.position.y > -50)
-						)
+						) &&
+						delta > 18
 				) {
-					//fire = 1;
+					fire = 1;
 				}
 				update_queue.push(
 					{ instruction: { name: "move", type: "bot", details: { fire: fire, pX: tX.instruction, pY: tY.instruction * .7, pZ: tZ.instruction, rY: rY, username: bots[index].username } } }

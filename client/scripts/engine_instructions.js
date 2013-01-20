@@ -51,7 +51,7 @@ function loadObject(instruction) {
 	var  x = instruction.position.x,
 		y = instruction.position.y,
 		z = instruction.position.z,
-		scale = instruction.position.scale,
+		scale = instruction.position.scale, 
 		category,
 		type;
 	
@@ -196,11 +196,11 @@ function renderObject(mesh, category, type, instruction) {
 	if (type == "bot") {
 		var bot = mesh;
 		bot.bullets = [];
-		bot.username = instruction.id;
+		bot.id = instruction.id;
 		bot.rotation.y = instruction.position.rotationY;
 		bots.push(bot);
 		scene.add(bots[bots.length-1]);
-		$("#botList").append("<li>" + bot.username + "</li>");
+		$("#botList").append("<li>" + bot.id + "</li>");
 		$("#bots h2").html("Enemies detected (" + bots.length + ")");
 	}
 }

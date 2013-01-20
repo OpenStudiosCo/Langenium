@@ -17,7 +17,7 @@ function handleBullets(delta){
 		});
 	}
 }
-
+ 
 function addBullet(ship) {
 
 	var geometry = new THREE.CubeGeometry(1, 1, 30);

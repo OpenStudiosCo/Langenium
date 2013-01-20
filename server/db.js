@@ -10,32 +10,31 @@ var THREE = require('three');
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 function getLoadInstructions(set) {
 	var res;
-	var location;
 	switch (set) {
 		case "map":
 			res = buildMap();
 			break;
 		case "bots":
-			res = buildEnemies(location);
+			res = buildEnemies();
 			break;
 	}
 	return res; 
 }
 
-function buildEnemies(location) {
+function buildEnemies() {
 	var 	enemyDetails = getDummyEnemies(),
 			enemies = [];
 			
 	enemyDetails.forEach(function(objDetails, index) {
 		var obj = buildObject(objDetails.id, objDetails.type, objDetails.position, objDetails.scale);
-		obj.type = { ship: "bot" };
-		obj.id = objDetails.id;
+		obj.id =  objDetails.id;
 		enemies.push(obj);
 	});
+	
 	return enemies;
 }
 
-function buildMap(location) {
+function buildMap() {
 	var 	mapDetails = getDummyMap(),
 			map = [];
 			
@@ -76,7 +75,7 @@ function getObject(type) {
 	return retObject;
 }
 function buildObject(role, type, position, scale) {
-	var retObject;
+	var retObject; 
 	for (var objectType in objectTypes) {
 		for (var object in objectTypes[objectType]) {
 			if (type[objectType] == object) {

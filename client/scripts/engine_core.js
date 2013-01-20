@@ -18,7 +18,7 @@ var camera, scene, renderer, stats;
 var hblur, vblur;
 var geometry, material, mesh;
 var controls;
-var player, ships = [], bots = [], bullets = [];
+var player, ships = [], bots = [], bullets = [], particle_systems = [];
 var keyboard = new THREEx.KeyboardState(), clock = new THREE.Clock();
 var M = 10000 * 1000;
 var composer;
@@ -38,7 +38,7 @@ function init() {
 		document.documentElement.offsetWidth ) {
 		winW = document.documentElement.offsetWidth;
 		winH = document.documentElement.offsetHeight;
-	}
+	} 
 	if (window.innerWidth && window.innerHeight) {
 		winW = window.innerWidth;
 		winH = window.innerHeight;
@@ -118,7 +118,7 @@ function createScene() {
  /* Player input
  --------------------------------------------------------------------------------------------------------------------------------*/
 function playerInput(delta){
-	var keyboardInput = { d: delta, pZ: 0, pY: 0, rY: 0 },
+	var keyboardInput = { d: delta, pZ: 0, pY: 0, rY: 0, fire: isFiring },
 			move = false;
 	
 	if (keyboard.pressed("W")){
@@ -146,6 +146,10 @@ function playerInput(delta){
 		move = true;
 		keyboardInput.pY = -1;
 	}
+	if (isFiring == true) {
+		move = true;
+	}
+	
 	if (move == true) {
 		socket.emit('move', keyboardInput);
 	}
@@ -238,6 +242,7 @@ var duration = 100,
 	
 function animate() {
 	var delta = clock.getDelta();
+	handleParticles(delta);
 	handleBullets(delta);
 	var animTime = new Date().getTime() % duration;
 	var keyframe = Math.floor( animTime / interpolation ) + animOffset;

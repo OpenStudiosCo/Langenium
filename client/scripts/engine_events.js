@@ -33,13 +33,29 @@ var setEventHandlers = function() {
 		$("#latencyLabel").html("<h3>&nbsp;" + data.latency + "ms</h3>");
 		socket.emit("pong", data);
 	});
-	return socket;
+	return socket; 
 };
 
 function updateClient(data) {
+	if (data.instruction.name == "kill") {
+		if (data.instruction.type == "bot") {
+			bots.forEach(function(bot, index){
+				if (bot.id == data.instruction.id) {
+					teleportEffect(bot.position);
+					scene.remove(bot);
+					bots.splice(index, 1);
+				}
+			});
+		}
+		
+	}
+
 	if (data.instruction.name == "move") {
 		if (data.instruction.details.username == socket.socket.sessionid) {
 			if (player) {
+				if (data.instruction.details.fire == 1) {
+						addBullet(player); 
+				}
 				moveShip(player, true, data.instruction);
 				$("#selectedItem").html("<div><strong>Player</strong><br />pX:&nbsp;"+player.position.x+"<br />pY:&nbsp;"+player.position.y+"<br />pZ:&nbsp;"+player.position.z+"<br />rY:&nbsp;"+player.rotation.y+"</div>");
 			}
@@ -47,11 +63,14 @@ function updateClient(data) {
 		else {
 			ships.forEach(function(ship,index){
 				if (data.instruction.details.username == ship.username) {
+					if (data.instruction.details.fire == 1) {
+						addBullet(ships[index]); 
+					}
 					moveShip(ships[index], false, data.instruction);
 				}
 			});
 			bots.forEach(function(bot,index){
-				if (data.instruction.details.username == bot.username) {
+				if (data.instruction.details.id == bot.id) {
 					if (data.instruction.details.fire == 1) {
 						addBullet(bots[index]); 
 					}

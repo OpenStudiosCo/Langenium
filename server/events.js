@@ -1,6 +1,8 @@
 module.exports.movePlayer = movePlayer;
 module.exports.makeBotMovementBuffer = makeBotMovementBuffer;
 module.exports.moveBot = moveBot;
+module.exports.detectCollision = detectCollision;
+
 
 /*///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	Movement and location
@@ -11,12 +13,12 @@ var 	THREE = require('three');
 function makeBotMovementBuffer(bot, destination, angle, distance) {
 	return { 
 		xBuffer: distance * Math.sin(angle),
-		yBuffer: Math.sqrt((destination.y - bot.position.y)*(destination.y - bot.position.y)),
+		yBuffer: destination.y - bot.position.y,
 		zBuffer: distance * Math.cos(angle),
 		distance: distance
 	}
 }
-function moveBot(buffer) {
+function moveBot(buffer) { 
 	var instruction = 0;
 	if (buffer != 0) {
 		if (buffer > 0) {
@@ -38,8 +40,8 @@ function moveBot(buffer) {
 function movePlayer(velocity, playerPosition, world_map, data) {
 
 	var 	velocityZChange = velocity,
-				velocityYChange = 200 * data.d,
-				rotateAngle = .045,
+				velocityYChange = 300 * data.d,
+				rotateAngle = 0.01744444444444444444444444444444 * 3,
 				retval;
 
 	if (data.rY > 0) { data.rY = rotateAngle; }						// left

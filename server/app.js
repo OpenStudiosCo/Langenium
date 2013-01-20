@@ -18,6 +18,7 @@ app.listen(80);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 var bots = [];
 var players_online = [];
+var bullets = [];
 var players = [ 
 		{ username: "Mercenary", id: "1", type: { ship: "player" }, url: "assets/mercenary.js", position: { x: -8500, y: 5000, z: -1740 , scale: 10, rotationY: 0 }},
 		//{ username: "Pirate", uid: "2", type: "player", url: "assets/pirate.js", position: { x: -1000, y: 3000, z: 5500 , scale: 10, rotationY: 0 }}
@@ -37,12 +38,12 @@ var worldTime = new Date().getTime();
 
 var tick = setInterval(function(){
 	var newTime = new Date().getTime(); 
-	io.sockets.emit("update", world.updateWorld(newTime - worldTime, update_queue, bots, events, players_online, THREE, world_map));
+	io.sockets.emit("update", world.updateWorld(bullets, newTime - worldTime, update_queue, bots, events, players_online, THREE, world_map));
 	worldTime = newTime; 
 }, 1000 / 66);
 
 io.sockets.on('connection', function (socket) {
-	socket.emit("ping", { time: new Date().getTime(), latency: 0});
+	socket.emit("ping", { time: new Date().getTime(), latency: 0}); 
 	socket.on("pong", function(data){
 		var time = new Date().getTime(); 
 		var latency = time - data.time;
@@ -114,21 +115,12 @@ function loginPlayer(sessionId, username) {
 
 function initializeClient(activePlayer) {
 	var initial_instructions = [];
-	
+
 	db.getLoadInstructions("map").forEach(function(instruction){ instruction.name = "load"; initial_instructions.push(instruction);});
-	db.getLoadInstructions("bots").forEach(function(instruction){ 
-		instruction.name = "load"; 
-		if (bots.length > 0) {
-			bots.forEach(function(bot, index) {
-				if (bot.username == instruction.id) {
-					instruction.position.x = bots[index].position.x;
-					instruction.position.y = bots[index].position.y;
-					instruction.position.z = bots[index].position.z;
-					instruction.position.rotationY = bots[index].rotation.y;
-				}
-			});
-		}
-		initial_instructions.push(instruction);
+	bots.forEach(function(bot, index){
+		
+		initial_instructions.push({name: "load", id: bots[index].id, type: bots[index].type, url: bots[index].url, position: { x: bots[index].position.x,  y: bots[index].position.y,  z: bots[index].position.z, rotationY: bots[index].rotation.y , scale: bots[index].scale.x }  });
+
 	});
 	
 	//getLoadInstructions("ships").forEach(function(instruction){initial_instructions.push(instruction);});

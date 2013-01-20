@@ -8,7 +8,8 @@ function makeWorld(db, bots, THREE) {
 		var  type = sceneObj.type,
 				object = db.getObject(type),
 				scale = sceneObj.scale || object.scale,
-				urlPrefix = "http://langenium.com/play/",
+				urlPrefix = "http://localhost:8080/",
+				//urlPrefix = "http://langenium.com/play/",
 				loader =  new THREE.JSONLoader(),
 				url = object.url;
 				
@@ -32,8 +33,8 @@ function makeWorld(db, bots, THREE) {
 		var 	type = obj.type,
 				object = db.getObject(type),
 				scale = obj.scale || object.scale,
-				//urlPrefix = "http://localhost:8080/",
-				urlPrefix = "http://langenium.com/play/", 
+				urlPrefix = "http://localhost:8080/",
+				//urlPrefix = "http://langenium.com/play/", 
 				loader =  new THREE.JSONLoader(),
 				url = object.url;
 				
@@ -41,31 +42,39 @@ function makeWorld(db, bots, THREE) {
 			var bot = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial( materials ) );
 			bot.geometry.computeBoundingBox();
 			bot.scale = new THREE.Vector3(scale,scale,scale);
+			bot.health = 100;
 			bot.position.x = obj.position.x,
 			bot.position.y = obj.position.y,
 			bot.position.z = obj.position.z,
 			bot.matrixAutoUpdate = true;
 			bot.updateMatrix();
 			bot.updateMatrixWorld();
-			bot.username = obj.id;
+			bot.id = obj.id;
+			bot.url = url;
+			bot.type = { ship: "bot" };
 			bot.movement_queue = [];
-			bots.push(bot);
+			bots.push(bot); 
 		});	
 	});
 	return world_map;
 };
 
-function updateWorld(delta, update_queue, bots, events, players_online, THREE, world_map) {
-	updateBotsFromBuffer(delta, update_queue, bots, events, players_online, THREE, world_map);
+function updateWorld(bullets, delta, update_queue, bots, events, players_online, THREE, world_map) {
+	
+	updateBotsFromBuffer(bullets, delta, update_queue, bots, events, players_online, THREE, world_map);
 	time = new Date();
 	players_online.forEach(function(player){
 		var 	playerMovement, 
 				inputData;
 		if (player.inputUpdates.length > 0) {
 			inputData = player.inputUpdates.shift();
+			if ((delta > 10)&&(inputData.fire == true)) {
+				bullets.push(addBullet(player.username, player.position, player.position.rotationY, 20, THREE));
+				bullets.push(addBullet(player.username, player.position, player.position.rotationY, -20, THREE));
+			}
 		}
 		else {
-			inputData = { d: 0, pZ: 0, pY: 0, rY: 0};
+			inputData = { d: 0, pZ: 0, pY: 0, rY: 0, fire: false };
 		}
 		playerMovement = events.movePlayer(player.velocity, player.position, world_map, inputData);	
 		player.position.y += playerMovement.instruction.details.pY;
@@ -81,6 +90,7 @@ function updateWorld(delta, update_queue, bots, events, players_online, THREE, w
 			player.velocity += .05;
 		}
 	});
+	handleBullets(bullets, bots, players_online, delta, update_queue);
 	var update_buffer = [];
 	update_queue.forEach(function(update, index){
 		update_buffer.push(update);
@@ -89,86 +99,121 @@ function updateWorld(delta, update_queue, bots, events, players_online, THREE, w
 	return update_buffer;
 };
 
-function updateBotsFromBuffer(delta, update_queue, bots, events, players_online, THREE, world_map) {
+function addBullet(username, position, rotation, shifter, THREE) {
+	var geometry = new THREE.CubeGeometry(1, 1, 30);
+	var material = new THREE.MeshBasicMaterial();
+	
+	var bullet = new THREE.Mesh(geometry, material);
+	
+	bullet.username = username;
+	bullet.opacity = .8;
+	bullet.position.x = position.x + shifter;
+	bullet.position.y = position.y + 5;
+	bullet.position.z = position.z + shifter;
+	bullet.rotation.y = rotation;
+	bullet.rotation.z = Math.PI / 4;
+	bullet.scale.x = 1;
+	bullet.scale.y = 1;
+	bullet.scale.z = 1;
+	rotation *= 180 / Math.PI;
+	var xRot = position.x + Math.sin(rotation) * shifter + Math.cos(rotation) * shifter;
+	var zRot = position.z + Math.cos(rotation) * shifter - Math.sin(rotation) * shifter;
+	
+	bullet.position.x = xRot;
+	bullet.position.z = zRot;
+
+	bullet._lifetime = 0;
+	bullet.updateMatrix();
+	
+	return bullet;
+}
+
+function handleBullets(bullets, bots, players_online, delta, update_queue){
+	bullets.forEach(function(bullet, index){
+		if (bullets[index]._lifetime > 200) {
+			bullets.splice(index, 1);
+		}
+		else {
+			bullets[index].translateZ(-0.3030303030303030303030303030303);
+			bullets[index]._lifetime += delta;
+			bots.forEach(function(bot, botIndex){
+				var distance = getDistance(bots[botIndex], bullets[index]) ;
+				if ((bots[botIndex].id != bullet.username)&&(distance< 150)) {
+					console.log("Hit!");
+					bots[botIndex].health -= 5;
+					if (bots[botIndex].health < 0) {
+						update_queue.push(
+							{ instruction: { name: "kill", type: "bot", id: bots[botIndex].id } }
+						);
+						bots.splice(botIndex, 1);		
+						return;
+					}
+				}
+			});
+		}
+	});
+}
+
+function updateBotsFromBuffer(bullets, delta, update_queue, bots, events, players_online, THREE, world_map) {
 	bots.forEach(function(bot, index){
 		if (players_online.length > 0) {
 
 			var 	fire = 0,
-					radian = 0.01744444444444444444444444444444 * 3;
+					radian = .0333,
+					rY = 0;	
 			
-			if (bots[index].movement_buffer&&
-			(getDistance(bots[index], players_online[0]) - bots[index].movement_buffer.distance < 250)&&
-			(checkMovementBuffer(bots[index].movement_buffer) == true))
+			if (bot.rotation.y  > getTheta(bot, players_online[0])) {
+				if (bot.rotation.y - radian < getTheta(bot, players_online[0])) { }
+				else { bot.rotation.y -= radian;	rY -= radian; }
+			}
+			else {
+				if (bot.rotation.y + radian > getTheta(bot, players_online[0])) { }
+				else { bot.rotation.y += radian;	rY+= radian; }
+			}
 			
-			{
-				var 	tX = events.moveBot(bots[index].movement_buffer.xBuffer), 
-						tY = events.moveBot(bots[index].movement_buffer.yBuffer), 	
-						tZ = events.moveBot(bots[index].movement_buffer.zBuffer),
-						rY = 0,
-						theta = getTheta(bots[index], players_online[0]);
-			
-				if  (
-						(theta > radian + bot.rotation.y)||
-						(theta < -radian + bot.rotation.y)
+			if (
+					bot.movement_buffer &&
+					(
+						checkMovementBuffer(bot.movement_buffer) == true
 					)
+				)
 				{
-					bots[index].movement_buffer.xBuffer *= .999;
-					bots[index].movement_buffer.yBuffer *= .999;
-					bots[index].movement_buffer.zBuffer *= .999;
-					
-					if (bots[index].rotation.y  > theta) {
-						if (bots[index].rotation.y - radian < theta) { }
-						else { bots[index].rotation.y -= radian;	rY -= radian; }
-					}
-					else {
-						if (bots[index].rotation.y + radian > theta) { }
-						else { bots[index].rotation.y += radian;	rY+= radian; }
-					}
-				}
-				else {
-					if (bots[index].rotation.y  > theta) {
-						if (bots[index].rotation.y - radian < theta) { }
-						else { bots[index].rotation.y -= radian;	rY -= radian; }
-					}
-					else {
-						if (bots[index].rotation.y + radian > theta) { }
-						else { bots[index].rotation.y += radian;	rY+= radian; }
-					}
-					if (tX.instruction != 0) { bots[index].position.x += tX.instruction; bots[index].movement_buffer.xBuffer = tX.buffer; }
-					if (tY.instruction != 0) { bots[index].position.y += tY.instruction; bots[index].movement_buffer.yBuffer = tY.buffer; }
-					if (tZ.instruction != 0) { bots[index].position.z += tZ.instruction; bots[index].movement_buffer.zBuffer = tZ.buffer; }
-				}
+				var 	tX = events.moveBot(bot.movement_buffer.xBuffer), 
+						tY = events.moveBot(bot.movement_buffer.yBuffer), 	
+						tZ = events.moveBot(bot.movement_buffer.zBuffer);
+						
+				if (tX.instruction != 0) { bot.position.x += tX.instruction; bot.movement_buffer.xBuffer = tX.buffer; }
+				if (tY.instruction != 0) { bot.position.y += tY.instruction; bot.movement_buffer.yBuffer = tY.buffer; }
+				if (tZ.instruction != 0) { bot.position.z += tZ.instruction; bot.movement_buffer.zBuffer = tZ.buffer; }
 
 				if (
-						(getDistance(bots[index], players_online[0]) < 1500) &&
-						(
-							(bots[index].rotation.y - theta < .0314)
-						) &&
+						(getDistance(bot, players_online[0]) < 1500) &&
+						(bot.rotation.y - getTheta(bot, players_online[0]) < .0314)&&
 						(
 							(players_online[0].position.y - bot.position.y < 50)&&
 							(players_online[0].position.y - bot.position.y > -50)
 						) &&
-						delta > 18
+						delta > 10
 				) {
 					fire = 1;
 				}
 				update_queue.push(
-					{ instruction: { name: "move", type: "bot", details: { fire: fire, pX: tX.instruction, pY: tY.instruction * .7, pZ: tZ.instruction, rY: rY, username: bots[index].username } } }
+					{ instruction: { name: "move", type: "bot", details: { fire: fire, pX: tX.instruction, pY: tY.instruction * .7, pZ: tZ.instruction, rY: rY, id: bot.id } } }
 				);
 			}
 			else {
 				var destination = new THREE.Vector3(players_online[0].position.x, players_online[0].position.y, players_online[0].position.z);	
-				bots[index].movement_buffer = events.makeBotMovementBuffer(bots[index], destination, getAngle(bots[index], players_online[0]), getDistance(bots[index], players_online[0]));
+				bot.movement_buffer = events.makeBotMovementBuffer(bot, destination, getAngle(bot, players_online[0]), getDistance(bot, players_online[0]));
 			}
 		}
 		else {
-			if ((bots[index].movement_buffer)&&
-				((bots[index].movement_buffer.xBuffer != 0)||
-				(bots[index].movement_buffer.yBuffer != 0)||
-				(bots[index].movement_buffer.zBuffer != 0))) {
-					bots[index].movement_buffer.xBuffer = 0;
-					bots[index].movement_buffer.yBuffer = 0;
-					bots[index].movement_buffer.zBuffer = 0;
+			if ((bot.movement_buffer)&&
+				((bot.movement_buffer.xBuffer != 0)||
+				(bot.movement_buffer.yBuffer != 0)||
+				(bot.movement_buffer.zBuffer != 0))) {
+					bot.movement_buffer.xBuffer = 0;
+					bot.movement_buffer.yBuffer = 0;
+					bot.movement_buffer.zBuffer = 0;
 			}		
 		}
 	});

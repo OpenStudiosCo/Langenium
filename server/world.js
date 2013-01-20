@@ -8,8 +8,8 @@ function makeWorld(db, bots, THREE) {
 		var  type = sceneObj.type,
 				object = db.getObject(type),
 				scale = sceneObj.scale || object.scale,
-				urlPrefix = "http://localhost:8080/",
-				//urlPrefix = "http://langenium.com/play/",
+				//urlPrefix = "http://localhost:8080/",
+				urlPrefix = "http://langenium.com/play/",
 				loader =  new THREE.JSONLoader(),
 				url = object.url;
 				
@@ -33,8 +33,8 @@ function makeWorld(db, bots, THREE) {
 		var 	type = obj.type,
 				object = db.getObject(type),
 				scale = obj.scale || object.scale,
-				urlPrefix = "http://localhost:8080/",
-				//urlPrefix = "http://langenium.com/play/", 
+				//urlPrefix = "http://localhost:8080/",
+				urlPrefix = "http://langenium.com/play/", 
 				loader =  new THREE.JSONLoader(),
 				url = object.url;
 				
@@ -104,10 +104,8 @@ function updateWorld(bullets, delta, update_queue, bots, events, players_online,
 };
 
 function addBullet(username, position, rotation, shifter, THREE) {
-	var geometry = new THREE.CubeGeometry(1, 1, 30);
-	var material = new THREE.MeshBasicMaterial();
 	
-	var bullet = new THREE.Mesh(geometry, material);
+	var bullet = new THREE.Mesh(new THREE.CubeGeometry(1, 1, 30), new THREE.MeshBasicMaterial());
 	
 	bullet.username = username;
 	bullet.position.x = position.x;
@@ -118,12 +116,9 @@ function addBullet(username, position, rotation, shifter, THREE) {
 	bullet.scale.x = 1;
 	bullet.scale.y = 1;
 	bullet.scale.z = 1;
-
-	var xRot = position.x + Math.sin(rotation) * shifter + Math.cos(rotation) * shifter;
-	var zRot = position.z + Math.cos(rotation) * shifter - Math.sin(rotation) * shifter;
 	
-	bullet.position.x = xRot;
-	bullet.position.z = zRot;
+	bullet.position.x = position.x + Math.sin(rotation) * shifter + Math.cos(rotation) * shifter;
+	bullet.position.z = position.z + Math.cos(rotation) * shifter - Math.sin(rotation) * shifter;
 
 	bullet._lifetime = 0;
 	bullet.updateMatrix();
@@ -132,7 +127,6 @@ function addBullet(username, position, rotation, shifter, THREE) {
 }
 
 function handleBullets(bullets, bots, players_online, delta, update_queue){
-	
 	bullets.forEach(function(bullet, index){
 		if (bullet._lifetime > 2000) {
 			bullets.splice(index, 1);
@@ -148,6 +142,7 @@ function handleBullets(bullets, bots, players_online, delta, update_queue){
 							{ instruction: { name: "kill", type: "bot", id: bot.id } }
 						);
 						bots.splice(botIndex, 1);		
+						return;
 					}
 					else {
 						update_queue.push(
@@ -179,6 +174,7 @@ function updateBotsFromBuffer(bullets, delta, update_queue, bots, events, player
 			
 			if (
 					bot.movement_buffer &&
+					(getDistance(bots[index], players_online[0]) - bots[index].movement_buffer.distance < 150)&&
 					checkMovementBuffer(bot.movement_buffer) == true
 				)
 				{

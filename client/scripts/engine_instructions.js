@@ -7,8 +7,12 @@ function moveShip(ship, isPlayer, instruction) {
 	if (instruction.details.pY != 0){
 		ship.position.y += instruction.details.pY;
 	}
-	if (instruction.details.pZ != 0) {
+	
+	if (instruction.details.pX != 0){
 		ship.position.x += instruction.details.pX;
+	}
+	
+	if (instruction.details.pZ != 0) {
 		ship.position.z += instruction.details.pZ;
 	}
 	

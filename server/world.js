@@ -69,7 +69,7 @@ function updateWorld(bullets, delta, update_queue, bots, events, players_online,
 		if (player.inputUpdates.length > 0) {
 			inputData = player.inputUpdates.shift();
 	
-			if ((delta >16)&&(inputData.fire == true)) {
+			if ((delta >12)&&(inputData.fire == true)) {
 				bullets.push(addBullet(player.username, player.position, player.position.rotationY, 20, THREE));
 				bullets.push(addBullet(player.username, player.position, player.position.rotationY, -20, THREE));
 			}

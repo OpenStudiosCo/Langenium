@@ -155,7 +155,6 @@ function handleBullets(bullets, bots, players_online, delta, update_queue, THREE
 					bot.health -= 5;
 					if (bot.health < 0) {
 						update_queue.push( addBot(bots, delta, THREE) );
-						update_queue.push( addBot(bots, delta, THREE) );
 						update_queue.push( { instruction: { name: "kill", type: "bot", id: bot.id } } );
 						bots.splice(botIndex, 1);		
 						return;

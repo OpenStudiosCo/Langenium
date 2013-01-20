@@ -20,10 +20,10 @@ function handleBullets(delta){
 
 function addBullet(ship) {
 
-	var geometry = new THREE.CubeGeometry(.5, .5, 30);
+	var geometry = new THREE.CubeGeometry(1, 1, 30);
 	
 	for ( var i = 0; i < geometry.faces.length; i ++ ) {
-		geometry.faces[ i ].color.setHex( 0xFF9900 );
+		geometry.faces[ i ].color.setHex( 0xEE1133 );
 	}
 	
 	var material = new THREE.MeshBasicMaterial( { vertexColors: THREE.FaceColors } );
@@ -42,18 +42,20 @@ function addBullet(ship) {
 var	counter = 0,
 		vector = new THREE.Vector3(), 
 		projector = new THREE.Projector(),
-		SPEED = 15, 
-		INTERVAL = .01, 
+		SPEED = 30, 
+		INTERVAL = .1, 
 		MAX_LIFETIME = 1;
 		
 function makeBullet(position, pVector, rotation, shifter,geometry, material) {
 	var bullet = new THREE.Mesh(geometry, material);
-	bullet.opacity = .8;
-	bullet.position.x = (position.x + shifter);
-	bullet.position.y = position.y;
-	bullet.position.z = position.z;
-	bullet.rotation.y = rotation;
 	
+	bullet.opacity = .8;
+	bullet.position.x = position.x + shifter;
+	bullet.position.y = position.y + 10;
+	bullet.position.z = position.z + shifter;
+	bullet.rotation.y = rotation;
+
+	rotation *= 180 / Math.PI;
 	var xRot = position.x + Math.sin(rotation) * shifter + Math.cos(rotation) * shifter;
 	var zRot = position.z + Math.cos(rotation) * shifter - Math.sin(rotation) * shifter;
 	
@@ -69,6 +71,6 @@ function makeBullet(position, pVector, rotation, shifter,geometry, material) {
 	bullet.direction = target;
 	$("#hits").html(target);
 	bullet._lifetime = 0;
-
+	bullet.updateMatrix();
 	return bullet;
 }

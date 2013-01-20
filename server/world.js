@@ -126,7 +126,14 @@ function updateBotsFromBuffer(delta, update_queue, bots, events, players_online,
 					}
 				}
 				else {
-			
+					if (bots[index].rotation.y  > theta) {
+						if (bots[index].rotation.y - radian < theta) { }
+						else { bots[index].rotation.y -= radian;	rY -= radian; }
+					}
+					else {
+						if (bots[index].rotation.y + radian > theta) { }
+						else { bots[index].rotation.y += radian;	rY+= radian; }
+					}
 					if (tX.instruction != 0) { bots[index].position.x += tX.instruction; bots[index].movement_buffer.xBuffer = tX.buffer; }
 					if (tY.instruction != 0) { bots[index].position.y += tY.instruction; bots[index].movement_buffer.yBuffer = tY.buffer; }
 					if (tZ.instruction != 0) { bots[index].position.z += tZ.instruction; bots[index].movement_buffer.zBuffer = tZ.buffer; }

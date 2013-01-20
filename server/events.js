@@ -11,7 +11,7 @@ var 	THREE = require('three');
 function makeBotMovementBuffer(bot, destination, angle, distance) {
 	return { 
 		xBuffer: distance * Math.sin(angle),
-		yBuffer: destination.y - bot.position.y,
+		yBuffer: Math.sqrt((destination.y - bot.position.y)*(destination.y - bot.position.y)),
 		zBuffer: distance * Math.cos(angle),
 		distance: distance
 	}

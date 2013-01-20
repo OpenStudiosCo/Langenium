@@ -60,7 +60,7 @@ function makeWorld(db, bots, THREE) {
 };
 
 function updateWorld(bullets, delta, update_queue, bots, events, players_online, THREE, world_map) {
-	
+	handleBullets(bullets, bots, players_online, delta, update_queue);
 	updateBotsFromBuffer(bullets, delta, update_queue, bots, events, players_online, THREE, world_map);
 	time = new Date();
 	players_online.forEach(function(player){
@@ -69,7 +69,7 @@ function updateWorld(bullets, delta, update_queue, bots, events, players_online,
 		if (player.inputUpdates.length > 0) {
 			inputData = player.inputUpdates.shift();
 	
-			if ((delta >12)&&(inputData.fire == true)) {
+			if ((delta >16)&&(inputData.fire == true)) {
 				bullets.push(addBullet(player.username, player.position, player.position.rotationY, 20, THREE));
 				bullets.push(addBullet(player.username, player.position, player.position.rotationY, -20, THREE));
 			}
@@ -94,7 +94,7 @@ function updateWorld(bullets, delta, update_queue, bots, events, players_online,
 			player.velocity += .05;
 		}
 	});
-	handleBullets(bullets, bots, players_online, delta, update_queue);
+	
 	var update_buffer = [];
 	update_queue.forEach(function(update, index){
 		update_buffer.push(update);
@@ -110,16 +110,15 @@ function addBullet(username, position, rotation, shifter, THREE) {
 	var bullet = new THREE.Mesh(geometry, material);
 	
 	bullet.username = username;
-	bullet.opacity = .8;
-	bullet.position.x = position.x + shifter;
-	bullet.position.y = position.y + 5;
-	bullet.position.z = position.z + shifter;
+	bullet.position.x = position.x;
+	bullet.position.y = position.y + 10;
+	bullet.position.z = position.z;
 	bullet.rotation.y = rotation;
-	bullet.rotation.z = Math.PI / 4;
+	
 	bullet.scale.x = 1;
 	bullet.scale.y = 1;
 	bullet.scale.z = 1;
-	rotation *= 180 / Math.PI;
+
 	var xRot = position.x + Math.sin(rotation) * shifter + Math.cos(rotation) * shifter;
 	var zRot = position.z + Math.cos(rotation) * shifter - Math.sin(rotation) * shifter;
 	
@@ -143,15 +142,17 @@ function handleBullets(bullets, bots, players_online, delta, update_queue){
 			bullet._lifetime += delta;
 			bots.forEach(function(bot, botIndex){
 				if ((bot.id != bullet.username)&&(getDistance(bot, bullet)< 150)) {
-					
-		
 					bot.health -= 5;
 					if (bot.health < 0) {
 						update_queue.push(
 							{ instruction: { name: "kill", type: "bot", id: bot.id } }
 						);
 						bots.splice(botIndex, 1);		
-						return;
+					}
+					else {
+						update_queue.push(
+							{ instruction: { name: "hit", type: "bot", id: bot.id } }
+						);
 					}
 				}
 			});
@@ -164,7 +165,7 @@ function updateBotsFromBuffer(bullets, delta, update_queue, bots, events, player
 		if (players_online.length > 0) {
 
 			var 	fire = 0,
-					radian = .0314,
+					radian = .01744444444444444444444444444444,
 					rY = 0;	
 			
 			if (bot.rotation.y  > getTheta(bot, players_online[0])) {
@@ -179,7 +180,6 @@ function updateBotsFromBuffer(bullets, delta, update_queue, bots, events, player
 			if (
 					bot.movement_buffer &&
 					checkMovementBuffer(bot.movement_buffer) == true
-					
 				)
 				{
 				var 	tX = events.moveBot(bot.movement_buffer.xBuffer), 
@@ -197,7 +197,7 @@ function updateBotsFromBuffer(bullets, delta, update_queue, bots, events, player
 							(players_online[0].position.y - bot.position.y < 50)&&
 							(players_online[0].position.y - bot.position.y > -50)
 						) &&
-						delta > 12
+						delta > 16
 				) {
 					fire = 1;
 				}
@@ -206,8 +206,7 @@ function updateBotsFromBuffer(bullets, delta, update_queue, bots, events, player
 				);
 			}
 			else {
-				var destination = new THREE.Vector3(players_online[0].position.x, players_online[0].position.y, players_online[0].position.z);	
-				bot.movement_buffer = events.makeBotMovementBuffer(bot, destination, getAngle(bot, players_online[0]), getDistance(bot, players_online[0]));
+				bot.movement_buffer = events.makeBotMovementBuffer(bot, players_online[0].position, getAngle(bot, players_online[0]), getDistance(bot, players_online[0]));
 			}
 		}
 		else {
@@ -232,8 +231,6 @@ function getDistance(position1, position2) {
 }
 
 function getAngle(position1, position2) {
-	
-
 	var angle = Math.atan2(-(position1.position.x - position2.position.x), 
 											(position1.position.z - position2.position.z));
 	angle *= 180 / Math.PI;

@@ -46,9 +46,18 @@ function updateClient(data) {
 				}
 			});
 		}
-		
 	}
-
+	
+	if (data.instruction.name == "hit") {
+		if (data.instruction.type == "bot") {
+			bots.forEach(function(bot, index){
+				if (bot.id == data.instruction.id) {
+					bulletEffect(bot.position);
+				}
+			});
+		}
+	}
+	
 	if (data.instruction.name == "move") {
 		if (data.instruction.details.username == socket.socket.sessionid) {
 			if (player) {

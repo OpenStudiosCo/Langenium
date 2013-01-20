@@ -41,13 +41,18 @@ function updateClient(data) {
 	}
 	if (data.instruction.name == "kill") {
 		if (data.instruction.type == "bot") {
+			$("#botList").html("");
 			bots.forEach(function(bot, index){
 				if (bot.id == data.instruction.id) {
 					teleportEffect(bot.position);
 					scene.remove(bots[index]);
 					bots.splice(index, 1);
 				}
+				else {
+					$("#botList").append("<li>" + bot.id + "</li>");
+				}
 			});
+			$("#bots h2").html("Enemies detected (" + bots.length + ")");
 		}
 	}
 	

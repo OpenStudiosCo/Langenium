@@ -116,7 +116,7 @@ function addBot(bots, delta, THREE){
 	obj.name = "load";
 	obj.type = { ship: "bot" };
 	
-	return { instruction: {name: "load", id: obj.id, type: obj.type, url: obj.url, position: { x: obj.position.x,  y: obj.position.y,  z: obj.position.z, rotationY: obj.position.rotationY , scale: obj.position.scale } } };
+	return { instruction: {name: "load", id: obj.id, type: obj.type, url: obj.url, position: { x: obj.position.x,  y: obj.position.y,  z: obj.position.z, rotationY: obj.position.rotationY , scale: 10 } } };
 }
 
 function addBullet(username, position, rotation, shifter, THREE) {

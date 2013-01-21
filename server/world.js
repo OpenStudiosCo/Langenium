@@ -34,7 +34,7 @@ function makeWorld(db, bots, THREE) {
 		var 	type = obj.type,
 				object = db.getObject(type),
 				scale = obj.scale || object.scale,
-				url = urlPrefix + object.url;
+				url = object.url;
 				
 		makeBotMesh(url, scale, bots, obj, THREE);
 	});
@@ -45,7 +45,7 @@ function makeWorld(db, bots, THREE) {
 
 function makeBotMesh(url, scale, bots, obj, THREE) {
 var  loader =  new THREE.JSONLoader();
-	loader.load(url, function(geometry, materials){
+	loader.load(urlPrefix + url, function(geometry, materials){
 		var bot = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial( materials ) );
 		bot.geometry.computeBoundingBox();
 		bot.scale = new THREE.Vector3(scale,scale,scale);
@@ -57,7 +57,7 @@ var  loader =  new THREE.JSONLoader();
 		bot.updateMatrix();
 		bot.updateMatrixWorld();
 		bot.id = obj.id;
-		bot.url = url;
+		bot.url = urlPrefix + url;
 		bot.type = { ship: "bot" };
 		bot.movement_queue = [];
 		bots.push(bot); 
@@ -111,11 +111,10 @@ function addBot(bots, delta, THREE){
 	var db = require("./db.js");
 	var obj = db.buildObject(("Pirate " + (new Date().getTime()) * Math.random()), { ship: 'pirate' }, { x: -8500, y: 5000, z: -3500, rotationY: 0 }, 10);
 	
-	makeBotMesh(urlPrefix + obj.url, obj.scale, bots, obj, THREE);
+	makeBotMesh(obj.url, obj.scale, bots, obj, THREE);
 
 	obj.name = "load";
 	obj.type = { ship: "bot" };
-	
 	return { instruction: {name: "load", id: obj.id, type: obj.type, url: obj.url, position: { x: obj.position.x,  y: obj.position.y,  z: obj.position.z, rotationY: obj.position.rotationY , scale: 10 } } };
 }
 

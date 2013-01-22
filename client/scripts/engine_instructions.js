@@ -55,7 +55,7 @@ function loadObject(instruction) {
 	var  x = instruction.position.x,
 		y = instruction.position.y,
 		z = instruction.position.z,
-		scale = instruction.position.scale, 
+		scale = instruction.scale, 
 		category,
 		type;
 	
@@ -159,7 +159,7 @@ function renderObject(mesh, category, type, instruction) {
 	var  x = instruction.position.x,
 			y = instruction.position.y,
 			z = instruction.position.z,
-			scale = instruction.position.scale;
+			scale = instruction.scale;
 
 	if (type == "platform") { 
 		platforms.push(mesh);

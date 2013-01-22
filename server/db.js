@@ -80,12 +80,12 @@ function buildObject(id, type, position, scale) {
 	for (var objectType in objectTypes) {
 		for (var object in objectTypes[objectType]) {
 			if (type[objectType] == object) {
-				position.scale = scale || objectTypes[objectType][object].scale;
 				retObject = 	{
 										id: id,
 										type: type,
 										url: objectTypes[objectType][object].url,
-										position: position
+										position: position,
+										scale: scale || objectTypes[objectType][object].scale
 									};
 			}
 		}

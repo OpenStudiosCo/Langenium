@@ -56,15 +56,24 @@ function updateClient(data) {
 		}
 	}
 	
+	if (data.instruction.name == "hit") {
+		if (data.instruction.type == "bot") {
+			bots.forEach(function(bot, index){
+				if (bot.id == data.instruction.id) {
+					
+				}
+			});
+		}
+	}
 	if (data.instruction.name == "move") {
 		if (data.instruction.details.username == socket.socket.sessionid) {
 			if (player) {
 				if (data.instruction.details.fire == 1) {
-						
 						addBullet(player); 
 				}
 				moveShip(player, true, data.instruction);
 				if (data.instruction.details.velocity < 0) { data.instruction.details.velocity *= -1; }
+				$("#heading").rotate({animateTo: (-player.rotation.y * 180 / Math.PI)});
 				$("#speed").html(Math.round(data.instruction.details.velocity * 66) + "<span>KM/H</span>");
 				$("#altitude").html(Math.round(player.position.y)+ "m");
 				$("#selectedItem").html("<div><strong>Player</strong><br />pX:&nbsp;"+player.position.x+"<br />pY:&nbsp;"+player.position.y+"<br />pZ:&nbsp;"+player.position.z+"<br />rY:&nbsp;"+player.rotation.y+"</div>");

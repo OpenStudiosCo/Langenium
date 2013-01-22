@@ -20,9 +20,9 @@ var bots = [];
 var players_online = [];
 var bullets = [];
 var players = [ 
-		{ username: "Mercenary", id: "1", type: { ship: "player" }, url: "assets/mercenary.js", position: { x: -8500, y: 5000, z: -1740 , scale: 10, rotationY: 0 }},
+		{ username: "Mercenary", id: "1", type: { ship: "player" }, url: "assets/mercenary.js", position: { x: -8500, y: 5000, z: -1740, rotationY: 0 }, scale: 10},
 		//{ username: "Pirate", uid: "2", type: "player", url: "assets/pirate.js", position: { x: -1000, y: 3000, z: 5500 , scale: 10, rotationY: 0 }}
-		{ username: "Pirate", id: "2", type: { ship: "player" }, url: "assets/pirate.js", position: { x: 0, y: 0, z: 0 , scale: 10, rotationY: 0 }}
+		{ username: "Pirate", id: "2", type: { ship: "player" }, url: "assets/pirate.js", position: { x: 0, y: 0, z: 0, rotationY: 0 }, scale: 10}
 	];
 	
 /*///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -36,11 +36,34 @@ var world_map = world.makeWorld(db, bots, THREE);
 
 var worldTime = new Date().getTime(); 
 
+var bulletCheck = 0;
+var shootInterval = 0;
+
 var tick = setInterval(function(){
+	bulletCheck += 1;
+	shootInterval += 1;
+	
+	
 	var newTime = new Date().getTime(); 
-	io.sockets.emit("update", world.updateWorld(bullets, newTime - worldTime, update_queue, bots, events, players_online, THREE, world_map));
+	var update = world.updateWorld(
+															bullets, 
+															newTime - worldTime, 
+															update_queue, 
+															bots, events, 
+															players_online, 
+															THREE, 
+															world_map, 
+															bulletCheck, 
+															shootCheck()
+														);
+	io.sockets.emit("update", update);
 	worldTime = newTime; 
 }, 1000 / 66);
+
+function shootCheck() { 
+		if (shootInterval > 8) { shootInterval = 0; return true; } 
+		else { return false; } 
+}
 
 io.sockets.on('connection', function (socket) {
 	socket.emit("ping", { time: new Date().getTime(), latency: 0}); 
@@ -58,7 +81,7 @@ io.sockets.on('connection', function (socket) {
 			var ship = cloneObject(player);
 			ship.type = {ship: "ship"}
 			
-			socket.broadcast.emit('load', { instructions: [ {name: "load", username: ship.username, type: ship.type, url: ship.url, position: ship.position, scale: ship.position.scale, rotationY: ship.position.rotationY} ] });
+			socket.broadcast.emit('load', { instructions: [ {name: "load", username: ship.username, type: ship.type, url: ship.url, position: ship.position, scale: ship.scale, rotationY: ship.position.rotationY} ] });
 		}
 	});
 	socket.on("disconnect" , function ()  {
@@ -114,9 +137,8 @@ function initializeClient(activePlayer) {
 	var initial_instructions = [];
 
 	db.getLoadInstructions("map").forEach(function(instruction){ instruction.name = "load"; initial_instructions.push(instruction);});
-	bots.forEach(function(bot, index){
-		
-		initial_instructions.push({name: "load", id: bots[index].id, type: bots[index].type, url: bots[index].url, position: { x: bots[index].position.x,  y: bots[index].position.y,  z: bots[index].position.z, rotationY: bots[index].rotation.y , scale: 10 }  });
+	bots.forEach(function(bot, index){	
+		initial_instructions.push({name: "load", id: bots[index].id, type: bots[index].type, url: bots[index].url, position: { x: bots[index].position.x,  y: bots[index].position.y,  z: bots[index].position.z, rotationY: bots[index].rotation.y  },  scale: bots[index].scale.x || bots[index].scale });
 	});
 	
 	//getLoadInstructions("ships").forEach(function(instruction){initial_instructions.push(instruction);});
@@ -126,10 +148,10 @@ function initializeClient(activePlayer) {
 			// had to do this to de-reference player so that changing .type didn't override 
 			var ship = cloneObject(player);
 			ship.type = { ship: "ship" };
-			initial_instructions.push({name: "load", username: ship.username, type: ship.type, url: ship.url, position: ship.position, scale: ship.position.scale, rotationY: ship.position.rotationY});
+			initial_instructions.push({name: "load", username: ship.username, type: ship.type, url: ship.url, position: ship.position, scale: ship.scale, rotationY: ship.position.rotationY});
 		}
 		else {
-			initial_instructions.push({name: "load", username: player.username, type: player.type, url: player.url, position: player.position, scale: player.position.scale, rotationY: player.position.rotationY});
+			initial_instructions.push({name: "load", username: player.username, type: player.type, url: player.url, position: player.position, scale: player.scale, rotationY: player.position.rotationY});
 		}
 	});
 	return initial_instructions;
@@ -145,14 +167,4 @@ function cloneObject(obj) {
         }
         return clone;
 }
-
-/*///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	Utility functions
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
-
-function spawn(uid, position) {
-	position.scale = 10;
-	return { name: "load", details: { uid: uid, type: "monster", url: "assets/pirate.js", position: position}};
-}
-
 

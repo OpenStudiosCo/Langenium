@@ -44,8 +44,8 @@ function init() {
 		winH = window.innerHeight;
 	}
 	camera = new THREE.PerspectiveCamera( 45, (winW) / (winH), 10, M );
-	camera.position.y = 6;
-	camera.position.z = 40;
+	camera.position.y = 8;
+	camera.position.z = 50;
 
 	createScene();
 	controls = new THREE.TrackballControls(camera);

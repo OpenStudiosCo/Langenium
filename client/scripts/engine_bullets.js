@@ -8,6 +8,14 @@ function handleBullets(delta){
 			scene.remove(bullets[index]);
 			bullets.splice(index, 1);
 		}
+		else {
+			bots.forEach(function(bot) {
+				if ((bullet.username != bot.id)&&(bot.position.distanceTo(bullet.position) < 100)) {
+					bulletEffect(bot.position);
+					scene.remove(bullet);
+				}
+			});
+		}
 	});
 }
  
@@ -24,7 +32,10 @@ function addBullet(ship) {
 	
 	var 	lBullet = makeBullet(ship.position, pVector, ship.rotation.y, 20, geometry, material),
 			rBullet = makeBullet(ship.position, pVector, ship.rotation.y, -20, geometry, material);
-				
+			
+	lBullet.username = ship.username || ship.id;			
+	rBullet.username = ship.username || ship.id;
+	
 	bullets.push(lBullet);
 	scene.add(bullets[bullets.length-1]);
 	bullets.push(rBullet);

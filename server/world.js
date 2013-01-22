@@ -1,10 +1,13 @@
 module.exports.makeWorld = makeWorld;
 module.exports.updateWorld = updateWorld;
+module.exports.urlPrefix = urlPrefix;
 
-var 	urlPrefix = urlPrefix = "http://localhost:8080/";
-		//urlPrefix = "http://langenium.com/play/";
+var 	//urlPrefix =  "http://localhost:8080/",
+		urlPrefix = "http://langenium.com/play/",
+		bullet;
 
 function makeWorld(db, bots, THREE) {
+	bullet = new THREE.Mesh(new THREE.CubeGeometry(1, 1, 30), new THREE.MeshBasicMaterial());
 	var world_map = [];
 	var map_builder = db.getDummyMap();
 	map_builder.forEach(function(sceneObj, index){
@@ -13,11 +16,10 @@ function makeWorld(db, bots, THREE) {
 				scale = sceneObj.scale || object.scale,
 				loader =  new THREE.JSONLoader(),
 				url = object.url;
-				
+					
 		loader.load(urlPrefix + url, function(geometry, materials){
 			var objMesh = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial( materials ) );
 			objMesh.geometry.computeBoundingBox();
-			
 			objMesh.scale = new THREE.Vector3(scale,scale,scale);
 			objMesh.position.x = sceneObj.position.x,
 			objMesh.position.y = sceneObj.position.y,
@@ -34,7 +36,7 @@ function makeWorld(db, bots, THREE) {
 		var 	type = obj.type,
 				object = db.getObject(type),
 				scale = obj.scale || object.scale,
-				url = object.url;
+				url = urlPrefix + object.url;
 				
 		makeBotMesh(url, scale, bots, obj, THREE);
 	});
@@ -45,7 +47,7 @@ function makeWorld(db, bots, THREE) {
 
 function makeBotMesh(url, scale, bots, obj, THREE) {
 var  loader =  new THREE.JSONLoader();
-	loader.load(urlPrefix + url, function(geometry, materials){
+	loader.load(url, function(geometry, materials){
 		var bot = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial( materials ) );
 		bot.geometry.computeBoundingBox();
 		bot.scale = new THREE.Vector3(scale,scale,scale);
@@ -57,25 +59,27 @@ var  loader =  new THREE.JSONLoader();
 		bot.updateMatrix();
 		bot.updateMatrixWorld();
 		bot.id = obj.id;
-		bot.url = urlPrefix + url;
+		bot.url = url;
 		bot.type = { ship: "bot" };
 		bot.movement_queue = [];
 		bots.push(bot); 
 	});	
 }
 
-function updateWorld(bullets, delta, update_queue, bots, events, players_online, THREE, world_map) {
-	handleBullets(bullets, bots, players_online, delta, update_queue, THREE);
-	updateBotsFromBuffer(bullets, delta, update_queue, bots, events, players_online, THREE, world_map);
+function updateWorld(bullets, delta, update_queue, bots, events, players_online, THREE, world_map, bulletCheck, shootCheck) {
+	if (bulletCheck > 20) {
+		handleBullets(bullets, bots, players_online, delta, update_queue, THREE);
+		bulletCheck = 0;
+	}
+	updateBotsFromBuffer(bullets, delta, update_queue, bots, events, players_online, THREE, world_map, shootCheck);
 	players_online.forEach(function(player){
 		var 	playerMovement, 
 				inputData;
 		if (player.inputUpdates.length > 0) {
 			inputData = player.inputUpdates.shift();
 	
-			if ((delta >12)&&(inputData.fire == true)) {
-				bullets.push(addBullet(player.username, player.position, player.position.rotationY, 20, THREE));
-				bullets.push(addBullet(player.username, player.position, player.position.rotationY, -20, THREE));
+			if ((shootCheck == true)&&(inputData.fire == true)) {
+				bullets.push(addBullet(player.username, player.position, player.position.rotationY, 1, THREE));
 			}
 			else {
 				inputData.fire = false;
@@ -109,17 +113,15 @@ function addBot(bots, delta, THREE){
 	var db = require("./db.js");
 	var obj = db.buildObject(("Pirate " + (new Date().getTime()) * Math.random()), { ship: 'pirate' }, { x: -8500, y: 5000, z: -3500, rotationY: 0 }, 10);
 	
-	makeBotMesh(obj.url, obj.scale, bots, obj, THREE);
+	makeBotMesh(urlPrefix + obj.url, obj.scale, bots, obj, THREE);
 
 	obj.name = "load";
 	obj.type = { ship: "bot" };
-	return { instruction: {name: "load", id: obj.id, type: obj.type, url: obj.url, position: { x: obj.position.x,  y: obj.position.y,  z: obj.position.z, rotationY: obj.position.rotationY , scale: 10 } } };
+	return { instruction: {name: "load", id: obj.id, type: obj.type, url: obj.url, position: { x: obj.position.x,  y: obj.position.y,  z: obj.position.z, rotationY: obj.position.rotationY  }, scale: obj.scale } };
 }
 
 function addBullet(username, position, rotation, shifter, THREE) {
-	
-	var bullet = new THREE.Mesh(new THREE.CubeGeometry(1, 1, 30), new THREE.MeshBasicMaterial());
-	
+
 	bullet.username = username;
 	bullet.position.x = position.x;
 	bullet.position.y = position.y + 10;
@@ -141,11 +143,11 @@ function addBullet(username, position, rotation, shifter, THREE) {
 
 function handleBullets(bullets, bots, players_online, delta, update_queue, THREE){
 	bullets.forEach(function(bullet, index){
-		if (bullet._lifetime > 2000) {
+		if (bullet._lifetime > 100) {
 			bullets.splice(index, 1);
 		}
 		else {
-			bullet.translateZ(-0.3030303030303030303030303030303);
+			bullet.translateZ(-6.06);
 			bullet._lifetime += delta;
 			bots.forEach(function(bot, botIndex){
 				if ((bot.id != bullet.username)&&(getDistance(bot, bullet)< 150)) {
@@ -156,18 +158,21 @@ function handleBullets(bullets, bots, players_online, delta, update_queue, THREE
 						bots.splice(botIndex, 1);		
 						return;
 					}
+					/*else {
+						update_queue.push( { instruction: { name: "hit", type: "bot", id: bot.id } } );
+					}*/
 				}
 			});
 		}
 	});
 }
 
-function updateBotsFromBuffer(bullets, delta, update_queue, bots, events, players_online, THREE, world_map) {
+function updateBotsFromBuffer(bullets, delta, update_queue, bots, events, players_online, THREE, world_map, shootCheck) {
 	bots.forEach(function(bot, index){
 		if (players_online.length > 0) {
 
 			var 	fire = 0,
-					radian = .01744444444444444444444444444444,
+					radian = .017444,
 					rY = 0;	
 			
 			if (bot.rotation.y  > getTheta(bot, players_online[0])) {
@@ -200,7 +205,7 @@ function updateBotsFromBuffer(bullets, delta, update_queue, bots, events, player
 							(players_online[0].position.y - bot.position.y < 50)&&
 							(players_online[0].position.y - bot.position.y > -50)
 						) &&
-						delta > 16
+						shootCheck == true
 				) {
 					fire = 1;
 				}

@@ -75,11 +75,11 @@ io.sockets.on('connection', function (socket) {
 		players_online.forEach(function(player, index){
 			if (player.sessionId == socket.id) {
 				
-				if ((data.pZ > 0)&&(player.velocity > -6)){ 
-					player.velocity -= 15 * data.d; 
+				if ((data.pZ > 0)&&(player.velocity > -6.6)){ 
+					player.velocity -= .25; 
 				} 			
-				if  ((data.pZ < 0)&&(player.velocity < 3)) { 
-					player.velocity  += 7.5 * data.d; 
+				if  ((data.pZ < 0)&&(player.velocity < 3.3)) { 
+					player.velocity  += .125; 
 				}			
 				player.inputUpdates.push(data);
 			}

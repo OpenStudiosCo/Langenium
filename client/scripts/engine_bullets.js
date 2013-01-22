@@ -14,9 +14,9 @@ function handleBullets(delta){
 function addBullet(ship) {
 
 	var geometry = new THREE.CubeGeometry(1, 1, 30);
-	
 	for ( var i = 0; i < geometry.faces.length; i ++ ) {
-		geometry.faces[ i ].color.setHex( 0xEE1133 );
+		
+		geometry.faces[ i ].color.setHex( 0xFF6600 );
 	}
 	
 	var material = new THREE.MeshBasicMaterial( { vertexColors: THREE.FaceColors } );
@@ -31,6 +31,8 @@ function addBullet(ship) {
 	scene.add(bullets[bullets.length-1]);
 
 }
+
+
 
 var	counter = 0,
 		SPEED = 30, 

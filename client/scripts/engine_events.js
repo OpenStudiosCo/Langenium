@@ -60,7 +60,7 @@ function updateClient(data) {
 		if (data.instruction.type == "bot") {
 			bots.forEach(function(bot, index){
 				if (bot.id == data.instruction.id) {
-					
+					bulletEffect(bot.position);
 				}
 			});
 		}

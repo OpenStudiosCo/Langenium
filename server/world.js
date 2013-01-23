@@ -43,8 +43,6 @@ function makeWorld(db, bots, THREE) {
 	return world_map;
 };
 
-
-
 function makeBotMesh(url, scale, bots, obj, THREE) {
 var  loader =  new THREE.JSONLoader();
 	loader.load(url, function(geometry, materials){
@@ -71,7 +69,7 @@ function updateWorld(bullets, delta, update_queue, bots, events, players_online,
 		handleBullets(bullets, bots, players_online, delta, update_queue, THREE);
 		bulletCheck = 0;
 	}
-	updateBotsFromBuffer(bullets, delta, update_queue, bots, events, players_online, THREE, world_map, shootCheck);
+	//updateBotsFromBuffer(bullets, delta, update_queue, bots, events, players_online, THREE, world_map, shootCheck);
 	players_online.forEach(function(player){
 		var 	playerMovement, 
 				inputData;
@@ -143,14 +141,14 @@ function addBullet(username, position, rotation, shifter, THREE) {
 
 function handleBullets(bullets, bots, players_online, delta, update_queue, THREE){
 	bullets.forEach(function(bullet, index){
-		if (bullet._lifetime > 100) {
+		if (bullet._lifetime > 2000) {
 			bullets.splice(index, 1);
 		}
 		else {
-			bullet.translateZ(-6.06);
+			bullet.translateZ(-22.5);
 			bullet._lifetime += delta;
 			bots.forEach(function(bot, botIndex){
-				if ((bot.id != bullet.username)&&(getDistance(bot, bullet)< 150)) {
+				if ((bot.id != bullet.username)&&(getDistance(bot, bullet) < 100)) {
 					bot.health -= 5;
 					if (bot.health < 0) {
 						update_queue.push( addBot(bots, delta, THREE) );
@@ -172,7 +170,7 @@ function updateBotsFromBuffer(bullets, delta, update_queue, bots, events, player
 		if (players_online.length > 0) {
 
 			var 	fire = 0,
-					radian = 0.01744444444444444444444444444444,
+					radian = 0.01744444444444444444444444444444 * 2,
 					rY = 0;	
 			
 			if (bot.rotation.y  > getTheta(bot, players_online[0])) {
@@ -186,7 +184,7 @@ function updateBotsFromBuffer(bullets, delta, update_queue, bots, events, player
 			
 			if (
 					bot.movement_buffer &&
-					(getDistance(bots[index], players_online[0]) - bots[index].movement_buffer.distance < 150)&&
+					(getDistance(bots[index], players_online[0]) - bots[index].movement_buffer.distance < 200)&&
 					checkMovementBuffer(bot.movement_buffer) == true
 				)
 				{

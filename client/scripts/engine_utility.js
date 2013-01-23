@@ -72,7 +72,7 @@ function teleportEffect(position){
 }
 
 function bulletEffect(position){
-		var particleCount = 2,
+		var particleCount = 20,
 				particles = new THREE.Geometry(),
 				pMaterial =
 				  new THREE.ParticleBasicMaterial({
@@ -98,7 +98,7 @@ function bulletEffect(position){
 			var particle_system = new THREE.ParticleSystem(particles, pMaterial);	
 			particle_system.max = 6;
 			particle_system.min = 1;
-			particle_system._lifetime = 1.5;
+			particle_system._lifetime = 0;
 			particle_system.sortParticles = true;
 			particle_systems.push(particle_system);
 			// add it to the scene

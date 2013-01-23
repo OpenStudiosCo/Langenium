@@ -154,29 +154,6 @@ function makeObjectMesh(objectType, geometry, materials, x, y, z, scale) {
 	return object;
 }
 
-function playerScope() {
-	var geometry = new THREE.Geometry();
-	geometry.vertices.push(new THREE.Vector3(-4, 0, 0));
-	    geometry.vertices.push(new THREE.Vector3(0, 5, 0));
-	geometry.vertices.push(new THREE.Vector3(4, 0, 0));
-	geometry.vertices.push(new THREE.Vector3(0, -5, 0));
-	geometry.vertices.push(new THREE.Vector3(-4, 0, 0));
-	
-
-	
-
-	var material = new THREE.LineBasicMaterial( { color: 0x00FF00 } );
-	var mesh = new THREE.Line(geometry, material );
-	
-	mesh.position.x = 0;
-	mesh.position.y = 0;
-	mesh.position.z = -100;
-
-	mesh.scale = new THREE.Vector3(1,1,1);
-	
-	return mesh;
-};
-
 function renderObject(mesh, category, type, instruction) {
 	mesh.uid = instruction.id;
 	var  x = instruction.position.x,
@@ -201,8 +178,6 @@ function renderObject(mesh, category, type, instruction) {
 		player.material.materials.forEach(function(material,index){
 			player.material.materials[index].morphTargets = true;
 		});
-		
-		player.add(playerScope());
 		
 		player.add(camera);
 		scene.add(player);

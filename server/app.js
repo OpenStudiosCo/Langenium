@@ -61,7 +61,7 @@ var tick = setInterval(function(){
 }, 1000 / 66);
 
 function shootCheck() { 
-		if (shootInterval > 8) { shootInterval = 0; return true; } 
+		if (shootInterval > 6) { shootInterval = 0; return true; } 
 		else { return false; } 
 }
 

@@ -178,6 +178,7 @@ function renderObject(mesh, category, type, instruction) {
 		player.material.materials.forEach(function(material,index){
 			player.material.materials[index].morphTargets = true;
 		});
+		
 		player.add(camera);
 		scene.add(player);
 		ships.push(player);

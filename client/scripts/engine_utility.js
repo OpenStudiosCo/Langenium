@@ -22,12 +22,12 @@ function handleParticles(delta){
 		particle_system.material.color.r -= Math.random()*.001;
 		particle_system.material.color.g += Math.random()*.001;
 		if (particle_system.material.opacity > 0){
-		particle_system.material.opacity -= .01;
+		particle_system.material.opacity *= .99;
 		}
 			particle_system.geometry.vertices.forEach(function(particle,index){
-			  particle.x += Math.random() * 16 - 8;
-			  particle.y += Math.random() * 16 - 8;
-			  particle.z += Math.random() * 16 - 8;
+			  particle.x += Math.random() * particle_system.max - particle_system.min;
+			  particle.y += Math.random() * particle_system.max - particle_system.min;
+			  particle.z += Math.random() * particle_system.max - particle_system.min;
 		});
 		particle_system.geometry.__dirtyVertices = true;
 		if (particle_system._lifetime > 1.57) {
@@ -62,6 +62,8 @@ function teleportEffect(position){
 
 			// create the particle system
 			var particle_system = new THREE.ParticleSystem(particles, pMaterial);	
+			particle_system.max = 16;
+			particle_system.min = 8;
 			particle_system._lifetime = -2;
 			particle_system.sortParticles = true;
 			particle_systems.push(particle_system);
@@ -70,7 +72,7 @@ function teleportEffect(position){
 }
 
 function bulletEffect(position){
-		var particleCount = 2,
+		var particleCount = 20,
 				particles = new THREE.Geometry(),
 				pMaterial =
 				  new THREE.ParticleBasicMaterial({
@@ -84,9 +86,9 @@ function bulletEffect(position){
 			for(var p = 0; p < particleCount; p++) {
 				// create a particle with random
 				// position values, -250 -> 250
-				var pX = position.x + Math.random() * 2 - 1.25,
-				  pY = position.y + Math.random() * 2 - 1.25,
-				  pZ = position.z + Math.random() * 2 - 1.25,
+				var pX = position.x + Math.random() * 4 - 2,
+				  pY = position.y + Math.random() * 4 - 2,
+				  pZ = position.z + Math.random() * 4 - 2,
 				  particle = new THREE.Vector3(pX, pY, pZ);
 				// add it to the geometry
 				particles.vertices.push(particle);
@@ -94,7 +96,9 @@ function bulletEffect(position){
 
 			// create the particle system
 			var particle_system = new THREE.ParticleSystem(particles, pMaterial);	
-			particle_system._lifetime = 1.2;
+			particle_system.max = 6;
+			particle_system.min = 1;
+			particle_system._lifetime = 0;
 			particle_system.sortParticles = true;
 			particle_systems.push(particle_system);
 			// add it to the scene

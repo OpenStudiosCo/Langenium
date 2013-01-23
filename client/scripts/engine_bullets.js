@@ -9,9 +9,9 @@ function handleBullets(delta){
 			bullets.splice(index, 1);
 		}
 		else {
+			
 			bots.forEach(function(bot) {
 				if ((bullet.username != bot.id)&&(bot.position.distanceTo(bullet.position) < 100)) {
-					bulletEffect(bot.position);
 					scene.remove(bullet);
 				}
 			});

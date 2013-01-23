@@ -145,7 +145,7 @@ function handleBullets(bullets, bots, players_online, delta, update_queue, THREE
 			bullets.splice(index, 1);
 		}
 		else {
-			bullet.translateZ(-22.5);
+			bullet.translateZ(-1.5 * delta);
 			bullet._lifetime += delta;
 			bots.forEach(function(bot, botIndex){
 				if ((bot.id != bullet.username)&&(getDistance(bot, bullet) < 100)) {

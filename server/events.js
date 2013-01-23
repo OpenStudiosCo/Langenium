@@ -41,7 +41,7 @@ function movePlayer(velocity, playerPosition, world_map, data) {
 
 	var 	velocityZChange = velocity,
 				velocityYChange = 300 * data.d,
-				rotateAngle = 0.01744444444444444444444444444444 * 3,
+				rotateAngle = Math.PI * data.d,  // 0.01744444444444444444444444444444,
 				retval;
 
 	if (data.rY > 0) { data.rY = rotateAngle; }						// left

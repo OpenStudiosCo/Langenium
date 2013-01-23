@@ -2,8 +2,8 @@ module.exports.makeWorld = makeWorld;
 module.exports.updateWorld = updateWorld;
 module.exports.urlPrefix = urlPrefix;
 
-var 	//urlPrefix =  "http://localhost:8080/",
-		urlPrefix = "http://langenium.com/play/",
+var 	urlPrefix =  "http://localhost:8080/",
+		//urlPrefix = "http://langenium.com/play/",
 		bullet;
 
 function makeWorld(db, bots, THREE) {
@@ -158,9 +158,9 @@ function handleBullets(bullets, bots, players_online, delta, update_queue, THREE
 						bots.splice(botIndex, 1);		
 						return;
 					}
-					/*else {
+					else {
 						update_queue.push( { instruction: { name: "hit", type: "bot", id: bot.id } } );
-					}*/
+					}
 				}
 			});
 		}
@@ -172,7 +172,7 @@ function updateBotsFromBuffer(bullets, delta, update_queue, bots, events, player
 		if (players_online.length > 0) {
 
 			var 	fire = 0,
-					radian = .017444,
+					radian = 0.01744444444444444444444444444444,
 					rY = 0;	
 			
 			if (bot.rotation.y  > getTheta(bot, players_online[0])) {

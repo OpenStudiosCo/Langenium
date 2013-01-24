@@ -39,10 +39,8 @@ function moveBot(buffer) {
 
 function movePlayer(velocity, playerPosition, world_map, data) {
 
-	var 	velocityZChange = velocity,
-				velocityYChange = 300 * data.d,
-				rotateAngle = 0.01744444444444444444444444444444,
-				retval;
+	var 		velocityYChange = 300 * data.d,
+				rotateAngle = 0.01744444444444444444444444444444 * 2;
 
 	if (data.rY > 0) { data.rY = rotateAngle; }						// left
 	if (data.rY < 0) { data.rY = -rotateAngle; }					// right
@@ -52,8 +50,8 @@ function movePlayer(velocity, playerPosition, world_map, data) {
 	if (data.pY < 0) { data.pY = -(velocityYChange); } 		// down
 
 	
-	data.pX = velocityZChange * Math.sin(playerPosition.rotationY);
-	data.pZ = velocityZChange * Math.cos(playerPosition.rotationY);
+	data.pX = velocity * Math.sin(playerPosition.rotationY);
+	data.pZ = velocity * Math.cos(playerPosition.rotationY);
 	
 	var moveVector = new THREE.Vector3(data.pX, data.pY, data.pZ);
 	var playerPositionVector = new THREE.Vector3(playerPosition.x, playerPosition.y, playerPosition.z);
@@ -80,12 +78,9 @@ function movePlayer(velocity, playerPosition, world_map, data) {
 					data.pZ *= -.001;
 				}
 			}
-		});
-		
+		}); 
 	}
-	retval = { instruction: { name: "move", type: "player", details: data } };
-	
-	return retval;
+		return { instruction: { name: "move", type: "player", details: data } };
 }
 
 function detectCollision(source, direction, world_map) {

@@ -19,6 +19,7 @@ var hblur, vblur;
 var geometry, material, mesh;
 var controls;
 var player, ships = [], bots = [], bullets = [], particle_systems = [];
+var projector = new THREE.Projector();
 var keyboard = new THREEx.KeyboardState(), clock = new THREE.Clock();
 var M = 10000 * 1000;
 var composer;
@@ -51,6 +52,7 @@ function init() {
 	controls = new THREE.TrackballControls(camera);
 	controls.target.set(0, 0, 0);
 	controls.staticMoving = true;
+	controls.dynamicDampingFactor = 0.5;
 
 	stats = new Stats();
 	stats.domElement.style.float = "left"
@@ -61,7 +63,12 @@ function init() {
 	});
 	renderer.setSize( winW, winH);
 	$container.append(renderer.domElement);
-	
+	renderer.domElement.addEventListener( 'mousedown', onDocumentMouseDown, false );
+	renderer.domElement.addEventListener( 'mouseup', onDocumentMouseUp, false );
+
+	//
+
+	window.addEventListener( 'resize', onWindowResize, false );
 }
 
  /* Create basic scene objects - sky, etc
@@ -265,7 +272,7 @@ function animate() {
 		var 	interval = new Date,
 				intervalDelta = interval - player.moveInterval;
 				
-		player.rotation.x = Math.sin(interval/5000)/15;
+
 		
 		if (intervalDelta >= player.latency / 20) {
 			playerInput(delta);
@@ -294,12 +301,74 @@ function animate() {
 	});
 	
 	bots.forEach(function(bot,index){
+		if (player) {
+			bots[index].children[0].rotation.x = -bots[index].rotation.x;
+			bots[index].children[0].rotation.y = -bots[index].rotation.y + player.rotation.y + player.children[0].rotation.y;
+			bots[index].children[0].rotation.z = -bots[index].rotation.z;
+		}
 		if (bot.position.y < 50) { bot.position.y += 3; }
-		if (bot.rotation.z != 0) { bot.rotation.z -= bot.rotation.z / 50; }	
+		if (bot.rotation.z != 0) { bot.rotation.z -= bot.rotation.z / 50; }
 	});
 	
 	requestAnimationFrame( animate );
 	renderer.render( scene, camera );
 	controls.update();
 	stats.update();
+}
+
+var mouse = new THREE.Vector2(),
+			offset = new THREE.Vector3(),
+			INTERSECTED, SELECTED;
+
+function onDocumentMouseDown( event ) {
+
+				event.preventDefault();
+
+				var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
+				projector.unprojectVector( vector, camera );
+
+				var raycaster = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
+
+				var intersects = raycaster.intersectObjects( bots );
+
+				if ( intersects.length > 0 ) {
+					console.log("HELLO");
+					controls.enabled = false;
+
+					SELECTED = intersects[ 0 ].object;
+
+					var intersects = raycaster.intersectObject( plane );
+					offset.copy( intersects[ 0 ].point ).sub( plane.position );
+
+					container.style.cursor = 'move';
+
+				}
+
+			}
+
+function onDocumentMouseUp( event ) {
+
+	event.preventDefault();
+
+	controls.enabled = true;
+
+	if ( INTERSECTED ) {
+
+		plane.position.copy( INTERSECTED.position );
+
+		SELECTED = null;
+
+	}
+
+	container.style.cursor = 'auto';
+
+}
+
+function onWindowResize() {
+
+	camera.aspect = window.innerWidth / window.innerHeight;
+	camera.updateProjectionMatrix();
+
+	renderer.setSize( window.innerWidth, window.innerHeight );
+
 }

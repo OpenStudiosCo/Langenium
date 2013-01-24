@@ -98,11 +98,11 @@ io.sockets.on('connection', function (socket) {
 		players_online.forEach(function(player, index){
 			if (player.sessionId == socket.id) {
 				
-				if ((data.pZ > 0)&&(player.velocity > -6.6)){ 
-					player.velocity -= .25; 
+				if ((data.pZ > 0)&&(player.velocity > -660)){ 
+					player.velocity -= 25; 
 				} 			
-				if  ((data.pZ < 0)&&(player.velocity < 3.3)) { 
-					player.velocity  += .125; 
+				if  ((data.pZ < 0)&&(player.velocity < 330)) { 
+					player.velocity  += 12.5; 
 				}			
 				player.inputUpdates.push(data);
 			}
@@ -120,6 +120,7 @@ function loginPlayer(sessionId, username) {
 	players.forEach(function(player){
 		if (player.username == username) {
 			var online_player = cloneObject(player);
+			online_player.health = 100;
 			online_player.inputUpdates = []; 
 			online_player.username = sessionId; 
 			online_player.sessionId = sessionId;

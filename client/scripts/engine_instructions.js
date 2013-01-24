@@ -20,22 +20,22 @@ function moveShip(ship, isPlayer, instruction) {
 
 	if (rotate > 0){
 		if (ship.rotation.z < .5) {
-			if (isPlayer == true) { camera.rotation.z -= rotate / 3; }
+			//if (isPlayer == true) { camera.rotation.z -= rotate / 3; }
 			ship.rotation.z += rotate / 3;
 		}
 		else {
-			if (isPlayer == true) { camera.rotation.z -= rotate / 4; }
+			//if (isPlayer == true) { camera.rotation.z -= rotate / 4; }
 			ship.rotation.z += rotate / 4;
 		}
 		ship.rotation.y += rotate;
 	}
 	if (rotate < 0) {
 		if (ship.rotation.z > -.5) {
-			if (isPlayer == true) { camera.rotation.z -= rotate / 3; }
+			//if (isPlayer == true) { camera.rotation.z -= rotate / 3; }
 			ship.rotation.z += rotate / 3;
 		}
 		else {
-			if (isPlayer == true) { camera.rotation.z -= rotate / 4; }
+			//if (isPlayer == true) { camera.rotation.z -= rotate / 4; }
 			ship.rotation.z += rotate / 4;
 		}
 		ship.rotation.y += rotate;
@@ -46,6 +46,8 @@ function moveShip(ship, isPlayer, instruction) {
 function loadInstructions(data) {
 	data.instructions.forEach(function(instruction){ loadObject(instruction); });
 }
+
+
 
 function loadObject(instruction) {
 	var loader = new THREE.JSONLoader();
@@ -154,6 +156,26 @@ function makeObjectMesh(objectType, geometry, materials, x, y, z, scale) {
 	return object;
 }
 
+function playerScope() {
+	var geometry = new THREE.PlaneGeometry(10, 10);
+
+
+	var material = new THREE.MeshBasicMaterial( { 
+					map: THREE.ImageUtils.loadTexture("assets/scope.png?nocache"),
+					blending: THREE.AdditiveBlending,
+					transparent: true
+	} );
+	var mesh = new THREE.Mesh(geometry, material );
+
+	mesh.position.x = 0;
+	mesh.position.y = .75
+	mesh.position.z = -100;
+	
+	mesh.scale = new THREE.Vector3(1,1,1);
+
+	return mesh;
+};
+
 function renderObject(mesh, category, type, instruction) {
 	mesh.uid = instruction.id;
 	var  x = instruction.position.x,
@@ -179,6 +201,7 @@ function renderObject(mesh, category, type, instruction) {
 			player.material.materials[index].morphTargets = true;
 		});
 		
+		player.add(playerScope());
 		player.add(camera);
 		scene.add(player);
 		ships.push(player);
@@ -203,9 +226,31 @@ function renderObject(mesh, category, type, instruction) {
 		bot.bullets = [];
 		bot.id = instruction.id;
 		bot.rotation.y = instruction.position.rotationY;
+		bot.add(botScope());
 		bots.push(bot);
 		scene.add(bots[bots.length-1]);
 		$("#botList").append("<li>" + bot.id + "</li>");
 		$("#bots h2").html("Enemies detected (" + bots.length + ")");
 	}
 }
+
+function botScope() {
+	var geometry = new THREE.Geometry();
+	
+	geometry.vertices.push(new THREE.Vector3(-10, 0, 0));
+	geometry.vertices.push(new THREE.Vector3(0, 10, 0));
+	geometry.vertices.push(new THREE.Vector3(10, 0, 0));
+	geometry.vertices.push(new THREE.Vector3(0, -10, 0));
+	geometry.vertices.push(new THREE.Vector3(-10, 0, 0));
+
+	var material = new THREE.LineBasicMaterial( { color: 0xFF0000, opacity: 0.5 } );
+	var mesh = new THREE.Line(geometry, material );
+
+	mesh.position.x = 0;
+	mesh.position.y = 0;
+	mesh.position.z = 0;
+
+	mesh.scale = new THREE.Vector3(1,1,1);
+
+	return mesh;
+};

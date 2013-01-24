@@ -54,9 +54,25 @@ function updateClient(data) {
 			});
 			$("#bots h2").html("Enemies detected (" + bots.length + ")");
 		}
+		if (data.instruction.type == "ship") {
+			ships.forEach(function(ship, index){
+				if (ship.username == data.instruction.username) {
+					teleportEffect(ship.position);
+					scene.remove(bots[index]);
+					bots.splice(index, 1);
+				}
+			});
+		}
 	}
 	
 	if (data.instruction.name == "hit") {
+		if (data.instruction.type == "ship") {
+			ships.forEach(function(ship, index){
+				if (ship.username == data.instruction.username) {
+					bulletEffect(ship.position);
+				}
+			});
+		}
 		if (data.instruction.type == "bot") {
 			bots.forEach(function(bot, index){
 				if (bot.id == data.instruction.id) {

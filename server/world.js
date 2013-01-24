@@ -2,8 +2,8 @@ module.exports.makeWorld = makeWorld;
 module.exports.updateWorld = updateWorld;
 module.exports.urlPrefix = urlPrefix;
 
-var 	//urlPrefix =  "http://localhost:8080/",
-		urlPrefix = "http://langenium.com/play/",
+var 	urlPrefix =  "http://localhost:8080/",
+		//urlPrefix = "http://langenium.com/play/",
 		bullet;
 
 function makeWorld(db, bots, THREE) {
@@ -69,7 +69,7 @@ function updateWorld(bullets, delta, update_queue, bots, events, players_online,
 		handleBullets(bullets, bots, players_online, delta, update_queue, THREE);
 		bulletCheck = 0;
 	}
-	updateBotsFromBuffer(bullets, delta, update_queue, bots, events, players_online, THREE, world_map, shootCheck);
+	//updateBotsFromBuffer(bullets, delta, update_queue, bots, events, players_online, THREE, world_map, shootCheck);
 	players_online.forEach(function(player){
 		var 	playerMovement, 
 				inputData;
@@ -86,7 +86,7 @@ function updateWorld(bullets, delta, update_queue, bots, events, players_online,
 		else {
 			inputData = { d: 0, pZ: 0, pY: 0, rY: 0, fire: false };
 		}
-		playerMovement = events.movePlayer(player.velocity, player.position, world_map, inputData);	
+		playerMovement = events.movePlayer(player.velocity * delta, player.position, world_map, inputData);	
 		player.position.y += playerMovement.instruction.details.pY;
 		player.position.x += playerMovement.instruction.details.pX; 
 		player.position.z += playerMovement.instruction.details.pZ;
@@ -145,7 +145,7 @@ function handleBullets(bullets, bots, players_online, delta, update_queue, THREE
 			bullets.splice(index, 1);
 		}
 		else {
-			bullet.translateZ(-1.5 * delta);
+			bullet.translateZ(-3 * delta);
 			bullet._lifetime += delta;
 			bots.forEach(function(bot, botIndex){
 				if ((bot.id != bullet.username)&&(getDistance(bot, bullet) < 100)) {
@@ -161,6 +161,19 @@ function handleBullets(bullets, bots, players_online, delta, update_queue, THREE
 					}
 				}
 			});
+			players_online.forEach(function(player, playerIndex){
+				if ((player.username != bullet.username)&&(getDistance(player, bullet) < 100)) {
+					player.health -= 5;
+					if (player.health < 0) {
+						player.health = 100;
+						update_queue.push( { instruction: { name: "kill", type: "ship", id: player.username } } );
+						return;
+					}
+					else {
+						update_queue.push( { instruction: { name: "hit", type: "ship", id: player.username } } );
+					}
+				}
+			});
 		}
 	});
 }
@@ -170,7 +183,7 @@ function updateBotsFromBuffer(bullets, delta, update_queue, bots, events, player
 		if (players_online.length > 0) {
 
 			var 	fire = 0,
-					radian = 0.01744444444444444444444444444444 * 2,
+					radian = 0.01744444444444444444444444444444,
 					rY = 0;	
 			
 			if (bot.rotation.y  > getTheta(bot, players_online[0])) {

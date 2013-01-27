@@ -64,7 +64,6 @@ function init() {
 	renderer.setSize( winW, winH);
 	$container.append(renderer.domElement);
 	renderer.domElement.addEventListener( 'mousedown', onDocumentMouseDown, false );
-	renderer.domElement.addEventListener( 'mouseup', onDocumentMouseUp, false );
 
 	window.addEventListener( 'resize', onWindowResize, false );
 }
@@ -370,45 +369,30 @@ function onDocumentMouseDown( event ) {
 
 				event.preventDefault();
 
-				var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
+				var vector = new THREE.Vector3( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1, 0.5 );
 				projector.unprojectVector( vector, camera );
+	
+				var cameraVector = new THREE.Vector3();
+				cameraVector.x = player.position.x + 100 * Math.sin(player.rotation.y);
+				cameraVector.z = player.position.z + 100 * Math.cos(player.rotation.y);
+				cameraVector.y = player.position.y;
 
-				var raycaster = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
+				var raycaster = new THREE.Raycaster( cameraVector, vector.sub( cameraVector ).normalize() );
 
 				var intersects = raycaster.intersectObjects( bots );
-
+	
 				if ( intersects.length > 0 ) {
-					console.log("HELLO");
-					controls.enabled = false;
-
-					SELECTED = intersects[ 0 ].object;
-
-					var intersects = raycaster.intersectObject( plane );
-					offset.copy( intersects[ 0 ].point ).sub( plane.position );
-
-					container.style.cursor = 'move';
-
+					intersects.forEach(function(intersect, index){
+						console.log(intersect);
+						intersect.object.material.materials[0].color =  { r: 1, g: 1, b: 1 };
+						intersect.object.material.materials[1].color =  { r: 1, g: 1, b: 1 };
+						intersect.object.material.materials[2].color =  { r: 1, g: 1, b: 1 };
+					});
 				}
-
-			}
-
-function onDocumentMouseUp( event ) {
-
-	event.preventDefault();
-
-	controls.enabled = true;
-
-	if ( INTERSECTED ) {
-
-		plane.position.copy( INTERSECTED.position );
-
-		SELECTED = null;
-
-	}
-
-	container.style.cursor = 'auto';
+				
 
 }
+
 
 function onWindowResize() {
 

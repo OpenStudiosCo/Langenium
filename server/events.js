@@ -70,13 +70,13 @@ function movePlayer(velocity, playerPosition, world_map, data) {
 					{ data.rY += collision.distance / 10000; }
 				
 				if (data.pX != 0) {
-					playerPosition.x += velocity * Math.sin(playerPosition.rotationY) * -.001;
+					data.pX *= -.001;
 				}
 				if (data.pY != 0) {
-					playerPosition.y += data.pY * -.001;
+					data.pY *= -.001;
 				}
 				if (data.pZ != 0) {
-					playerPosition.z += velocity * Math.cos(playerPosition.rotationY) * -.001;
+					data.pZ *= -.001;
 				}
 			}
 		}); 

@@ -1,8 +1,8 @@
 function getDistance(position1, position2) {
 	return Math.sqrt(
-		((position1.position.x - position2.position.x) * (position1.position.x - position2.position.x)) + 
-		((position1.position.y - position2.position.y) * (position1.position.y - position2.position.y)) + 
-		((position1.position.z - position2.position.z) * (position1.position.z - position2.position.z))
+		((position1.x - position2.x) * (position1.x - position2.x)) + 
+		((position1.y - position2.y) * (position1.y - position2.y)) + 
+		((position1.z - position2.z) * (position1.z - position2.z))
 	);
 }
 

@@ -206,6 +206,7 @@ function movePlayer(velocity, playerPosition, data) {
 	}
 	
 		moveShip(player, true, { name: "move", type: "player", details: data });
+		$("#selectedItem").html("<div><strong>Player</strong><br />pX:&nbsp;"+player.position.x+"<br />pY:&nbsp;"+player.position.y+"<br />pZ:&nbsp;"+player.position.z+"<br />rY:&nbsp;"+player.rotation.y+"<br />d:&nbsp;" + Math.round(data.d * 1000) + "</div>");
 }
 
 var isFiring = false;

@@ -49,12 +49,17 @@ function movePlayer(velocity, playerPosition, world_map, data) {
 	
 	if (data.pY > 0) { data.pY = velocityYChange; } 			// up
 	if (data.pY < 0) { data.pY = -(velocityYChange); } 		// down
-
+	
+	data.pX = velocity * Math.sin(playerPosition.rotationY);
+	data.pZ = velocity * Math.cos(playerPosition.rotationY);
+	
 	var moveVector = new THREE.Vector3(data.pX, data.pY, data.pZ);
 	var playerPositionVector = new THREE.Vector3(playerPosition.x, playerPosition.y, playerPosition.z);
 	
 	var collisions = detectCollision(playerPositionVector, moveVector, world_map);
+	
 
+	
 	if (collisions.length > 0) {
 		collisions.forEach(function(collision, index){
 			
@@ -76,11 +81,10 @@ function movePlayer(velocity, playerPosition, world_map, data) {
 			}
 		}); 
 	}
-	else {
-		playerPosition.y += data.pY;
-		playerPosition.x += velocity * Math.sin(playerPosition.rotationY);
-		playerPosition.z += velocity * Math.cos(playerPosition.rotationY);
-	}
+	
+	playerPosition.y += data.pY;
+	playerPosition.x += data.pX;
+	playerPosition.z += data.pZ;
 	
 	playerPosition.rotationY += data.rY;
 	
@@ -88,7 +92,6 @@ function movePlayer(velocity, playerPosition, world_map, data) {
 	data.pY = playerPosition.y;
 	data.pZ = playerPosition.z;
 	data.rY = playerPosition.rotationY;
-	
 	return { instruction: { name: "move", type: "player", details: data } };
 }
 

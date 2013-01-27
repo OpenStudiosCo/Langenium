@@ -18,6 +18,7 @@ function makeBotMovementBuffer(bot, destination, angle, distance) {
 		distance: distance
 	}
 }
+
 function moveBot(buffer) { 
 	var instruction = 0;
 	if (buffer != 0) {

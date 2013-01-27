@@ -84,12 +84,14 @@ function updateClient(data) {
 	if (data.instruction.name == "move") {
 		if (data.instruction.details.username == socket.socket.sessionid) {
 			if (player) {
+				player.velocity = Math.round(data.instruction.details.velocity * 66);
 				if (data.instruction.details.fire == 1) {
 						addBullet(player); 
 				}
-				moveShip(player, true, data.instruction);
+				//moveShip(player, true, data.instruction);
 				if (data.instruction.details.velocity < 0) { data.instruction.details.velocity *= -1; }
 				$("#heading").rotate({animateTo: (-player.rotation.y * 180 / Math.PI)});
+				
 				$("#speed").html(Math.round(data.instruction.details.velocity * 66) + "<span>KM/H</span>");
 				$("#altitude").html(Math.round(player.position.y)+ "m");
 				$("#selectedItem").html("<div><strong>Player</strong><br />pX:&nbsp;"+player.position.x+"<br />pY:&nbsp;"+player.position.y+"<br />pZ:&nbsp;"+player.position.z+"<br />rY:&nbsp;"+player.rotation.y+"</div>");
@@ -115,7 +117,11 @@ function updateClient(data) {
 		}
 	}
 }
-
+function detectCollision(source, direction, world_map) {
+	var raycaster = new THREE.Raycaster(source, direction.normalize());
+	var intersects = raycaster.intersectObjects(world_map);
+	return intersects;
+}
 function removeShip(data) {
 	$("#playerList").html("");
 	ships.forEach(function(ship, index){

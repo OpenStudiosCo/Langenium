@@ -66,8 +66,6 @@ function init() {
 	renderer.domElement.addEventListener( 'mousedown', onDocumentMouseDown, false );
 	renderer.domElement.addEventListener( 'mouseup', onDocumentMouseUp, false );
 
-	//
-
 	window.addEventListener( 'resize', onWindowResize, false );
 }
 
@@ -160,7 +158,58 @@ function playerInput(delta){
 	if (move == true) {
 		socket.emit('move', keyboardInput);
 	}
+	if (player.velocity != 0) {
+		movePlayer(player.velocity / 66, player.position, keyboardInput);
+	}
 }
+
+function movePlayer(velocity, playerPosition, data) {
+
+	var 		velocityYChange = 300 * data.d,
+				rotateAngle = 0.01744444444444444444444444444444 * 2;
+
+	if (data.rY > 0) { data.rY = rotateAngle; }						// left
+	if (data.rY < 0) { data.rY = -rotateAngle; }					// right
+	data.rY = (data.rY + data.rY * Math.PI / 180);
+	
+	if (data.pY > 0) { data.pY = velocityYChange; } 			// up
+	if (data.pY < 0) { data.pY = -(velocityYChange); } 		// down
+
+	
+	data.pX = velocity * Math.sin(player.rotation.y);
+	data.pZ = velocity * Math.cos(player.rotation.y);
+	
+	var moveVector = new THREE.Vector3(data.pX, data.pY, data.pZ);
+	var playerPositionVector = new THREE.Vector3(playerPosition.x, playerPosition.y, playerPosition.z);
+	
+	var collisions = detectCollision(playerPositionVector, moveVector, world_map);
+
+	if (collisions.length > 0) {
+		collisions.forEach(function(collision, index){
+			
+			if (collision.distance < 90) {
+		
+				if (collision.point.x > playerPosition.x) 
+					{ data.rY -= collision.distance / 10000; }
+				if (collision.point.x < playerPosition.x) 
+					{ data.rY += collision.distance / 10000; }
+				
+				if (data.pX != 0) {
+					data.pX *= -.001;
+				}
+				if (data.pY != 0) {
+					data.pY *= -.001;
+				}
+				if (data.pZ != 0) {
+					data.pZ *= -.001;
+				}
+			}
+		}); 
+	}
+	
+		moveShip(player, true, { name: "move", type: "player", details: data });
+}
+
 var isFiring = false;
 $(document).bind("mousedown", function(event) {
     switch (event.which) {
@@ -249,6 +298,7 @@ var duration = 100,
 	
 function animate() {
 	var delta = clock.getDelta();
+	
 	handleParticles(delta);
 	handleBullets(delta);
 	var animTime = new Date().getTime() % duration;
@@ -257,6 +307,9 @@ function animate() {
 	TWEEN.update();
 	var shipsMoving = false;
 	if (player) {
+		if  (player.velocity != 0) {
+			player.velocity *= .996;
+		}
 		if ( keyframe != currentKeyframe ) {
 			player.morphTargetInfluences[ lastKeyframe ] = 0;
 			player.morphTargetInfluences[ currentKeyframe ] = 1;

@@ -21,7 +21,6 @@ var players_online = [];
 var bullets = [];
 var players = [ 
 		{ username: "Mercenary", id: "1", type: { ship: "player" }, url: "assets/mercenary.js", position: { x: -8500, y: 5000, z: -1740, rotationY: 0 }, scale: 10},
-		//{ username: "Pirate", uid: "2", type: "player", url: "assets/pirate.js", position: { x: -1000, y: 3000, z: 5500 , scale: 10, rotationY: 0 }}
 		{ username: "Pirate", id: "2", type: { ship: "player" }, url: "assets/pirate.js", position: { x: 0, y: 0, z: 0, rotationY: 0 }, scale: 10}
 	];
 	
@@ -98,11 +97,11 @@ io.sockets.on('connection', function (socket) {
 		players_online.forEach(function(player, index){
 			if (player.sessionId == socket.id) {
 				
-				if ((data.pZ > 0)&&(player.velocity > -660)){ 
-					player.velocity -= 25; 
+				if ((data.pZ > 0)&&(player.velocity > -6.6)){ 
+					player.velocity -= .25; 
 				} 			
-				if  ((data.pZ < 0)&&(player.velocity < 330)) { 
-					player.velocity  += 12.5; 
+				if  ((data.pZ < 0)&&(player.velocity < 3.3)) { 
+					player.velocity  += .125; 
 				}			
 				player.inputUpdates.push(data);
 			}

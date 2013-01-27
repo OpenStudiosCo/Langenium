@@ -69,7 +69,7 @@ function updateWorld(bullets, delta, update_queue, bots, events, players_online,
 		handleBullets(bullets, bots, players_online, delta, update_queue, THREE);
 		bulletCheck = 0;
 	}
-	//updateBotsFromBuffer(bullets, delta, update_queue, bots, events, players_online, THREE, world_map, shootCheck);
+	updateBotsFromBuffer(bullets, delta, update_queue, bots, events, players_online, THREE, world_map, shootCheck);
 	players_online.forEach(function(player){
 		var 	playerMovement, 
 				inputData;
@@ -86,7 +86,8 @@ function updateWorld(bullets, delta, update_queue, bots, events, players_online,
 		else {
 			inputData = { d: 0, pZ: 0, pY: 0, rY: 0, fire: false };
 		}
-		playerMovement = events.movePlayer(player.velocity * delta, player.position, world_map, inputData);	
+		playerMovement = events.movePlayer(player.velocity, player.position, world_map, inputData);	
+		console.log(player.position);
 		player.position.y += playerMovement.instruction.details.pY;
 		player.position.x += playerMovement.instruction.details.pX; 
 		player.position.z += playerMovement.instruction.details.pZ;
@@ -162,7 +163,9 @@ function handleBullets(bullets, bots, players_online, delta, update_queue, THREE
 				}
 			});
 			players_online.forEach(function(player, playerIndex){
+		
 				if ((player.username != bullet.username)&&(getDistance(player, bullet) < 100)) {
+					
 					player.health -= 5;
 					if (player.health < 0) {
 						player.health = 100;

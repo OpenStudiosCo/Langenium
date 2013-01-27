@@ -1,7 +1,5 @@
 function moveShip(ship, isPlayer, instruction) {
 
-	var platform = platforms[0];
-	
 	var playerMesh = player;
 	
 	if (instruction.details.pY != 0){
@@ -81,8 +79,7 @@ function loadObject(instruction) {
 		});
 	}
 }
-var 	islands = [],
-		platforms = [];
+var 	world_map = [];
 function makeObjectMesh(objectType, geometry, materials, x, y, z, scale) {
 	var useVertexOverrides = false;
 	if ((objectType != "ship")&&(objectType != "player")&&(objectType != "bot")) {
@@ -184,12 +181,12 @@ function renderObject(mesh, category, type, instruction) {
 			scale = instruction.scale;
 
 	if (type == "platform") { 
-		platforms.push(mesh);
-		scene.add(platforms[platforms.length-1]);
+		world_map.push(mesh);
+		scene.add(world_map[world_map.length-1]);
 	}
 	if (type ==  "island") {
-		islands.push(mesh);
-		scene.add(islands[islands.length-1]);
+		world_map.push(mesh);
+		scene.add(world_map[world_map.length-1]);
 	}
 	if (type == "player") {	
 		player = mesh;
@@ -200,6 +197,8 @@ function renderObject(mesh, category, type, instruction) {
 		player.material.materials.forEach(function(material,index){
 			player.material.materials[index].morphTargets = true;
 		});
+		
+		player.velocity = 0;
 		
 		player.add(playerScope());
 		player.add(camera);

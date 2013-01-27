@@ -2,8 +2,8 @@ module.exports.makeWorld = makeWorld;
 module.exports.updateWorld = updateWorld;
 module.exports.urlPrefix = urlPrefix;
 
-var 	//urlPrefix =  "http://localhost:8080/",
-		urlPrefix = "http://langenium.com/play/",
+var 	urlPrefix =  "http://localhost:8080/",
+		//urlPrefix = "http://langenium.com/play/",
 		bullet;
 
 function makeWorld(db, bots, THREE) {
@@ -88,10 +88,7 @@ function updateWorld(bullets, delta, update_queue, bots, events, players_online,
 		}
 		playerMovement = events.movePlayer(player.velocity, player.position, world_map, inputData);	
 		console.log(player.position);
-		player.position.y += playerMovement.instruction.details.pY;
-		player.position.x += playerMovement.instruction.details.pX; 
-		player.position.z += playerMovement.instruction.details.pZ;
-		player.position.rotationY +=  playerMovement.instruction.details.rY;
+
 		playerMovement.instruction.details.username = player.sessionId;
 		playerMovement.instruction.details.velocity = player.velocity;
 		update_queue.push(playerMovement);

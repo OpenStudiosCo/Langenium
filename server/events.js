@@ -50,10 +50,6 @@ function movePlayer(velocity, playerPosition, world_map, data) {
 	if (data.pY > 0) { data.pY = velocityYChange; } 			// up
 	if (data.pY < 0) { data.pY = -(velocityYChange); } 		// down
 
-	
-	data.pX = velocity * Math.sin(playerPosition.rotationY);
-	data.pZ = velocity * Math.cos(playerPosition.rotationY);
-	
 	var moveVector = new THREE.Vector3(data.pX, data.pY, data.pZ);
 	var playerPositionVector = new THREE.Vector3(playerPosition.x, playerPosition.y, playerPosition.z);
 	
@@ -63,25 +59,37 @@ function movePlayer(velocity, playerPosition, world_map, data) {
 		collisions.forEach(function(collision, index){
 			
 			if (collision.distance < 90) {
-		
 				if (collision.point.x > playerPosition.x) 
 					{ data.rY -= collision.distance / 10000; }
 				if (collision.point.x < playerPosition.x) 
 					{ data.rY += collision.distance / 10000; }
 				
 				if (data.pX != 0) {
-					data.pX *= -.001;
+					playerPosition.x += velocity * Math.sin(playerPosition.rotationY) * -.001;
 				}
 				if (data.pY != 0) {
-					data.pY *= -.001;
+					playerPosition.y += data.pY * -.001;
 				}
 				if (data.pZ != 0) {
-					data.pZ *= -.001;
+					playerPosition.z += velocity * Math.cos(playerPosition.rotationY) * -.001;
 				}
 			}
 		}); 
 	}
-		return { instruction: { name: "move", type: "player", details: data } };
+	else {
+		playerPosition.y += data.pY;
+		playerPosition.x += velocity * Math.sin(playerPosition.rotationY);
+		playerPosition.z += velocity * Math.cos(playerPosition.rotationY);
+	}
+	
+	playerPosition.rotationY += data.rY;
+	
+	data.pX = playerPosition.x;
+	data.pY = playerPosition.y;
+	data.pZ = playerPosition.z;
+	data.rY = playerPosition.rotationY;
+	
+	return { instruction: { name: "move", type: "player", details: data } };
 }
 
 function detectCollision(source, direction, world_map) {

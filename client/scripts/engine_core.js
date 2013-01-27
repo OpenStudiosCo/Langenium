@@ -158,9 +158,7 @@ function playerInput(delta){
 	if (move == true) {
 		socket.emit('move', keyboardInput);
 	}
-	if (player.velocity != 0) {
-		movePlayer(player.velocity / 66, player.position, keyboardInput);
-	}
+	return keyboardInput;
 }
 
 function movePlayer(velocity, playerPosition, data) {
@@ -322,15 +320,9 @@ function animate() {
 		player.morphTargetInfluences[ keyframe ] = ( animTime % interpolation ) / interpolation;
 		player.morphTargetInfluences[ lastKeyframe ] = 1 - player.morphTargetInfluences[ keyframe ];
 		player.updateMatrix();
-		var 	interval = new Date,
-				intervalDelta = interval - player.moveInterval;
-				
 
+		movePlayer(player.velocity / 66, player.position, playerInput(delta));
 		
-		if (intervalDelta >= player.latency / 20) {
-			playerInput(delta);
-			player.moveInterval = interval;
-		}
 		if (player.position.y < 50) {
 			player.position.y += 3;
 		}

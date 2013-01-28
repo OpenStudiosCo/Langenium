@@ -217,7 +217,7 @@ function updateBotsFromBuffer(bullets, delta, update_queue, bots, events, player
 						shootCheck == true
 				) {
 					fire = 1;
-					bullets.push(addBullet(bot.id, bot.position, bot.rotation.y, 1, THREE));
+					//bullets.push(addBullet(bot.id, bot.position, bot.rotation.y, 1, THREE));
 				}
 				update_queue.push(
 					{ instruction: { name: "move", type: "bot", details: { fire: fire, pX: bot.position.x, pY: bot.position.y, pZ: bot.position.z, rY: bot.rotation.y, id: bot.id } } }

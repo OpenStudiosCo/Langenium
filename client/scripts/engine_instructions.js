@@ -3,37 +3,33 @@ function moveShip(ship, isPlayer, instruction) {
 	var playerMesh = player;
 	
 	if (instruction.details.pY != 0){
-		ship.position.y += instruction.details.pY;
+		ship.position.y = instruction.details.pY;
 	}
 	
 	if (instruction.details.pX != 0){
-		ship.position.x += instruction.details.pX;
+		ship.position.x = instruction.details.pX;
 	}
 	
 	if (instruction.details.pZ != 0) {
-		ship.position.z += instruction.details.pZ;
+		ship.position.z = instruction.details.pZ;
 	}
 	
-	var rotate = instruction.details.rY;
+	var rotate = instruction.details.rY - ship.rotation.y;
 
 	if (rotate > 0){
 		if (ship.rotation.z < .5) {
-			//if (isPlayer == true) { camera.rotation.z -= rotate / 3; }
 			ship.rotation.z += rotate / 3;
 		}
 		else {
-			//if (isPlayer == true) { camera.rotation.z -= rotate / 4; }
 			ship.rotation.z += rotate / 4;
 		}
 		ship.rotation.y += rotate;
 	}
 	if (rotate < 0) {
 		if (ship.rotation.z > -.5) {
-			//if (isPlayer == true) { camera.rotation.z -= rotate / 3; }
 			ship.rotation.z += rotate / 3;
 		}
 		else {
-			//if (isPlayer == true) { camera.rotation.z -= rotate / 4; }
 			ship.rotation.z += rotate / 4;
 		}
 		ship.rotation.y += rotate;

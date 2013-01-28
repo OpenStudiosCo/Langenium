@@ -2,8 +2,8 @@ module.exports.makeWorld = makeWorld;
 module.exports.updateWorld = updateWorld;
 module.exports.urlPrefix = urlPrefix;
 
-var 	//urlPrefix =  "http://localhost:8080/",
-		urlPrefix = "http://langenium.com/play/",
+var 	urlPrefix =  "http://localhost:8080/",
+		//urlPrefix = "http://langenium.com/play/",
 		bullet;
 
 function makeWorld(db, bots, THREE) {
@@ -164,11 +164,11 @@ function handleBullets(bullets, bots, players_online, delta, update_queue, THREE
 					player.health -= 5;
 					if (player.health < 0) {
 						player.health = 100;
-						update_queue.push( { instruction: { name: "kill", type: "ship", id: player.username } } );
+						update_queue.push( { instruction: { name: "kill", type: "ship", username: player.username } } );
 						return;
 					}
 					else {
-						update_queue.push( { instruction: { name: "hit", type: "ship", id: player.username } } );
+						update_queue.push( { instruction: { name: "hit", type: "ship", username: player.username } } );
 					}
 				}
 			});
@@ -219,7 +219,7 @@ function updateBotsFromBuffer(bullets, delta, update_queue, bots, events, player
 					fire = 1;
 				}
 				update_queue.push(
-					{ instruction: { name: "move", type: "bot", details: { fire: fire, pX: tX.instruction, pY: tY.instruction * .7, pZ: tZ.instruction, rY: rY, id: bot.id } } }
+					{ instruction: { name: "move", type: "bot", details: { fire: fire, pX: bot.position.x, pY: bot.position.y, pZ: bot.position.z, rY: bot.rotation.y, id: bot.id } } }
 				);
 			}
 			else {

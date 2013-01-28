@@ -106,9 +106,9 @@ function updateWorld(bullets, delta, update_queue, bots, events, players_online,
 	});
 	return update_buffer;
 };
-var botCount = 0;
+var botCount = 8;
 function addBot(bots, delta, THREE){
-	botCount = bots.length + 2;
+	botCount++;
 	var db = require("./db.js");
 	var obj = db.buildObject(("Pirate " + botCount), { ship: 'pirate' }, { x: -8500, y: 5000, z: -3500, rotationY: 0 }, 10);
 	

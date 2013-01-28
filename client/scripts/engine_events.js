@@ -84,7 +84,7 @@ function updateClient(data) {
 		if (data.instruction.details.username == socket.socket.sessionid) {
 			if (player) {
 							
-				$("#stats .ship.info li span.ship-health").css("width",data.instruction.details.health - 5);
+						$("#stats .ship.info li span.ship-health").css("width",data.instruction.details.health - 5);
 					
 				player.velocity = Math.round(data.instruction.details.velocity * 66);
 				if (data.instruction.details.fire == 1) {

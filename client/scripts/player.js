@@ -81,7 +81,7 @@ function movePlayer(velocity, playerPosition, data) {
 			}
 		}); 
 	}
-	
+
 		moveShip(player, true, { name: "move", type: "player", details: data });
 		
 

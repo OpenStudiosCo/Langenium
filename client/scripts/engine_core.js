@@ -47,6 +47,7 @@ function init() {
 	camera = new THREE.PerspectiveCamera( 45, (winW) / (winH), 10, M );
 	camera.position.y = 5;
 	camera.position.z = 50;
+	
 
 	createScene();
 	controls = new THREE.TrackballControls(camera);
@@ -73,7 +74,6 @@ function init() {
 function createScene() {
 
 	scene = new THREE.Scene();
-	
 	var skyGeo = new THREE.CubeGeometry(M, M, M);
 	var skyMat = new THREE.MeshLambertMaterial({
 		shading: THREE.SmoothShading, 
@@ -256,7 +256,7 @@ function resetCamera(){
 	}
 	if (camera.position.y != 0) { 
 		resetYPosition = new TWEEN.Tween( { x: camera.position.y , y: 0 } )
-		.to( { x: 6 }, duration )
+		.to( { x: 5 }, duration )
 		.easing(TWEEN.Easing.Elastic.Out )
 		.onUpdate( function () {
 			camera.position.y = this.x;
@@ -350,31 +350,25 @@ var mouse = new THREE.Vector2(),
 
 function onDocumentMouseDown( event ) {
 
-				event.preventDefault();
+	event.preventDefault();
 
-				var vector = new THREE.Vector3( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1, 0.5 );
-				projector.unprojectVector( vector, camera );
+	var vector = new THREE.Vector3( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1, 0.5 );
+	projector.unprojectVector( vector, camera );
 	
-				var cameraVector = new THREE.Vector3();
-				cameraVector.x = player.position.x + 100 * Math.sin(player.rotation.y);
-				cameraVector.z = player.position.z + 100 * Math.cos(player.rotation.y);
-				cameraVector.y = player.position.y;
-
-				var raycaster = new THREE.Raycaster( cameraVector, vector.sub( cameraVector ).normalize() );
-
-				var intersects = raycaster.intersectObjects( bots );
+	var camVector = new THREE.Vector3(camera.matrixWorld.elements[12], camera.matrixWorld.elements[13], camera.matrixWorld.elements[14]);
 	
-				if ( intersects.length > 0 ) {
-					intersects.forEach(function(intersect, index){
-						intersect.object.material.materials[0].color =  { r: 1, g: 1, b: 1 };
-						intersect.object.material.materials[1].color =  { r: 1, g: 1, b: 1 };
-						intersect.object.material.materials[2].color =  { r: 1, g: 1, b: 1 };
-					});
-				}
+	var raycaster = new THREE.Raycaster( camVector , vector.sub( camVector ).normalize() );
+
+	var intersects = raycaster.intersectObjects( bots );
+
+	if ( intersects.length > 0 ) {
+		intersects.forEach(function(intersect, index){
+			intersect.object.children[0].material.color.g = 1;
+		});
+	}
 				
 
 }
-
 
 function onWindowResize() {
 

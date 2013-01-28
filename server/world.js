@@ -69,7 +69,7 @@ function updateWorld(bullets, delta, update_queue, bots, events, players_online,
 		handleBullets(bullets, bots, players_online, delta, update_queue, THREE);
 		bulletCheck = 0;
 	}
-	updateBotsFromBuffer(bullets, delta, update_queue, bots, events, players_online, THREE, world_map, shootCheck);
+	//updateBotsFromBuffer(bullets, delta, update_queue, bots, events, players_online, THREE, world_map, shootCheck);
 	players_online.forEach(function(player){
 		var 	playerMovement, 
 				inputData;
@@ -93,6 +93,9 @@ function updateWorld(bullets, delta, update_queue, bots, events, players_online,
 		update_queue.push(playerMovement);
 		if  (player.velocity != 0) {
 			player.velocity *= .996;
+		}
+		if (player.health < 100) {
+			player.health += .5;
 		}
 	});
 	
@@ -146,7 +149,7 @@ function handleBullets(bullets, bots, players_online, delta, update_queue, THREE
 			bullet._lifetime += delta;
 			bots.forEach(function(bot, botIndex){
 				if ((bot.id != bullet.username)&&(getDistance(bot, bullet) < 100)) {
-					bot.health -= 5;
+					bot.health -= 1;
 					if (bot.health < 0) {
 						update_queue.push( addBot(bots, delta, THREE) );
 						update_queue.push( { instruction: { name: "kill", type: "bot", id: bot.id } } );

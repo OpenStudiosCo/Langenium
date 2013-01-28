@@ -302,6 +302,7 @@ function animate() {
 		if  (player.velocity != 0) {
 			player.velocity *= .996;
 		}
+
 		if ( keyframe != currentKeyframe ) {
 			player.morphTargetInfluences[ lastKeyframe ] = 0;
 			player.morphTargetInfluences[ currentKeyframe ] = 1;
@@ -365,7 +366,6 @@ function onDocumentMouseDown( event ) {
 	
 				if ( intersects.length > 0 ) {
 					intersects.forEach(function(intersect, index){
-						console.log(intersect);
 						intersect.object.material.materials[0].color =  { r: 1, g: 1, b: 1 };
 						intersect.object.material.materials[1].color =  { r: 1, g: 1, b: 1 };
 						intersect.object.material.materials[2].color =  { r: 1, g: 1, b: 1 };

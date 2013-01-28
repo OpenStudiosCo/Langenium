@@ -2,8 +2,8 @@ module.exports.makeWorld = makeWorld;
 module.exports.updateWorld = updateWorld;
 module.exports.urlPrefix = urlPrefix;
 
-var 	//urlPrefix =  "http://localhost:8080/",
-		urlPrefix = "http://langenium.com/play/",
+var 	urlPrefix =  "http://localhost:8080/",
+		//urlPrefix = "http://langenium.com/play/",
 		bullet;
 
 function makeWorld(db, bots, THREE) {
@@ -89,6 +89,7 @@ function updateWorld(bullets, delta, update_queue, bots, events, players_online,
 		playerMovement = events.movePlayer(player.velocity, player.position, world_map, inputData);	
 		playerMovement.instruction.details.username = player.sessionId;
 		playerMovement.instruction.details.velocity = player.velocity;
+		playerMovement.instruction.details.health = player.health;
 		update_queue.push(playerMovement);
 		if  (player.velocity != 0) {
 			player.velocity *= .996;
@@ -163,11 +164,16 @@ function handleBullets(bullets, bots, players_online, delta, update_queue, THREE
 					player.health -= 5;
 					if (player.health < 0) {
 						player.health = 100;
-						update_queue.push( { instruction: { name: "kill", type: "ship", username: player.username } } );
+						update_queue.push( { instruction: { name: "kill", type: "ship", username: player.username, health: player.health } } );
+						player.position.x = -8500;
+						player.position.y = 5000;
+						player.position.z = -1740;
+						player.position.rotationY = 0;
+						update_queue.push( { instruction: { name: "move", type: "player", details: { fire: 0, pX: -8500, pY: 5000, pZ: -1740, rY: 0, username: player.username } } } );
 						return;
 					}
 					else {
-						update_queue.push( { instruction: { name: "hit", type: "ship", username: player.username } } );
+						update_queue.push( { instruction: { name: "hit", type: "ship", username: player.username, health: player.health } } );
 						return;
 					}
 				}
@@ -217,7 +223,7 @@ function updateBotsFromBuffer(bullets, delta, update_queue, bots, events, player
 						shootCheck == true
 				) {
 					fire = 1;
-					//bullets.push(addBullet(bot.id, bot.position, bot.rotation.y, 1, THREE));
+					bullets.push(addBullet(bot.id, bot.position, bot.rotation.y, 1, THREE));
 				}
 				update_queue.push(
 					{ instruction: { name: "move", type: "bot", details: { fire: fire, pX: bot.position.x, pY: bot.position.y, pZ: bot.position.z, rY: bot.rotation.y, id: bot.id } } }

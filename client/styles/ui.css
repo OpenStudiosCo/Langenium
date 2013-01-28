@@ -31,9 +31,10 @@
 	display: block;
 }
 #stats .ship.info li span {
-	float: right;
+	float: left;
+	position: absolute;
 	display: inline-block;
-	margin-left: 15px;
+	left: 40px;
 	background-color: #FFFF00;
 	width: 95px;
 	height: 1.2em;

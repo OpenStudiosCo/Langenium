@@ -57,10 +57,8 @@ function updateClient(data) {
 		}
 		if (data.instruction.type == "ship") {
 			ships.forEach(function(ship, index){
-				if ((data.instruction.username != player.username) && (ship.username == data.instruction.username)) {
+				if (ship.username == data.instruction.username) {
 					teleportEffect(ship.position);
-					scene.remove(bots[index]);
-					ships.splice(index, 1);
 				}
 			});
 		}
@@ -85,6 +83,9 @@ function updateClient(data) {
 	if (data.instruction.name == "move") {
 		if (data.instruction.details.username == socket.socket.sessionid) {
 			if (player) {
+							
+				$("#stats .ship.info li span.ship-health").css("width",data.instruction.details.health - 5);
+					
 				player.velocity = Math.round(data.instruction.details.velocity * 66);
 				if (data.instruction.details.fire == 1) {
 						addBullet(player); 

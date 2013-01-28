@@ -107,3 +107,20 @@
 	right: 15px;
 	top: 145px;
 }
+
+#controls #targets {
+	position: relative;
+	margin: -165px auto 0px auto;
+	width: 920px;
+	height: 135px;
+	background: transparent url(../assets/targets.png) no-repeat top right;
+}
+#controls #targets ul {
+	width: 250px;
+	margin-left: 680px;
+	padding-top: 20px;
+}
+#controls #targets li {
+	list-style: none;
+	float: left;
+}

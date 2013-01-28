@@ -83,8 +83,8 @@ function updateClient(data) {
 	if (data.instruction.name == "move") {
 		if (data.instruction.details.username == socket.socket.sessionid) {
 			if (player) {
-							
-						$("#stats .ship.info li span.ship-health").css("width",data.instruction.details.health - 5);
+				var health = data.instruction.details.health / 500;
+				$("#stats .ship.info li span.ship-health").css("width", health * 95);
 					
 				player.velocity = Math.round(data.instruction.details.velocity * 66);
 				if (data.instruction.details.fire == 1) {
@@ -113,6 +113,7 @@ function updateClient(data) {
 			});
 			bots.forEach(function(bot,index){
 				if (data.instruction.details.id == bot.id) {
+					bots[index].health = data.instruction.details.health;
 					if (data.instruction.details.fire == 1) {
 						addBullet(bots[index]); 
 					}

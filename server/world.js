@@ -2,8 +2,8 @@ module.exports.makeWorld = makeWorld;
 module.exports.updateWorld = updateWorld;
 module.exports.urlPrefix = urlPrefix;
 
-var 	urlPrefix =  "http://localhost:8080/",
-		//urlPrefix = "http://langenium.com/play/",
+var 	//urlPrefix =  "http://localhost:8080/",
+		urlPrefix = "http://langenium.com/play/",
 		bullet;
 
 function makeWorld(db, bots, THREE) {
@@ -58,7 +58,7 @@ var  loader =  new THREE.JSONLoader();
 		bot.updateMatrixWorld();
 		bot.id = obj.id;
 		bot.url = url;
-		bot.type = { ship: "bot" };
+		bot.shipType = obj.type.ship;
 		bot.movement_queue = [];
 		bots.push(bot); 
 	});	
@@ -69,7 +69,7 @@ function updateWorld(bullets, delta, update_queue, bots, events, players_online,
 		handleBullets(bullets, bots, players_online, delta, update_queue, THREE);
 		bulletCheck = 0;
 	}
-	//updateBotsFromBuffer(bullets, delta, update_queue, bots, events, players_online, THREE, world_map, shootCheck);
+	updateBotsFromBuffer(bullets, delta, update_queue, bots, events, players_online, THREE, world_map, shootCheck);
 	players_online.forEach(function(player){
 		var 	playerMovement, 
 				inputData;
@@ -94,7 +94,7 @@ function updateWorld(bullets, delta, update_queue, bots, events, players_online,
 		if  (player.velocity != 0) {
 			player.velocity *= .996;
 		}
-		if (player.health < 100) {
+		if (player.health < 500) {
 			player.health += .5;
 		}
 	});
@@ -106,16 +106,17 @@ function updateWorld(bullets, delta, update_queue, bots, events, players_online,
 	});
 	return update_buffer;
 };
-
+var botCount = 0;
 function addBot(bots, delta, THREE){
+	botCount = bots.length + 2;
 	var db = require("./db.js");
-	var obj = db.buildObject(("Pirate " + (new Date().getTime()) * Math.random()), { ship: 'pirate' }, { x: -8500, y: 5000, z: -3500, rotationY: 0 }, 10);
+	var obj = db.buildObject(("Pirate " + botCount), { ship: 'pirate' }, { x: -8500, y: 5000, z: -3500, rotationY: 0 }, 10);
 	
 	makeBotMesh(urlPrefix + obj.url, obj.scale, bots, obj, THREE);
 
 	obj.name = "load";
-	obj.type = { ship: "bot" };
-	return { instruction: {name: "load", id: obj.id, type: obj.type, url: obj.url, position: { x: obj.position.x,  y: obj.position.y,  z: obj.position.z, rotationY: obj.position.rotationY  }, scale: obj.scale } };
+	
+	return { instruction: {name: "load", id: obj.id, type: { ship: "bot" }, shipType: "pirate", url: obj.url, position: { x: obj.position.x,  y: obj.position.y,  z: obj.position.z, rotationY: obj.position.rotationY  }, scale: obj.scale } };
 }
 
 function addBullet(username, position, rotation, shifter, THREE) {
@@ -166,7 +167,7 @@ function handleBullets(bullets, bots, players_online, delta, update_queue, THREE
 				if ((player.username != bullet.username)&&(getDistance(player, bullet) < 100)) {
 					player.health -= 5;
 					if (player.health < 0) {
-						player.health = 100;
+						player.health = 500;
 						update_queue.push( { instruction: { name: "kill", type: "ship", username: player.username, health: player.health } } );
 						player.position.x = -8500;
 						player.position.y = 5000;
@@ -229,7 +230,7 @@ function updateBotsFromBuffer(bullets, delta, update_queue, bots, events, player
 					bullets.push(addBullet(bot.id, bot.position, bot.rotation.y, 1, THREE));
 				}
 				update_queue.push(
-					{ instruction: { name: "move", type: "bot", details: { fire: fire, pX: bot.position.x, pY: bot.position.y, pZ: bot.position.z, rY: bot.rotation.y, id: bot.id } } }
+					{ instruction: { name: "move", type: "bot", details: { fire: fire, pX: bot.position.x, pY: bot.position.y, pZ: bot.position.z, rY: bot.rotation.y, id: bot.id, health: bot.health } } }
 				);
 			}
 			else {

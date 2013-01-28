@@ -362,12 +362,13 @@ function onDocumentMouseDown( event ) {
 	var intersects = raycaster.intersectObjects( bots );
 
 	if ( intersects.length > 0 ) {
-		intersects.forEach(function(intersect, index){
-			intersect.object.children[0].material.color.g = 1;
-		});
+		lockTarget(intersects[0].object);
 	}
-				
+}
 
+function lockTarget(object) {
+	$("#targets ul").append("<li><img src='assets/"+ object.type +"-icon.png' /></li>");
+	object.children[0].material.color.g = 1;
 }
 
 function onWindowResize() {

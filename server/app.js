@@ -119,7 +119,7 @@ function loginPlayer(sessionId, username) {
 	players.forEach(function(player){
 		if (player.username == username) {
 			var online_player = cloneObject(player);
-			online_player.health = 100;
+			online_player.health = 500;
 			online_player.inputUpdates = []; 
 			online_player.username = sessionId; 
 			online_player.sessionId = sessionId;
@@ -138,7 +138,7 @@ function initializeClient(activePlayer) {
 
 	db.getLoadInstructions("map").forEach(function(instruction){ instruction.name = "load"; initial_instructions.push(instruction);});
 	bots.forEach(function(bot, index){	
-		initial_instructions.push({name: "load", id: bots[index].id, type: bots[index].type, url: bots[index].url, position: { x: bots[index].position.x,  y: bots[index].position.y,  z: bots[index].position.z, rotationY: bots[index].rotation.y  },  scale: bots[index].scale.x || bots[index].scale });
+		initial_instructions.push({name: "load", id: bots[index].id, type: { ship: "bot" }, shipType: bots[index].shipType, url: bots[index].url, position: { x: bots[index].position.x,  y: bots[index].position.y,  z: bots[index].position.z, rotationY: bots[index].rotation.y  },  scale: bots[index].scale.x || bots[index].scale });
 	});
 	
 	//getLoadInstructions("ships").forEach(function(instruction){initial_instructions.push(instruction);});

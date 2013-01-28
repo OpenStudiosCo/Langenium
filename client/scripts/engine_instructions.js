@@ -220,6 +220,7 @@ function renderObject(mesh, category, type, instruction) {
 		var bot = mesh;
 		bot.bullets = [];
 		bot.id = instruction.id;
+		bot.type = instruction.shipType;
 		bot.rotation.y = instruction.position.rotationY;
 		bot.add(botScope());
 		bots.push(bot);

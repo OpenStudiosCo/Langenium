@@ -154,13 +154,12 @@ function handleBullets(bullets, bots, players_online, delta, update_queue, THREE
 					}
 					else {
 						update_queue.push( { instruction: { name: "hit", type: "bot", id: bot.id } } );
+						return;
 					}
 				}
 			});
 			players_online.forEach(function(player, playerIndex){
-		
 				if ((player.username != bullet.username)&&(getDistance(player, bullet) < 100)) {
-					
 					player.health -= 5;
 					if (player.health < 0) {
 						player.health = 100;
@@ -169,6 +168,7 @@ function handleBullets(bullets, bots, players_online, delta, update_queue, THREE
 					}
 					else {
 						update_queue.push( { instruction: { name: "hit", type: "ship", username: player.username } } );
+						return;
 					}
 				}
 			});
@@ -217,6 +217,7 @@ function updateBotsFromBuffer(bullets, delta, update_queue, bots, events, player
 						shootCheck == true
 				) {
 					fire = 1;
+					bullets.push(addBullet(bot.id, bot.position, bot.rotation.y, 1, THREE));
 				}
 				update_queue.push(
 					{ instruction: { name: "move", type: "bot", details: { fire: fire, pX: bot.position.x, pY: bot.position.y, pZ: bot.position.z, rY: bot.rotation.y, id: bot.id } } }

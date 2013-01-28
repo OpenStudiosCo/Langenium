@@ -35,6 +35,7 @@ var setEventHandlers = function() {
 	return socket;  
 };
 
+
 function updateClient(data) {
 	if (data.instruction.name == "load") {
 		loadObject(data.instruction);
@@ -56,10 +57,10 @@ function updateClient(data) {
 		}
 		if (data.instruction.type == "ship") {
 			ships.forEach(function(ship, index){
-				if (ship.username == data.instruction.username) {
+				if ((data.instruction.username != player.username) && (ship.username == data.instruction.username)) {
 					teleportEffect(ship.position);
 					scene.remove(bots[index]);
-					bots.splice(index, 1);
+					ships.splice(index, 1);
 				}
 			});
 		}

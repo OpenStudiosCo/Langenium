@@ -49,7 +49,7 @@ function movePlayer(velocity, playerPosition, data) {
 	if (data.pY > 0) { data.pY = velocityYChange; } 			// up
 	if (data.pY < 0) { data.pY = -(velocityYChange); } 		// down
 
-	data.rY += playerPosition.rotationY;
+	data.rY += player.rotation.y;
 	data.pY += player.position.y;
 	data.pX = playerPosition.x + velocity * Math.sin(player.rotation.y);
 	data.pZ = playerPosition.z + velocity * Math.cos(player.rotation.y);
@@ -83,6 +83,7 @@ function movePlayer(velocity, playerPosition, data) {
 	}
 	
 		moveShip(player, true, { name: "move", type: "player", details: data });
+		
 
 		$("#selectedItem").html("<div><strong>Player</strong><br />pX:&nbsp;"+player.position.x+"<br />pY:&nbsp;"+player.position.y+"<br />pZ:&nbsp;"+player.position.z+"<br />rY:&nbsp;"+player.rotation.y+"<br />d:&nbsp;" + Math.round(data.d * 1000) + "</div>");
 }

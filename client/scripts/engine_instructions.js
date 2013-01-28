@@ -15,7 +15,7 @@ function moveShip(ship, isPlayer, instruction) {
 	}
 	
 	var rotate = instruction.details.rY - ship.rotation.y;
-
+	
 	if (rotate > 0){
 		if (ship.rotation.z < .5) {
 			ship.rotation.z += rotate / 3;
@@ -23,7 +23,7 @@ function moveShip(ship, isPlayer, instruction) {
 		else {
 			ship.rotation.z += rotate / 4;
 		}
-		ship.rotation.y += rotate;
+		ship.rotation.y = instruction.details.rY;
 	}
 	if (rotate < 0) {
 		if (ship.rotation.z > -.5) {
@@ -32,9 +32,9 @@ function moveShip(ship, isPlayer, instruction) {
 		else {
 			ship.rotation.z += rotate / 4;
 		}
-		ship.rotation.y += rotate;
+		ship.rotation.y = instruction.details.rY;
 	}
-	
+
 }
 
 function loadInstructions(data) {

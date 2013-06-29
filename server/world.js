@@ -2,8 +2,8 @@ module.exports.makeWorld = makeWorld;
 module.exports.updateWorld = updateWorld;
 module.exports.urlPrefix = urlPrefix;
 
-var 	//urlPrefix =  "http://localhost:8080/",
-		urlPrefix = "http://langenium.com/play/",
+var 	urlPrefix =  "http://localhost:8080/",
+		//urlPrefix = "http://langenium.com/play/",
 		bullet;
 
 function makeWorld(db, bots, THREE) {

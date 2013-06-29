@@ -1,0 +1,25 @@
+{
+  "name": "Langenium",
+  "preferGlobal": true,
+  "version": "0.0.1",
+  "author": "Paul Brzeski <mail@paulbrzeski.com>",
+  "description": "The Langenium server application",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nodejitsu/http-server.git"
+  },
+  "dependencies" : {
+    "connect"   :  "*",
+    "express" :  "*",
+    "passport" :  "*",
+    "passport-facebook"    :  "*",
+    "facebook-sdk" :  "*",
+    "mongolian" :  "*",
+    "socket.io"   :  "*",
+    "jade"   :  "*"
+  }, 
+  "license": "MIT",
+  "engines": {
+    "node": ">=0.8"
+  }
+}

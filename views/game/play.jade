@@ -1,0 +1,103 @@
+doctype 5
+html(lang="en")
+	head
+		title Langenium Test
+		link(rel='stylesheet', href='/shared/styles/reset.css')
+		link(rel='stylesheet', href='/shared/styles/jquery-ui-1.10.2.custom.css')
+		link(rel='stylesheet', href='/game/styles/game.css')
+		link(rel='stylesheet', href='/game/styles/ui.css')
+	body
+		#ui
+		#game
+	script(src='/shared/scripts/jquery.min.js')
+	script(src='/shared/scripts/jQueryRotateCompressed.2.2.js')
+	script(src='/shared/scripts/jquery-ui-1.10.2.custom.min.js')
+	script(src='/shared/scripts/socket.io.min.js')
+	script(src='/shared/scripts/three.min.js')
+	script(src='/shared/scripts/tween.min.js')
+	script(src='/shared/scripts/THREEx.KeyboardState.js')
+	script(src='/shared/scripts/Stats.js')
+	script(src='/shared/scripts/smoothie.js')
+	script(src='/shared/scripts/SimplexNoise.js')
+	script(src='/game/scripts/client.js')
+	script(src='/game/scripts/controls.js')
+	script(src='/game/scripts/controls/character.js')
+	script(src='/game/scripts/controls/editor_controls.js')
+	script(src='/game/scripts/controls/flight.js')
+	script(src='/game/scripts/effects.js')
+	script(src='/game/scripts/effects/bullets.js')
+	script(src='/game/scripts/effects/particles.js')
+	script(src='/game/scripts/effects/water.js')
+	script(src='/game/scripts/engine.js')
+	script(src='/game/scripts/events.js')
+	script(src='/game/scripts/objects.js')
+	script(src='/game/scripts/objects/bots.js')
+	script(src='/game/scripts/objects/environment.js')
+	script(src='/game/scripts/objects/players.js')
+	script(src='/game/scripts/objects/projectiles.js')
+	script(src='/game/scripts/ui.js')
+	script(type='text/javascript')
+		/*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+			Globals
+		\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
+
+		// Global variables for the THREE JS client
+		var scene, water_tiles, sky, M = 500000;
+		var keyboard = new THREEx.KeyboardState(), clock = new THREE.Clock();
+		var player, ships = [], bots = [], bullets = [], particle_systems = [], ui = [];
+
+		client = new client();
+		client.updateWinSizeVariables();
+
+		engine = new engine();
+
+		controls = new controls();
+		objects = new objects();
+
+		effects = new effects();
+
+		//	Setup the global socket variable
+		events = new events();
+
+		ui = new user_interface();
+		ui.makeDialog("playerPosition", ui.playerPosition);
+
+		
+
+		/*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+			Start the game engine
+		\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
+
+		$(document).ready(function(){
+
+			client.initialize();
+			engine.animate();
+			
+		});
+	if (editor == true)
+		script(src='/game/scripts/editor.js')
+		script(src='/game/scripts/editor/properties.js')
+		script(src='/game/scripts/editor/transform.js')
+		script(type='text/javascript')
+			var editor = new editor();
+			editor.properties = new properties();
+			editor.transform = new transform();
+
+			ui.makeDialog("editor_tools", editor.makeControls());
+			$("#editor_tools .button").button();
+			$("#editor_tools .menu").menu();
+			
+			ui.makeDialog("properties", editor.properties.makeControls());
+			ui.makeDialog("transform", editor.transform.makeControls());
+			editor.transform.render();
+
+	script
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-37159175-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();

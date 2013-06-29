@@ -1,0 +1,15 @@
+script(src='/game/scripts/editor.js')
+script(src='/game/scripts/editor/properties.js')
+script(src='/game/scripts/editor/transform.js')
+script(type='text/javascript')
+	var editor = new editor();
+	editor.properties = new properties();
+	editor.transform = new transform();
+
+	ui.makeDialog("editor_tools", editor.makeControls());
+	$("#editor_tools .button").button();
+	$("#editor_tools .menu").menu();
+	
+	ui.makeDialog("properties", editor.properties.makeControls());
+	ui.makeDialog("transform", editor.transform.makeControls());
+	editor.transform.render();

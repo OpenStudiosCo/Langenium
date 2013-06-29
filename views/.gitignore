@@ -1,0 +1,27 @@
+#slideshow.span-15 
+	h2.hidden Slideshow
+	ul
+		li
+			h3 Welcome to Langenium
+			p A game bla bla bla
+		li
+			h3 Game trailer
+			p A game bla bla bla
+		li
+			h3 Game trailer
+			p A game bla bla bla
+		li
+			h3 Game trailer
+			p A game bla bla bla
+#play.span-7.last 
+	h2.hidden Play
+	h3 PLAY LANGENIUM
+	p	You can play Langenium by connecting with either OpenID or Facebook. 
+	p	Once you select a method, choose your game mode to login.
+#news.span-15 
+	h2.hidden News
+	ul
+		li
+			h3
+#game_guide.span-7.last 
+	h3 Game guide

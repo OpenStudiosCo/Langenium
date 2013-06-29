@@ -1,0 +1,42 @@
+/**************************************************************
+	Langenium UI Styles
+	Author: Paul Brzeski
+**************************************************************/
+.dialog {
+	color: #FFF;
+	background-color: #000;
+	opacity: .8;
+	z-index: 10;
+	position: absolute;
+	height:auto;
+	padding: 1em;
+	margin: .5em;
+	font: 10px Verdana;
+	max-height: 80%;
+	
+}
+
+#editor_tools .button.refresh {
+	margin: 0px auto;
+}
+.ui-menu .ui-menu-item a {
+	min-width: 100px;
+}
+#transform .controls > h3 { 
+	margin: 0.25em 0 0 0;
+}
+#transform .controls > h4 { 
+	display: inline-block;
+	float: left;
+	clear: left;
+}
+#transform .controls > input {
+	height: 12px;
+	margin: 0.75em 0 0 0.5em;
+	width: 7em;
+	text-align: center;
+	float: left;
+}
+#transform .controls > .slider-control {
+	width:70%; float:left; margin:15px;
+}

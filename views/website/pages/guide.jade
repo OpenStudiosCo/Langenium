@@ -1,0 +1,21 @@
+.row
+	.round-box.last
+		.span-21.last
+			h2 Game Guide
+			if (logged_id == true)
+				ul.subnav
+					li
+						a(href=edit_url) Edit
+					li 
+						a(href='/guide/Index') View Index
+					li
+						a(href='new') New
+			ul.breadcrumbs
+				- each breadcrumb in breadcrumbs
+					li
+						a(href=breadcrumb.url)= breadcrumb.name
+						p.arrow
+			h3= content.Title
+
+			.round_box!= content.Content
+			

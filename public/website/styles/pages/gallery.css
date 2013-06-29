@@ -1,0 +1,16 @@
+.span-21.last {
+	padding-bottom: 2em;
+}
+.span-21.last ul.gallery li {
+	float: left;
+	display: block;
+	min-height: 180px;
+	max-height: 320px;
+	width: 210px;
+	margin-right: 7.5px;
+	overflow: hidden;
+	text-align: center;
+}
+.span-21.last .photo {
+	text-align: center;
+}

@@ -1,0 +1,52 @@
+!!!5
+html
+	head
+		include header
+	body
+		.container
+			#top_nav.span-22.last
+				ul
+					li
+						a(href='#contact') Contact us
+					li.user
+						if (logged_id == true)
+							img(src=user.profile_img)
+							a(href='#profile')= user.username
+							a(href='/logout') Logout
+						else
+							a(href='/auth/facebook') Login with Facebook
+			.round-box
+				#header.span-22.last
+					h1.span-7
+						a(href='/') 
+							span.hidden Langenium
+					include menu
+			case page
+				when 'pages/home'
+					include pages/home				
+				when 'pages/about'
+					include pages/about
+				when 'pages/gallery_list'
+					include pages/gallery_list
+				when 'pages/gallery_view'
+					include pages/gallery_view
+				when 'pages/guide'
+					include pages/guide
+				when 'pages/guide_edit'
+					include pages/guide_edit
+				when 'pages/guide_index'
+					include pages/guide_index
+				when 'pages/guide_new'
+					include pages/guide_new
+				when 'pages/community'
+					include pages/community
+	script
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-37159175-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();

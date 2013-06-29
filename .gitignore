@@ -1,4 +1,31 @@
 #################
+## Node
+#################
+lib-cov
+*.seed
+*.log
+*.csv
+*.dat
+*.out
+*.pid
+*.gz
+
+tracegl.js
+tracegl
+pids
+logs
+results
+
+npm-debug.log
+node_modules
+
+#################
+## Komodo
+#################
+
+.komodoproject
+
+#################
 ## Eclipse
 #################
 

@@ -53,7 +53,7 @@ app.configure(function () {
   	app.use(passport.session());
 	app.set('views', __dirname + '/views');
 	app.set('view engine', 'jade');
-	app.set('view options', {pretty: true});
+	app.locals.pretty = true;
 	app.use(connect.favicon("public/favicon.ico"));
 	app.use(app.router);
 	app.use(connect.logger('dev'));

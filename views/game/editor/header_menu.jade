@@ -1,0 +1,67 @@
+header
+	menu.header_menu
+		ul.unstyled
+			li.button
+				a.button(href='#')
+					i.icon-user.icon-large
+					|   Username
+				menu.sub_menu
+					ul.unstyled
+						li
+							a(href='#')
+								i.icon-key
+								|  Logout
+						li
+							a(href='#')
+								i.icon-save
+								|  Save
+			li.button
+				a(href='#') 
+					i.icon-edit.icon-large
+					|  Texture editor
+				menu.sub_menu
+					a.window(href='#')
+						i.icon-list-alt
+						|  Make window
+					ul.unstyled
+						li
+							select
+								option Create new
+							input(type='text')
+							a.button(href='#') Save
+						li
+							table
+								thead	
+									tr
+										td Pattern generator
+										td Texture preview
+								tbody
+									tr
+										td
+											textarea(cols='80', rows='10')
+										td
+											| (texture preview)
+			li.button
+				a(href='#')
+					i.icon-tasks.icon-large
+					|  Object presets
+				menu.sub_menu
+					a.window(href='#')
+						i.icon-list-alt
+						|  Make window
+			li.button
+				a(href='#') 
+					i.icon-group.icon-large
+					|  Object groups
+			li.button
+				a(href='#') 
+					i.icon-gear.icon-large
+					|  Object properties
+			li.button
+				a(href='#') 
+					i.icon-reorder.icon-large
+					|  Object library
+			li.button
+				a(href='#') 
+					i.icon-gears.icon-large
+					|  Editor settings

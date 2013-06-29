@@ -98,7 +98,7 @@ properties.prototype.loadProperties = function(id) {
 	for (var i in scene.__objects) {
 		if (scene.__objects[i].id == id) {
 			$("#properties").html(this.getPropertyList(i));
-			$("#properties .menu").menu();
+			//$("#properties .menu").menu();
 			if (scene.__objects[i].material.materials) {
 				scene.__objects[i].material.materials.forEach(function(material){
 					material.wireframe = true;

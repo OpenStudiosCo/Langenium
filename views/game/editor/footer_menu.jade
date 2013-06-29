@@ -1,0 +1,32 @@
+footer 
+	menu.footer_menu
+		ul
+			li.button
+				menu.sub_menu
+					ul.unstyled
+						li
+							a(href='#',onclick='controls.editor.toggleCamera()')
+								i.icon-facetime-video
+								|  Toggle camera view
+				a(href='#') 
+					i.icon-camera.icon-large
+					|  Camera
+			li.button
+				a(href='#')
+					i.icon-search
+					|  Scene explorer
+			li.selected
+				h3 Selected
+			li.camera_info
+				i.icon-facetime-video.icon-3x.pull-left
+				ul.unstyled.pull-left
+					li.x x:
+					li.y y:
+					li.z z:
+			li.cursor_info
+				i.icon-hand-up.icon-3x.pull-left
+				ul.unstyled.pull-left
+					li.x x:
+					li.y y:
+					li.z z:
+			li.logo

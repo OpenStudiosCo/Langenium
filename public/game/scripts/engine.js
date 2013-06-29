@@ -17,7 +17,6 @@ var engine = function() {
     
     /* Game engine */
 	this.renderer,
-	this.camera,
 		
 	this.duration = 100,
 	this.keyframes = 5,
@@ -30,6 +29,10 @@ var engine = function() {
 						projectiles: [],
 						environment: []
 					};
+
+	// Not implemented yet, but will be used for simplifying animation queue
+	this.event_queue = [];
+
     return this;
 }
 
@@ -159,6 +162,14 @@ engine.prototype.animate = function () {
 		if (bot.rotation.z != 0) { bot.rotation.z -= bot.rotation.z / 50; }
 	});
 
+	if (window.location.href.indexOf("editor") > 0) {
+		if (player && player.children.length > 0) {	
+			client.camera_position = new THREE.Vector3().getPositionFromMatrix(client.camera.matrixWorld);
+			$('.camera_info .x').html('x: ' + Math.round(client.camera_position.x));
+			$('.camera_info .y').html('y: ' + Math.round(client.camera_position.y));
+			$('.camera_info .z').html('z: ' + Math.round(client.camera_position.z));
+		}	
+	}
 	
 	requestAnimationFrame( engine.animate );
 

@@ -3,7 +3,7 @@ function bulletEffect(position){
 				particles = new THREE.Geometry(),
 				pMaterial =
 				  new THREE.ParticleBasicMaterial({
-					map: THREE.ImageUtils.loadTexture("assets/particle.png?nocache"),
+					map: THREE.ImageUtils.loadTexture("assets/textures/particle.png?nocache"),
 					size: .25,
 					blending: THREE.AdditiveBlending,
 					transparent: true
@@ -78,7 +78,7 @@ function addBullet(ship) {
 
 
 var	counter = 0,
-		SPEED = 30, 
+		SPEED = 120, 
 		INTERVAL = .1, 
 		MAX_LIFETIME = 1;
 		

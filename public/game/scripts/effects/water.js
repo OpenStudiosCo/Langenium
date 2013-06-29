@@ -32,7 +32,7 @@ water.prototype.makeWater = function(M, pos) {
 	var geometry = new THREE.PlaneGeometry( M, M , water_res, water_res );	
 	geometry.applyMatrix( new THREE.Matrix4().makeRotationX( - Math.PI / 2 ) );
 	
-	var waterTexture = THREE.ImageUtils.loadTexture( "/game/assets/water.jpg" );
+	var waterTexture = THREE.ImageUtils.loadTexture( "/game/assets/textures/water.jpg" );
 	waterTexture.wrapS = waterTexture.wrapT = THREE.RepeatWrapping;
 	waterTexture.repeat.set( water_texture, water_texture );
 	

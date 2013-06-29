@@ -59,6 +59,7 @@ header {
 }
 .header_menu > ul > li.button,
 .footer_menu > ul > li.button {
+	display: block;
 	border: solid 5px #333333;
 	border-radius: 15px;
 	background: rgb(33,33,33); /* Old browsers */
@@ -147,9 +148,56 @@ footer {
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#212121', endColorstr='#000000',GradientType=0 ); /* IE6-8 */
 
 }
-
-.camera_info,
-.cursor_info {
+.footer_menu .selected {
+	padding-left: 50px;
+	display: block;
+}
+.footer_menu .selected h4 {
+	float: left;
+}
+.footer_menu .selected h4 small {
+	text-align: center;
+	display: block;
+	clear: both;
+}
+.footer_menu .selected ul {
+	display: block;
+	float: left;
+	width: 200px;
+	font-size: .8em;
+	margin: 0 .5em;
+	background-color: #333333;
+	color: #AAAAAA;
+	padding: 0 .25em;
+}
+.footer_menu .selected .scale {
+	clear: both;
+}
+.footer_menu .selected .position div {
+	float: left;
+	margin-right: 5px;
+}
+.footer_menu .logo {
+	float: right;
+}
+.footer_menu .logo a {
+	display: block;
+	height: 65px;
+	width: 184px;
+	text-indent: -9999px;
+	background: transparent url('/shared/images/editor_logo.png') no-repeat top left;
+}
+.footer_menu .camera_info,
+.footer_menu .cursor_info {
+	float: right;
 	font-size: 8pt;
 	line-height: 10pt;
+}
+.footer_menu .camera_info i,
+.footer_menu .cursor_info i {
+	padding-top: 10px;
+}
+.footer_menu .camera_info ul,
+.footer_menu .cursor_info ul {
+	margin-top: -2.5px;
 }

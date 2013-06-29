@@ -1,7 +1,7 @@
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	Game
-	This class contains handlers for game client paths
+	Routes
+	This class binds routes to route handlers in /routes
 	
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
@@ -10,52 +10,51 @@
 	Globals
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
-var https = require('https'),
+var app,
 	db,
-	fb;
+	fb,
+	website = require('./routes/website.js'),
+	game = require('./routes/game.js');
 
 
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 	Pages
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
-exports.setProviders = function (database, facebook) {
+exports.setProviders = function (application, database, facebook) {
+	app = application;
 	db = database;
 	fb = facebook;
 }
 
-exports.play = function(req, res) {
-	res.setHeader("Expires", "-1");
-	res.setHeader("Cache-Control", "must-revalidate, private");
-	res.render('game/client', { title: "Langenium Game Client Alpha", editor: false });
-};
-exports.editor = function(req, res) {
-	res.setHeader("Expires", "-1");
-	res.setHeader("Cache-Control", "must-revalidate, private");
-	res.render('game/editor', { title: "Langenium Map Editor Alpha", editor: true });
-};
-exports.selected = function(req, res) {
-	res.setHeader("Expires", "-1");
-	res.setHeader("Cache-Control", "must-revalidate, private");
-	res.render('game/editor/selected', { 
-		id: req.query.id, 
-		name: req.query.name, 
-		position: {
-			x: req.query.positionX,
-			y: req.query.positionY,
-			z: req.query.positionZ
-		}, 
-		scale: req.query.scale });
-};
+exports.bind = function () {
+	// Bind website 
+	website.setProviders(db, fb);
 
-exports.library = function(req, res) {
+	// Bind game client
+	game.setProviders(db, fb);
 
-	var callback = function(result) {
-		res.setHeader("Expires", "-1");
-		res.setHeader("Cache-Control", "must-revalidate, private");
-		res.render('game/editor/library', { objects: result });
-	};
-	
-	db.queryClientDB("objects", { }, callback);
-	
-};
+	// Route bindings
+	//		Home page
+	app.get('/', website.index);
+	app.get('/news', website.news);
+	//		About
+	app.get('/about/*', website.about);
+	//		Gallery
+	app.get('/gallery/', website.gallery_list);
+	app.get('/gallery/*', website.gallery);
+	//		Game guide
+	app.get('/guide/*', website.guide);
+	app.post('/guide/save', website.guide_save);
+	//		Community
+	app.get('/community/*', website.community);
+	//		Play Langenium
+	app.get('/play', game.play);
+	app.get('/play/*', game.play);
+	//		Map editor
+	app.get('/editor', game.editor);
+	app.get('/editor/selected', game.selected);
+	app.get('/editor/library', game.library);
+	//		Security overrides
+	app.get('/wiki/*', website.redirect);
+}

@@ -35,7 +35,7 @@ objects.prototype.loadObject = function (instruction) {
 	var loader = new THREE.JSONLoader();
 	var cacheIndex = -1;
 	this.cache.forEach(function(cachedObject, index){ if (instruction.url == cachedObject.url) { cacheIndex = index;} });
-	var  x = instruction.position.x,
+	var x = instruction.position.x,
 		y = instruction.position.y,
 		z = instruction.position.z,
 		scale = instruction.scale, 

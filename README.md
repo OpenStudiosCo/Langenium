@@ -13,6 +13,7 @@ The game architecture can be boiled down to three components:
 * (Website) Built-in modules to deliver static files and pages for the game website and client
 
 /play launches the game client 
+
 /editor launches the map editor
 
 The game has been designed to be a single package for now as I anticipate a heavy use of dynamic micro-templates.

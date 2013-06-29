@@ -84,6 +84,8 @@ flight.prototype.input = function (delta){
 	}
 	if (client.isFiring == true) {
 		move = true;
+		addBullet(player);
+		client.isFiring = false;
 	}
 	
 	if (move == true) {

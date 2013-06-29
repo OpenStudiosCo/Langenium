@@ -1,0 +1,8 @@
+- for (var object_index in objects)
+	li
+		.name= objects[object_index].name
+		.scale= objects[object_index].details.scale
+		.type= objects[object_index].type
+		a.button.add(href='#',onclick="editor.library.addObject('#{objects[object_index].name}','#{objects[object_index].type}','#{objects[object_index].details.scale}')")
+			i.icon-plus
+			|  Add

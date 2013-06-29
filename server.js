@@ -34,8 +34,7 @@ var 	// 3rd Party Libs
 		events = require('./events.js'),
 		instance = require('./instance.js'),
 		//Routes
-		website = require('./routes/website.js'),
-		game = require('./routes/game.js');
+		routes = require('./routes.js');
 	
 
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -65,30 +64,8 @@ app.configure(function () {
 
 });
 
-// Bind website 
-website.setProviders(db, fb);
-
-// Route bindings
-//		Home page
-app.get('/', website.index);
-app.get('/news', website.news);
-//		About
-app.get('/about/*', website.about);
-//		Gallery
-app.get('/gallery/', website.gallery_list);
-app.get('/gallery/*', website.gallery);
-//		Game guide
-app.get('/guide/*', website.guide);
-app.post('/guide/save', website.guide_save);
-//		Community
-app.get('/community/*', website.community);
-//		Play Langenium
-app.get('/play', game.play);
-app.get('/play/*', game.play);
-//		Map editor
-app.get('/editor', game.editor);
-//		Security overrides
-app.get('/wiki/*', website.redirect);
+routes.setProviders(app, db, fb);
+routes.bind();
 
 // Setup Facebook authentication
 passport.serializeUser(function(user, done) {

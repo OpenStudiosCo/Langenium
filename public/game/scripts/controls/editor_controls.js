@@ -28,25 +28,32 @@ var editor_controls = function() {
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
 $(document).bind("mousedown", function(event) {
+	if (window.location.href.indexOf("editor") > 0) {
+		var raycaster = new THREE.Raycaster( client.camera_position, controls.editor.cursor_position.sub( client.camera_position ).normalize() );
 
-	var raycaster = new THREE.Raycaster( client.camera_position, controls.editor.cursor_position.sub( client.camera_position ).normalize() );
+		var intersects = raycaster.intersectObjects( scene.__objects );
 
-	var intersects = raycaster.intersectObjects( scene.__objects );
-
-	if ( intersects.length > 0 ) {
-		// selected area expand and make thingo wireframe
-		console.log(intersects);
+		if ( intersects.length > 0 ) {
+			editor.selected.new(
+					intersects[0].object.id,
+					intersects[0].object.name,
+					intersects[0].object.position,
+					intersects[0].object.scale.x
+			);
+		}
 	}
 });
 
 $(document).bind("mousemove", function(event) {
-	if (controls && controls.editor) {
-		controls.editor.cursor_position = new THREE.Vector3( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1, 0.5 );
-		projector.unprojectVector( controls.editor.cursor_position, client.camera );
+	if (window.location.href.indexOf("editor") > 0) {
+		if (controls && controls.editor) {
+			controls.editor.cursor_position = new THREE.Vector3( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1, 0.5 );
+			projector.unprojectVector( controls.editor.cursor_position, client.camera );
 
-		$('.cursor_info .x').html('x: ' + Math.round(controls.editor.cursor_position.x));
-		$('.cursor_info .y').html('y: ' + Math.round(controls.editor.cursor_position.y));
-		$('.cursor_info .z').html('z: ' + Math.round(controls.editor.cursor_position.z));
+			$('.cursor_info .x').html('x: ' + Math.round(controls.editor.cursor_position.x));
+			$('.cursor_info .y').html('y: ' + Math.round(controls.editor.cursor_position.y));
+			$('.cursor_info .z').html('z: ' + Math.round(controls.editor.cursor_position.z));
+		}
 	}
 });
 

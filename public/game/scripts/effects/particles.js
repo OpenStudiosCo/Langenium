@@ -25,7 +25,7 @@ function teleportEffect(position){
 				particles = new THREE.Geometry(),
 				pMaterial =
 				  new THREE.ParticleBasicMaterial({
-					map: THREE.ImageUtils.loadTexture("/game/assets/particle.png?nocache"),
+					map: THREE.ImageUtils.loadTexture("/game/assets/textures/particle.png?nocache"),
 					size: .5,
 					blending: THREE.AdditiveBlending,
 					transparent: true
@@ -61,7 +61,7 @@ function cloudEffect(position){
 				pMaterial =
 				  new THREE.ParticleBasicMaterial({
 				  transparent: true,
-					map: THREE.ImageUtils.loadTexture("/game/assets/cloud10.png?nocache"),
+					map: THREE.ImageUtils.loadTexture("/game/assets/textures/cloud10.png?nocache"),
 					size: 512
 					
 					

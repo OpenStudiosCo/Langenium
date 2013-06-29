@@ -21,35 +21,53 @@ module.exports.queryWebsiteDB = queryWebsiteDB;
 var 		db_user = process.env['DB_USERNAME'],
 			db_pass = process.env['DB_PASSWORD'],
 			db_url = db_user+':'+db_pass+'@langenium.com:27017/',
-			Mongolian  = require("mongolian"),
-			client_db = new Mongolian(db_url + 'dev_client'),
-			website_db = new Mongolian(db_url + 'dev_website');
+			mongojs  = require("mongojs"),
+			client_db = mongojs(db_url + 'dev_client'),
+			website_db = mongojs(db_url + 'dev_website');
 
 
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 	Function Definitions
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
-function queryClientDB(path, search_term, callback) {
-	var k;
-	var collection = client_db.collection(path);
-	collection.find(search_term).toArray(function(err, result) {
-		if (err) { console.log(err); }
-		else {
-			callback(result);	
-		}
-	});
+function queryClientDB(collection_name, search_term, callback) {
+	var collection = client_db.collection(collection_name);
+	if (Object.keys(search_term).length > 0) {
+		collection.find(search_term).toArray(function(err, result) {
+			if (err) { console.log(err); }
+			else {
+				callback(result);	
+			}
+		});
+	}
+	else {
+		collection.find().toArray(function(err, result) {
+			if (err) { console.log(err); }
+			else {
+				callback(result);	
+			}
+		});
+	}
 }
 
-function queryWebsiteDB(path, search_term, callback) {
-	var k;
-	var collection = website_db.collection(path);
-	collection.find(search_term).toArray(function(err, result) {
-		if (err) { console.log(err); }
-		else {
-			callback(result);	
-		}
-	});
+function queryWebsiteDB(collection_name, search_term, callback) {
+	var collection = website_db.collection(collection_name);
+	if (Object.keys(search_term).length > 0) {
+		collection.find(search_term).toArray(function(err, result) {
+			if (err) { console.log(err); }
+			else {
+				callback(result);	
+			}
+		});
+	}
+	else {
+		collection.find().toArray(function(err, result) {
+			if (err) { console.log(err); }
+			else {
+				callback(result);	
+			}
+		});
+	}
 }
 
 exports.addUser = function(username, facebook_id) {

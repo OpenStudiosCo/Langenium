@@ -14,7 +14,7 @@
     "passport" :  "*",
     "passport-facebook"    :  "*",
     "facebook-sdk" :  "*",
-    "mongolian" :  "*",
+    "mongojs" :  "*",
     "socket.io"   :  "*",
     "jade"   :  "*"
   }, 

@@ -38,15 +38,23 @@ function make(details) {
 
 	*/
 	details.move = function (player, world, details, _complete) {
+		/*
+		if (details.client_position) {
+			console.log("Client:")
+			console.log(details.client_position);	
+			console.log("Server:")
+			console.log(player.position);	
+		}
+		*/
 		player.d = details.d;
 		details.username = player.username;
 		details.type = 'move';
 		details.obj_class = 'players';
-		var 		velocityYChange = 600 * details.d,
-					rotateAngle = 0.01744444444444444444444444444444 * 100 * details.d;
+		var 		velocityYChange = 120 * details.d,
+					rotateAngle = 0.01744444444444444444444444444444 * 50 * details.d;
 
-		if (details.pZ > 0 && player.velocity > -7.5) { player.velocity -= .75 }
-		if (details.pZ < 0 && player.velocity < 5) { player.velocity += .75 }
+		if (details.pZ > 0 && player.velocity > -7.5) { player.velocity -= 7.5 }
+		if (details.pZ < 0 && player.velocity < 5) { player.velocity += 7.5 }
 
 		if (details.rY > 0) { details.rY = rotateAngle; }						// left
 		if (details.rY < 0) { details.rY = -rotateAngle; }						// right
@@ -69,6 +77,7 @@ function make(details) {
 		details.pX = player.position.x;
 		details.pZ = player.position.z;
 
+		
 		_complete(details);
 	};
 

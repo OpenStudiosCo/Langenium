@@ -31,7 +31,7 @@ function make(io, world, objects) {
 	*/
 	world.update_queue = [];
 
-	world.update = function() { update(io, world); };
+	world.update = function(delta) { update(delta, io, world); };
 
 	for (var object in objects) {
 		world[object] = [];
@@ -41,9 +41,12 @@ function make(io, world, objects) {
 
 }
 
-function update(io, world) {
+// Private function
+function update(delta, io, world) {
 	var processed_changes = [];
 	// Player velocities reduce to 0 over time
+	
+	
 	world.update_queue.forEach(function(update, index){
 
 		var _complete = function(processed_change) {

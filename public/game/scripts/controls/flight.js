@@ -96,10 +96,10 @@ flight.prototype.input = function (delta){
 
 flight.prototype.move = function (velocity, playerPosition, data) {
 	
-	var 		velocityYChange = 600 * data.d,
-				rotateAngle = 0.01744444444444444444444444444444 * 100 * data.d;
+	var 		velocityYChange = 120 * data.d,
+				rotateAngle = 0.01744444444444444444444444444444 * 50 * data.d;
 
-	velocity = velocity * 100 * data.d;
+	
 	if (window.location.href.indexOf("editor") > 0) { 
 		if (editor.sky_camera_active == true) {
 			velocity *= 100 ; 

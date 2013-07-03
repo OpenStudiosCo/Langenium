@@ -35,7 +35,7 @@ var 	objects = {
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 	Function Definitions
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
-function make(type, hasClock) {
+function make(io, type) {
 	/* 
 		Creates a new instance
 		
@@ -51,7 +51,7 @@ function make(type, hasClock) {
 	
 	if (type == "world") { 
 		instance.addObjectToWorld = function(details) { addObjectToWorld(details, instance) };
-		return types.world.make(instance, objects, hasClock); 
+		return types.world.make(io, instance, objects); 
 	}
 
 }

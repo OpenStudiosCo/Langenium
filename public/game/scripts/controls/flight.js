@@ -44,7 +44,7 @@ $(document).bind("mousedown", function(event) {
 });
 
 flight.prototype.input = function (delta){
-	var keyboardInput = { d: delta, pZ: 0, pY: 0, rY: 0, fire: client.isFiring },
+	var keyboardInput = { d: delta, pZ: 0, pY: 0, rY: 0, fire: client.isFiring, client_position: player.position },
 			move = false;
 	
 	if (keyboard.pressed("W")){
@@ -192,9 +192,6 @@ flight.prototype.move = function (velocity, playerPosition, data) {
 	
 	sky.updateMatrixWorld();
 		
-	events.moveShip(player, true, { name: "move", type: "player", details: data });
-	var 		html = 		"<div><strong>";
-				html +=	"<strong>Player</strong><br />pX:&nbsp;"+Math.round(player.position.x)+"<br />pY:&nbsp;"+Math.round(player.position.y)+"<br />pZ:&nbsp;"+Math.round(player.position.z);
-				html += 	"<br />rY:&nbsp;"+Math.round(player.rotation.y)+"<br />d:&nbsp;" + Math.round(data.d * 1000) + "</div>";
-	$("#playerPosition").html(html);
+	//events.moveShip(player, true, { name: "move", type: "player", details: data });
+
 }

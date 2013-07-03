@@ -114,18 +114,13 @@ app.get('/logout', function(req, res){
 });
 
 
-// Test Facebook albums
-
-
-
 // Start server
-//server.listen(8000, "127.0.0.1"); // production
 server.listen(process.env['HTTP_PORT']); // dev
 
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 	Function Definitions
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
-//io.set('log level', 2); // supresses the console output
+io.set('log level', 2); // supresses the console output
 io.sockets.on('connection', function (socket) {
 	// Ping and Pong
 	socket.emit("ping", { time: new Date().getTime(), latency: 0 }); 
@@ -134,7 +129,7 @@ io.sockets.on('connection', function (socket) {
 	// Player
 	socket.on("login", function(data){ events.login(socket, data, db, instances, client_sessions); });
 	socket.on("disconnect" , function ()  { events.logout(socket, db, instances, client_sessions); });
-
+	socket.on("move" , function(data){ events.move(socket, data, db, instances, client_sessions); });
 });
 
 function makeUniverse() {
@@ -142,9 +137,9 @@ function makeUniverse() {
 	Sets up the main map
 */
 	// Create container and first object 
-	instances.master = instance.make("container", false);
+	instances.master = instance.make(io, "container");
 	instances.master.instances.push(
-		instance.make("world", false)
+		instance.make(io, "world")
 	);
 	
 	// Check the database for any objects that belong to this instance and add them

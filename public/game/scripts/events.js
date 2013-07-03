@@ -38,6 +38,20 @@ events.prototype.setEventHandlers = function (socket) {
 	socket.on("load", function(data) { 
 		objects.loadObject(data);
 	});
+	socket.on("update", function(updates){
+		updates.forEach(function(update){
+			if (update.type == "move") {
+				if (update.obj_class == "players") {
+					ships.forEach(function(ship){
+						if (update.username == ship.username) {
+							events.moveShip(ship, true, { name: "move", type: "player", details: update });
+						}
+					});
+				}
+			}
+		});
+		
+	});
 	return socket;
 }
 
@@ -49,8 +63,6 @@ events.prototype.detectCollision = function (source, direction, world_map) {
 
 events.prototype.moveShip = function (ship, isPlayer, instruction) {
 
-	var playerMesh = player;
-	
 	if (instruction.details.pY != 0){
 		ship.position.y = instruction.details.pY;
 	}

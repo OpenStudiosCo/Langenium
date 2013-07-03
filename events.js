@@ -13,6 +13,7 @@
 module.exports.login = login;
 module.exports.logout = logout;
 module.exports.pong = pong;
+module.exports.move = move;
 
 
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -33,27 +34,29 @@ function login(socket, data, db, instances, client_sessions) {
 	*/
 	
 	if (data.username.length > 0) {
-	var loginUser = function(result) { 
-	
-			var player = result[0];
-			// check if we're dealing with a container
-			if (instances[player.instance_id].instances) {
-
-				instances[player.instance_id].addObjectToContainer(player, instances[player.instance_id].instances[0].players);
-				initializeClient(socket, instances[player.instance_id].instances[0], db);
-			}
-			else {
-				instances[player.instance_id].addObjectToWorld(player, instances[player.instance_id].players);
-				initializeClient(socket, instances[player.instance_id], db);
-			}
+		var loginUser = function(result) { 
 		
-		client_sessions.push({	sessionId: socket.id,
-												instance_id: player.instance_id,
-												username: player.username });
-	
-	};
-	
-	db.queryClientDB("players", { username: data.username }, loginUser);
+				var player = result[0];
+				player.velocity = 0;
+				// check if we're dealing with a container
+				if (instances[player.instance_id].instances) {
+
+					instances[player.instance_id].addObjectToContainer(player, instances[player.instance_id].instances[0].players);
+					initializeClient(socket, instances[player.instance_id].instances[0], db);
+				}
+				else {
+					instances[player.instance_id].addObjectToWorld(player, instances[player.instance_id].players);
+					initializeClient(socket, instances[player.instance_id], db);
+				}
+			
+			client_sessions.push({					_id: player._id,
+													sessionId: socket.id,
+													instance_id: player.instance_id,
+													username: player.username });
+		
+		};
+		
+		db.queryClientDB("players", { username: data.username }, loginUser);
 	
 	}
 										
@@ -62,19 +65,34 @@ function login(socket, data, db, instances, client_sessions) {
 function logout(socket, db, instances, client_sessions) {
 
 	client_sessions.forEach(function(client, index){
-			if (client.sessionId == socket.id) {
-				socket.broadcast.emit('logout', { username: client.username }); // change to sessionID later
+		if (client.sessionId == socket.id) {
+			socket.broadcast.emit('logout', { username: client.username }); // change to sessionID later
 
-				instances[client_sessions[index].instance_id].instances[0].players.forEach(function(player, player_index) {
-					if (player.username == client_sessions[index].username) {
-						instances[client_sessions[index].instance_id].instances[0].players.splice(player_index, 1);
-					}
-				});
-				
-				client_sessions.splice(index, 1);
-			}		
-		});
+			instances[client_sessions[index].instance_id].instances[0].players.forEach(function(player, player_index) {
+				if (player.username == client_sessions[index].username) {
+					instances[client_sessions[index].instance_id].instances[0].players.splice(player_index, 1);
+				}
+			});
+			
+			client_sessions.splice(index, 1);
+		}			
+	});
 	delete socket;
+}
+
+function move(socket, data, db, instances, client_sessions) {
+	client_sessions.forEach(function(client, index){
+		if (client.sessionId == socket.id) {
+			var update = {
+				_id: client._id,
+				obj_class: "players",
+				type: "move",
+				username: client.username,
+				details: data
+			};
+			instances.master.instances[0].update_queue.push(update);
+		}
+	});
 }
 
 function initializeClient(socket, instance, db) {

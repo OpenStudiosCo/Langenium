@@ -140,9 +140,6 @@ engine.prototype.animate = function () {
 		player.updateMatrix();
 
 		controls.flight.move(player.velocity, player.position, controls.flight.input(delta));
-		if  (player.velocity != 0) {
-			player.velocity *= .996;
-		}
 
 	}
 	

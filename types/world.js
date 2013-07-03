@@ -22,17 +22,17 @@ module.exports.make = make;
 	Function Definitions
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
-function make(world, objects, hasClock) {
+function make(io, world, objects) {
 	/* 
 		Returns the standard container type world object
 		
 		Parameters:
 			none
 	*/
-	world.update = function() { update(world); };
-	
-	if (hasClock == true) {world.clock = setInterval(function(){ update(world); }); }
-	
+	world.update_queue = [];
+
+	world.update = function() { update(io, world); };
+
 	for (var object in objects) {
 		world[object] = [];
 	}
@@ -41,7 +41,23 @@ function make(world, objects, hasClock) {
 
 }
 
-function update(world) {
-	//console.log(world);
+function update(io, world) {
+	var processed_changes = [];
+	// Player velocities reduce to 0 over time
+	world.update_queue.forEach(function(update, index){
+
+		var _complete = function(processed_change) {
+			processed_changes.push(processed_change);
+			world.update_queue.splice(index, 1);
+		};
+		
+		world[update.obj_class].forEach(function(obj, index){
+			if (obj._id == update._id) {
+				obj[update.type](obj, world, update.details, _complete);
+			}
+		});
+	});
+
+	io.sockets.emit('update', processed_changes);
 }
 

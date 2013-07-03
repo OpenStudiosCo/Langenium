@@ -125,7 +125,7 @@ server.listen(process.env['HTTP_PORT']); // dev
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 	Function Definitions
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
-io.set('log level', 2); // supresses the console output
+//io.set('log level', 2); // supresses the console output
 io.sockets.on('connection', function (socket) {
 	// Ping and Pong
 	socket.emit("ping", { time: new Date().getTime(), latency: 0 }); 
@@ -134,7 +134,7 @@ io.sockets.on('connection', function (socket) {
 	// Player
 	socket.on("login", function(data){ events.login(socket, data, db, instances, client_sessions); });
 	socket.on("disconnect" , function ()  { events.logout(socket, db, instances, client_sessions); });
-	socket.on("move",function(data){ });
+
 });
 
 function makeUniverse() {
@@ -149,7 +149,9 @@ function makeUniverse() {
 	
 	// Check the database for any objects that belong to this instance and add them
 	var objects = function(result) { 
+
 		result.forEach(function(object){
+
 			instances.master.addObjectToContainer(object, instances.master);
 		}); 
 	};

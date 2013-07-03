@@ -31,11 +31,14 @@ function login(socket, data, db, instances, client_sessions) {
 		Parameters:
 			none
 	*/
+	
 	if (data.username.length > 0) {
 	var loginUser = function(result) { 
+	
 			var player = result[0];
 			// check if we're dealing with a container
 			if (instances[player.instance_id].instances) {
+
 				instances[player.instance_id].addObjectToContainer(player, instances[player.instance_id].instances[0].players);
 				initializeClient(socket, instances[player.instance_id].instances[0], db);
 			}
@@ -75,6 +78,7 @@ function logout(socket, db, instances, client_sessions) {
 }
 
 function initializeClient(socket, instance, db) {
+
 	for (var objects in instance) {
 		if (typeof(instance[objects]) == "object") {
 			var instruction = {};

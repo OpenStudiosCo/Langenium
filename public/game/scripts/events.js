@@ -24,13 +24,13 @@ var events = function() {
 	Function definitions
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 events.prototype.getUrl = function () {
-	if (window.location.href.indexOf("langenium") > 0)
+	if (window.location.href.indexOf("dev.langenium") > 0)
 	{
-		return "http://langenium.com:8080"; // own port "8080"
+		return "http://dev.langenium.com:8080"; // own port "8080"
 		
 	}
 	else {
-		return "http://localhost:8000";
+		return "http://langenium.com:8080";
 	}
 }
 events.prototype.setEventHandlers = function (socket) {
@@ -50,8 +50,6 @@ events.prototype.detectCollision = function (source, direction, world_map) {
 events.prototype.moveShip = function (ship, isPlayer, instruction) {
 
 	var playerMesh = player;
-	
-	
 	
 	if (instruction.details.pY != 0){
 		ship.position.y = instruction.details.pY;

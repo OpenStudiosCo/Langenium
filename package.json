@@ -16,7 +16,8 @@
     "facebook-sdk" :  "*",
     "mongojs" :  "*",
     "socket.io"   :  "*",
-    "jade"   :  "*"
+    "jade"   :  "*",
+    "three" : "*"
   }, 
   "license": "MIT",
   "engines": {

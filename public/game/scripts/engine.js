@@ -98,6 +98,7 @@ engine.prototype.animate = function () {
 	TWEEN.update();
 	var shipsMoving = false;
 	
+	// need a nicer way to do this
 	var playerHeightOk = false;
 	
 	if (!player) { playerHeightOk = true; }

@@ -63,64 +63,9 @@ objects.prototype.makeObjectMesh = function (objectType, geometry, materials, x,
 		useVertexOverrides = true;
 
 	}
-	materials.forEach(function(material, index){
-
-		if (material.name == "Metal") {
-
-				materials[index].vertexColors = THREE.VertexColors;
-		}
-		if (material.name == "Light-Metal") {
-				materials[index].vertexColors = THREE.VertexColors;
-		}
-		if (material.name == "Red-Metal") {
-				materials[index].vertexColors = THREE.VertexColors;
-		}
-		if (material.name == "Glass") {
-				materials[index].transparent = true;
-				materials[index].opacity = 0.8;
 	
-				materials[index].color.r = .1;
-				materials[index].color.g =  .5; 
-				materials[index].color.b =  .9;
-		
-				materials[index].vertexColors = THREE.VertexColors;
+	textures.prepare(geometry, materials, useVertexOverrides);
 
-		}
-		if (material.name == "Dark-Glass") {
-			materials[index].shading = THREE.FlatShading;
-			materials[index].transparent = true;
-			materials[index].opacity = 0.95;
-
-			materials[index].vertexColors = THREE.VertexColors;
-			
-		}
-	});
-	geometry.faces.forEach(function(face,index){
-		if ((materials[face.materialIndex].name == "Red-Metal")&&(useVertexOverrides == true)) {
-			face.vertexColors[0] =  new THREE.Color( 0x440000 );
-			face.vertexColors[1] =  new THREE.Color( 0x440000 );
-			face.vertexColors[2] =  new THREE.Color( 0x550000);
-			face.vertexColors[3] =  new THREE.Color( 0x440000 );
-		}
-		if ((materials[face.materialIndex].name == "Metal")&&(useVertexOverrides == true)) {
-			face.vertexColors[0] =  new THREE.Color( 0x333333 );
-			face.vertexColors[1] =  new THREE.Color( 0x222222 );
-			face.vertexColors[2] =  new THREE.Color( 0x333333);
-			face.vertexColors[3] =  new THREE.Color( 0x333333 );
-		}
-		if ((materials[face.materialIndex].name == "Light-Metal")&&(useVertexOverrides == true)) {
-			face.vertexColors[0] =  new THREE.Color( 0x666666 );
-			face.vertexColors[1] =  new THREE.Color( 0x444444 );
-			face.vertexColors[2] =  new THREE.Color( 0x666666);
-			face.vertexColors[3] =  new THREE.Color( 0x666666 );
-		}
-		if ((materials[face.materialIndex].name == "Dark-Glass")&&(useVertexOverrides == true)) {
-			face.vertexColors[0] =  new THREE.Color( 0x112233 );
-			face.vertexColors[1] =  new THREE.Color( 0x112233 );
-			face.vertexColors[2] =  new THREE.Color( 0x116699);
-			face.vertexColors[3] =  new THREE.Color( 0x113355 );
-		}
-	});
 	object = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial( materials ) );
 	object.geometry.computeBoundingBox();
 	object.name = objectType;
@@ -161,7 +106,6 @@ objects.prototype.renderObject = function (mesh, type, instruction) {
 		scene.add(player);
 		ships.push(player);
 	}
-	console.log(type);
 	if (type == "ship") {
 		var ship = mesh;
 		ship.bullets = [];

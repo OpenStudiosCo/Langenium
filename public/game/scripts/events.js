@@ -52,7 +52,6 @@ events.prototype.setEventHandlers = function (socket) {
 				if (update.obj_class == "players") {
 					ships.forEach(function(ship){
 						if (update.socket_id == ship.socket_id) {
-							console.log(update.socket_id)
 							events.moveShip(ship, true, { name: "move", type: "player", details: update });
 						}
 					});

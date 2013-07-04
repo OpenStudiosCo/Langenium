@@ -37,7 +37,7 @@ function make(details) {
 			move
 
 	*/
-	details.move = function (player, world, details, _complete) {
+	details.move = function (player, world, socket_id, details, _complete) {
 		/*
 		if (details.client_position) {
 			console.log("Client:")
@@ -47,6 +47,7 @@ function make(details) {
 		}
 		*/
 		player.d = details.d;
+		details.socket_id = socket_id;
 		details.username = player.username;
 		details.type = 'move';
 		details.obj_class = 'players';

@@ -38,12 +38,21 @@ events.prototype.setEventHandlers = function (socket) {
 	socket.on("load", function(data) { 
 		objects.loadObject(data);
 	});
+
+	socket.on("logout",function(data) {
+		ships.forEach(function(ship, index){
+			if (data.socket_id == ship.socket_id) {
+				events.logout(ship, index);
+			}
+		});
+	});
 	socket.on("update", function(updates){
 		updates.forEach(function(update){
 			if (update.type == "move") {
 				if (update.obj_class == "players") {
 					ships.forEach(function(ship){
-						if (update.username == ship.username) {
+						if (update.socket_id == ship.socket_id) {
+							console.log(update.socket_id)
 							events.moveShip(ship, true, { name: "move", type: "player", details: update });
 						}
 					});
@@ -59,6 +68,12 @@ events.prototype.detectCollision = function (source, direction, world_map) {
 	var raycaster = new THREE.Raycaster(source, direction.normalize());
 	var intersects = raycaster.intersectObjects(world_map);
 	return intersects;
+}
+
+events.prototype.logout = function(ship, index) {
+	teleportEffect(ship.position);
+	scene.remove(ship);
+	ships.splice(index, 1);
 }
 
 events.prototype.moveShip = function (ship, isPlayer, instruction) {

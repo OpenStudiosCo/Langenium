@@ -56,7 +56,7 @@ function update(delta, io, world) {
 		
 		world[update.obj_class].forEach(function(obj, index){
 			if (obj._id == update._id) {
-				obj[update.type](obj, world, update.details, _complete);
+				obj[update.type](obj, world, update.socket_id, update.details, _complete);
 			}
 		});
 	});

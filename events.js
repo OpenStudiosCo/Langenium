@@ -38,6 +38,7 @@ function login(socket, data, db, instances, client_sessions) {
 		
 				var player = result[0];
 				player.velocity = 0;
+				player.socket_id = socket.id;
 				// check if we're dealing with a container
 				if (instances[player.instance_id].instances) {
 
@@ -66,10 +67,10 @@ function logout(socket, db, instances, client_sessions) {
 
 	client_sessions.forEach(function(client, index){
 		if (client.sessionId == socket.id) {
-			socket.broadcast.emit('logout', { username: client.username }); // change to sessionID later
+			socket.broadcast.emit('logout', { socket_id: socket.id }); // change to sessionID later
 
 			instances[client_sessions[index].instance_id].instances[0].players.forEach(function(player, player_index) {
-				if (player.username == client_sessions[index].username) {
+				if (socket.id == player.socket_id) {
 					instances[client_sessions[index].instance_id].instances[0].players.splice(player_index, 1);
 				}
 			});
@@ -77,7 +78,6 @@ function logout(socket, db, instances, client_sessions) {
 			client_sessions.splice(index, 1);
 		}			
 	});
-	delete socket;
 }
 
 function move(socket, data, db, instances, client_sessions) {
@@ -85,6 +85,7 @@ function move(socket, data, db, instances, client_sessions) {
 		if (client.sessionId == socket.id) {
 			var update = {
 				_id: client._id,
+				socket_id: socket.id,
 				obj_class: "players",
 				type: "move",
 				username: client.username,
@@ -104,6 +105,11 @@ function initializeClient(socket, instance, db) {
 			
 			var send_instructions = function (instruction) {
 				socket.emit("load", instruction );
+				
+				if (instruction.class == 'players') {
+					instruction.class = 'ship';
+					socket.broadcast.emit("load", instruction );
+				}
 			};
 			prepareLoadInstructions(instruction[objects], db, send_instructions);
 		}

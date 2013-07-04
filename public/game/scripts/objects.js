@@ -148,6 +148,7 @@ objects.prototype.renderObject = function (mesh, type, instruction) {
 		player.bullets = [];
 		player.moveInterval = new Date().getTime();
 		player.username = instruction.username;
+		player.socket_id = instruction.socket_id;
 		player.rotation.y = instruction.position.rY;
 		player.material.materials.forEach(function(material,index){
 			player.material.materials[index].morphTargets = true;
@@ -159,6 +160,23 @@ objects.prototype.renderObject = function (mesh, type, instruction) {
 		
 		scene.add(player);
 		ships.push(player);
+	}
+	console.log(type);
+	if (type == "ship") {
+		var ship = mesh;
+		ship.bullets = [];
+		ship.moveInterval = new Date().getTime();
+		ship.username = instruction.username;
+		ship.socket_id = instruction.socket_id;
+		ship.rotation.y = instruction.position.rY;
+		ship.material.materials.forEach(function(material,index){
+			ship.material.materials[index].morphTargets = true;
+		});
+		
+		ship.velocity = 0;
+		
+		ships.push(ship);
+		scene.add(ships[ships.length-1]);
 
 	}
 	if (type == "bot") {

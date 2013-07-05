@@ -34,7 +34,10 @@ events.prototype.getUrl = function () {
 	}
 }
 events.prototype.setEventHandlers = function (socket) {
-    socket.emit("login", { username: "Saggy Nuts" });
+	var is_editor = false;
+	if (window.location.href.indexOf("editor") > 0) { is_editor = true; }
+
+    socket.emit("login", { username: "Saggy Nuts", editor: is_editor });
 	socket.on("load", function(data) { 
 		objects.loadObject(data);
 	});

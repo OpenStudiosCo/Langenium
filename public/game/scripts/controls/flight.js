@@ -99,17 +99,6 @@ flight.prototype.move = function (velocity, playerPosition, data) {
 	var 		velocityYChange = 120 * data.d,
 				rotateAngle = 0.01744444444444444444444444444444 * 50 * data.d;
 
-	
-	if (window.location.href.indexOf("editor") > 0) { 
-		if (editor.sky_camera_active == true) {
-			velocity *= 100 ; 
-		}
-		else {
-			velocity *= 50 ; 
-			velocityYChange *= 50;
-		}
-	}
-
 
 	if (data.rY > 0) { data.rY = rotateAngle; }						// left
 	if (data.rY < 0) { data.rY = -rotateAngle; }						// right

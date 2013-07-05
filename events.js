@@ -37,6 +37,7 @@ function login(socket, data, db, instances, client_sessions) {
 		var loginUser = function(result) { 
 		
 				var player = result[0];
+				player.editor = data.editor;
 				player.velocity = 0;
 				player.socket_id = socket.id;
 				// check if we're dealing with a container
@@ -107,6 +108,7 @@ function initializeClient(socket, instance, db) {
 				socket.emit("load", instruction );
 				
 				if (instruction.class == 'players') {
+
 					instruction.class = 'ship';
 					socket.broadcast.emit("load", instruction );
 				}
@@ -119,14 +121,21 @@ function initializeClient(socket, instance, db) {
 function prepareLoadInstructions(objects, db, send_instructions) {
 	objects.forEach(function(object, index){
 		for (var obj in object.type) {
-			var val = function(result) {
-				var val = result[0];
-				for (var property in val.details) {
-                                object[property] = val.details[property];
-                 }
-				 send_instructions(object);
+			var callback = function(result) {
+				result.forEach(function(obj_result){
+
+					if (obj_result && obj_result.name == object.type[obj]) {
+						for (var property in obj_result.details) {
+							if (property == 'scale' && object.scale) {}
+							else {
+		                    	object[property] = obj_result.details[property];
+		                    }
+		                 }
+						 send_instructions(object);
+					}
+				});
 			};
-			db.queryClientDB("objects", {type: obj}, val);
+			db.queryClientDB("objects", {type: obj}, callback);
 		}
 	});
 }

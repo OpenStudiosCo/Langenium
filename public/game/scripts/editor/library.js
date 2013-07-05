@@ -38,9 +38,8 @@ function loadLibrary() {
 	});
 }
 
-library.prototype.addObject = function (name, type, scale) {
+library.prototype.addObject = function (name, type, url, scale) {
 	
-	var url = '/game/assets/objects/'+ type + '/' + name + '.js?nocache';
 	var new_position = new THREE.Vector3(client.camera_position.x, client.camera_position.y, client.camera_position.z);
 
 	new_position.x -= Math.sin(player.rotation.y) * 1000;

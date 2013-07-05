@@ -59,11 +59,10 @@ objects.prototype.loadObject = function (instruction) {
 
 objects.prototype.makeObjectMesh = function (objectType, geometry, materials, x, y, z, scale) {
 	var useVertexOverrides = false;
-	if ((objectType != "ship")&&(objectType != "players")&&(objectType != "bot")) {
+	if ((objectType != "terrain")&&(objectType != "ship")&&(objectType != "players")&&(objectType != "bot")) {
 		useVertexOverrides = true;
-
 	}
-	
+
 	textures.prepare(geometry, materials, useVertexOverrides);
 
 	object = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial( materials ) );

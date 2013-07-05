@@ -46,6 +46,7 @@ function make(details) {
 			console.log(player.position);	
 		}
 		*/
+		
 		player.d = details.d;
 		details.socket_id = socket_id;
 		details.username = player.username;
@@ -54,8 +55,17 @@ function make(details) {
 		var 		velocityYChange = 120 * details.d,
 					rotateAngle = 0.01744444444444444444444444444444 * 50 * details.d;
 
-		if (details.pZ > 0 && player.velocity > -7.5) { player.velocity -= 7.5 }
-		if (details.pZ < 0 && player.velocity < 5) { player.velocity += 7.5 }
+		
+		if (player.editor == true) {
+			velocityYChange *= 10;
+			if (details.pZ > 0 && player.velocity > -150) { player.velocity -= 15 }
+			if (details.pZ < 0 && player.velocity < 75) { player.velocity += 15 }
+		}
+		else {
+			if (details.pZ > 0 && player.velocity > -7.5) { player.velocity -= 7.5 }
+			if (details.pZ < 0 && player.velocity < 5) { player.velocity += 7.5 }
+		}
+		
 
 		if (details.rY > 0) { details.rY = rotateAngle; }						// left
 		if (details.rY < 0) { details.rY = -rotateAngle; }						// right

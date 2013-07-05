@@ -68,6 +68,7 @@ textures.prototype.prepare = function(geometry, materials, useVertexOverrides) {
 			if (material_details.name == material.name) {
 				if (material_details.vertex && material_details.vertex == true) {
 					materials[material_index].vertexColors = THREE.VertexColors;
+					materials[material_index].side = THREE.DoubleSide;
 				}
 				if (material_details.opacity) {
 					materials[material_index].transparent = true;

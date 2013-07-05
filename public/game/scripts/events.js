@@ -98,19 +98,19 @@ events.prototype.moveShip = function (ship, isPlayer, instruction) {
 	
 	if (rotate > 0){
 		if (ship.rotation.z < .5) {
-			ship.rotation.z += rotate / 3;
+			ship.rotation.z += rotate / 4;
 		}
 		else {
-			ship.rotation.z += rotate / 4;
+			ship.rotation.z += rotate / 5;
 		}
 		ship.rotation.y = instruction.details.rY;
 	}
 	if (rotate < 0) {
 		if (ship.rotation.z > -.5) {
-			ship.rotation.z += rotate / 3;
+			ship.rotation.z += rotate / 4;
 		}
 		else {
-			ship.rotation.z += rotate / 4;
+			ship.rotation.z += rotate / 5;
 		}
 		ship.rotation.y = instruction.details.rY;
 	}

@@ -1,0 +1,31 @@
+/**************************************************************
+	Langenium Editor Window Styles
+	Author: Paul Brzeski
+**************************************************************/
+
+li.window {
+	position: absolute!important;
+	min-width: 200px;
+	padding: 2em 0 2em 0;
+}
+
+header li.window {
+	top: 100px;
+}
+footer li.window {
+	bottom: 100px;
+}
+li.window a.move { 
+	position: absolute;
+	top: 0;
+	left: 0px;
+	right: 0px;
+}
+
+li.button a.make_window,
+li.window a.close_window { 
+	width: auto!important;
+	position: absolute;
+	top: 0;
+	right: 10px;
+}

@@ -39,55 +39,63 @@ objects.prototype.loadObject = function (instruction) {
 		y = instruction.position.y,
 		z = instruction.position.z,
 		scale = instruction.scale, 
-		type = instruction["class"],
+		obj_class = instruction["class"],
 		o = this;
 	
-	if ((cacheIndex >= 0)&&(window.location.href.indexOf("editor") <= 0)) {
+	if ((cacheIndex >= 0)&&(window.location.href.indexOf("editor") < 0)) {
 		var cachedObject = o.cache[cacheIndex];
-		mesh = o.makeObjectMesh(type, cachedObject.geometry, cachedObject.materials, x, y, z , scale);
-		o.renderObject(mesh, type, instruction);
+		mesh = o.makeObjectMesh(obj_class, instruction.name, instruction.obj_type, instruction.sub_type, cachedObject.geometry, cachedObject.materials, x, y, z , scale);
+		o.renderObject(mesh, obj_class, instruction);
 	}
 	else {
 		loader.load(instruction.url, function(geometry, materials) {
-			mesh = o.makeObjectMesh(type, geometry, materials, x, y, z , scale);
+			mesh = o.makeObjectMesh(obj_class, instruction.name, instruction.obj_type, instruction.sub_type, geometry, materials, x, y, z , scale);
 			var cachedObject = { url: instruction.url, geometry: geometry, materials: materials};
 			o.cache.push(cachedObject);	
-			o.renderObject(mesh, type, instruction);
+			o.renderObject(mesh, obj_class, instruction);
 		});
 	}
 };
 
-objects.prototype.makeObjectMesh = function (objectType, geometry, materials, x, y, z, scale) {
+objects.prototype.makeObjectMesh = function (obj_class, obj_name, obj_type, obj_sub_type, geometry, materials, x, y, z, scale) {
 	var useVertexOverrides = false;
-	if ((objectType != "terrain")&&(objectType != "ship")&&(objectType != "players")&&(objectType != "bot")) {
+	if ((obj_class != "terrain")&&(obj_class != "ship")&&(obj_class != "players")&&(obj_class != "bot")) {
 		useVertexOverrides = true;
 	}
 
 	textures.prepare(geometry, materials, useVertexOverrides);
 
 	object = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial( materials ) );
+	object.obj_details = {
+		name: obj_name,
+		type: obj_type,
+		sub_type: obj_sub_type
+	};
 	object.geometry.computeBoundingBox();
-	object.name = objectType;
+	object.name = obj_class;
 	object.position.set(x, y, z);
 	object.scale.set(scale, scale, scale);
 	object.matrixAutoUpdate = true;
 	object.updateMatrix();
 	object.geometry.colorsNeedUpdate = true;
+	if (window.location.href.indexOf("editor") >= 0) {
+		editor.object_properties.add_object(object);
+	}
 	return object;
 };
 
-objects.prototype.renderObject = function (mesh, type, instruction) {
+objects.prototype.renderObject = function (mesh, obj_class, instruction) {
 	mesh.uid = instruction.id;
 	var  x = instruction.position.x,
 			y = instruction.position.y,
 			z = instruction.position.z,
 			scale = instruction.scale;
 
-	if (type == "environment") { 
+	if (obj_class == "environment") { 
 		this.world_map.push(mesh);
 		scene.add(this.world_map[this.world_map.length-1]);
 	}
-	if (type == "players") {
+	if (obj_class == "players") {
 		player = mesh;
 		player.bullets = [];
 		player.moveInterval = new Date().getTime();
@@ -105,7 +113,7 @@ objects.prototype.renderObject = function (mesh, type, instruction) {
 		scene.add(player);
 		ships.push(player);
 	}
-	if (type == "ship") {
+	if (obj_class == "ship") {
 		var ship = mesh;
 		ship.bullets = [];
 		ship.moveInterval = new Date().getTime();
@@ -122,7 +130,7 @@ objects.prototype.renderObject = function (mesh, type, instruction) {
 		scene.add(ships[ships.length-1]);
 
 	}
-	if (type == "bot") {
+	if (obj_class == "bot") {
 		var bot = mesh;
 		bot.bullets = [];
 		bot.id = instruction.id;

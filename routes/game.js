@@ -30,10 +30,15 @@ exports.play = function(req, res) {
 	res.render('game/client', { title: "Langenium Game Client Alpha", editor: false });
 };
 exports.editor = function(req, res) {
-	res.setHeader("Expires", "-1");
-	res.setHeader("Cache-Control", "must-revalidate, private");
-	res.render('game/editor', { title: "Langenium Map Editor Alpha", editor: true });
+	var callback = function(result) {
+		res.setHeader("Expires", "-1");
+		res.setHeader("Cache-Control", "must-revalidate, private");
+		res.render('game/editor', { title: "Langenium Game Map Editor Alpha", editor: true, objects: result });
+	};
+	db.queryClientDB("objects", { }, callback);
 };
+
+// Modals
 exports.selected = function(req, res) {
 	res.setHeader("Expires", "-1");
 	res.setHeader("Cache-Control", "must-revalidate, private");
@@ -48,14 +53,3 @@ exports.selected = function(req, res) {
 		scale: req.query.scale });
 };
 
-exports.library = function(req, res) {
-
-	var callback = function(result) {
-		res.setHeader("Expires", "-1");
-		res.setHeader("Cache-Control", "must-revalidate, private");
-		res.render('game/editor/library', { objects: result });
-	};
-	
-	db.queryClientDB("objects", { }, callback);
-	
-};

@@ -1,13 +1,15 @@
 script(src='/shared/scripts/bootstrap.min.js')
 script(src='/game/scripts/editor.js')
 script(src='/game/scripts/editor/toolbars.js')
-script(src='/game/scripts/editor/library.js')
+script(src='/game/scripts/editor/object_library.js')
+script(src='/game/scripts/editor/object_properties.js')
 script(src='/game/scripts/editor/selected.js')
 script(type='text/javascript')
 
 	var editor = new editor();
 	editor.toolbars = new toolbars();
-	editor.library = new library();
+	editor.object_library = new object_library();
+	editor.object_properties = new object_properties();
 	editor.selected = new selected();
 
 	var ray = new THREE.Raycaster();

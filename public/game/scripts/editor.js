@@ -28,64 +28,64 @@ var editor = function() {
 
 // Events
 
-$("#editors_tools").live("mouseenter",function(e){
+$("header *, footer *").live("mouseenter",function(e){
 	controls.enabled = false;
 });
-$("#editors_tools").live("mouseout",function(e){
+$("header *, footer *").live("mouseover",function(e){
+	controls.enabled = false;
+});
+$("header *, footer *").live("mouseout",function(e){
 	controls.enabled = true;
 });
 
-$("#editor_tools input[name='scene_objects']").live("click", function(e){
-	$("#editor_tools").html(ui.editor.makeControls().data);
-	$("#editor_tools").append(ui.editor.getProperties(this.value));
+$('a.make_window').live("click", function(e){
+	$(this).parent().parent().css('left', (e.clientX - $('.moving').width() + 40 ) + 'px');
+	$(this).parent().parent().addClass('window');
+	$(this).parent().removeClass('sub_menu');
+
+	$(this).parent().siblings('a').addClass('move');
+
+	// Change this into a close button
+	$(this).html('');
+	$(this).attr('title','Close');
+	$(this).prepend('<i class="icon-remove" />');
+	$(this).addClass('close_window');
+	$(this).removeClass('make_window');
+
 });
 
-// Helpers
+$('a.close_window').live("click", function(e){
+	$(this).parent().fadeToggle();
+	$(this).parent().parent().css('left','');
+	$(this).parent().parent().css('top','');
+	$(this).parent().parent().removeClass('window');
+	$(this).parent().addClass('sub_menu');
 
-editor.prototype.makeControls = function () {
+	// Add move button
+	$(this).parent().children('.move').remove();
 
-	var html = { width: 250, alignX: "left", alignY: "top", data: "" };
-		
-	
-		html.data += "<h3>Tools</h3>";
-		html.data += "<ul class='menu'>";
-		
-		html.data += "<li><a href='#'>Scene Objects</a><ul>";
-		if (scene) {
-			for (var i in scene.__objects) {
+	// Change this into a close button
+	$(this).html('');
+	$(this).attr('title','Make window');
+	$(this).prepend('<i class="icon-external-link" />');
+	$(this).removeClass('close_window');
+	$(this).addClass('make_window');
+});
 
-				html.data += "<li><a href='#' onclick='editor.properties.loadProperties("+i+")'>" + scene.__objects[i].name + " (" + scene.__objects[i].id + ")</a></li>";
-			}
-		}
-		html.data += "</ul></li>";
-		
-		html.data += "<li><a href='#'>Add</a>";
-		html.data += "<ul class='menu'>";
-			html.data += "<li><a href='#'>Union</a><ul>";
-			html.data += "<li><a href='#'>Platform</a></li>";
-			html.data += "</ul></li>";
-		html.data += "</ul></li>";
+$('.window a.move').live("click", function(e){
+	$(this).parent().addClass('moving')
+	window.addEventListener('mousemove', editor.mouseMove, true);
+	window.addEventListener('mouseup', editor.mouseUp, false);
 
-		html.data += "<li><a href='#'>Camera</a>";
-		html.data += "<ul class='menu'>";
-			html.data += "<li><a href='#' onclick='controls.editor.toggleCamera();'>Toggle camera</a></li>";
-		html.data += "</ul></li>";
-		html.data += "</ul><br />";
-		
-		
-		html.data += "<a class='refresh button' href='#' onclick='editor.refresh();' >Refresh editor</a>";
-	
+});
 
-	return html;
+editor.prototype.mouseUp = function(e) {
+	$('.moving').removeClass('moving');
+	window.removeEventListener('mouseup', editor.mouseUp, false);
+	window.removeEventListener('mousemove', editor.mouseMove, true);
 };
 
-editor.prototype.refresh = function() {
-	
-	$("#editor_tools").html(editor.makeControls().data);
-	$("#editor_tools .button").button();
-	$("#editor_tools .menu").menu();
+editor.prototype.mouseMove = function (e) {
+	$('.moving').css('top', (e.clientY + 20 )+ 'px');
+	$('.moving').css('left', (e.clientX - $('.moving').width() * .6 ) + 'px');
 };
-
-
-
-

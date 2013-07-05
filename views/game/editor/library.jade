@@ -1,9 +1,9 @@
 - for (var object_index in objects)
 	li
+		.type= objects[object_index].type
+		.sub_type= objects[object_index].sub_type
 		.name= objects[object_index].name
 		.scale= objects[object_index].details.scale
-		.type= objects[object_index].type
-		.sub_type= [object_index].sub_type
-		a.button.add(href='#',onclick="editor.library.addObject('#{objects[object_index].name}','#{objects[object_index].type}','#{objects[object_index].details.url}','#{objects[object_index].details.scale}')")
+		a.button.add(href='#',onclick="editor.object_library.addObject('#{objects[object_index].name}','#{objects[object_index].type}','#{objects[object_index].sub_type}','#{objects[object_index].details.url}','#{objects[object_index].details.scale}')")
 			i.icon-plus
 			|  Add

@@ -1,0 +1,21 @@
+/**************************************************************
+	Langenium Editor Object Library Styles
+	Author: Paul Brzeski
+**************************************************************/
+
+.object_library menu ul.unstyled li {
+	display: block;
+	height: 50px;
+}
+
+.object_library menu ul.unstyled li .name {
+	float: left;
+	font-weight: bold;
+}
+.object_library menu ul.unstyled li .type {
+	float: left;
+	
+}
+.object_library menu ul.unstyled li .scale {
+	display: none;
+}

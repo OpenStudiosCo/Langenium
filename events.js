@@ -120,17 +120,23 @@ function initializeClient(socket, instance, db) {
 }
 
 function prepareLoadInstructions(objects, db, send_instructions) {
+	console.log(objects);
 	objects.forEach(function(object, index){
 		for (var obj in object.type) {
 			var callback = function(result) {
 				result.forEach(function(obj_result){
-
 					if (obj_result && obj_result.name == object.type[obj]) {
+						object.name = obj_result.name;
+						object.obj_type = obj_result.type;
 						for (var property in obj_result.details) {
 							if (property == 'scale' && object.scale) {}
 							else {
+								
 		                    	object[property] = obj_result.details[property];
 		                    }
+		                 }
+		                 if (obj_result.sub_type) {
+		                 	object.sub_type = obj_result.sub_type;
 		                 }
 						 send_instructions(object);
 					}

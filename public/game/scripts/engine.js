@@ -139,15 +139,14 @@ engine.prototype.animate = function () {
 		player.morphTargetInfluences[ engine.lastKeyframe ] = 1 - player.morphTargetInfluences[ keyframe ];
 		player.updateMatrix();
 
-		controls.flight.move(player.velocity, player.position, controls.flight.input(delta));
-
+		if (controls.enabled == true) {
+			controls.flight.move(player.velocity, player.position, controls.flight.input(delta));
+		}
 	}
-	
-	
 	
 	ships.forEach(function(ship,index){
 		if (ship.position.y < 0) { ship.position.y += 1.2; }
-		if (ship.rotation.z != 0) { ship.rotation.z -= ship.rotation.z / 50; }
+		if (ship.rotation.z != 0) { ship.rotation.z *= .96; }
 	});
 	
 	bots.forEach(function(bot,index){

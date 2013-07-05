@@ -1,7 +1,7 @@
 header
 	menu.header_menu
 		ul.unstyled
-			li.button
+			li.button.username_menu
 				a.button(href='#')
 					i.icon-user.icon-large
 					|   Username
@@ -15,14 +15,13 @@ header
 							a(href='#')
 								i.icon-save
 								|  Save
-			li.button
+			li.button.texture_editor
 				a(href='#') 
 					i.icon-edit.icon-large
 					|  Texture editor
 				menu.sub_menu
-					a.window(href='#')
-						i.icon-list-alt
-						|  Make window
+					a.make_window(href='#',title='Make window')
+						i.icon-external-link
 					ul.unstyled
 						li
 							select
@@ -41,32 +40,78 @@ header
 											textarea(cols='80', rows='10')
 										td
 											| (texture preview)
-			li.button
+			li.button.object_presets
 				a(href='#')
 					i.icon-tasks.icon-large
 					|  Object presets
 				menu.sub_menu
-					a.window(href='#')
-						i.icon-list-alt
-						|  Make window
-			li.button
+					a.make_window(href='#',title='Make window')
+						i.icon-external-link
+			li.button.object_groups
 				a(href='#') 
 					i.icon-group.icon-large
 					|  Object groups
-			li.button
+			li.button.object_properties
 				a(href='#') 
 					i.icon-gear.icon-large
 					|  Object properties
-			li.button.library
+				menu.sub_menu
+					a.make_window(href='#',title='Make window')
+						i.icon-external-link
+					ul.unstyled
+						li
+							select.object_list
+						li.details
+							h3 Information
+							ul
+								li.instance_name
+									strong Instance Name
+									p
+								li.save_status
+									strong Save Status
+									p
+								li.type
+									strong 	Type | Sub Type
+									p
+								li.library_name
+									strong Library Name
+									p
+						li.transform
+							h3 Transform
+							ul
+								li.position
+									strong Position
+									label(for='position_x') X
+									input.x(type='text',name='position_x',placeholder='X')
+									label(for='position_y') Y
+									input.y(type='text',name='position_y',placeholder='Y')
+									label(for='position_z') Z
+									input.z(type='text',name='position_z',placeholder='Z')
+								li.scale
+									label(for='scale') Scale
+									input(type='text',name='scale')
+								li.rotation
+									strong Rotation
+									label(for='rotation_x') X
+									input.x(type='text',name='rotation_x',placeholder='X')
+									label(for='rotation_y') Y
+									input.y(type='text',name='rotation_y',placeholder='Y')
+									label(for='rotation_z') Z
+									input.z(type='text',name='rotation_z',placeholder='Z')
+								li.increments
+									label(for='increments') Increments
+									input(type='text',name='increments')
+
+			li.button.object_library
 				a(href='#') 
 					i.icon-reorder.icon-large
 					|  Object library
 				menu.sub_menu
-					a.window(href='#')
-						i.icon-list-alt
-						|  Make window
+					a.make_window(href='#',title='Make window')
+						i.icon-external-link
 					ul.unstyled
-			li.button
+						include library.jade
+			li.button.editor_settings
 				a(href='#') 
 					i.icon-gears.icon-large
 					|  Editor settings

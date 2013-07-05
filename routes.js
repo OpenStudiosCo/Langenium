@@ -54,7 +54,6 @@ exports.bind = function () {
 	//		Map editor
 	app.get('/editor', game.editor);
 	app.get('/editor/selected', game.selected);
-	app.get('/editor/library', game.library);
 	//		Security overrides
 	app.get('/wiki/*', website.redirect);
 }

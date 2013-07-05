@@ -1,0 +1,105 @@
+/**************************************************************
+	Langenium Editor Object Properties Styles
+	Author: Paul Brzeski
+**************************************************************/
+
+.object_properties menu {
+	padding: 1em;
+	width: 560px;
+}
+.window.object_properties .object_list {
+	width: 560px;
+}
+.object_properties .object_list {
+	width: 520px;
+}
+.object_properties .details h3,
+.object_properties .transform h3 {
+	font-weight: normal;
+	font-size: 1.2em;
+}
+.object_properties .details {
+	margin-bottom: solid 1px #CCCCCC;
+}
+.object_properties .details,
+.object_properties .transform {
+	float: left;
+	clear: both;
+}
+
+.object_properties .details .instance_name,
+.object_properties .details .type {
+	float: left;
+	clear: left;
+	width: 300px;
+}
+.object_properties .details .save_status,
+.object_properties .details .library_name {
+	width: 250px;
+	float: left;
+	clear: right;
+}
+
+.object_properties .details .instance_name strong,
+.object_properties .details .save_status strong,
+.object_properties .details .type strong,
+.object_properties .details .library_name strong {
+	float: left;
+	font-weight: normal;
+	font-size: 1.1em;
+}
+.object_properties .details .instance_name p,
+.object_properties .details .save_status p,
+.object_properties .details .type p,
+.object_properties .details .library_name p {
+	color: #FFFFFF;
+	float: right;
+	padding-right: 1em;
+}
+
+.object_properties .details .instance_name,
+.object_properties .details .save_status,
+.object_properties .details .type,
+.object_properties .details .library_name {
+	
+}
+
+.object_properties .transform .position,
+.object_properties .transform .rotation {
+	float: left;
+	clear: left;
+	padding-left: 70px;
+}
+.object_properties .transform .position strong,
+.object_properties .transform .rotation strong {
+	position: absolute;
+	margin-left: -60px;
+}
+.object_properties .transform .scale,
+.object_properties .transform .increments {
+	width: 146px;
+	float: left;
+	clear: right;
+}
+
+.object_properties .transform .position label,
+.object_properties .transform .rotation label,
+.object_properties .transform .scale label,
+.object_properties .transform .increments label  {
+	float: left;
+	padding: 0 1em;
+	height: 20px;
+}
+
+.object_properties .transform .position input,
+.object_properties .transform .rotation input {
+	float: left;
+	width: 60px;
+	height: 20px;
+}
+.object_properties .transform .scale input,
+.object_properties .transform .increments input {
+	float: right;
+	width: 35px;
+	height: 20px;
+}

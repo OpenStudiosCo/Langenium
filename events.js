@@ -82,6 +82,7 @@ function logout(socket, db, instances, client_sessions) {
 }
 
 function move(socket, data, db, instances, client_sessions) {
+
 	client_sessions.forEach(function(client, index){
 		if (client.sessionId == socket.id) {
 			var update = {
@@ -89,8 +90,8 @@ function move(socket, data, db, instances, client_sessions) {
 				socket_id: socket.id,
 				obj_class: "players",
 				type: "move",
-				username: client.username,
-				details: data
+				details: data,
+				username: client.username
 			};
 			instances.master.instances[0].update_queue.push(update);
 		}

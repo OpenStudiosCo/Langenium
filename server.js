@@ -146,7 +146,6 @@ function makeUniverse() {
 	var objects = function(result) { 
 
 		result.forEach(function(object){
-
 			instances.master.addObjectToContainer(object, instances.master);
 		}); 
 	};

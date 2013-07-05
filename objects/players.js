@@ -39,12 +39,12 @@ function make(details) {
 	*/
 	details.move = function (player, world, socket_id, details, _complete) {
 		/*
-		if (details.client_position) {
-			console.log("Client:")
-			console.log(details.client_position);	
-			console.log("Server:")
-			console.log(player.position);	
-		}
+			if (details.client_position) {
+				console.log("Client:")
+				console.log(details.client_position);	
+				console.log("Server:")
+				console.log(player.position);	
+			}
 		*/
 		
 		player.d = details.d;
@@ -57,13 +57,13 @@ function make(details) {
 
 		
 		if (player.editor == true) {
-			velocityYChange *= 10;
+			velocityYChange *= 20;
 			if (details.pZ > 0 && player.velocity > -150) { player.velocity -= 15 }
 			if (details.pZ < 0 && player.velocity < 75) { player.velocity += 15 }
 		}
 		else {
-			if (details.pZ > 0 && player.velocity > -7.5) { player.velocity -= 7.5 }
-			if (details.pZ < 0 && player.velocity < 5) { player.velocity += 7.5 }
+			if (details.pZ > 0 && player.velocity > -3.75) { player.velocity -= 1.75 }
+			if (details.pZ < 0 && player.velocity < 2.5) { player.velocity += 1.75 }
 		}
 		
 

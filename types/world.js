@@ -53,13 +53,29 @@ function update(delta, io, world) {
 			world.update_queue.splice(index, 1);
 		};
 		
-		world[update.obj_class].forEach(function(obj, index){
+		world[update.obj_class].forEach(function(obj){
 			if (obj._id == update._id) {
 				obj[update.type](obj, world, update.socket_id, update.details, _complete);
 			}
 		});
 	});
-
+	world.players.forEach(function(player){
+		var _complete = function(processed_change) {
+			processed_changes.push(processed_change);
+		};
+		player.velocity *= .996;
+		var details = {
+			d: delta / 10000,
+			socket_id: player.socket_id,
+			username: player.username,
+			type: 'move',
+			obj_class: 'players',
+			pZ: 0,
+			pY: 0,
+			rY: 0
+		};
+		player.move(player, world, player.socket_id, details, _complete);
+	});
 	io.sockets.emit('update', processed_changes);
 }
 

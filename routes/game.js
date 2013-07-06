@@ -119,6 +119,30 @@ exports.update_object = function(req, res) {
 	}
 }
 
+exports.delete_object = function(req, res) {
+	if (req.user) {
+		var details = {
+			_id: new ObjectID(req.query._id),
+			class: req.query.obj_class
+		};
+
+		var callback = function(_id) {
+			res.setHeader("Expires", "-1");
+			res.setHeader("Cache-Control", "must-revalidate, private");
+			res.writeHead(200, {"Content-Type": "application/json"});
+	  		res.end(JSON.stringify(req.query._id));
+		}
+
+		db.deleteObject(details, callback, instances);
+	}
+	else {
+		res.setHeader("Expires", "-1");
+		res.setHeader("Cache-Control", "must-revalidate, private");
+		res.writeHead(200, {"Content-Type": "application/json"});
+  		res.end(JSON.stringify(0));
+	}
+}
+
 var render = function(req, res, template, variables) {
 	res.setHeader("Expires", "-1");
 	res.setHeader("Cache-Control", "must-revalidate, private");

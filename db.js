@@ -103,20 +103,28 @@ exports.saveObject = function(obj_details, callback, instances) {
 			instances.master.instances[0][obj_details.class].forEach(function(environment_object, index){
 				if (environment_object._id.toString() == obj_details._id.toString()) {
 					instances.master.instances[0][obj_details.class].splice(index, 1);
-					instances.master.addObjectToContainer(obj_details, instances.master);	
 				}
 			}); 
 		}
 		else {
-			instances.master.addObjectToContainer(obj, instances.master);		
+			obj_details._id = obj._id;
 		}
+		instances.master.addObjectToContainer(obj_details, instances.master);		
 		
 	});
 
 }
 
-exports.deleteObject = function(obj_id) {
-
+exports.deleteObject = function(obj_details, callback, instances) {
+	var instance_objects = client_db.collection('instance_objects');
+	instance_objects.remove({_id: obj_details._id}, function(err, obj){
+		instances.master.instances[0][obj_details.class].forEach(function(environment_object, index){
+			if (environment_object._id.toString() == obj_details._id.toString()) {
+				instances.master.instances[0][obj_details.class].splice(index, 1);
+			}
+		}); 
+		callback(obj_details._id);
+	});
 }
 
 

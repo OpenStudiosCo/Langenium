@@ -58,6 +58,7 @@ exports.bind = function () {
 	app.get('/editor/selected', game.selected);
 	app.get('/editor/create_object', game.create_object);
 	app.get('/editor/update_object', game.update_object);
+	app.get('/editor/delete_object', game.delete_object);
 	//		Security overrides
 	app.get('/wiki/*', website.redirect);
 	//		Self closing page, might need to rename later but CBF

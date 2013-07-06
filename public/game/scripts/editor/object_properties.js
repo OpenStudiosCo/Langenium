@@ -33,6 +33,9 @@ object_properties.prototype.add_object = function(object) {
 };
 $(document).ready(function(){
 	$('.object_properties select.object_list').live('change', editor.object_properties.select);	
+	$('.object_properties .save_status .create').live('click', editor.object_properties.create);	
+	$('.object_properties .save_status .update').live('click', editor.object_properties.update);	
+	$('.object_properties .save_status .delete').live('click', editor.object_properties.delete);	
 });
 
 
@@ -52,6 +55,7 @@ object_properties.prototype.select = function() {
 			switch(object.obj_details.status) {
 				case 'Saved':
 					$('.object_properties .details .save_status p').html('Saved ('+object.obj_details.instance_id + ')');	
+					$('.object_properties .details .save_status p').append('<a href="#" class="btn btn-inverse delete"><i class="icon-trash" /> Delete</a>');	
 					break;
 				case 'Modified':
 					$('.object_properties .details .save_status p').html('<a href="#" class="btn btn-inverse update"><i class="icon-save" /> Update</a>');
@@ -188,19 +192,16 @@ object_properties.prototype.unbind_events = function() {
 		$('.object_properties input').unbind();
 };
 
-$(document).ready(function(){
-	$('.object_properties .save_status .create').live('click', editor.object_properties.create);	
-	$('.object_properties .save_status .update').live('click', editor.object_properties.update);	
-});
-
 object_properties.prototype.modified = function() {
-	var selected_id = $('.object_properties select.object_list').val();
-	scene.children.forEach(function(object, index){
-		if(object.id == selected_id) {
-			object.obj_details.status = 'Modified';
-		}
-	});
-	$('.object_properties .details .save_status p').html('<a href="#" class="btn btn-inverse update"><i class="icon-save" /> Update</a>');
+	if (object.obj_details.status == 'Saved') {
+		var selected_id = $('.object_properties select.object_list').val();
+		scene.children.forEach(function(object, index){
+			if(object.id == selected_id) {
+				object.obj_details.status = 'Modified';
+			}
+		});
+		$('.object_properties .details .save_status p').html('<a href="#" class="btn btn-inverse update"><i class="icon-save" /> Update</a>');
+	}
 }
 
 object_properties.prototype.create = function(e){
@@ -227,6 +228,7 @@ object_properties.prototype.create = function(e){
 						object.obj_details.status = 'Saved';
 						object.obj_details.instance_id = data;
 						$('.object_properties .details .save_status p').html('Saved ('+ data + ')');
+						$('.object_properties .details .save_status p').append('<a href="#" class="btn btn-inverse delete"><i class="icon-trash" /> Delete</a>');	
 					}
 				}
 			});
@@ -257,6 +259,24 @@ object_properties.prototype.update = function(e){
 					if (data != 0) {
 						object.obj_details.status = 'Saved';
 						$('.object_properties .details .save_status p').html('Saved ('+ data + ')');
+						$('.object_properties .details .save_status p').append('<a href="#" class="btn btn-inverse delete"><i class="icon-trash" /> Delete</a>');	
+					}
+				}
+			});
+		}
+	});
+}
+object_properties.prototype.delete = function(e){
+	var selected_id = $('.object_properties select.object_list').val();
+	scene.children.forEach(function(object, index){
+		if(object.id == selected_id) {
+			$.ajax({
+				url: '/editor/delete_object',
+				data: { _id: object.obj_details.instance_id, obj_class: object.name },
+				success: function(data) {
+					if (data != 0) {
+						object.parent.remove(object);
+						console.log('Object deleted');
 					}
 				}
 			});

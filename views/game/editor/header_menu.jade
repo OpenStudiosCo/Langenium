@@ -5,7 +5,7 @@ header
 				a.button(href='#')
 					if (logged_in == true)
 						img(src=user.profile_img)
-						= user.username
+						=  user.username
 					else
 						i.icon-user.icon-large
 						|   Username
@@ -15,7 +15,7 @@ header
 							li
 								a.logout(href='/logout',target='_new') 
 									i.icon-power-off
-									|  Logout
+									menu|  Logout
 						else
 							li
 								a.login(href='/auth/facebook',target='_new')

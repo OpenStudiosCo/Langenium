@@ -93,6 +93,18 @@ exports.saveGuide = function(newtitle, title, content) {
 	);
 }
 
+exports.saveObject = function(obj_details, callback, instances) {
+	var instance_objects = client_db.collection('instance_objects');
+	instance_objects.save(obj_details, function(err, obj){
+		callback(obj._id);
+		instances.master.addObjectToContainer(obj, instances.master);
+	});
+
+}
+
+exports.deleteObject = function(obj_id) {
+
+}
 
 
 

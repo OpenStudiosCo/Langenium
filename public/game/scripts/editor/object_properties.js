@@ -49,7 +49,12 @@ object_properties.prototype.select = function() {
 	scene.children.forEach(function(object, index){
 		if(object.id == selected_id) {
 			$('.object_properties .details .instance_name p').html(object.name);
-			$('.object_properties .details .save_status p').html('Not implemented');
+			if (object.obj_details.instance_id) {
+				$('.object_properties .details .save_status p').html('Saved ('+object.obj_details.instance_id + ')');	
+			}
+			else {
+				$('.object_properties .details .save_status p').html('<a href="#" class="btn btn-inverse create"><i class="icon-save" /> Create</a>');
+			}
 			$('.object_properties .details .type p').html(object.obj_details.type + ' | ' + object.obj_details.sub_type);
 			$('.object_properties .details .library_name p').html(object.obj_details.name);
 
@@ -171,3 +176,35 @@ object_properties.prototype.unbind_events = function() {
 		$('.object_properties .minus').unbind();
 		$('.object_properties input').unbind();
 };
+
+$(document).ready(function(){
+	$('.object_properties .save_status .create').live('click', editor.object_properties.create);	
+});
+
+
+object_properties.prototype.create = function(e){
+	var selected_id = $('.object_properties select.object_list').val();
+	scene.children.forEach(function(object, index){
+		if(object.id == selected_id) {
+			console.log(object);
+			var create_details = {
+				pX: object.position.x,
+				pY: object.position.y,
+				pZ: object.position.z,
+				rY: object.rotation.y,
+				scale: object.scale.x,
+				obj_class: object.name, // this seems dodge but keeping consistent for now
+				sub_type: object.obj_details.sub_type,
+				type: object.obj_details.type,
+				name: object.obj_details.name
+			};
+			$.ajax({
+				url: '/editor/create_object',
+				data: create_details,
+				success: function(data) {
+					object.obj_details.instance_id = data;
+				}
+			});
+		}
+	});
+}

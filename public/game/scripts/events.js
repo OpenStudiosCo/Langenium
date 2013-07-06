@@ -73,7 +73,7 @@ events.prototype.setEventHandlers = function (socket) {
 events.prototype.login = function(user) {
 	if (window.location.href.indexOf("editor") >= 0) {
 		$('.username_menu > .button').html('');
-		$('.username_menu > .button').append('<img src="https://graph.facebook.com/'+user.facebook_id+'/picture?width=20&height=20" />'); 
+		$('.username_menu > .button').append('<img src="https://graph.facebook.com/'+user.facebook_id+'/picture?width=20&height=20" /> '); 
 		$('.username_menu > .button').append(user.username); 
 		$('.username_menu .login').remove();
 

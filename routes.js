@@ -13,6 +13,7 @@
 var app,
 	db,
 	fb,
+	instances,
 	website = require('./routes/website.js'),
 	game = require('./routes/game.js');
 
@@ -21,10 +22,11 @@ var app,
 	Pages
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
-exports.setProviders = function (application, database, facebook) {
+exports.setProviders = function (application, database, facebook, instance_provider) {
 	app = application;
 	db = database;
 	fb = facebook;
+	instances = instance_provider;
 }
 
 exports.bind = function () {
@@ -32,7 +34,7 @@ exports.bind = function () {
 	website.setProviders(db, fb);
 
 	// Bind game client
-	game.setProviders(db, fb);
+	game.setProviders(db, fb, instances);
 
 	// Route bindings
 	//		Home page
@@ -54,6 +56,7 @@ exports.bind = function () {
 	//		Map editor
 	app.get('/editor', game.editor);
 	app.get('/editor/selected', game.selected);
+	app.get('/editor/create_object', game.create_object);
 	//		Security overrides
 	app.get('/wiki/*', website.redirect);
 	//		Self closing page, might need to rename later but CBF

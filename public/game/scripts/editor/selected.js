@@ -13,7 +13,8 @@
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
 var selected = function() {
-   return this;
+	this.objects = [];
+	return this;
 };
 
 
@@ -36,4 +37,7 @@ selected.prototype.new = function (id, name, position, scale) {
 		url: url,
 		success: callback
 	});
+}
+selected.prototype.remove = function (id) {
+	$('.footer_menu li.selected small').html
 }

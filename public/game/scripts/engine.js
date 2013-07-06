@@ -160,6 +160,7 @@ engine.prototype.animate = function () {
 	});
 
 	if (window.location.href.indexOf("editor") > 0) {
+		controls.editor.input(delta);
 		if (player && player.children.length > 0) {	
 			client.camera_position = new THREE.Vector3().getPositionFromMatrix(client.camera.matrixWorld);
 			$('.camera_info .x').html('x: ' + Math.round(client.camera_position.x));

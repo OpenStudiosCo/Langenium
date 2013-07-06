@@ -12,16 +12,18 @@
 
 var https = require('https'),
 	db,
-	fb;
+	fb,
+	instances;
 
 
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 	Pages
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
-exports.setProviders = function (database, facebook) {
+exports.setProviders = function (database, facebook, instance_provider) {
 	db = database;
 	fb = facebook;
+	instances = instance_provider;
 }
 
 exports.play = function(req, res) {
@@ -47,12 +49,39 @@ exports.selected = function(req, res) {
 		scale: req.query.scale });
 };
 
-var render = function(req, res, template, variables) { 
-	res.setHeader("Expires", "-1");
-	res.setHeader("Cache-Control", "must-revalidate, private");
-	res.render(template, variables);
-};
+exports.create_object = function(req, res) {
+	if (req.user) {
+		var new_object = {
+			class: req.query.obj_class,
+			instance_id: "master",
+			position: {
+				x: req.query.pX,
+				y: req.query.pY,
+				z: req.query.pZ,
+				rY: req.query.rY
+			},
+			scale: req.query.scale,
+			type: {}
+		};
+		new_object.type[req.query.type] = req.query.name;
+		new_object.sub_type = req.query.sub_type;
+		
+		var callback = function(_id) {
+			res.setHeader("Expires", "-1");
+			res.setHeader("Cache-Control", "must-revalidate, private");
+			res.writeHead(200, {"Content-Type": "application/json"});
+	  		res.end(JSON.stringify(_id ? _id : {}));
+		}
 
+		db.saveObject(new_object, callback, instances);
+	}
+	else {
+		res.setHeader("Expires", "-1");
+		res.setHeader("Cache-Control", "must-revalidate, private");
+		res.writeHead(200, {"Content-Type": "application/json"});
+  		res.end(JSON.stringify(0));
+	}
+}
 
 var render = function(req, res, template, variables) {
 	res.setHeader("Expires", "-1");

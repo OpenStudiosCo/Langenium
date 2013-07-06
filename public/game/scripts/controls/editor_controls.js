@@ -64,9 +64,12 @@ $(document).bind("mousemove", function(event) {
 	}
 });
 
-
-
-
+// these are not for flight control, they're keyboard inputs for the editor specifically
+editor_controls.prototype.input = function (delta){
+	if (keyboard.pressed("e")){
+		console.log('esc pressed');
+	}
+}
 editor_controls.prototype.toggleCamera = function() {
 
 	if (controls.editor.enabled == true) {

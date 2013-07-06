@@ -64,7 +64,7 @@ app.configure(function () {
 
 });
 
-routes.setProviders(app, db, fb);
+routes.setProviders(app, db, fb, instances);
 routes.bind();
 
 // Setup Facebook authentication

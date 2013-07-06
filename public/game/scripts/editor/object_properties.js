@@ -116,7 +116,8 @@ object_properties.prototype.transform_object = function(object, property, sub_pr
 
 object_properties.prototype.bind_events = function(object) {
 	var increment = parseFloat($('.object_properties .increments input').val());
-	
+	var radian = Math.PI / 180;
+
 	$('.object_properties .position .x input').keyup(function(e){ editor.object_properties.transform_object(object, 'position', 'x', $(this).val()); });
 	$('.object_properties .position .y input').keyup(function(e){ editor.object_properties.transform_object(object, 'position', 'y', $(this).val()); });
 	$('.object_properties .position .z input').keyup(function(e){ editor.object_properties.transform_object(object, 'position', 'z', $(this).val()); });
@@ -151,12 +152,12 @@ object_properties.prototype.bind_events = function(object) {
 	$('.object_properties .rotation .y input').keyup(function(e){ editor.object_properties.transform_object(object, 'rotation', 'y', $(this).val()); });
 	$('.object_properties .rotation .z input').keyup(function(e){ editor.object_properties.transform_object(object, 'rotation', 'z', $(this).val()); });
 
-	$('.object_properties .rotation .x .add').click(function(e){ editor.object_properties.transform_object(object, 'rotation', 'x', object.rotation.x + increment); $(this).siblings('input').val(object.rotation.x); });
-	$('.object_properties .rotation .y .add').click(function(e){ editor.object_properties.transform_object(object, 'rotation', 'y', object.rotation.y + increment); $(this).siblings('input').val(object.rotation.y); });
-	$('.object_properties .rotation .z .add').click(function(e){ editor.object_properties.transform_object(object, 'rotation', 'z', object.rotation.z + increment); $(this).siblings('input').val(object.rotation.z); });
-	$('.object_properties .rotation .x .minus').click(function(e){ editor.object_properties.transform_object(object, 'rotation', 'x', object.rotation.x - increment); $(this).siblings('input').val(object.rotation.x); });
-	$('.object_properties .rotation .y .minus').click(function(e){ editor.object_properties.transform_object(object, 'rotation', 'y', object.rotation.y - increment); $(this).siblings('input').val(object.rotation.y); });
-	$('.object_properties .rotation .z .minus').click(function(e){ editor.object_properties.transform_object(object, 'rotation', 'z', object.rotation.z - increment); $(this).siblings('input').val(object.rotation.z); });
+	$('.object_properties .rotation .x .add').click(function(e){ editor.object_properties.transform_object(object, 'rotation', 'x', object.rotation.x + radian); $(this).siblings('input').val(object.rotation.x); });
+	$('.object_properties .rotation .y .add').click(function(e){ editor.object_properties.transform_object(object, 'rotation', 'y', object.rotation.y + radian); $(this).siblings('input').val(object.rotation.y); });
+	$('.object_properties .rotation .z .add').click(function(e){ editor.object_properties.transform_object(object, 'rotation', 'z', object.rotation.z + radian); $(this).siblings('input').val(object.rotation.z); });
+	$('.object_properties .rotation .x .minus').click(function(e){ editor.object_properties.transform_object(object, 'rotation', 'x', object.rotation.x - radian); $(this).siblings('input').val(object.rotation.x); });
+	$('.object_properties .rotation .y .minus').click(function(e){ editor.object_properties.transform_object(object, 'rotation', 'y', object.rotation.y - radian); $(this).siblings('input').val(object.rotation.y); });
+	$('.object_properties .rotation .z .minus').click(function(e){ editor.object_properties.transform_object(object, 'rotation', 'z', object.rotation.z - radian); $(this).siblings('input').val(object.rotation.z); });
 
 	$('.object_properties .increments').keyup(function(e){
 		$(this).siblings('input').val($(this).val());

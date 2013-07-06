@@ -56,4 +56,17 @@ exports.bind = function () {
 	app.get('/editor/selected', game.selected);
 	//		Security overrides
 	app.get('/wiki/*', website.redirect);
+	//		Self closing page, might need to rename later but CBF
+	app.get('/logged_in', function(req, res) {
+		res.setHeader("Expires", "-1");
+		res.setHeader("Cache-Control", "must-revalidate, private");
+		res.render('logged_in', {  });
+	});
+	//		AJAX return to check if we're dealing with a
+	app.get('/login_check', function(req, res) {
+		res.setHeader("Expires", "-1");
+		res.setHeader("Cache-Control", "must-revalidate, private");
+		res.writeHead(200, {"Content-Type": "application/json"});
+  		res.end(JSON.stringify(req.user ? req.user : {}));
+	});
 }

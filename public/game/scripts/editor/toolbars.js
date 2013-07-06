@@ -36,3 +36,12 @@ function hideAllSubMenus(e) {
 	e.preventDefault();
 	$('.sub_menu').slideUp();
 }
+$('.username_menu .login').click(function(e){
+	var callback = function(data) {
+		if (data.username) {
+			events.login(data);
+			e.preventDefault();
+		}
+	};
+	$.ajax({url:'/login_check', success: callback});
+});

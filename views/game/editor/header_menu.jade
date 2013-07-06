@@ -3,18 +3,24 @@ header
 		ul.unstyled
 			li.button.username_menu
 				a.button(href='#')
-					i.icon-user.icon-large
-					|   Username
+					if (logged_in == true)
+						img(src=user.profile_img)
+						= user.username
+					else
+						i.icon-user.icon-large
+						|   Username
 				menu.sub_menu
 					ul.unstyled
-						li
-							a(href='#')
-								i.icon-key
-								|  Logout
-						li
-							a(href='#')
-								i.icon-save
-								|  Save
+						if (logged_in == true)
+							li
+								a.logout(href='/logout',target='_new') 
+									i.icon-power-off
+									|  Logout
+						else
+							li
+								a.login(href='/auth/facebook',target='_new')
+									i.icon-key
+									|  Login
 			li.button.texture_editor
 				a(href='#') 
 					i.icon-edit.icon-large
@@ -103,13 +109,9 @@ header
 											i.icon-plus-sign-alt
 										a.minus(href='#')
 											i.icon-minus-sign-alt
-								li.scale
-									label(for='scale') Scale
-									input(type='text',name='scale')
-									a.add(href='#')
-										i.icon-plus-sign-alt
-									a.minus(href='#')
-										i.icon-minus-sign-alt
+								li.increments
+									label(for='increments') Increments
+									input(type='text',name='increments')
 								li.rotation
 									strong Rotation
 									.x
@@ -133,9 +135,13 @@ header
 											i.icon-plus-sign-alt
 										a.minus(href='#')
 											i.icon-minus-sign-alt
-								li.increments
-									label(for='increments') Increments
-									input(type='text',name='increments')
+								li.scale
+									label(for='scale') Scale
+									input(type='text',name='scale')
+									a.add(href='#')
+										i.icon-plus-sign-alt
+									a.minus(href='#')
+										i.icon-minus-sign-alt
 
 			li.button.object_library
 				a(href='#') 

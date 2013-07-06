@@ -95,22 +95,10 @@ passport.use(new FacebookStrategy({
 	return done(null, user);
   }
 ));
-app.get('/auth/facebook', passport.authenticate('facebook'));
-app.get('/auth/facebook', passport.authenticate('facebook'));
-app.get('/auth/facebook/callback', function(req, res, next) {
-  passport.authenticate('facebook', function(err, user, info) {
-	if (err) { return next(err); }
-	if (!user) { console.log("User not found"); return res.redirect('/'); }
-	req.logIn(user, function(err) {
-	  if (err) { console.log(err); return next(err); }
-	  
-	  return res.redirect('/guide/');
-	});
-  })(req, res, next);
-});
+
 app.get('/logout', function(req, res){
   req.logout();
-  res.redirect('/');
+  res.redirect('/logged_in');
 });
 
 
@@ -122,6 +110,28 @@ server.listen(process.env['HTTP_PORT']); // dev
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 io.set('log level', 2); // supresses the console output
 io.sockets.on('connection', function (socket) {
+	app.get('/auth/facebook', function(req,res,next){
+		if (req.user) {
+			return res.redirect('/logged_in');
+		}
+		else {
+			passport.authenticate('facebook')(req,res,next);
+		}
+	});
+	app.get('/auth/facebook/callback', function(req, res, next) {
+
+	  passport.authenticate('facebook', function(err, user, info) {
+		if (err) { return next(err); }
+		if (!user) { console.log("User not found"); return res.redirect('/'); }
+		req.logIn(user, function(err) {
+		  if (err) { console.log(err); return next(err); }
+		  else {
+			socket.emit("login", { username: req.user.username, facebook_id: req.user.facebook_id });
+			return res.redirect('/logged_in');
+		  }
+		});
+	  })(req, res, next);
+	});
 	// Ping and Pong
 	socket.emit("ping", { time: new Date().getTime(), latency: 0 }); 
 	socket.on("pong", function(data){ events.pong(socket, data); });

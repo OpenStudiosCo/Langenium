@@ -53,6 +53,7 @@ function login(socket, data, db, instances, client_sessions) {
 			
 			client_sessions.push({					_id: player._id,
 													sessionId: socket.id,
+													socket: socket,
 													instance_id: player.instance_id,
 													username: player.username });
 		
@@ -120,7 +121,6 @@ function initializeClient(socket, instance, db) {
 }
 
 function prepareLoadInstructions(objects, db, send_instructions) {
-	console.log(objects);
 	objects.forEach(function(object, index){
 		for (var obj in object.type) {
 			var callback = function(result) {

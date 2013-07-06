@@ -25,24 +25,18 @@ exports.setProviders = function (database, facebook) {
 }
 
 exports.play = function(req, res) {
-	res.setHeader("Expires", "-1");
-	res.setHeader("Cache-Control", "must-revalidate, private");
-	res.render('game/client', { title: "Langenium Game Client Alpha", editor: false });
+	render(req, res, 'game/client', { title: "Langenium Game Client Alpha", editor: false });
 };
 exports.editor = function(req, res) {
 	var callback = function(result) {
-		res.setHeader("Expires", "-1");
-		res.setHeader("Cache-Control", "must-revalidate, private");
-		res.render('game/editor', { title: "Langenium Game Map Editor Alpha", editor: true, objects: result });
+		render(req, res, 'game/editor', { title: "Langenium Game Map Editor Alpha", editor: true, objects: result });
 	};
 	db.queryClientDB("objects", { }, callback);
 };
 
 // Modals
 exports.selected = function(req, res) {
-	res.setHeader("Expires", "-1");
-	res.setHeader("Cache-Control", "must-revalidate, private");
-	res.render('game/editor/selected', { 
+	render(req, res, 'game/editor/selected', { 
 		id: req.query.id, 
 		name: req.query.name, 
 		position: {
@@ -53,3 +47,22 @@ exports.selected = function(req, res) {
 		scale: req.query.scale });
 };
 
+var render = function(req, res, template, variables) { 
+	res.setHeader("Expires", "-1");
+	res.setHeader("Cache-Control", "must-revalidate, private");
+	res.render(template, variables);
+};
+
+
+var render = function(req, res, template, variables) {
+	res.setHeader("Expires", "-1");
+	res.setHeader("Cache-Control", "must-revalidate, private");
+	if ((req.user)&&(req.user.username == 'TheZeski')) { // this is hopefully overkill as FB is in sandbox_mode :D
+		variables.logged_in = true;
+		variables.user = { username: req.user.username, profile_img: 'https://graph.facebook.com/'+req.user.facebook_id+'/picture?width=20&height=20' };
+	}
+	else {
+		variables.logged_in = false;	
+	}
+	res.render(template, variables);
+}

@@ -24,7 +24,7 @@ var events = function() {
 	Function definitions
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 events.prototype.getUrl = function () {
-	if (window.location.href.indexOf("dev.langenium") > 0)
+	if (window.location.href.indexOf("dev.langenium") >= 0)
 	{
 		return "http://dev.langenium.com:8080"; // own port "8080"
 		
@@ -40,6 +40,10 @@ events.prototype.setEventHandlers = function (socket) {
     socket.emit("login", { username: "Saggy Nuts", editor: is_editor });
 	socket.on("load", function(data) { 
 		objects.loadObject(data);
+	});
+
+	socket.on("login", function(data) { 
+		events.login(data);
 	});
 
 	socket.on("logout",function(data) {
@@ -64,6 +68,23 @@ events.prototype.setEventHandlers = function (socket) {
 		
 	});
 	return socket;
+}
+
+events.prototype.login = function(user) {
+	if (window.location.href.indexOf("editor") >= 0) {
+		$('.username_menu > .button').html('');
+		$('.username_menu > .button').append('<img src="https://graph.facebook.com/'+user.facebook_id+'/picture?width=20&height=20" />'); 
+		$('.username_menu > .button').append(user.username); 
+		$('.username_menu .login').remove();
+
+		var html = '<li>';
+		html += '<a href="/logout" target="_new">';
+		html += '<i class="icon-power-off" /> Logout</a>';
+		html += '</li>'
+
+		$('.username_menu menu ul').append(html);
+
+	}
 }
 
 events.prototype.detectCollision = function (source, direction, world_map) {

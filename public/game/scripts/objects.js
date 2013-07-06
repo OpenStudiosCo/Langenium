@@ -49,7 +49,7 @@ objects.prototype.loadObject = function (instruction) {
 	}
 	else {
 		loader.load(instruction.url, function(geometry, materials) {
-			mesh = o.makeObjectMesh(obj_class, instruction.name, instruction.obj_type, instruction.sub_type, geometry, materials, x, y, z , scale);
+			mesh = o.makeObjectMesh(obj_class, instruction.name, instruction._id, instruction.obj_type, instruction.sub_type, geometry, materials, x, y, z , scale);
 			var cachedObject = { url: instruction.url, geometry: geometry, materials: materials};
 			o.cache.push(cachedObject);	
 			o.renderObject(mesh, obj_class, instruction);
@@ -57,7 +57,7 @@ objects.prototype.loadObject = function (instruction) {
 	}
 };
 
-objects.prototype.makeObjectMesh = function (obj_class, obj_name, obj_type, obj_sub_type, geometry, materials, x, y, z, scale) {
+objects.prototype.makeObjectMesh = function (obj_class, obj_name, obj_id, obj_type, obj_sub_type, geometry, materials, x, y, z, scale) {
 	var useVertexOverrides = false;
 	if ((obj_class != "terrain")&&(obj_class != "ship")&&(obj_class != "players")&&(obj_class != "bot")) {
 		useVertexOverrides = true;
@@ -67,6 +67,7 @@ objects.prototype.makeObjectMesh = function (obj_class, obj_name, obj_type, obj_
 
 	object = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial( materials ) );
 	object.obj_details = {
+		instance_id: obj_id,
 		name: obj_name,
 		type: obj_type,
 		sub_type: obj_sub_type

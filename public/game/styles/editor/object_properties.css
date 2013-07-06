@@ -56,7 +56,9 @@
 	float: right;
 	padding-right: 1em;
 }
-
+.object_properties .details .save_status a {
+	float: left;
+}
 .object_properties .details .instance_name,
 .object_properties .details .save_status,
 .object_properties .details .type,

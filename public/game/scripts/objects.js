@@ -32,6 +32,7 @@ objects.prototype.new = function(obj) {
 };
 
 objects.prototype.loadObject = function (instruction) {
+
 	var obj_status = 'Saved';
 	if (instruction.status) {
 		obj_status = instruction.status
@@ -48,7 +49,7 @@ objects.prototype.loadObject = function (instruction) {
 	
 	if ((cacheIndex >= 0)&&(window.location.href.indexOf("editor") < 0)) {
 		var cachedObject = o.cache[cacheIndex];
-		mesh = o.makeObjectMesh(obj_status, obj_class, instruction.name, instruction.obj_type, instruction.sub_type, cachedObject.geometry, cachedObject.materials, x, y, z , scale);
+		mesh = o.makeObjectMesh(obj_status, obj_class, instruction.name, instruction._id, instruction.obj_type, instruction.sub_type, cachedObject.geometry, cachedObject.materials, x, y, z , scale);
 		o.renderObject(mesh, obj_class, instruction);
 	}
 	else {

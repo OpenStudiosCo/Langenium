@@ -36,20 +36,20 @@ function login(socket, data, db, instances, client_sessions) {
 	if (data.username.length > 0) {
 		var loginUser = function(result) { 
 		
-				var player = result[0];
-				player.editor = data.editor;
-				player.velocity = 0;
-				player.socket_id = socket.id;
-				// check if we're dealing with a container
-				if (instances[player.instance_id].instances) {
+			var player = result[0];
+			player.editor = data.editor;
+			player.velocity = 0;
+			player.socket_id = socket.id;
+			// check if we're dealing with a container
+			if (instances[player.instance_id].instances) {
 
-					instances[player.instance_id].addObjectToContainer(player, instances[player.instance_id].instances[0].players);
-					initializeClient(socket, instances[player.instance_id].instances[0], db);
-				}
-				else {
-					instances[player.instance_id].addObjectToWorld(player, instances[player.instance_id].players);
-					initializeClient(socket, instances[player.instance_id], db);
-				}
+				instances[player.instance_id].addObjectToContainer(player, instances[player.instance_id].instances[0].players);
+				initializeClient(socket, instances[player.instance_id].instances[0], db);
+			}
+			else {
+				instances[player.instance_id].addObjectToWorld(player, instances[player.instance_id].players);
+				initializeClient(socket, instances[player.instance_id], db);
+			}
 			
 			client_sessions.push({					_id: player._id,
 													sessionId: socket.id,
@@ -78,6 +78,7 @@ function logout(socket, db, instances, client_sessions) {
 			});
 			
 			client_sessions.splice(index, 1);
+			delete socket;
 		}			
 	});
 }
@@ -108,9 +109,7 @@ function initializeClient(socket, instance, db) {
 			
 			var send_instructions = function (instruction) {
 				socket.emit("load", instruction );
-				
 				if (instruction.class == 'players') {
-
 					instruction.class = 'ship';
 					socket.broadcast.emit("load", instruction );
 				}

@@ -16,6 +16,11 @@ footer li.window {
 	bottom: 100px;
 }
 li.window a.move { 
+	-moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -o-user-select: none;
+    user-select: none;
 	position: absolute;
 	top: 0;
 	left: 0px;

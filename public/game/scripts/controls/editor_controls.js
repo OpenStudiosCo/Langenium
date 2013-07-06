@@ -28,7 +28,7 @@ var editor_controls = function() {
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
 $(document).bind("mousedown", function(event) {
-	if (window.location.href.indexOf("editor") > 0) {
+	if (window.location.href.indexOf("editor") > 0 && controls.enabled == true) {
 		var raycaster = new THREE.Raycaster( client.camera_position, controls.editor.cursor_position.sub( client.camera_position ).normalize() );
 
 		var intersects = raycaster.intersectObjects( scene.__objects );

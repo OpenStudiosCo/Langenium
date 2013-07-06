@@ -72,7 +72,7 @@ $('a.close_window').live("click", function(e){
 	$(this).addClass('make_window');
 });
 
-$('.window a.move').live("click", function(e){
+$('.window a.move').live("mousedown", function(e){
 	$(this).parent().addClass('moving')
 	window.addEventListener('mousemove', editor.mouseMove, true);
 	window.addEventListener('mouseup', editor.mouseUp, false);
@@ -86,6 +86,6 @@ editor.prototype.mouseUp = function(e) {
 };
 
 editor.prototype.mouseMove = function (e) {
-	$('.moving').css('top', (e.clientY + 20 )+ 'px');
-	$('.moving').css('left', (e.clientX - $('.moving').width() * .6 ) + 'px');
+	$('.moving').css('top', e.clientY + 'px');
+	$('.moving').css('left', e.clientX + 'px');
 };

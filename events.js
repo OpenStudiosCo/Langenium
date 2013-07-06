@@ -83,7 +83,7 @@ function logout(socket, db, instances, client_sessions) {
 }
 
 function move(socket, data, db, instances, client_sessions) {
-
+	//console.log(instances.master.instances[0].environment);
 	client_sessions.forEach(function(client, index){
 		if (client.sessionId == socket.id) {
 			var update = {
@@ -131,7 +131,6 @@ function prepareLoadInstructions(objects, db, send_instructions) {
 						for (var property in obj_result.details) {
 							if (property == 'scale' && object.scale) {}
 							else {
-								
 		                    	object[property] = obj_result.details[property];
 		                    }
 		                 }

@@ -32,6 +32,10 @@ objects.prototype.new = function(obj) {
 };
 
 objects.prototype.loadObject = function (instruction) {
+	var obj_status = 'Saved';
+	if (instruction.status) {
+		obj_status = instruction.status
+	}
 	var loader = new THREE.JSONLoader();
 	var cacheIndex = -1;
 	this.cache.forEach(function(cachedObject, index){ if (instruction.url == cachedObject.url) { cacheIndex = index;} });
@@ -44,12 +48,12 @@ objects.prototype.loadObject = function (instruction) {
 	
 	if ((cacheIndex >= 0)&&(window.location.href.indexOf("editor") < 0)) {
 		var cachedObject = o.cache[cacheIndex];
-		mesh = o.makeObjectMesh(obj_class, instruction.name, instruction.obj_type, instruction.sub_type, cachedObject.geometry, cachedObject.materials, x, y, z , scale);
+		mesh = o.makeObjectMesh(obj_status, obj_class, instruction.name, instruction.obj_type, instruction.sub_type, cachedObject.geometry, cachedObject.materials, x, y, z , scale);
 		o.renderObject(mesh, obj_class, instruction);
 	}
 	else {
 		loader.load(instruction.url, function(geometry, materials) {
-			mesh = o.makeObjectMesh(obj_class, instruction.name, instruction._id, instruction.obj_type, instruction.sub_type, geometry, materials, x, y, z , scale);
+			mesh = o.makeObjectMesh(obj_status, obj_class, instruction.name, instruction._id, instruction.obj_type, instruction.sub_type, geometry, materials, x, y, z , scale);
 			var cachedObject = { url: instruction.url, geometry: geometry, materials: materials};
 			o.cache.push(cachedObject);	
 			o.renderObject(mesh, obj_class, instruction);
@@ -57,7 +61,7 @@ objects.prototype.loadObject = function (instruction) {
 	}
 };
 
-objects.prototype.makeObjectMesh = function (obj_class, obj_name, obj_id, obj_type, obj_sub_type, geometry, materials, x, y, z, scale) {
+objects.prototype.makeObjectMesh = function (obj_status, obj_class, obj_name, obj_id, obj_type, obj_sub_type, geometry, materials, x, y, z, scale) {
 	var useVertexOverrides = false;
 	if ((obj_class != "terrain")&&(obj_class != "ship")&&(obj_class != "players")&&(obj_class != "bot")) {
 		useVertexOverrides = true;
@@ -70,7 +74,8 @@ objects.prototype.makeObjectMesh = function (obj_class, obj_name, obj_id, obj_ty
 		instance_id: obj_id,
 		name: obj_name,
 		type: obj_type,
-		sub_type: obj_sub_type
+		sub_type: obj_sub_type,
+		status: obj_status
 	};
 	object.geometry.computeBoundingBox();
 	object.name = obj_class;

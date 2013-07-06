@@ -51,6 +51,7 @@ object_library.prototype.addObject = function (name, type, sub_type, url, scale)
 	instruction.name = name;
 	instruction.obj_type = type;
 	instruction.sub_type = sub_type;
+	instruction.status = 'New';
 
 	objects.loadObject(instruction);
 

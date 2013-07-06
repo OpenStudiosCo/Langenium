@@ -11,6 +11,7 @@
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
 var https = require('https'),
+	ObjectID = require('mongodb').ObjectID,
 	db,
 	fb,
 	instances;
@@ -74,6 +75,41 @@ exports.create_object = function(req, res) {
 		}
 
 		db.saveObject(new_object, callback, instances);
+	}
+	else {
+		res.setHeader("Expires", "-1");
+		res.setHeader("Cache-Control", "must-revalidate, private");
+		res.writeHead(200, {"Content-Type": "application/json"});
+  		res.end(JSON.stringify(0));
+	}
+}
+
+exports.update_object = function(req, res) {
+	if (req.user) {
+		var existing_object = {
+			_id: new ObjectID(req.query._id),
+			class: req.query.obj_class,
+			instance_id: "master",
+			position: {
+				x: req.query.pX,
+				y: req.query.pY,
+				z: req.query.pZ,
+				rY: req.query.rY
+			},
+			scale: req.query.scale,
+			type: {}
+		};
+		existing_object.type[req.query.type] = req.query.name;
+		existing_object.sub_type = req.query.sub_type;
+		
+		var callback = function(_id) {
+			res.setHeader("Expires", "-1");
+			res.setHeader("Cache-Control", "must-revalidate, private");
+			res.writeHead(200, {"Content-Type": "application/json"});
+	  		res.end(JSON.stringify(req.query._id));
+		}
+
+		db.saveObject(existing_object, callback, instances);
 	}
 	else {
 		res.setHeader("Expires", "-1");

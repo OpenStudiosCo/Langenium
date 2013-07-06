@@ -96,8 +96,21 @@ exports.saveGuide = function(newtitle, title, content) {
 exports.saveObject = function(obj_details, callback, instances) {
 	var instance_objects = client_db.collection('instance_objects');
 	instance_objects.save(obj_details, function(err, obj){
+
 		callback(obj._id);
-		instances.master.addObjectToContainer(obj, instances.master);
+		// Remove Existing
+		if (obj_details._id) {
+			instances.master.instances[0][obj_details.class].forEach(function(environment_object, index){
+				if (environment_object._id.toString() == obj_details._id.toString()) {
+					instances.master.instances[0][obj_details.class].splice(index, 1);
+					instances.master.addObjectToContainer(obj_details, instances.master);	
+				}
+			}); 
+		}
+		else {
+			instances.master.addObjectToContainer(obj, instances.master);		
+		}
+		
 	});
 
 }

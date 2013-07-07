@@ -20,11 +20,11 @@ var https = require('https'),
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
 exports.index = function(req, res) {
-	render(req, res, 'website/index', { page: 'pages/home' });
+	render(req, res, 'website/index', { title: 'Langenium - Home', page: 'pages/home' });
 };
 
 exports.about = function(req, res) {
-	render(req, res, 'website/index', { page: 'pages/about', variable: "Some text" });
+	render(req, res, 'website/index', { title: 'Langenium - About', page: 'pages/about', variable: "Some text" });
 };
 
 exports.gallery_list = function(req, res) {
@@ -81,6 +81,7 @@ exports.guide = function (req, res)
 				var breadcrumb_trail = makeBreadcrumbs(pages);
 				render(req, res, 'website/index', 
 					{ 
+						title: 'Langenium - Guide - ' + result[0].Title,
 						page: template, 
 						content: result[0],
 						breadcrumbs: breadcrumb_trail,
@@ -109,6 +110,7 @@ var guide_new = function(req, res) {
 	var breadcrumb_trail = makeBreadcrumbs(pages);
 	render(req, res, 'website/index', 
 		{ 
+			title: 'Langenium - Guide - New',
 			page: 'pages/guide_new', 
 			breadcrumbs: breadcrumb_trail
 		}
@@ -126,6 +128,7 @@ var guide_index = function(req, res) {
 			var breadcrumb_trail = makeBreadcrumbs(pages);
 			render(req, res, 'website/index', 
 				{ 
+					title: 'Langenium - Guide - Index',
 					page: 'pages/guide_index', 
 					content: result,
 					breadcrumbs: breadcrumb_trail
@@ -142,7 +145,7 @@ exports.guide_save = function(req, res) {
 	res.end();
 };
 exports.community = function(req, res) {
-	render(req, res, 'website/index', { page: 'pages/community' });
+	render(req, res, 'website/index', { title: 'Langenium - Community', page: 'pages/community' });
 };
 
 exports.redirect = function(req, res) {
@@ -215,6 +218,7 @@ var gallery_albums = function (req, res) {
 
 		render(req, res, 'website/index', 
 			{ 
+				title: 'Langenium - Gallery - Albums',
 				page: 'pages/gallery_list', 
 				gallery_list: albums, 
 				breadcrumbs: breadcrumb_trail
@@ -246,6 +250,7 @@ var gallery_view = function (req, res) {
 
 				render(req, res, 'website/index', 
 					{ 
+						title: 'Langenium - Gallery - ' + url_params[0],
 						page: 'pages/gallery_list', 
 						gallery_list: photos,
 						breadcrumbs: breadcrumb_trail
@@ -270,6 +275,7 @@ var gallery_view = function (req, res) {
 
 				render(req, res, 'website/index', 
 					{ 
+						title: 'Langenium - Gallery - ' + photo.name,
 						page: 'pages/gallery_view', 
 						gallery: photo,
 						breadcrumbs: breadcrumb_trail

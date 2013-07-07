@@ -56,8 +56,18 @@
 	float: right;
 	padding-right: 1em;
 }
+
 .object_properties .details .save_status a {
+	padding: .5em!important;
+	margin: .5em!important;
+	display: block!important;
 	float: left;
+	position: absolute!important;
+	top: 90px;
+	width: auto!important;
+}
+.object_properties .sub_menu .details .save_status a {
+	top: 70px;	
 }
 .object_properties .details .instance_name,
 .object_properties .details .save_status,

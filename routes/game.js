@@ -28,11 +28,11 @@ exports.setProviders = function (database, facebook, instance_provider) {
 }
 
 exports.play = function(req, res) {
-	render(req, res, 'game/client', { title: "Langenium Game Client Alpha", editor: false });
+	render(req, res, 'game/client', { title: "Langenium - Game - Client Alpha", editor: false });
 };
 exports.editor = function(req, res) {
 	var callback = function(result) {
-		render(req, res, 'game/editor', { title: "Langenium Game Map Editor Alpha", editor: true, objects: result });
+		render(req, res, 'game/editor', { title: "Langenium - Game - Map Editor Alpha", editor: true, objects: result });
 	};
 	db.queryClientDB("objects", { }, callback);
 };

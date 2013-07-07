@@ -55,13 +55,13 @@ object_properties.prototype.select = function() {
 			switch(object.obj_details.status) {
 				case 'Saved':
 					$('.object_properties .details .save_status p').html('Saved ('+object.obj_details.instance_id + ')');	
-					$('.object_properties .details .save_status p').append('<a href="#" class="btn btn-inverse delete"><i class="icon-trash" /> Delete</a>');	
+					$('.object_properties .details .save_status p').append('<a href="#" class="btn btn-inverse delete"><i class="icon-trash" /></a>');	
 					break;
 				case 'Modified':
-					$('.object_properties .details .save_status p').html('<a href="#" class="btn btn-inverse update"><i class="icon-save" /> Update</a>');
+					$('.object_properties .details .save_status p').html('<a href="#" class="btn btn-inverse update"><i class="icon-save" /></a>');
 					break;
 				case 'New':
-					$('.object_properties .details .save_status p').html('<a href="#" class="btn btn-inverse create"><i class="icon-save" /> Create</a>');
+					$('.object_properties .details .save_status p').html('<a href="#" class="btn btn-inverse create"><i class="icon-save" /></a>');
 					break;
 				default:
 					$('.object_properties .details .save_status p').html('Unknown');
@@ -200,7 +200,7 @@ object_properties.prototype.modified = function() {
 				object.obj_details.status = 'Modified';
 			}
 		});
-		$('.object_properties .details .save_status p').html('<a href="#" class="btn btn-inverse update"><i class="icon-save" /> Update</a>');
+		$('.object_properties .details .save_status p').html('<a href="#" class="btn btn-inverse update"><i class="icon-save" /></a>');
 	}
 }
 
@@ -228,7 +228,7 @@ object_properties.prototype.create = function(e){
 						object.obj_details.status = 'Saved';
 						object.obj_details.instance_id = data;
 						$('.object_properties .details .save_status p').html('Saved ('+ data + ')');
-						$('.object_properties .details .save_status p').append('<a href="#" class="btn btn-inverse delete"><i class="icon-trash" /> Delete</a>');	
+						$('.object_properties .details .save_status p').append('<a href="#" class="btn btn-inverse delete"><i class="icon-trash" /></a>');	
 					}
 				}
 			});
@@ -259,7 +259,7 @@ object_properties.prototype.update = function(e){
 					if (data != 0) {
 						object.obj_details.status = 'Saved';
 						$('.object_properties .details .save_status p').html('Saved ('+ data + ')');
-						$('.object_properties .details .save_status p').append('<a href="#" class="btn btn-inverse delete"><i class="icon-trash" /> Delete</a>');	
+						$('.object_properties .details .save_status p').append('<a href="#" class="btn btn-inverse delete"><i class="icon-trash" /></a>');	
 					}
 				}
 			});

@@ -57,11 +57,16 @@ events.prototype.setEventHandlers = function (socket) {
 		updates.forEach(function(update){
 			if (update.type == "move") {
 				if (update.obj_class == "players") {
-					ships.forEach(function(ship){
-						if (update.socket_id == ship.socket_id) {
-							events.moveShip(ship, true, { name: "move", type: "player", details: update });
-						}
-					});
+					if (player && update.socket_id == player.socket_id) {
+						events.moveShip(player, true, { name: "move", type: "player", details: update });
+					}
+					else {
+						ships.forEach(function(ship){
+							if (update.socket_id == ship.socket_id) {
+								events.moveShip(ship, false, { name: "move", type: "player", details: update });
+							}
+						});
+					}
 				}
 			}
 		});
@@ -107,31 +112,48 @@ events.prototype.moveShip = function (ship, isPlayer, instruction) {
 	
 	if (instruction.details.pX != 0){
 		ship.position.x = instruction.details.pX;
-
 	}
 	
 	if (instruction.details.pZ != 0) {
 		ship.position.z = instruction.details.pZ;
-
 	}
 	
 	var rotate = instruction.details.rY - ship.rotation.y;
-	
+	var rotate_factor = rotate / 5;
+
 	if (rotate > 0){
 		if (ship.rotation.z < .5) {
-			ship.rotation.z += rotate / 4;
+			ship.rotation.z += rotate_factor;
+			if (isPlayer == true && controls.flight.camera.rotation.y < .15) { 
+				controls.flight.camera.rotation.y += rotate_factor;	
+				controls.flight.camera.rotation.z -= rotate_factor; 
+			}
 		}
 		else {
-			ship.rotation.z += rotate / 5;
+			rotate_factor = rotate / 6;
+			ship.rotation.z += rotate_factor;
+			if (isPlayer == true && controls.flight.camera.rotation.y < .25) { 
+				controls.flight.camera.rotation.y += rotate_factor;	
+				controls.flight.camera.rotation.z -= rotate_factor; 
+			}
 		}
 		ship.rotation.y = instruction.details.rY;
 	}
 	if (rotate < 0) {
 		if (ship.rotation.z > -.5) {
-			ship.rotation.z += rotate / 4;
+			ship.rotation.z += rotate_factor;
+			if (isPlayer == true && controls.flight.camera.rotation.y > -.15) { 
+				controls.flight.camera.rotation.y += rotate_factor; 
+				controls.flight.camera.rotation.z -= rotate_factor; 
+			}
 		}
 		else {
-			ship.rotation.z += rotate / 5;
+			rotate_factor = rotate / 6;
+			ship.rotation.z += rotate_factor;
+			if (isPlayer == true && controls.flight.camera.rotation.y > -.25) { 
+				controls.flight.camera.rotation.y += rotate_factor; 
+				controls.flight.camera.rotation.z -= rotate_factor; 
+			}
 		}
 		ship.rotation.y = instruction.details.rY;
 	}

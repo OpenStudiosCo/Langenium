@@ -18,6 +18,7 @@ var flight = function() {
     this.camera = new THREE.PerspectiveCamera( 45, (client.winW / client.winH), 1, M / 3 * 2 );
     this.camera.position.y = 3;
 	this.camera.position.z = 35;
+	this.camera_rotating = false;
     this.enabled = true;
 
     return this;
@@ -40,11 +41,16 @@ $(document).bind("mousedown", function(event) {
 				//zoom IGNORE
 				break;
 			case 3:
-				//rotate
+				controls.flight.rotateCamera(event);
 				break;
 		}
 	}
+
 });
+
+$(document).bind("contextmenu",function(){
+    return false;
+}); 
 
 flight.prototype.input = function (delta){
 	var keyboardInput = { d: delta, pZ: 0, pY: 0, rY: 0, fire: client.isFiring, client_position: player.position },
@@ -91,7 +97,20 @@ flight.prototype.input = function (delta){
 	if (move == true) {
 		events.socket.emit('move', keyboardInput);
 	}
+	
+	if (keyboardInput.rY == 0 && controls.flight.camera.rotation.y != 0) {
+		
+		controls.flight.camera.rotation.y *= .96;
+	}
+	if (keyboardInput.rY == 0 && controls.flight.camera.rotation.z != 0) {
+		controls.flight.camera.rotation.z *= .96;
+	}
+	
 	return keyboardInput;
+}
+
+flight.prototype.rotateCamera = function (e) {
+	console.log(e);
 }
 
 flight.prototype.move = function (velocity, playerPosition, data) {

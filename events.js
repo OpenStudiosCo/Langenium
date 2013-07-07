@@ -40,6 +40,7 @@ function login(socket, data, db, instances, client_sessions) {
 			player.editor = data.editor;
 			player.velocity = 0;
 			player.socket_id = socket.id;
+			player.input_status = false;
 			// check if we're dealing with a container
 			if (instances[player.instance_id].instances) {
 

@@ -55,26 +55,35 @@ function update(delta, io, world) {
 		
 		world[update.obj_class].forEach(function(obj){
 			if (obj._id == update._id) {
+				if (update.type == "move") {
+					obj.input_status = true;
+				}
 				obj[update.type](obj, world, update.socket_id, update.details, _complete);
 			}
 		});
 	});
 	world.players.forEach(function(player){
-		var _complete = function(processed_change) {
-			processed_changes.push(processed_change);
-		};
-		player.velocity *= .996;
-		var details = {
-			d: delta / 10000,
-			socket_id: player.socket_id,
-			username: player.username,
-			type: 'move',
-			obj_class: 'players',
-			pZ: 0,
-			pY: 0,
-			rY: 0
-		};
-		player.move(player, world, player.socket_id, details, _complete);
+		if (player.input_status == false) {
+			console.log("Gliding");
+			var _complete = function(processed_change) {
+				processed_changes.push(processed_change);
+			};
+			player.velocity *= .996;
+			var details = {
+				d: delta,
+				socket_id: player.socket_id,
+				username: player.username,
+				type: 'move',
+				obj_class: 'players',
+				pZ: 0,
+				pY: 0,
+				rY: 0
+			};
+			player.move(player, world, player.socket_id, details, _complete);
+		}
+		else {
+			player.input_status = false;
+		}
 	});
 	io.sockets.emit('update', processed_changes);
 }

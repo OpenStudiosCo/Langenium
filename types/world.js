@@ -64,7 +64,6 @@ function update(delta, io, world) {
 	});
 	world.players.forEach(function(player){
 		if (player.input_status == false) {
-			console.log("Gliding");
 			var _complete = function(processed_change) {
 				processed_changes.push(processed_change);
 			};

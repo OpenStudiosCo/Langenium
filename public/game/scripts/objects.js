@@ -13,7 +13,8 @@
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
 var objects = function() {
-	this.players = new players();
+	this.characters = new characters();
+	this.ships = new ships();
     this.cache = [];
     this.world_map = [];
     return this;
@@ -92,6 +93,7 @@ objects.prototype.makeObjectMesh = function (obj_status, obj_class, obj_name, ob
 };
 
 objects.prototype.renderObject = function (mesh, obj_class, instruction) {
+	
 	mesh.uid = instruction.id;
 	var  x = instruction.position.x,
 			y = instruction.position.y,
@@ -103,48 +105,11 @@ objects.prototype.renderObject = function (mesh, obj_class, instruction) {
 		scene.add(this.world_map[this.world_map.length-1]);
 	}
 	if (obj_class == "players") {
-		player = mesh;
-		player.bullets = [];
-		player.moveInterval = new Date().getTime();
-		player.username = instruction.username;
-		player.socket_id = instruction.socket_id;
-		player.rotation.y = instruction.position.rY;
-		player.material.materials.forEach(function(material,index){
-			player.material.materials[index].morphTargets = true;
-		});
-		
-		player.velocity = 0;
-		
-		player.add(client.camera);
-		
-		scene.add(player);
-		ships.push(player);
+		controls.enabled = true;
+		objects.ships.make(instruction, mesh, true, objects.ships.mercenary);
 	}
 	if (obj_class == "ship") {
-		var ship = mesh;
-		ship.bullets = [];
-		ship.moveInterval = new Date().getTime();
-		ship.username = instruction.username;
-		ship.socket_id = instruction.socket_id;
-		ship.rotation.y = instruction.position.rY;
-		ship.material.materials.forEach(function(material,index){
-			ship.material.materials[index].morphTargets = true;
-		});
-		
-		ship.velocity = 0;
-		
-		ships.push(ship);
-		scene.add(ships[ships.length-1]);
+		objects.ships.make(instruction, mesh, false, objects.ships.mercenary);
+	}
 
-	}
-	if (obj_class == "bot") {
-		var bot = mesh;
-		bot.bullets = [];
-		bot.id = instruction.id;
-		bot.type = instruction.shipType;
-		bot.rotation.y = instruction.position.rotationY;
-		bot.add(botScope());
-		bots.push(bot);
-		scene.add(bots[bots.length-1]);
-	}
 };

@@ -20,9 +20,7 @@ var engine = function() {
 		
 	this.duration = 100,
 	this.keyframes = 5,
-	this.animOffset = 0,
 	this.interpolation = this.duration / this.keyframes,
-	this.lastKeyframe = 0, this.currentKeyframe = 0;
 	this.objects = 	{
 						players: [],
 						bots: [],
@@ -31,7 +29,6 @@ var engine = function() {
 					};
 
 	// Not implemented yet, but will be used for simplifying animation queue
-	this.event_queue = [];
 
     return this;
 }
@@ -89,86 +86,34 @@ engine.prototype.createScene = function () {
 
 engine.prototype.animate = function () {
 	var delta = clock.getDelta();
-	var time = new Date().getTime() / 1000;
-	handleParticles(delta);
-	handleBullets(delta);
-	var animTime = new Date().getTime() % engine.duration;
-	var keyframe = Math.floor( animTime / engine.interpolation ) + engine.animOffset;
-	
-	TWEEN.update();
-	var shipsMoving = false;
-	
-	// need a nicer way to do this
-	var playerHeightOk = false;
-	
-	if (!player) { playerHeightOk = true; }
-	else {
-		if (player.position.y < 80000) {
-			playerHeightOk = true;
-		}
+
+	if (controls.enabled == true) {
+		controls.flight.move(player.velocity, player.position, controls.flight.input(delta));
 	}
 	
-	if ((water_tiles.length  >= 1)&&(playerHeightOk == true)){
-		var myTime = clock.getElapsedTime() * 10;
-		
-		for (var i = 0; i < water_tiles[0].geometry.vertices.length; i++) {
-			var n = Math.sin( i / 5 + ( myTime + i ) /  7);
-			water_tiles[0].geometry.vertices[i].z += 5.654321 * n;
-			water_tiles[0].geometry.vertices[i].y = 222.654321 * n;
-		}
-		water_tiles[0].geometry.verticesNeedUpdate = true;
-	}
-	
-	if (player) {	
-		scene.children[1].rotation.y = Math.cos(delta) / 15000;
-
-		if  (player.velocity != 0) {
-			player.velocity *= .996;
-		}
-
-		if ( keyframe != engine.currentKeyframe ) {
-			player.morphTargetInfluences[ engine.lastKeyframe ] = 0;
-			player.morphTargetInfluences[ engine.currentKeyframe ] = 1;
-			player.morphTargetInfluences[ keyframe ] = 0;
-
-			engine.lastKeyframe = engine.currentKeyframe;
-			engine.currentKeyframe = keyframe;
-		}
-
-		player.morphTargetInfluences[ keyframe ] = ( animTime % engine.interpolation ) / engine.interpolation;
-		player.morphTargetInfluences[ engine.lastKeyframe ] = 1 - player.morphTargetInfluences[ keyframe ];
-		player.updateMatrix();
-
-		if (controls.enabled == true) {
-			controls.flight.move(player.velocity, player.position, controls.flight.input(delta));
-		}
-	}
-	
-	ships.forEach(function(ship,index){
-		if (ship.position.y < 0) { ship.position.y += 1.2; }
-		if (ship.rotation.z != 0) { ship.rotation.z *= .96; }
-	});
-	
-	bots.forEach(function(bot,index){
-		if (player) {
-			bots[index].children[0].rotation.x = -bots[index].rotation.x;
-			bots[index].children[0].rotation.y = -bots[index].rotation.y + player.rotation.y + player.children[0].rotation.y;
-			bots[index].children[0].rotation.z = -bots[index].rotation.z;
-		}
-		if (bot.position.y < 50) { bot.position.y += 3; }
-		if (bot.rotation.z != 0) { bot.rotation.z -= bot.rotation.z / 50; }
-	});
-
 	if (window.location.href.indexOf("editor") > 0) {
 		controls.editor.input(delta);
-		if (player && player.children.length > 0) {	
-			client.camera_position = new THREE.Vector3().getPositionFromMatrix(client.camera.matrixWorld);
-			$('.camera_info .x').html('x: ' + Math.round(client.camera_position.x));
-			$('.camera_info .y').html('y: ' + Math.round(client.camera_position.y));
-			$('.camera_info .z').html('z: ' + Math.round(client.camera_position.z));
-		}	
+		editor.toolbars.updateCameraDetails();
 	}
+
+	// Animating ship meshes
+	var animTime = new Date().getTime() % engine.duration;
+	var keyframe = Math.floor( animTime / engine.interpolation );
+
+	objects.ships.animation_queue.forEach(function(ship){
+		objects.ships.animate(animTime, keyframe, ship, delta);
+	});
+
+	// Animating sprites
+	textures.sprites.animation_queue.forEach(function(sprite){
+		textures.sprites.animate(sprite, delta);
+	});
 	
+	TWEEN.update();
+	effects.water.animate();
+	handleParticles(delta);
+	handleBullets(delta);
+
 	requestAnimationFrame( engine.animate );
 
 	engine.renderer.render( scene, client.camera );

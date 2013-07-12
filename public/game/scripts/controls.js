@@ -14,8 +14,9 @@
 
 // This object
 var controls = function() {
-    this.enabled = true;
+    this.enabled = false;
 	this.flight = new flight();
+	this.character = new character();
 	this.editor = new editor_controls();
     
     return this;

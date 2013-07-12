@@ -63,6 +63,29 @@ function makeEnvScale() {
 	return env_scale;
 }
 
+water.prototype.animate = function() {
+	// need a nicer way to do this
+	var playerHeightOk = false;
+	
+	if (!player) { playerHeightOk = true; }
+	else {
+		if (player.position.y < 80000) {
+			playerHeightOk = true;
+		}
+	}
+	
+	if ((water_tiles.length  >= 1)&&(playerHeightOk == true)){
+		var myTime = clock.getElapsedTime() * 10;
+		
+		for (var i = 0; i < water_tiles[0].geometry.vertices.length; i++) {
+			var n = Math.sin( i / 5 + ( myTime + i ) /  7);
+			water_tiles[0].geometry.vertices[i].z += 5.654321 * n;
+			water_tiles[0].geometry.vertices[i].y = 222.654321 * n;
+		}
+		water_tiles[0].geometry.verticesNeedUpdate = true;
+	}
+}
+
 water.prototype.update = function() {
 	
 	var 	env_scale = makeEnvScale(),

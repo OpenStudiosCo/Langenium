@@ -30,8 +30,6 @@ function make(details) {
 			class		'players'
 			instance_id	Instance type (default: master)
 			position	x:y:z:rY
-			url			ship mesh
-			scale		ship scale
 
 		Functions:
 			move

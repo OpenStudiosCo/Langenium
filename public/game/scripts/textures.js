@@ -57,7 +57,8 @@ var textures = function() {
 				new THREE.Color( 0x116699),
 				new THREE.Color( 0x113355 )]	}
 	];
-
+	
+	this.sprites = new sprites();
 
     return this;
 };

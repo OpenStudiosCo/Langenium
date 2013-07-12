@@ -104,6 +104,7 @@ function move(socket, data, db, instances, client_sessions) {
 function initializeClient(socket, instance, db) {
 
 	for (var objects in instance) {
+
 		if (typeof(instance[objects]) == "object") {
 			var instruction = {};
 			instruction[objects] = instance[objects];
@@ -115,12 +116,14 @@ function initializeClient(socket, instance, db) {
 					socket.broadcast.emit("load", instruction );
 				}
 			};
+
 			prepareLoadInstructions(instruction[objects], db, send_instructions);
 		}
 	}
 }
 
 function prepareLoadInstructions(objects, db, send_instructions) {
+
 	objects.forEach(function(object, index){
 		for (var obj in object.type) {
 			var callback = function(result) {
@@ -137,6 +140,7 @@ function prepareLoadInstructions(objects, db, send_instructions) {
 		                 if (obj_result.sub_type) {
 		                 	object.sub_type = obj_result.sub_type;
 		                 }
+
 						 send_instructions(object);
 					}
 				});

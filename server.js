@@ -154,7 +154,7 @@ function makeUniverse() {
 	
 	// Check the database for any objects that belong to this instance and add them
 	var objects = function(result) { 
-
+		
 		result.forEach(function(object){
 			instances.master.addObjectToContainer(object, instances.master);
 		}); 

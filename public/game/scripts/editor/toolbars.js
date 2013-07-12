@@ -45,3 +45,12 @@ $('.username_menu .login').click(function(e){
 	};
 	$.ajax({url:'/login_check', success: callback});
 });
+
+toolbars.prototype.updateCameraDetails = function() {
+	if (player && player.children.length > 0) {	
+		client.camera_position = new THREE.Vector3().getPositionFromMatrix(client.camera.matrixWorld);
+		$('.camera_info .x').html('x: ' + Math.round(client.camera_position.x));
+		$('.camera_info .y').html('y: ' + Math.round(client.camera_position.y));
+		$('.camera_info .z').html('z: ' + Math.round(client.camera_position.z));
+	}	
+}

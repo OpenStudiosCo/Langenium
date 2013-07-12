@@ -32,11 +32,12 @@ script(src='/game/scripts/effects/water.js')
 script(src='/game/scripts/engine.js')
 script(src='/game/scripts/events.js')
 script(src='/game/scripts/objects.js')
-script(src='/game/scripts/objects/bots.js')
+script(src='/game/scripts/objects/characters.js')
 script(src='/game/scripts/objects/environment.js')
-script(src='/game/scripts/objects/players.js')
 script(src='/game/scripts/objects/projectiles.js')
+script(src='/game/scripts/objects/ships.js')
 script(src='/game/scripts/textures.js')
+script(src='/game/scripts/textures/sprites.js')
 script(src='/game/scripts/ui.js')
 script(type='text/javascript')
 	/*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -46,7 +47,7 @@ script(type='text/javascript')
 	// Global variables for the THREE JS client
 	var scene, water_tiles, sky, M = 500000;
 	var keyboard = new THREEx.KeyboardState(), clock = new THREE.Clock();
-	var player, ships = [], bots = [], bullets = [], particle_systems = [], ui = [];
+	var player, bots = [], bullets = [], particle_systems = [], ui = [];
 
 	client = new client();
 	client.updateWinSizeVariables();
@@ -55,6 +56,7 @@ script(type='text/javascript')
 
 	controls = new controls();
 	objects = new objects();
+	
 	textures = new textures();
 
 	effects = new effects();

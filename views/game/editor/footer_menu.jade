@@ -5,9 +5,15 @@ footer
 				menu.sub_menu
 					ul.unstyled
 						li
-							a(href='#',onclick='controls.editor.toggleCamera()')
+							a(href='#',onclick='controls.editor.toggleCamera("editor")')
 								i.icon-facetime-video
-								|  Toggle camera view
+								|  Bird's Eyes View
+							a(href='#',onclick='controls.editor.toggleCamera("flight")')
+								i.icon-facetime-video
+								|  Ship View
+							a(href='#',onclick='controls.editor.toggleCamera("character")')
+								i.icon-facetime-video	
+								|  Character View
 				a(href='#') 
 					i.icon-camera.icon-large
 					|  Camera

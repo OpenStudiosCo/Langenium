@@ -47,7 +47,7 @@ events.prototype.setEventHandlers = function (socket) {
 	});
 
 	socket.on("logout",function(data) {
-		ships.forEach(function(ship, index){
+		objects.ships.collection.forEach(function(ship, index){
 			if (data.socket_id == ship.socket_id) {
 				events.logout(ship, index);
 			}
@@ -61,7 +61,7 @@ events.prototype.setEventHandlers = function (socket) {
 						events.moveShip(player, true, { name: "move", type: "player", details: update });
 					}
 					else {
-						ships.forEach(function(ship){
+						objects.ships.collection.forEach(function(ship){
 							if (update.socket_id == ship.socket_id) {
 								events.moveShip(ship, false, { name: "move", type: "player", details: update });
 							}
@@ -76,6 +76,7 @@ events.prototype.setEventHandlers = function (socket) {
 }
 
 events.prototype.login = function(user) {
+	console.log(user);
 	if (window.location.href.indexOf("editor") >= 0) {
 		$('.username_menu > .button').html('');
 		$('.username_menu > .button').append('<img src="https://graph.facebook.com/'+user.facebook_id+'/picture?width=20&height=20" /> '); 
@@ -124,7 +125,7 @@ events.prototype.moveShip = function (ship, isPlayer, instruction) {
 	if (rotate > 0){
 		if (ship.rotation.z < .5) {
 			ship.rotation.z += rotate_factor;
-			if (isPlayer == true && controls.flight.camera.rotation.y < .15) { 
+			if (isPlayer == true && controls.flight.camera.rotation.y < .25) { 
 				controls.flight.camera.rotation.y += rotate_factor;	
 				controls.flight.camera.rotation.z -= rotate_factor; 
 			}
@@ -132,7 +133,7 @@ events.prototype.moveShip = function (ship, isPlayer, instruction) {
 		else {
 			rotate_factor = rotate / 6;
 			ship.rotation.z += rotate_factor;
-			if (isPlayer == true && controls.flight.camera.rotation.y < .25) { 
+			if (isPlayer == true && controls.flight.camera.rotation.y < .35) { 
 				controls.flight.camera.rotation.y += rotate_factor;	
 				controls.flight.camera.rotation.z -= rotate_factor; 
 			}
@@ -142,7 +143,7 @@ events.prototype.moveShip = function (ship, isPlayer, instruction) {
 	if (rotate < 0) {
 		if (ship.rotation.z > -.5) {
 			ship.rotation.z += rotate_factor;
-			if (isPlayer == true && controls.flight.camera.rotation.y > -.15) { 
+			if (isPlayer == true && controls.flight.camera.rotation.y > -.25) { 
 				controls.flight.camera.rotation.y += rotate_factor; 
 				controls.flight.camera.rotation.z -= rotate_factor; 
 			}
@@ -150,7 +151,7 @@ events.prototype.moveShip = function (ship, isPlayer, instruction) {
 		else {
 			rotate_factor = rotate / 6;
 			ship.rotation.z += rotate_factor;
-			if (isPlayer == true && controls.flight.camera.rotation.y > -.25) { 
+			if (isPlayer == true && controls.flight.camera.rotation.y > -.35) { 
 				controls.flight.camera.rotation.y += rotate_factor; 
 				controls.flight.camera.rotation.z -= rotate_factor; 
 			}

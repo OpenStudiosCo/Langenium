@@ -22,7 +22,7 @@ var object_library = function() {
     Functions
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
-object_library.prototype.addObject = function (name, type, sub_type, url, scale) {
+object_library.prototype.addObject = function (_id, name, type, sub_type, url, scale) {
 	
 	var new_position = new THREE.Vector3(client.camera_position.x, client.camera_position.y, client.camera_position.z);
 
@@ -42,16 +42,20 @@ object_library.prototype.addObject = function (name, type, sub_type, url, scale)
 			x: new_position.x,
 			y: new_position.y,
 			z: new_position.z,
-			rY: player.rotation.y
 		},
-		type: {}
+		rotation: {
+			x: 0,
+			y: 0,
+			z: 0
+		},
+		object: {
+			_id: _id,
+			name: name,
+			type: type,
+			sub_type: sub_type
+		},
+		status: 'New'
 	};
-
-	instruction.type[type] = name;
-	instruction.name = name;
-	instruction.obj_type = type;
-	instruction.sub_type = sub_type;
-	instruction.status = 'New';
 
 	objects.loadObject(instruction);
 

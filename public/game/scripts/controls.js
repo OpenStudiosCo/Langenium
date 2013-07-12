@@ -40,7 +40,7 @@ controls.prototype.mousewheel = function (e) {
 
 	var new_fov = client.camera.fov - delta / 11.321312;
 	
-	if (new_fov > 18 && new_fov < 120) {
+	if (new_fov > 18 && new_fov < 100) {
 		client.camera.fov = new_fov;
 	}
 

@@ -33,7 +33,6 @@ ships.prototype.make = function (instruction, mesh, is_player, ship_type) {
 		player.moveInterval = new Date().getTime();
 		player.username = instruction.username;
 		player.socket_id = instruction.socket_id;
-		player.rotation.y = instruction.position.rY;
 		player.material.materials.forEach(function(material,index){
 			player.material.materials[index].morphTargets = true;
 		});
@@ -52,7 +51,6 @@ ships.prototype.make = function (instruction, mesh, is_player, ship_type) {
 		ship.moveInterval = new Date().getTime();
 		ship.username = instruction.username;
 		ship.socket_id = instruction.socket_id;
-		ship.rotation.y = instruction.position.rY;
 		ship.material.materials.forEach(function(material,index){
 			ship.material.materials[index].morphTargets = true;
 		});

@@ -41,6 +41,15 @@ function login(socket, data, db, instances, client_sessions) {
 			player.velocity = 0;
 			player.socket_id = socket.id;
 			player.input_status = false;
+
+			// for now, we are defaulting to Mercenary ships
+			player.object = {
+				_id: "51dee691fc48c32330000000",
+				name: "mercenary",
+				type: "ship",
+				sub_type: "winthrom"
+			};
+
 			// check if we're dealing with a container
 			if (instances[player.instance_id].instances) {
 
@@ -122,31 +131,34 @@ function initializeClient(socket, instance, db) {
 	}
 }
 
-function prepareLoadInstructions(objects, db, send_instructions) {
+function prepareLoadInstructions(instance_objects, db, send_instructions) {
+	
+	instance_objects.forEach(function(instance_object, index){
+	
+		var callback = function(result) {
 
-	objects.forEach(function(object, index){
-		for (var obj in object.type) {
-			var callback = function(result) {
-				result.forEach(function(obj_result){
-					if (obj_result && obj_result.name == object.type[obj]) {
-						object.name = obj_result.name;
-						object.obj_type = obj_result.type;
-						for (var property in obj_result.details) {
-							if (property == 'scale' && object.scale) {}
-							else {
-		                    	object[property] = obj_result.details[property];
-		                    }
-		                 }
-		                 if (obj_result.sub_type) {
-		                 	object.sub_type = obj_result.sub_type;
-		                 }
+			result.forEach(function(obj_result){
+				
+				if (obj_result && obj_result._id.toString() == instance_object.object._id.toString()) {
 
-						 send_instructions(object);
-					}
-				});
-			};
-			db.queryClientDB("objects", {type: obj}, callback);
-		}
+					instance_object.name = obj_result.name;
+					instance_object.obj_type = obj_result.type;
+					for (var property in obj_result.details) {
+						if (property == 'scale' && instance_object.scale) {}
+						else {
+	                    	instance_object[property] = obj_result.details[property];
+	                    }
+	                 }
+	                 if (obj_result.sub_type) {
+	                 	instance_object.sub_type = obj_result.sub_type;
+	                 }
+					
+					send_instructions(instance_object);
+				}
+			});
+		};
+		db.queryClientDB("objects", {type: instance_object.object.type}, callback);
+	
 	});
 }
 

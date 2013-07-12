@@ -59,13 +59,20 @@ exports.create_object = function(req, res) {
 				x: req.query.pX,
 				y: req.query.pY,
 				z: req.query.pZ,
-				rY: req.query.rY
+			},
+			rotation: {
+				x: req.query.rX,
+				y: req.query.rY,
+				z: req.query.rZ,
 			},
 			scale: req.query.scale,
-			type: {}
+			object: {
+				_id: req.query.object_id,
+				name: req.query.name,
+				type: req.query.type,
+				sub_type: req.query.sub_type
+			}
 		};
-		new_object.type[req.query.type] = req.query.name;
-		new_object.sub_type = req.query.sub_type;
 		
 		var callback = function(_id) {
 			res.setHeader("Expires", "-1");
@@ -94,13 +101,20 @@ exports.update_object = function(req, res) {
 				x: req.query.pX,
 				y: req.query.pY,
 				z: req.query.pZ,
-				rY: req.query.rY
+			},
+			rotation: {
+				x: req.query.rX,
+				y: req.query.rY,
+				z: req.query.rZ,
 			},
 			scale: req.query.scale,
-			type: {}
+			object: {
+				_id: req.query.object_id,
+				name: req.query.name,
+				type: req.query.type,
+				sub_type: req.query.sub_type
+			}
 		};
-		existing_object.type[req.query.type] = req.query.name;
-		existing_object.sub_type = req.query.sub_type;
 		
 		var callback = function(_id) {
 			res.setHeader("Expires", "-1");

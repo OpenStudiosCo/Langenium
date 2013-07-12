@@ -34,38 +34,28 @@ objects.prototype.new = function(obj) {
 
 objects.prototype.loadObject = function (instruction) {
 
-	var obj_status = 'Saved';
-	if (instruction.status) {
-		obj_status = instruction.status
-	}
 	var loader = new THREE.JSONLoader();
 	var cacheIndex = -1;
 	this.cache.forEach(function(cachedObject, index){ if (instruction.url == cachedObject.url) { cacheIndex = index;} });
-	var x = instruction.position.x,
-		y = instruction.position.y,
-		z = instruction.position.z,
-		scale = instruction.scale, 
-		obj_class = instruction["class"],
-		o = this;
-	
+
 	if ((cacheIndex >= 0)&&(window.location.href.indexOf("editor") < 0)) {
-		var cachedObject = o.cache[cacheIndex];
-		mesh = o.makeObjectMesh(obj_status, obj_class, instruction.name, instruction._id, instruction.obj_type, instruction.sub_type, cachedObject.geometry, cachedObject.materials, x, y, z , scale);
-		o.renderObject(mesh, obj_class, instruction);
+		var cachedObject = objects.cache[cacheIndex];
+		mesh = objects.makeObjectMesh(instruction, cachedObject.geometry, cachedObject.materials);
+		objects.renderObject(mesh, instruction['class'], instruction);
 	}
 	else {
 		loader.load(instruction.url, function(geometry, materials) {
-			mesh = o.makeObjectMesh(obj_status, obj_class, instruction.name, instruction._id, instruction.obj_type, instruction.sub_type, geometry, materials, x, y, z , scale);
+			mesh = objects.makeObjectMesh(instruction, geometry, materials);
 			var cachedObject = { url: instruction.url, geometry: geometry, materials: materials};
-			o.cache.push(cachedObject);	
-			o.renderObject(mesh, obj_class, instruction);
+			objects.cache.push(cachedObject);	
+			objects.renderObject(mesh, instruction['class'], instruction);
 		});
 	}
 };
 
-objects.prototype.makeObjectMesh = function (obj_status, obj_class, obj_name, obj_id, obj_type, obj_sub_type, geometry, materials, x, y, z, scale) {
+objects.prototype.makeObjectMesh = function (instruction, geometry, materials) {
 	var useVertexOverrides = false;
-	if ((obj_class != "terrain")&&(obj_class != "ship")&&(obj_class != "players")&&(obj_class != "bot")) {
+	if ((instruction['class'] != "terrain")&&(instruction['class'] != "ship")&&(instruction['class'] != "players")&&(instruction['class'] != "bot")) {
 		useVertexOverrides = true;
 	}
 
@@ -73,16 +63,18 @@ objects.prototype.makeObjectMesh = function (obj_status, obj_class, obj_name, ob
 
 	object = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial( materials ) );
 	object.obj_details = {
-		instance_id: obj_id,
-		name: obj_name,
-		type: obj_type,
-		sub_type: obj_sub_type,
-		status: obj_status
+		_id: instruction._id,
+		object_id: instruction.object._id,
+		name: instruction.object.name,
+		type: instruction.object.type,
+		sub_type: instruction.object.sub_type,
+		status: instruction.status ? instruction.status : 'Saved'
 	};
 	object.geometry.computeBoundingBox();
-	object.name = obj_class;
-	object.position.set(x, y, z);
-	object.scale.set(scale, scale, scale);
+	object.name = instruction['class'];
+	object.position.set(instruction.position.x, instruction.position.y, instruction.position.z);
+	object.rotation.set(instruction.rotation.x, instruction.rotation.y, instruction.rotation.z);
+	object.scale.set(instruction.scale, instruction.scale, instruction.scale);
 	object.matrixAutoUpdate = true;
 	object.updateMatrix();
 	object.geometry.colorsNeedUpdate = true;

@@ -44,7 +44,7 @@ function make(details) {
 				console.log(player.position);	
 			}
 		*/
-		
+
 		player.d = details.d;
 		details.socket_id = socket_id;
 		details.username = player.username;
@@ -72,15 +72,15 @@ function make(details) {
 		if (details.pY > 0) { details.pY = velocityYChange; } 			// up
 		if (details.pY < 0) { details.pY = -(velocityYChange); } 		// down
 
-		details.rY += player.position.rY;
+		details.rY += player.rotation.y;
 		details.pY += player.position.y;
 		
-		var 	diffX = player.velocity * Math.sin(player.position.rY),
-				diffZ = player.velocity * Math.cos(player.position.rY);
+		var 	diffX = player.velocity * Math.sin(player.rotation.y),
+				diffZ = player.velocity * Math.cos(player.rotation.y);
 
 		player.position.x += diffX;
 		player.position.y = details.pY;
-		player.position.rY = details.rY;
+		player.rotation.y = parseFloat(details.rY);
 		player.position.z += diffZ;
 
 		details.pX = player.position.x;

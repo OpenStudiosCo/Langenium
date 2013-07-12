@@ -208,12 +208,15 @@ object_properties.prototype.create = function(e){
 	var selected_id = $('.object_properties select.object_list').val();
 	scene.children.forEach(function(object, index){
 		if(object.id == selected_id) {
-			console.log(object);
+			
 			var create_details = {
+				object_id: object.obj_details.object_id,
 				pX: object.position.x,
 				pY: object.position.y,
 				pZ: object.position.z,
+				rX: object.rotation.x,
 				rY: object.rotation.y,
+				rZ: object.rotation.z,
 				scale: object.scale.x,
 				obj_class: object.name, // this seems dodge but keeping consistent for now
 				sub_type: object.obj_details.sub_type,
@@ -226,7 +229,7 @@ object_properties.prototype.create = function(e){
 				success: function(data) {
 					if (data != 0) {
 						object.obj_details.status = 'Saved';
-						object.obj_details.instance_id = data;
+						object.obj_details._id = data;
 						$('.object_properties .details .save_status p').html('Saved ('+ data + ')');
 						$('.object_properties .details .save_status p').append('<a href="#" class="btn btn-inverse delete"><i class="icon-trash" /></a>');	
 					}
@@ -240,11 +243,14 @@ object_properties.prototype.update = function(e){
 	scene.children.forEach(function(object, index){
 		if(object.id == selected_id) {
 			var create_details = {
-				_id: object.obj_details.instance_id,
+				_id: object.obj_details._id,
+				object_id: object.obj_details.object_id,
 				pX: object.position.x,
 				pY: object.position.y,
 				pZ: object.position.z,
+				rX: object.rotation.x,
 				rY: object.rotation.y,
+				rZ: object.rotation.z,
 				scale: object.scale.x,
 				obj_class: object.name, // this seems dodge but keeping consistent for now
 				sub_type: object.obj_details.sub_type,

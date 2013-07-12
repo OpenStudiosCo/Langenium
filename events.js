@@ -132,9 +132,7 @@ function initializeClient(socket, instance, db) {
 }
 
 function prepareLoadInstructions(instance_objects, db, send_instructions) {
-	
 	instance_objects.forEach(function(instance_object, index){
-	console.log(instance_object)
 		var callback = function(result) {
 
 			result.forEach(function(obj_result){

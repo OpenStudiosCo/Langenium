@@ -11,18 +11,14 @@
 var ships = function() {
 	this.animation_queue = [];
 	this.collection = [];
-	this.mercenary = {
-		mesh_url: '/game/assets/objects/ships/mercenary.js',
-		health: 1000,
-		faction: 'Winthrom'
-	};
+
     return this;
 }
 
-ships.prototype.make = function (instruction, mesh, is_player, ship_type) {
+ships.prototype.make = function (obj_class, instruction, mesh) {
 	mesh.ship_attributes = {
-		health: ship_type.health,
-		faction: ship_type.faction,
+		health: instruction.health,
+		faction: instruction.faction,
 		lastKeyframe: 0, 
 		currentKeyframe: 0
 	};
@@ -84,7 +80,7 @@ ships.prototype.make = function (instruction, mesh, is_player, ship_type) {
 		}
 	};
 	
-	if (is_player == true) {
+	if (obj_class == "players") {
 		player = mesh;
 		player.bullets = [];
 		player.moveInterval = new Date().getTime();
@@ -102,7 +98,7 @@ ships.prototype.make = function (instruction, mesh, is_player, ship_type) {
 		objects.ships.collection.push(player);
 		objects.ships.animation_queue.push(player);
 	}
-	else {
+	if (obj_class == "ship") {
 		var ship = mesh;
 		ship.bullets = [];
 		ship.moveInterval = new Date().getTime();
@@ -115,6 +111,21 @@ ships.prototype.make = function (instruction, mesh, is_player, ship_type) {
 		ship.velocity = 0;
 		
 		objects.ships.collection.push(ship);
+		scene.add(objects.ships.collection[objects.ships.collection.length-1]);
+		objects.ships.animation_queue.push(objects.ships.collection[objects.ships.collection.length-1]);
+	}
+	if (obj_class == "bots") {
+		var bot = mesh;
+		bot.bot_id = instruction.bot_id;
+		bot.bullets = [];
+		bot.moveInterval = new Date().getTime();
+		bot.material.materials.forEach(function(material,index){
+			bot.material.materials[index].morphTargets = true;
+		});
+
+		bot.velocity = 0;
+		
+		objects.ships.collection.push(bot);
 		scene.add(objects.ships.collection[objects.ships.collection.length-1]);
 		objects.ships.animation_queue.push(objects.ships.collection[objects.ships.collection.length-1]);
 	}

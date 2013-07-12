@@ -48,7 +48,7 @@ events.prototype.setEventHandlers = function (socket) {
 
 	socket.on("logout",function(data) {
 		objects.ships.collection.forEach(function(ship, index){
-			if (data.socket_id == ship.socket_id) {
+			if (ship.socket_id && data.socket_id == ship.socket_id) {
 				events.logout(ship, index);
 			}
 		});
@@ -62,8 +62,11 @@ events.prototype.setEventHandlers = function (socket) {
 					}
 					else {
 						objects.ships.collection.forEach(function(ship){
-							if (update.socket_id == ship.socket_id) {
+							if (ship.socket_id && update.socket_id == ship.socket_id) {
 								ship.move(ship, false, { name: "move", type: "player", details: update });
+							}
+							if (ship.bot_id && update.bot_id == ship.bot_id) {
+								ship.move(ship, false, { name: "move", type: "bot", details: update });
 							}
 						});
 					}

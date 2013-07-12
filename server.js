@@ -151,6 +151,34 @@ function makeUniverse() {
 	instances.master.instances.push(
 		instance.make(io, "world")
 	);
+
+	var bot = {
+		class: "bots",
+		instance_id: "master",
+		object: {
+			_id: "51dee691fc48c32330000000",
+			name: "mercenary",
+			sub_type: "winthrom",
+			type: "ship" 
+		},
+		position: {
+			x: -5000,
+     		y: 2000,
+     		z: -5000 
+		},
+		rotation: {
+			x: 0,
+			y: 0,
+			z: 0
+		},
+		scale: 10
+	};
+	for (var i = 0; i < 1; i++) {
+		bot.bot_id = 'bot_' + i;
+		bot._id = 'bot_' + i;
+		instances.master.addObjectToContainer(bot, instances.master);	
+	}
+	
 	
 	// Check the database for any objects that belong to this instance and add them
 	var objects = function(result) { 

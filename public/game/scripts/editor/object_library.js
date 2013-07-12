@@ -46,7 +46,7 @@ object_library.prototype.addObject = function (_id, name, type, sub_type, url, s
 		rotation: {
 			x: 0,
 			y: 0,
-			z: 0
+			z: 0,
 		},
 		object: {
 			_id: _id,

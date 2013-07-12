@@ -38,21 +38,21 @@ sprites.prototype.make = function (texture, tilesHoriz, tilesVert, numTiles, til
 	// which image is currently being displayed?
 	this.currentTile = 0;
 
-	return this;
-}
-
-sprites.prototype.animate = function(sprite, delta) {
-	// take in the sprite, determine which keyframe to move to and continue
-	sprite.currentDisplayTime += delta * 1000;
-	while (sprite.currentDisplayTime > sprite.tileDisplayDuration)
-	{
-		sprite.currentDisplayTime -= sprite.tileDisplayDuration;
-		sprite.currentTile++;
-		if (sprite.currentTile == sprite.numberOfTiles)
-			sprite.currentTile = 0;
-		var currentColumn = sprite.currentTile % sprite.tilesHorizontal;
-		//texture.offset.x = currentColumn / sprite.tilesHorizontal;
-		var currentRow = Math.floor( sprite.currentTile / sprite.tilesHorizontal );
-		//texture.offset.y = currentRow / sprite.tilesVertical;
+	this.animate = function(delta) {
+		this.currentDisplayTime += delta * 1000;
+		while (this.currentDisplayTime > this.tileDisplayDuration)
+		{
+			this.currentDisplayTime -= this.tileDisplayDuration;
+			this.currentTile++;
+			if (this.currentTile == this.numberOfTiles)
+				this.currentTile = 0;
+			var currentColumn = this.currentTile % this.tilesHorizontal;
+			texture.offset.x = currentColumn / this.tilesHorizontal;
+			var currentRow = Math.floor( this.currentTile / this.tilesHorizontal );
+			texture.offset.y = currentRow / this.tilesVertical;
+			break;
+		}
 	}
+
+	return this;
 }

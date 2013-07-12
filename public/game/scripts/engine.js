@@ -106,7 +106,7 @@ engine.prototype.animate = function () {
 
 	// Animating sprites
 	textures.sprites.animation_queue.forEach(function(sprite){
-		textures.sprites.animate(sprite, delta);
+		sprite.animation.animate(delta);
 	});
 	
 	TWEEN.update();

@@ -80,7 +80,9 @@ function make(details) {
 
 		player.position.x += diffX;
 		player.position.y = details.pY;
+		player.rotation.x = 0;
 		player.rotation.y = parseFloat(details.rY);
+		player.rotation.z = 0;
 		player.position.z += diffZ;
 
 		details.pX = player.position.x;

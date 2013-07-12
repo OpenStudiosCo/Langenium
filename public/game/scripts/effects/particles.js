@@ -19,7 +19,41 @@ function handleParticles(delta){
 		}
 	});
 }
-  
+
+function explosionEffect(position){
+		var particleCount = 10,
+				particles = new THREE.Geometry(),
+				pMaterial =
+				  new THREE.ParticleBasicMaterial({
+					map: THREE.ImageUtils.loadTexture("/game/assets/textures/particle.png?nocache"),
+					size: .25,
+					blending: THREE.AdditiveBlending,
+					transparent: true
+				  });
+
+			// now create the individual particles
+			for(var p = 0; p < particleCount; p++) {
+				// create a particle with random
+				// position values, -250 -> 250
+				var pX = position.x + Math.random() * 1.1 - .5,
+				  pY = position.y + Math.random() * 1.1 - .5,
+				  pZ = position.z + Math.random() * 1.1 - .5,
+				  particle = new THREE.Vector3(pX, pY, pZ);
+				// add it to the geometry
+				particles.vertices.push(particle);
+			}
+
+			// create the particle system
+			var particle_system = new THREE.ParticleSystem(particles, pMaterial);	
+			particle_system.max = 3;
+			particle_system.min = 1;
+			particle_system._lifetime = 0;
+			particle_system.sortParticles = true;
+			particle_systems.push(particle_system);
+			// add it to the scene
+			scene.add(particle_systems[particle_systems.length-1]);
+}
+
 function teleportEffect(position){
 		var particleCount = 1000,
 				particles = new THREE.Geometry(),

@@ -76,7 +76,8 @@ function update(delta, io, world) {
 				obj_class: 'players',
 				pZ: 0,
 				pY: 0,
-				rY: 0
+				rY: 0,
+				fire: false
 			};
 			player.move(player, world, player.socket_id, details, _complete);
 		}

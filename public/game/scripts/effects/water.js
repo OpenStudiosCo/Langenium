@@ -39,7 +39,7 @@ water.prototype.makeWater = function(M, pos) {
 	var material = new THREE.MeshLambertMaterial( {
 		color: 0x006699,
 		shading: THREE.SmoothShading, 
-		side: THREE.DoubleSide, 
+		side:THREE.DoubleSide, depthWrite: false, 
 		map: waterTexture,
 		transparent: true,
 		opacity: 0.75,

@@ -42,8 +42,9 @@ function handleBullets(delta){
 			bullets.splice(index, 1);
 		}
 		else {
-			bots.forEach(function(bot) {
-				if ((bullet.username != bot.id)&&(bot.position.distanceTo(bullet.position) < 50)) {
+			objects.ships.collection.forEach(function(ship) {
+				if ((bullet.socket_id != ship.socket_id)&&(ship.position.distanceTo(bullet.position) < 50)) {
+					explosionEffect(bullet.position);
 					scene.remove(bullet);
 				}
 			});
@@ -65,8 +66,8 @@ function addBullet(ship) {
 	var 	lBullet = makeBullet(ship.position, pVector, ship.rotation.y, 20, geometry, material),
 			rBullet = makeBullet(ship.position, pVector, ship.rotation.y, -20, geometry, material);
 			
-	lBullet.username = ship.username || ship.id;			
-	rBullet.username = ship.username || ship.id;
+	lBullet.socket_id = ship.socket_id;			
+	rBullet.socket_id = ship.socket_id;
 	
 	bullets.push(lBullet);
 	scene.add(bullets[bullets.length-1]);

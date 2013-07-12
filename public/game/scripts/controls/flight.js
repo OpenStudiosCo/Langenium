@@ -87,11 +87,8 @@ flight.prototype.input = function (delta){
 			keyboardInput.pY = -1;																// <--------- these rules will need to go to the server
 		}
 	}
-	
 	if (client.isFiring == true) {
 		move = true;
-		addBullet(player);
-		client.isFiring = false;
 	}
 	
 	if (move == true) {
@@ -105,7 +102,9 @@ flight.prototype.input = function (delta){
 	if (keyboardInput.rY == 0 && controls.flight.camera.rotation.z != 0) {
 		controls.flight.camera.rotation.z *= .96;
 	}
-	
+	if (client.isFiring == true) {
+		client.isFiring = false;
+	}
 	return keyboardInput;
 }
 
@@ -189,6 +188,7 @@ flight.prototype.move = function (velocity, playerPosition, data) {
 			water_tiles[tile].position.x = water_tiles[tile].position.ox + data.pX;
 			water_tiles[tile].position.z = water_tiles[tile].position.oz + data.pZ;
 		}
+		water_tiles[tile].material.needsUpdate = true;
 	}	
 	
 	var height_diff = 5000 + 2000 * (water_tiles.length-1);

@@ -26,6 +26,63 @@ ships.prototype.make = function (instruction, mesh, is_player, ship_type) {
 		lastKeyframe: 0, 
 		currentKeyframe: 0
 	};
+
+	mesh.move = function(ship, isPlayer, instruction){
+		if (instruction.details.fire == true) {
+			addBullet(ship);
+		}
+		if (instruction.details.pY != 0){
+			ship.position.y = instruction.details.pY;
+		}
+		
+		if (instruction.details.pX != 0){
+			ship.position.x = instruction.details.pX;
+		}
+		
+		if (instruction.details.pZ != 0) {
+			ship.position.z = instruction.details.pZ;
+		}
+		
+		var rotate = instruction.details.rY - ship.rotation.y;
+		var rotate_factor = rotate / 5;
+
+		if (rotate > 0){
+			if (ship.rotation.z < .5) {
+				ship.rotation.z += rotate_factor;
+				if (isPlayer == true && controls.flight.camera.rotation.y < .25) { 
+					controls.flight.camera.rotation.y += rotate_factor;	
+					controls.flight.camera.rotation.z -= rotate_factor; 
+				}
+			}
+			else {
+				rotate_factor = rotate / 6;
+				ship.rotation.z += rotate_factor;
+				if (isPlayer == true && controls.flight.camera.rotation.y < .35) { 
+					controls.flight.camera.rotation.y += rotate_factor;	
+					controls.flight.camera.rotation.z -= rotate_factor; 
+				}
+			}
+			ship.rotation.y = instruction.details.rY;
+		}
+		if (rotate < 0) {
+			if (ship.rotation.z > -.5) {
+				ship.rotation.z += rotate_factor;
+				if (isPlayer == true && controls.flight.camera.rotation.y > -.25) { 
+					controls.flight.camera.rotation.y += rotate_factor; 
+					controls.flight.camera.rotation.z -= rotate_factor; 
+				}
+			}
+			else {
+				rotate_factor = rotate / 6;
+				ship.rotation.z += rotate_factor;
+				if (isPlayer == true && controls.flight.camera.rotation.y > -.35) { 
+					controls.flight.camera.rotation.y += rotate_factor; 
+					controls.flight.camera.rotation.z -= rotate_factor; 
+				}
+			}
+			ship.rotation.y = instruction.details.rY;
+		}
+	};
 	
 	if (is_player == true) {
 		player = mesh;
@@ -80,7 +137,7 @@ ships.prototype.animate = function (animTime, keyframe, ship, delta) {
 		}
 
 		ship.morphTargetInfluences[ keyframe ] = ( animTime % engine.interpolation ) / engine.interpolation;
-		ship.morphTargetInfluences[ ship.ship_attributes.lastKeyframe ] = 1 - player.morphTargetInfluences[ keyframe ];
+		ship.morphTargetInfluences[ ship.ship_attributes.lastKeyframe ] = 1 - ship.morphTargetInfluences[ keyframe ];
 		ship.updateMatrix();
 	}
 }

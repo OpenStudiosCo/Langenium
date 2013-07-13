@@ -62,16 +62,16 @@ function update(delta, io, world) {
 			}
 		});
 	});
-	world.players.forEach(function(player){
-		if (player.input_status == false) {
+	world.ships.forEach(function(ship){
+		if (ship.input_status == false) {
 			var _complete = function(processed_change) {
 				processed_changes.push(processed_change);
 			};
-			player.velocity *= .996;
+			ship.velocity *= .996;
 			var update = {
-				socket_id: player.socket_id,
+				socket_id: ship.socket_id,
 				type: "move_ship",
-				username: player.username,
+				username: ship.username,
 				obj_class: 'players',
 				details: {
 					d: delta,
@@ -82,10 +82,10 @@ function update(delta, io, world) {
 				}
 			};
 	
-			player.move_ship(player, world, update, _complete);
+			ship.move_ship(ship, world, update, _complete);
 		}
 		else {
-			player.input_status = false;
+			ship.input_status = false;
 		}
 	});
 	io.sockets.emit('update', processed_changes);

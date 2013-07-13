@@ -36,47 +36,57 @@ function login(socket, data, db, instances, client_sessions) {
 	*/
 	
 	if (data.username.length > 0) {
+		var player;
 		var loginUser = function(result) { 
 		
-			var player = result[0];
+			player = result[0];
 			player.editor = data.editor;
 			player.velocity = 0;
 			player.socket_id = socket.id;
 			player.input_status = false;
 
-			// for now, we are defaulting to Mercenary ships
-			player.object = {
-				_id: "51dee691fc48c32330000000",
-				name: "mercenary",
-				type: "ship",
-				sub_type: "winthrom"
-			};
-
 			// check if we're dealing with a container
 			if (instances[player.instance_id].instances) {
-
 				instances[player.instance_id].addObjectToContainer(player, instances[player.instance_id].instances[0].players);
-				initializeClient(socket, instances[player.instance_id].instances[0], db);
 			}
 			else {
 				instances[player.instance_id].addObjectToWorld(player, instances[player.instance_id].players);
-				initializeClient(socket, instances[player.instance_id], db);
 			}
 			
-			client_sessions.push({					_id: player._id,
-													sessionId: socket.id,
-													mode: "ship",
-													socket: socket,
-													instance_id: player.instance_id,
-													username: player.username });
-		
+			client_sessions.push({	_id: player._id,
+									sessionId: socket.id,
+									mode: "ship",
+									socket: socket,
+									instance_id: player.instance_id,
+									username: player.username });
+			db.queryClientDB("ships", { player_id: result[0]._id }, user_ship);
 		};
-		
+
+		var user_ship = function(result) {
+			var ship = result[0];
+			ship.socket_id = socket.id;
+			ship.position = player.position;
+			ship.rotation = player.rotation;
+			// check if we're dealing with a container
+			if (instances[player.instance_id].instances) {
+				instances[player.instance_id].addObjectToContainer(ship, instances[player.instance_id].instances[0].ships);
+				initializeClient(socket, instances[player.instance_id].instances[0], db);
+			}
+			else {
+				instances[player.instance_id].addObjectToWorld(ship, instances[player.instance_id].ships);
+				initializeClient(socket, instances[player.instance_id], db);
+			}
+
+		};
+
+
 		db.queryClientDB("players", { username: data.username }, loginUser);
 	
 	}
 										
 }
+
+
 
 function logout(socket, db, instances, client_sessions) {
 
@@ -103,7 +113,7 @@ function move_ship(socket, data, db, instances, client_sessions) {
 			var update = {
 				_id: client._id,
 				socket_id: socket.id,
-				obj_class: "players",
+				obj_class: "ships",
 				type: "move_ship",
 				details: data,
 				username: client.username
@@ -120,7 +130,7 @@ function move_character(socket, data, db, instances, client_sessions) {
 			var update = {
 				_id: client._id,
 				socket_id: socket.id,
-				obj_class: "players",
+				obj_class: "characters",
 				type: "move_character",
 				details: data
 			};
@@ -175,12 +185,12 @@ function initializeClient(socket, instance, db) {
 
 	for (var objects in instance) {
 
-		if (typeof(instance[objects]) == "object") {
+		if (typeof(instance[objects]) == "object" && objects != "players") {
 			var instruction = {};
 			instruction[objects] = instance[objects];
 			
 			var send_instructions = function (instruction) {
-				if (instruction.class == 'players') {
+				if (instruction.class == 'ships') {
 					socket.emit("load", instruction );
 					socket.broadcast.emit("load", instruction );
 				}
@@ -188,7 +198,7 @@ function initializeClient(socket, instance, db) {
 					socket.emit("load", instruction );
 				}
 			};
-
+			console.log(instruction[objects])
 			prepareLoadInstructions(instruction[objects], db, send_instructions);
 		}
 	}
@@ -196,6 +206,7 @@ function initializeClient(socket, instance, db) {
 
 function prepareLoadInstructions(instance_objects, db, send_instructions) {
 	instance_objects.forEach(function(instance_object, index){
+		
 		var callback = function(result) {
 
 			result.forEach(function(obj_result){

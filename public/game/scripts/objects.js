@@ -33,6 +33,7 @@ objects.prototype.new = function(obj) {
 };
 
 objects.prototype.loadObject = function (instruction) {
+	
 	var loader = new THREE.JSONLoader();
 	var cacheIndex = -1;
 	this.cache.forEach(function(cachedObject, index){ if (instruction.url == cachedObject.url) { cacheIndex = index;} });
@@ -54,7 +55,7 @@ objects.prototype.loadObject = function (instruction) {
 
 objects.prototype.makeObjectMesh = function (instruction, geometry, materials) {
 	var useVertexOverrides = false;
-	if ((instruction['class'] != "terrain")&&(instruction['class'] != "ship")&&(instruction['class'] != "players")&&(instruction['class'] != "bots")) {
+	if ((instruction['class'] != "terrain")&&(instruction['class'] != "ships")&&(instruction['class'] != "bots")) {
 		useVertexOverrides = true;
 	}
 
@@ -90,7 +91,7 @@ objects.prototype.renderObject = function (mesh, obj_class, instruction) {
 		scene.add(this.world_map[this.world_map.length-1]);
 	}
 	
-	if (obj_class == "players" ||
+	if (obj_class == "ships" ||
 		obj_class == "bots") {
 		objects.ships.make(obj_class, instruction, mesh);
 	}

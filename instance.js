@@ -19,17 +19,19 @@ module.exports.make = make;
 
 /* Instance Types */
 var 	types = {
-						container: require("./types/container.js"),
-						world: require("./types/world.js"),
-					};
+					container: require("./types/container.js"),
+					world: require("./types/world.js"),
+};
 		
 /* Object Definitions */
 var 	objects = {
-							players: require("./objects/players.js"),
-							bots: require("./objects/bots.js"),
-							projectiles: require("./objects/projectiles.js"),
-							environment: require("./objects/environment.js"),
-						};
+					players: require("./objects/players.js"),
+					bots: require("./objects/bots.js"),
+					projectiles: require("./objects/projectiles.js"),
+					environment: require("./objects/environment.js"),
+					ships: require("./objects/ships.js"),
+					characters: require("./objects/characters.js")
+};
 		
 		
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -57,7 +59,6 @@ function make(io, type) {
 }
 
 function addObjectToContainer(details, container) {
-	
 	container.instances[0][details.class].push( objects[details.class].make(details) ); // defaults to world 0 for now
 }
 

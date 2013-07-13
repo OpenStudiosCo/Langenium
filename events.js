@@ -164,10 +164,12 @@ function initializeClient(socket, instance, db) {
 			instruction[objects] = instance[objects];
 			
 			var send_instructions = function (instruction) {
-				socket.emit("load", instruction );
 				if (instruction.class == 'players') {
-					instruction.class = 'ship';
+					socket.emit("load", instruction );
 					socket.broadcast.emit("load", instruction );
+				}
+				else {
+					socket.emit("load", instruction );
 				}
 			};
 

@@ -89,11 +89,8 @@ objects.prototype.renderObject = function (mesh, obj_class, instruction) {
 		this.world_map.push(mesh);
 		scene.add(this.world_map[this.world_map.length-1]);
 	}
-	if (obj_class == "players") {
-		controls.enabled = true;
-	}
+	
 	if (obj_class == "players" ||
-		obj_class == "ship" ||
 		obj_class == "bots") {
 		objects.ships.make(obj_class, instruction, mesh);
 	}

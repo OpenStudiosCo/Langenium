@@ -91,7 +91,8 @@ ships.prototype.make = function (obj_class, instruction, mesh) {
 		}
 	};
 	
-	if (obj_class == "players") {
+	if (instruction.socket_id && instruction.socket_id == events.socket.socket.sessionid) {
+		controls.enabled = true;
 		player = mesh;
 		player.bullets = [];
 		player.moveInterval = new Date().getTime();
@@ -109,7 +110,7 @@ ships.prototype.make = function (obj_class, instruction, mesh) {
 		objects.ships.collection.push(player);
 		objects.ships.animation_queue.push(player);
 	}
-	if (obj_class == "ship") {
+	if (instruction.socket_id && instruction.socket_id != events.socket.socket.sessionid) {
 		var ship = mesh;
 		ship.bullets = [];
 		ship.moveInterval = new Date().getTime();
@@ -125,7 +126,7 @@ ships.prototype.make = function (obj_class, instruction, mesh) {
 		scene.add(objects.ships.collection[objects.ships.collection.length-1]);
 		objects.ships.animation_queue.push(objects.ships.collection[objects.ships.collection.length-1]);
 	}
-	if (obj_class == "bots") {
+	if (instruction.bot_id) {
 		var bot = mesh;
 		bot.bot_id = instruction.bot_id;
 		bot.bullets = [];

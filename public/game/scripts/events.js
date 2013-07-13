@@ -73,31 +73,30 @@ events.prototype.setEventHandlers = function (socket) {
 				}
 			}
 			if (update.type == "character_toggle") {
-				
-				if (update.socket_id == player.socket_id) {
-					if (update.details.object.type == "character" && controls.character.enabled == false) {
-						objects.characters.make(player.socket_id, objects.characters[update.details.object.name], player.position);
-						client.camera = controls.character.camera;
-						controls.character.enabled = true;
-					}
-					if (update.details.object.type == "ship" && controls.flight.enabled == false) {
-						objects.characters.remove(player.socket_id);
-						client.camera = controls.flight.camera;
-						controls.flight.enabled = true;
-					}
-				}
-				else {
-					objects.ships.collection.forEach(function(ship){
-						if (ship.socket_id == update.socket_id) {
-							if (update.details.object.type == "character" && controls.character.enabled == false) {
-								objects.characters.make(update.socket_id, objects.characters[update.details.object.name], ship.position);
-							}
-							if (update.details.object.type == "ship" && controls.flight.enabled == false) {
-								objects.characters.remove(update.socket_id);
-							}
+
+				objects.ships.collection.forEach(function(ship){
+					if (update.socket_id == player.socket_id) {
+						if (update.details.object.type == "character" && controls.character.enabled == false) {
+							client.camera = controls.character.camera;
+							controls.character.enabled = true;
 						}
-					});
-				}
+						if (update.details.object.type == "ship" && controls.flight.enabled == false) {
+							client.camera = controls.flight.camera;
+							controls.flight.enabled = true;
+						}
+					}
+					if (ship.socket_id == update.socket_id) {
+						
+						if (update.details.object.type == "character") {
+							objects.characters.make(update.socket_id, objects.characters[update.details.object.name], ship.position);
+						}
+						if (update.details.object.type == "ship") {
+							objects.characters.remove(update.socket_id);
+						}
+					}
+
+				});
+				
 			} 
 		});
 		

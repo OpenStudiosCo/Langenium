@@ -28,7 +28,11 @@ characters.prototype.make = function (socket_id, character, position) {
 	new_character.position.set(position.x,position.y,position.z);
 	new_character.face = 'front';
 
-	new_character.add(controls.character.camera);
+
+
+	if (socket_id == player.socket_id) {
+		new_character.add(controls.character.camera);	
+	}
 	objects.characters.collection.push(new_character);
 	textures.sprites.animation_queue.push(objects.characters.collection[objects.characters.collection.length-1]);
 

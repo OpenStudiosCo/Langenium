@@ -35,6 +35,7 @@ function make(details) {
 			move
 
 	*/
+
 	details.move_ship = function (player, world, update, _complete) {
 		/*
 			if (details.client_position) {

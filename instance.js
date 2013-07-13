@@ -57,7 +57,9 @@ function make(io, type) {
 }
 
 function addObjectToContainer(details, container) {
+	
 	container.instances[0][details.class].push( objects[details.class].make(details) ); // defaults to world 0 for now
+	console.log(container.instances[0]);
 }
 
 function addObjectToWorld(details, world) {

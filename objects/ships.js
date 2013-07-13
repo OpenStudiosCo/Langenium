@@ -26,35 +26,34 @@ function make(details) {
 		Adds a ship to the world
 		
 		Parameters:
-			username - player username
+			username - ship username
 	*/
 
-	details.move_ship = function (player, world, update, _complete) {
+	details.move_ship = function (ship, world, update, _complete) {
 		/*
 			if (details.client_position) {
 				console.log("Client:")
 				console.log(details.client_position);	
 				console.log("Server:")
-				console.log(player.position);	
+				console.log(ship.position);	
 			}
 		*/
-
-		player.d = update.details.d;
+		
+		ship.d = update.details.d;
 		update.details.socket_id = update.socket_id;
-		update.details.username = player.username;
-		update.details.obj_class = 'players';
+		update.details.username = ship.username;
 		var 		velocityYChange = 66 * update.details.d,
-					rotateAngle = (Math.PI / 7.5) * player.d;
+					rotateAngle = (Math.PI / 7.5) * ship.d;
 
 		
-		if (player.editor == true) {
+		if (ship.editor == true) {
 			velocityYChange *= 20;
-			if (update.details.pZ > 0 && player.velocity > -150) { player.velocity -= 2 }
-			if (update.details.pZ < 0 && player.velocity < 75) { player.velocity += 2 }
+			if (update.details.pZ > 0 && ship.velocity > -150) { ship.velocity -= 2 }
+			if (update.details.pZ < 0 && ship.velocity < 75) { ship.velocity += 2 }
 		}
 		else {
-			if (update.details.pZ > 0 && player.velocity > -3.75) { player.velocity -= 1.75 }
-			if (update.details.pZ < 0 && player.velocity < 2.5) { player.velocity += 1.75 }
+			if (update.details.pZ > 0 && ship.velocity > -3.75) { ship.velocity -= 1.75 }
+			if (update.details.pZ < 0 && ship.velocity < 2.5) { ship.velocity += 1.75 }
 		}
 		
 
@@ -65,24 +64,24 @@ function make(details) {
 		if (update.details.pY > 0) { update.details.pY = velocityYChange; } 			// up
 		if (update.details.pY < 0) { update.details.pY = -(velocityYChange); } 		// down
 
-		update.details.rY += player.rotation.y;
-		update.details.pY += player.position.y;
+		update.details.rY += ship.rotation.y;
+		update.details.pY += ship.position.y;
 		
-		var 	diffX = player.velocity * Math.sin(player.rotation.y),
-				diffZ = player.velocity * Math.cos(player.rotation.y);
+		var 	diffX = ship.velocity * Math.sin(ship.rotation.y),
+				diffZ = ship.velocity * Math.cos(ship.rotation.y);
 
-		player.position.x += diffX;
-		player.position.y = update.details.pY;
-		player.rotation.x = 0;
-		player.rotation.y = parseFloat(update.details.rY);
-		player.rotation.z = 0;
-		player.position.z += diffZ;
+		ship.position.x += diffX;
+		ship.position.y = update.details.pY;
+		ship.rotation.x = 0;
+		ship.rotation.y = parseFloat(update.details.rY);
+		ship.rotation.z = 0;
+		ship.position.z += diffZ;
 
-		update.details.pX = player.position.x;
-		update.details.pZ = player.position.z;
+		update.details.pX = ship.position.x;
+		update.details.pZ = ship.position.z;
 
 		_complete(update);
 	};
-	
+
 	return details;
 }

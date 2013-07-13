@@ -41,7 +41,6 @@ function login(socket, data, db, instances, client_sessions) {
 		
 			player = result[0];
 			player.editor = data.editor;
-			player.velocity = 0;
 			player.socket_id = socket.id;
 			player.input_status = false;
 
@@ -65,8 +64,10 @@ function login(socket, data, db, instances, client_sessions) {
 		var user_ship = function(result) {
 			var ship = result[0];
 			ship.socket_id = socket.id;
+			ship.username = player.username;
 			ship.position = player.position;
 			ship.rotation = player.rotation;
+			ship.velocity = 0;
 			// check if we're dealing with a container
 			if (instances[player.instance_id].instances) {
 				instances[player.instance_id].addObjectToContainer(ship, instances[player.instance_id].instances[0].ships);
@@ -125,15 +126,19 @@ function move_ship(socket, data, db, instances, client_sessions) {
 }
 function move_character(socket, data, db, instances, client_sessions) {
 	//console.log(instances.master.instances[0].environment);
+
 	client_sessions.forEach(function(client, index){
-		if (client.sessionId == socket.id) {
+		
+		if (client.sessionId == data.socket_id) {
+
 			var update = {
 				_id: client._id,
-				socket_id: socket.id,
+				socket_id: data.socket_id,
 				obj_class: "characters",
 				type: "move_character",
 				details: data
 			};
+
 			instances.master.instances[0].update_queue.push(update);
 		}
 	});
@@ -145,9 +150,11 @@ function character_toggle(socket, db, instances, client_sessions) {
 		if (client.sessionId == socket.id) {
 			if (client.mode == "ship") {
 				var _callback = function(result) {
+					var character = result[0];
 					client.mode = "character";
-					result[0].object = {
-						type: "character",
+					character.socket_id = socket.id;
+					character.object = {
+						type: "characters",
 						name: result[0].type // character job name
 					}
 					var update = {
@@ -158,6 +165,13 @@ function character_toggle(socket, db, instances, client_sessions) {
 						details: result[0],
 						username: client.username
 					};
+					
+					if (instances[client.instance_id].instances) {
+						instances[client.instance_id].addObjectToContainer(character, instances[client.instance_id].instances[0].characters);
+					}
+					else {
+						instances[client.instance_id].addObjectToWorld(character, instances[client.instance_id].characters);
+					}
 					instances.master.instances[0].update_queue.push(update);
 				};
 				db.queryClientDB("characters", { player_id: client._id }, _callback);
@@ -198,7 +212,7 @@ function initializeClient(socket, instance, db) {
 					socket.emit("load", instruction );
 				}
 			};
-			console.log(instruction[objects])
+			
 			prepareLoadInstructions(instruction[objects], db, send_instructions);
 		}
 	}

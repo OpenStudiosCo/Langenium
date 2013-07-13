@@ -47,14 +47,17 @@ function update(delta, io, world) {
 	// Player velocities reduce to 0 over time
 	
 	world.update_queue.forEach(function(update, index){
-
+		console.log(update);
 		var _complete = function(processed_change) {
 			processed_changes.push(processed_change);
 			world.update_queue.splice(index, 1);
 		};
 		
 		world[update.obj_class].forEach(function(obj){
-			if (obj._id == update._id) {
+			if (obj.socket_id == update.socket_id) {
+				//if (update.type == "move_character") {
+					
+				
 				if (update.type == "move_ship" || update.type == "move_character") {
 					obj.input_status = true; // determine if the ship should glide with velocity forward or not
 				}

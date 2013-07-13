@@ -54,51 +54,54 @@ events.prototype.setEventHandlers = function (socket) {
 		});
 	});
 	socket.on("update", function(updates){
+
 		updates.forEach(function(update){
+
 			if (update.type == "move_ship") {
-				if (update.obj_class == "players") {
-					if (player && update.socket_id == player.socket_id) {
-						player.move(player, true, update);
-					}
-					else {
-						objects.ships.collection.forEach(function(ship){
-							if (ship.socket_id && update.socket_id == ship.socket_id) {
-								ship.move(ship, false, update);
-							}
-							if (ship.bot_id && update.bot_id == ship.bot_id) {
-								ship.move(ship, false, update);
-							}
-						});
-					}
+				
+				if (player && update.socket_id == player.socket_id) {
+					player.move(player, true, update);
 				}
+				else {
+					objects.ships.collection.forEach(function(ship){
+						if (ship.socket_id && update.socket_id == ship.socket_id) {
+							ship.move(ship, false, update);
+						}
+						if (ship.bot_id && update.bot_id == ship.bot_id) {
+							ship.move(ship, false, update);
+						}
+					});
+				}
+				
 			}
 
 			if (update.type == "move_character") {
-				
 				controls.character.move(update.details);
 				
 			}
 
 			if (update.type == "character_toggle") {
-
+				
 				objects.ships.collection.forEach(function(ship){
 					if (update.socket_id != player.socket_id) {
 						if (ship.socket_id == update.socket_id) {
-							if (update.details.object.type == "character") {
+							if (update.details.object.type == "characters") {
 								objects.characters.make(update.socket_id, objects.characters[update.details.object.name], ship.position);
 							}
-							if (update.details.object.type == "ship") {
+							if (update.details.object.type == "ships") {
 								objects.characters.remove(update.socket_id);
 							}
 						}
 					}
-					else {
-						if (update.details.object.type == "character" && controls.character.enabled == false) {
+					if (update.socket_id == player.socket_id) {
+						
+						if (update.details.object.type == "characters" && controls.character.enabled == false) {
+
 							objects.characters.make(update.socket_id, objects.characters[update.details.object.name], ship.position);
 							client.camera = controls.character.camera;
 							controls.character.enabled = true;
 						}
-						if (update.details.object.type == "ship" && controls.flight.enabled == false) {
+						if (update.details.object.type == "ships" && controls.flight.enabled == false) {
 							objects.characters.remove(update.socket_id);
 							client.camera = controls.flight.camera;
 							controls.flight.enabled = true;

@@ -29,6 +29,7 @@ function make(details) {
 			username - player username
 	*/
 	details.move_character = function (character, world, update, _complete){
+		
 		_complete(update);
 	}
 

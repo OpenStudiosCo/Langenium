@@ -33,7 +33,6 @@ objects.prototype.new = function(obj) {
 };
 
 objects.prototype.loadObject = function (instruction) {
-	console.log(instruction)
 	var loader = new THREE.JSONLoader();
 	var cacheIndex = -1;
 	this.cache.forEach(function(cachedObject, index){ if (instruction.url == cachedObject.url) { cacheIndex = index;} });

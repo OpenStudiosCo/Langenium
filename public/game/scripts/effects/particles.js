@@ -96,9 +96,9 @@ function cloudEffect(position){
 				  new THREE.ParticleBasicMaterial({
 				  transparent: true,
 					map: THREE.ImageUtils.loadTexture("/game/assets/textures/cloud10.png?nocache"),
-					size: 512
+					size: 512, alphaTest: 0.5
 					
-					
+						
 				  });
 
 			// now create the individual particles
@@ -113,11 +113,11 @@ function cloudEffect(position){
 				
 				for (var j = 0; j < 100; j++) {
 					pX +=   Math.random() * 5000;
-					pY += Math.random() * n * -33;
+					pY += Math.random() * n * -133;
 					pZ +=   Math.random() * 5000;
 					for (var k = 0; k < 100; k++) {
 						pX += Math.random() *n;
-						pY -= Math.random();
+						pY -= Math.random() * n;
 						pZ += Math.random() *n;
 					}
 				

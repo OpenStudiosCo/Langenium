@@ -78,6 +78,11 @@ ships.prototype.make = function (obj_class, instruction, mesh) {
 			}
 			ship.rotation.y = instruction.details.rY;
 		}
+		if (isPlayer == true) {
+			objects.characters.collection.forEach(function(character){
+				character.rotation.y = instruction.details.rY;
+			});
+		}
 	};
 	
 	if (obj_class == "players") {

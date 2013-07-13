@@ -72,6 +72,20 @@ events.prototype.setEventHandlers = function (socket) {
 					}
 				}
 			}
+			if (update.type == "character_toggle") {
+				if (update.obj_class == "players") {
+					if (update.details.object.type == "character" && controls.character.enabled == false) {
+						objects.characters.make(player.socket_id, objects.characters[update.details.object.name], player.position);
+						client.camera = controls.character.camera;
+						controls.character.enabled = true;
+					}
+					if (update.details.object.type == "ship" && controls.flight.enabled == false) {
+						objects.characters.remove(player.socket_id);
+						client.camera = controls.flight.camera;
+						controls.flight.enabled = true;
+					}
+				}
+			} 
 		});
 		
 	});

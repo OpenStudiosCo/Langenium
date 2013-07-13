@@ -139,7 +139,8 @@ io.sockets.on('connection', function (socket) {
 	// Player
 	socket.on("login", function(data){ events.login(socket, data, db, instances, client_sessions); });
 	socket.on("disconnect" , function ()  { events.logout(socket, db, instances, client_sessions); });
-	socket.on("move" , function(data){ events.move(socket, data, db, instances, client_sessions); });
+	socket.on("move_ship" , function(data){ events.move_ship(socket, data, db, instances, client_sessions); });
+	socket.on("character_toggle" , function(){ events.character_toggle(socket, db, instances, client_sessions); });
 });
 
 function makeUniverse() {

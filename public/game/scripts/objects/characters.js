@@ -17,17 +17,29 @@ var characters = function() {
     return this;
 }
 
-characters.prototype.make = function (character) {
+characters.prototype.make = function (socket_id, character, position) {
 	var charTexture = new THREE.ImageUtils.loadTexture( character.texture_url );
 	var material = new THREE.MeshBasicMaterial( { map: charTexture, transparent: true, side:THREE.DoubleSide, alphaTest: 0.5 } );
-	var geometry = new THREE.PlaneGeometry(500, 500, 1, 1);
+	var geometry = new THREE.PlaneGeometry(5, 5, 1, 1);
 
 	var new_character = new THREE.Mesh(geometry, material);
+	new_character.socket_id = socket_id;
 	new_character.animation = new textures.sprites.make( charTexture, 12, 1, 12, 120 ); // texture, #horiz, #vert, #total, duration.
-	new_character.position.set(player.position.x,player.position.y,player.position.z);
+	new_character.position.set(position.x,position.y,position.z);
+	new_character.face = 'front';
 
+	new_character.add(controls.character.camera);
 	objects.characters.collection.push(new_character);
 	textures.sprites.animation_queue.push(objects.characters.collection[objects.characters.collection.length-1]);
 
 	scene.add(objects.characters.collection[objects.characters.collection.length-1]);
+}
+
+characters.prototype.remove = function (socket_id) {
+	objects.characters.collection.forEach(function(character, index){
+		if (character.socket_id == socket_id) {
+			scene.remove(character);
+			objects.characters.collection.splice(index, 1)
+		}
+	});
 }

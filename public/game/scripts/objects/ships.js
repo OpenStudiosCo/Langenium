@@ -23,6 +23,10 @@ ships.prototype.make = function (obj_class, instruction, mesh) {
 		currentKeyframe: 0
 	};
 
+	mesh.exit_ship = function() {
+		
+	};
+
 	mesh.move = function(ship, isPlayer, instruction){
 		if (instruction.details.fire == true) {
 			addBullet(ship);
@@ -80,7 +84,9 @@ ships.prototype.make = function (obj_class, instruction, mesh) {
 		}
 		if (isPlayer == true) {
 			objects.characters.collection.forEach(function(character){
-				character.rotation.y = instruction.details.rY;
+				if (character.socket_id != player.socket_id) {
+					character.rotation.y = instruction.details.rY;
+				}
 			});
 		}
 	};

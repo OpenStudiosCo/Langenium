@@ -88,7 +88,12 @@ engine.prototype.animate = function () {
 	var delta = clock.getDelta();
 
 	if (controls.enabled == true) {
-		controls.flight.move(player.velocity, player.position, controls.flight.input(delta));
+		if (controls.flight.enabled == true) {
+			controls.flight.move(player.velocity, player.position, controls.flight.input(delta));
+		}
+		if (controls.character.enabled == true) {
+			controls.character.move(player.position, controls.character.input(delta));
+		}
 	}
 	
 	if (window.location.href.indexOf("editor") > 0) {
@@ -106,7 +111,7 @@ engine.prototype.animate = function () {
 
 	// Animating sprites
 	textures.sprites.animation_queue.forEach(function(sprite){
-		sprite.animation.animate(delta);
+		sprite.animation.animate(sprite.moving, sprite.face, delta);
 	});
 	
 	TWEEN.update();

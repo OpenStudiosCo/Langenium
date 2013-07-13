@@ -35,7 +35,7 @@ function make(details) {
 			move
 
 	*/
-	details.move = function (player, world, socket_id, details, _complete) {
+	details.move_ship = function (player, world, update, _complete) {
 		/*
 			if (details.client_position) {
 				console.log("Client:")
@@ -45,53 +45,57 @@ function make(details) {
 			}
 		*/
 
-		player.d = details.d;
-		details.socket_id = socket_id;
-		details.username = player.username;
-		details.type = 'move';
-		details.obj_class = 'players';
-		var 		velocityYChange = 120 * details.d,
-					rotateAngle = 0.01744444444444444444444444444444 * 50 * details.d;
+		player.d = update.details.d;
+		update.details.socket_id = update.socket_id;
+		update.details.username = player.username;
+		update.details.type = 'move';
+		update.details.obj_class = 'players';
+		var 		velocityYChange = 66 * update.details.d,
+					rotateAngle = 0.01744444444444444444444444444444 * 50 * update.details.d;
 
 		
 		if (player.editor == true) {
 			velocityYChange *= 20;
-			if (details.pZ > 0 && player.velocity > -150) { player.velocity -= 15 }
-			if (details.pZ < 0 && player.velocity < 75) { player.velocity += 15 }
+			if (update.details.pZ > 0 && player.velocity > -150) { player.velocity -= 15 }
+			if (update.details.pZ < 0 && player.velocity < 75) { player.velocity += 15 }
 		}
 		else {
-			if (details.pZ > 0 && player.velocity > -3.75) { player.velocity -= 1.75 }
-			if (details.pZ < 0 && player.velocity < 2.5) { player.velocity += 1.75 }
+			if (update.details.pZ > 0 && player.velocity > -3.75) { player.velocity -= 1.75 }
+			if (update.details.pZ < 0 && player.velocity < 2.5) { player.velocity += 1.75 }
 		}
 		
 
-		if (details.rY > 0) { details.rY = rotateAngle; }						// left
-		if (details.rY < 0) { details.rY = -rotateAngle; }						// right
-		details.rY = (details.rY + details.rY * Math.PI / 180);
+		if (update.details.rY > 0) { update.details.rY = rotateAngle; }						// left
+		if (update.details.rY < 0) { update.details.rY = -rotateAngle; }						// right
+		update.details.rY = (update.details.rY + update.details.rY * Math.PI / 180);
 		
-		if (details.pY > 0) { details.pY = velocityYChange; } 			// up
-		if (details.pY < 0) { details.pY = -(velocityYChange); } 		// down
+		if (update.details.pY > 0) { update.details.pY = velocityYChange; } 			// up
+		if (update.details.pY < 0) { update.details.pY = -(velocityYChange); } 		// down
 
-		details.rY += player.rotation.y;
-		details.pY += player.position.y;
+		update.details.rY += player.rotation.y;
+		update.details.pY += player.position.y;
 		
 		var 	diffX = player.velocity * Math.sin(player.rotation.y),
 				diffZ = player.velocity * Math.cos(player.rotation.y);
 
 		player.position.x += diffX;
-		player.position.y = details.pY;
+		player.position.y = update.details.pY;
 		player.rotation.x = 0;
-		player.rotation.y = parseFloat(details.rY);
+		player.rotation.y = parseFloat(update.details.rY);
 		player.rotation.z = 0;
 		player.position.z += diffZ;
 
-		details.pX = player.position.x;
-		details.pZ = player.position.z;
+		update.details.pX = player.position.x;
+		update.details.pZ = player.position.z;
 
 		
-		_complete(details);
+		_complete(update.details);
 	};
 
+	details.character_toggle = function(character_update, world, update, _complete) {
+		console.log(update);
+		_complete(update);
+	}
 
 
 	return details;

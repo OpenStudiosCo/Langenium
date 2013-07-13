@@ -13,7 +13,8 @@
 module.exports.login = login;
 module.exports.logout = logout;
 module.exports.pong = pong;
-module.exports.move = move;
+module.exports.move_ship = move_ship;
+module.exports.character_toggle = character_toggle;
 
 
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -63,6 +64,7 @@ function login(socket, data, db, instances, client_sessions) {
 			
 			client_sessions.push({					_id: player._id,
 													sessionId: socket.id,
+													mode: "ship",
 													socket: socket,
 													instance_id: player.instance_id,
 													username: player.username });
@@ -93,7 +95,7 @@ function logout(socket, db, instances, client_sessions) {
 	});
 }
 
-function move(socket, data, db, instances, client_sessions) {
+function move_ship(socket, data, db, instances, client_sessions) {
 	//console.log(instances.master.instances[0].environment);
 	client_sessions.forEach(function(client, index){
 		if (client.sessionId == socket.id) {
@@ -101,11 +103,54 @@ function move(socket, data, db, instances, client_sessions) {
 				_id: client._id,
 				socket_id: socket.id,
 				obj_class: "players",
-				type: "move",
+				type: "move_ship",
 				details: data,
 				username: client.username
 			};
 			instances.master.instances[0].update_queue.push(update);
+		}
+	});
+
+}
+
+function character_toggle(socket, db, instances, client_sessions) {
+	//console.log(instances.master.instances[0].environment);
+	client_sessions.forEach(function(client, index){
+		if (client.sessionId == socket.id) {
+			if (client.mode == "ship") {
+				var _callback = function(result) {
+					client.mode = "character";
+					result[0].object = {
+						type: "character",
+						name: result[0].type // character job name
+					}
+					var update = {
+						_id: client._id,
+						socket_id: socket.id,
+						obj_class: "players",
+						type: "character_toggle",
+						details: result[0],
+						username: client.username
+					};
+					instances.master.instances[0].update_queue.push(update);
+				};
+				db.queryClientDB("characters", { player_id: client._id }, _callback);
+			}
+			else {
+				var _callback = function(result) {
+					client.mode = "ship";
+					var update = {
+						_id: client._id,
+						socket_id: socket.id,
+						obj_class: "players",
+						type: "character_toggle",
+						details: result[0],
+						username: client.username
+					};
+					instances.master.instances[0].update_queue.push(update);
+				};
+				db.queryClientDB("ships", { player_id: client._id }, _callback);
+			}
 		}
 	});
 }

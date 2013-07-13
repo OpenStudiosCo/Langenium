@@ -47,7 +47,25 @@ $(document).bind("mousedown", function(event) {
 	}
 
 });
+$(document).bind("mouseup", function(event) {
+	if ((controls.flight && 
+		controls.enabled == true && 
+		controls.flight.enabled == true)) 
+	{
+		switch (event.which) {
+			case 1:
+				client.isFiring = false;
+				break;
+			case 2:
+				//zoom IGNORE
+				break;
+			case 3:
+				//rotate IGNORE
+				break;
+		}
+	}
 
+});
 $(document).bind("contextmenu",function(){
     return false;
 }); 
@@ -81,11 +99,9 @@ flight.prototype.input = function (delta){
 			keyboardInput.pY = 1;																// <--------- these rules will need to go to the server
 		}
 	}
-	if (keyboard.pressed("shift")){
-		if (player.position.y > -100000){ 														// <--------- these rules will need to go to the server
-			move = true;																				// <--------- these rules will need to go to the server
-			keyboardInput.pY = -1;																// <--------- these rules will need to go to the server
-		}
+	if (keyboard.pressed("X")){
+		controls.flight.enabled = false;
+		events.socket.emit('character_toggle');
 	}
 
 	if (keyboard.pressed("shift")){
@@ -100,7 +116,7 @@ flight.prototype.input = function (delta){
 	}
 	
 	if (move == true) {
-		events.socket.emit('move', keyboardInput);
+		events.socket.emit('move_ship', keyboardInput);
 	}
 	
 	if (keyboardInput.rY == 0 && controls.flight.camera.rotation.y != 0) {
@@ -110,9 +126,7 @@ flight.prototype.input = function (delta){
 	if (keyboardInput.rY == 0 && controls.flight.camera.rotation.z != 0) {
 		controls.flight.camera.rotation.z *= .96;
 	}
-	if (client.isFiring == true) {
-		client.isFiring = false;
-	}
+	
 	return keyboardInput;
 }
 

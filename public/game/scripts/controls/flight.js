@@ -87,6 +87,14 @@ flight.prototype.input = function (delta){
 			keyboardInput.pY = -1;																// <--------- these rules will need to go to the server
 		}
 	}
+
+	if (keyboard.pressed("shift")){
+		if (player.position.y > -100000){ 														// <--------- these rules will need to go to the server
+			move = true;																				// <--------- these rules will need to go to the server
+			keyboardInput.pY = -1;																// <--------- these rules will need to go to the server
+		}
+	}
+
 	if (client.isFiring == true) {
 		move = true;
 	}

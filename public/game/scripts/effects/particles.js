@@ -26,7 +26,7 @@ function explosionEffect(position){
 				pMaterial =
 				  new THREE.ParticleBasicMaterial({
 					map: THREE.ImageUtils.loadTexture("/game/assets/textures/particle.png?nocache"),
-					size: .25,
+					size: .125,
 					blending: THREE.AdditiveBlending,
 					transparent: true
 				  });
@@ -45,8 +45,8 @@ function explosionEffect(position){
 
 			// create the particle system
 			var particle_system = new THREE.ParticleSystem(particles, pMaterial);	
-			particle_system.max = 3;
-			particle_system.min = 1;
+			particle_system.max = 2;
+			particle_system.min = -1;
 			particle_system._lifetime = 0;
 			particle_system.sortParticles = true;
 			particle_systems.push(particle_system);

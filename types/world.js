@@ -47,7 +47,7 @@ function update(delta, io, world) {
 	// Player velocities reduce to 0 over time
 	
 	world.update_queue.forEach(function(update, index){
-		console.log(update);
+		
 		var _complete = function(processed_change) {
 			processed_changes.push(processed_change);
 			world.update_queue.splice(index, 1);

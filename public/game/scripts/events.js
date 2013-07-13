@@ -55,46 +55,55 @@ events.prototype.setEventHandlers = function (socket) {
 	});
 	socket.on("update", function(updates){
 		updates.forEach(function(update){
-			if (update.type == "move") {
+			if (update.type == "move_ship") {
 				if (update.obj_class == "players") {
 					if (player && update.socket_id == player.socket_id) {
-						player.move(player, true, { name: "move", type: "player", details: update });
+						player.move(player, true, update);
 					}
 					else {
 						objects.ships.collection.forEach(function(ship){
 							if (ship.socket_id && update.socket_id == ship.socket_id) {
-								ship.move(ship, false, { name: "move", type: "player", details: update });
+								ship.move(ship, false, update);
 							}
 							if (ship.bot_id && update.bot_id == ship.bot_id) {
-								ship.move(ship, false, { name: "move", type: "bot", details: update });
+								ship.move(ship, false, update);
 							}
 						});
 					}
 				}
 			}
+
+			if (update.type == "move_character") {
+				
+				controls.character.move(update.details);
+				
+			}
+
 			if (update.type == "character_toggle") {
 
 				objects.ships.collection.forEach(function(ship){
-					if (update.socket_id == player.socket_id) {
+					if (update.socket_id != player.socket_id) {
+						if (ship.socket_id == update.socket_id) {
+							if (update.details.object.type == "character") {
+								objects.characters.make(update.socket_id, objects.characters[update.details.object.name], ship.position);
+							}
+							if (update.details.object.type == "ship") {
+								objects.characters.remove(update.socket_id);
+							}
+						}
+					}
+					else {
 						if (update.details.object.type == "character" && controls.character.enabled == false) {
+							objects.characters.make(update.socket_id, objects.characters[update.details.object.name], ship.position);
 							client.camera = controls.character.camera;
 							controls.character.enabled = true;
 						}
 						if (update.details.object.type == "ship" && controls.flight.enabled == false) {
+							objects.characters.remove(update.socket_id);
 							client.camera = controls.flight.camera;
 							controls.flight.enabled = true;
 						}
 					}
-					if (ship.socket_id == update.socket_id) {
-						
-						if (update.details.object.type == "character") {
-							objects.characters.make(update.socket_id, objects.characters[update.details.object.name], ship.position);
-						}
-						if (update.details.object.type == "ship") {
-							objects.characters.remove(update.socket_id);
-						}
-					}
-
 				});
 				
 			} 
@@ -105,7 +114,7 @@ events.prototype.setEventHandlers = function (socket) {
 }
 
 events.prototype.login = function(user) {
-	console.log(user);
+	
 	if (window.location.href.indexOf("editor") >= 0) {
 		$('.username_menu > .button').html('');
 		$('.username_menu > .button').append('<img src="https://graph.facebook.com/'+user.facebook_id+'/picture?width=20&height=20" /> '); 

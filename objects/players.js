@@ -49,7 +49,6 @@ function make(details) {
 		player.d = update.details.d;
 		update.details.socket_id = update.socket_id;
 		update.details.username = player.username;
-		update.details.type = 'move';
 		update.details.obj_class = 'players';
 		var 		velocityYChange = 66 * update.details.d,
 					rotateAngle = (Math.PI / 7.5) * player.d;
@@ -89,14 +88,16 @@ function make(details) {
 		update.details.pX = player.position.x;
 		update.details.pZ = player.position.z;
 
-		
-		_complete(update.details);
+		_complete(update);
 	};
 
 	details.character_toggle = function(character_update, world, update, _complete) {
 		_complete(update);
 	}
 
+	details.move_character = function (character, world, update, _complete){
+		_complete(update);
+	}
 
 	return details;
 }

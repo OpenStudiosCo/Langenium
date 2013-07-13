@@ -28,6 +28,7 @@ ships.prototype.make = function (obj_class, instruction, mesh) {
 	};
 
 	mesh.move = function(ship, isPlayer, instruction){
+		
 		if (instruction.details.fire == true) {
 			addBullet(ship);
 		}

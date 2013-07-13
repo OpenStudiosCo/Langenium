@@ -14,6 +14,7 @@ module.exports.login = login;
 module.exports.logout = logout;
 module.exports.pong = pong;
 module.exports.move_ship = move_ship;
+module.exports.move_character = move_character;
 module.exports.character_toggle = character_toggle;
 
 
@@ -112,7 +113,22 @@ function move_ship(socket, data, db, instances, client_sessions) {
 	});
 
 }
+function move_character(socket, data, db, instances, client_sessions) {
+	//console.log(instances.master.instances[0].environment);
+	client_sessions.forEach(function(client, index){
+		if (client.sessionId == socket.id) {
+			var update = {
+				_id: client._id,
+				socket_id: socket.id,
+				obj_class: "players",
+				type: "move_character",
+				details: data
+			};
+			instances.master.instances[0].update_queue.push(update);
+		}
+	});
 
+}
 function character_toggle(socket, db, instances, client_sessions) {
 	//console.log(instances.master.instances[0].environment);
 	client_sessions.forEach(function(client, index){

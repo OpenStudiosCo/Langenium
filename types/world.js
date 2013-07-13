@@ -55,7 +55,7 @@ function update(delta, io, world) {
 		
 		world[update.obj_class].forEach(function(obj){
 			if (obj._id == update._id) {
-				if (update.type == "move_ship") {
+				if (update.type == "move_ship" || update.type == "move_character") {
 					obj.input_status = true; // determine if the ship should glide with velocity forward or not
 				}
 				obj[update.type](obj, world, update, _complete);
@@ -68,17 +68,21 @@ function update(delta, io, world) {
 				processed_changes.push(processed_change);
 			};
 			player.velocity *= .996;
-			var details = {
-				d: delta,
+			var update = {
+				socket_id: player.socket_id,
+				type: "move_ship",
 				username: player.username,
-				type: 'move_ship',
 				obj_class: 'players',
-				pZ: 0,
-				pY: 0,
-				rY: 0,
-				fire: false
+				details: {
+					d: delta,
+					pZ: 0,
+					pY: 0,
+					rY: 0,
+					fire: false	
+				}
 			};
-			player.move_ship(player, world, {socket_id: player.socket_id, details: details}, _complete);
+	
+			player.move_ship(player, world, update, _complete);
 		}
 		else {
 			player.input_status = false;

@@ -110,7 +110,7 @@ flight.prototype.input = function (delta){
 			keyboardInput.pY = -1;																// <--------- these rules will need to go to the server
 		}
 	}
-
+	
 	if (client.isFiring == true) {
 		move = true;
 	}

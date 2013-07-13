@@ -92,7 +92,7 @@ engine.prototype.animate = function () {
 			controls.flight.move(player.velocity, player.position, controls.flight.input(delta));
 		}
 		if (controls.character.enabled == true) {
-			controls.character.move(player.position, controls.character.input(delta));
+			controls.character.input(delta);
 		}
 	}
 	

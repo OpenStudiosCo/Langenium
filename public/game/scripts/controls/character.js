@@ -28,8 +28,10 @@ var character = function() {
 character.prototype.input = function (delta) {
 	var moving = false, face;
 	var details = { 
+		moving: false,
+		face: 'back',
 		velocity: .5,
-		radian: (Math.PI / 20) * delta,
+		radian: (Math.PI / 10) * delta,
 		pZ: 0,
 		pY: 0,
 		rY: 0
@@ -68,13 +70,9 @@ character.prototype.input = function (delta) {
 			// move sub
 			if (details.rY != 0) {
 				sprite.rotation.y += details.rY;
-				sprite.translateZ(-details.velocity);
 			}
 			if (details.pZ != 0) {
 				sprite.translateZ(details.pZ);
-			}
-			if (sprite.rotation.y == 0 && moving == false) {
-				sprite.face = 'back';
 			}
 			
 		}

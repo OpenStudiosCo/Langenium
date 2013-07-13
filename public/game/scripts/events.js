@@ -73,7 +73,8 @@ events.prototype.setEventHandlers = function (socket) {
 				}
 			}
 			if (update.type == "character_toggle") {
-				if (update.obj_class == "players") {
+				
+				if (update.socket_id == player.socket_id) {
 					if (update.details.object.type == "character" && controls.character.enabled == false) {
 						objects.characters.make(player.socket_id, objects.characters[update.details.object.name], player.position);
 						client.camera = controls.character.camera;
@@ -84,6 +85,18 @@ events.prototype.setEventHandlers = function (socket) {
 						client.camera = controls.flight.camera;
 						controls.flight.enabled = true;
 					}
+				}
+				else {
+					objects.ships.collection.forEach(function(ship){
+						if (ship.socket_id == update.socket_id) {
+							if (update.details.object.type == "character" && controls.character.enabled == false) {
+								objects.characters.make(update.socket_id, objects.characters[update.details.object.name], ship.position);
+							}
+							if (update.details.object.type == "ship" && controls.flight.enabled == false) {
+								objects.characters.remove(update.socket_id);
+							}
+						}
+					});
 				}
 			} 
 		});

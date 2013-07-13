@@ -51,13 +51,13 @@ function make(details) {
 		update.details.type = 'move';
 		update.details.obj_class = 'players';
 		var 		velocityYChange = 66 * update.details.d,
-					rotateAngle = 0.01744444444444444444444444444444 * 50 * update.details.d;
+					rotateAngle = (Math.PI / 7.5) * player.d;
 
 		
 		if (player.editor == true) {
 			velocityYChange *= 20;
-			if (update.details.pZ > 0 && player.velocity > -150) { player.velocity -= 15 }
-			if (update.details.pZ < 0 && player.velocity < 75) { player.velocity += 15 }
+			if (update.details.pZ > 0 && player.velocity > -150) { player.velocity -= 2 }
+			if (update.details.pZ < 0 && player.velocity < 75) { player.velocity += 2 }
 		}
 		else {
 			if (update.details.pZ > 0 && player.velocity > -3.75) { player.velocity -= 1.75 }
@@ -93,7 +93,6 @@ function make(details) {
 	};
 
 	details.character_toggle = function(character_update, world, update, _complete) {
-		console.log(update);
 		_complete(update);
 	}
 

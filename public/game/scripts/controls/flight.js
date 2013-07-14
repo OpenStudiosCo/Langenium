@@ -122,12 +122,14 @@ flight.prototype.input = function (delta){
 	if (move == true) {
 		events.socket.emit('move_ship', keyboardInput);
 	}
-	
-	if (keyboardInput.rY == 0 && controls.flight.camera.rotation.y != 0) {
-		
+
+	if (controls.flight.camera.rotation.x != 0 && controls.camera_rotating == false) {
+		controls.flight.camera.rotation.x *= .96;
+	}
+	if (keyboardInput.rY == 0 && controls.flight.camera.rotation.y != 0 && controls.camera_rotating == false) {
 		controls.flight.camera.rotation.y *= .96;
 	}
-	if (keyboardInput.rY == 0 && controls.flight.camera.rotation.z != 0) {
+	if (keyboardInput.rY == 0 && controls.flight.camera.rotation.z != 0 && controls.camera_rotating == false) {
 		controls.flight.camera.rotation.z *= .96;
 	}
 	

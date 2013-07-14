@@ -44,7 +44,7 @@ ships.prototype.make = function (obj_class, instruction, mesh) {
 			ship.position.z = instruction.details.pZ;
 		}
 		
-		var rotate = instruction.details.rY - ship.rotation.y;
+		var rotate = parseFloat(instruction.details.rY - ship.rotation.y);
 		var rotate_factor = parseFloat(rotate / 5);
 
 		if (rotate > 0){

@@ -72,9 +72,9 @@ objects.prototype.makeObjectMesh = function (instruction, geometry, materials) {
 	};
 	object.geometry.computeBoundingBox();
 	object.name = instruction['class'];
-	object.position.set(instruction.position.x, instruction.position.y, instruction.position.z);
-	object.rotation.set(instruction.rotation.x, instruction.rotation.y, instruction.rotation.z);
-	object.scale.set(instruction.scale, instruction.scale, instruction.scale);
+	object.position.set(parseFloat(instruction.position.x), parseFloat(instruction.position.y), parseFloat(instruction.position.z));
+	object.rotation.set(parseFloat(instruction.rotation.x), parseFloat(instruction.rotation.y), parseFloat(instruction.rotation.z));
+	object.scale.set(parseFloat(instruction.scale), parseFloat(instruction.scale), parseFloat(instruction.scale));
 	object.matrixAutoUpdate = true;
 	object.updateMatrix();
 	object.geometry.colorsNeedUpdate = true;

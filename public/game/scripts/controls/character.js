@@ -71,13 +71,13 @@ character.prototype.input = function (delta) {
 
 	events.socket.emit('move_character', details);
 	
-	if (controls.character.camera.rotation.x != 0 && controls.camera_rotating == false) {
+	if (controls.character.camera.rotation.x != 0 && (controls.camera_rotating == false || controls.mouse.changeX == false)) {
 		controls.character.camera.rotation.x *= .96;
 	}
-	if (controls.character.camera.rotation.y != 0 && controls.camera_rotating == false) {
+	if (controls.character.camera.rotation.y != 0 && (controls.camera_rotating == false || controls.mouse.changeY == false)) {
 		controls.character.camera.rotation.y *= .96;
 	}
-	if (controls.character.camera.rotation.z != 0 && controls.camera_rotating == false) {
+	if (controls.character.camera.rotation.z != 0 && (controls.camera_rotating == false || controls.mouse.changeX == false)) {
 		controls.character.camera.rotation.z *= .96;
 	}
 	

@@ -22,7 +22,9 @@ var controls = function() {
     	x: 0,
     	y: 0,
     	lastX: 0,
-    	lastY: 0
+    	lastY: 0,
+    	changeX: false,
+    	changeY: false
     };
 	this.radius = ( client.winW + client.winH ) / 4;
 	this.camera_rotating = false;
@@ -76,14 +78,13 @@ $(document).bind('mousewheel DOMMouseScroll', function (e) {
 });
 
 $(document).bind("mousemove", function(event) {
-	if (controls.enabled == true &&
-		controls.mouse.lastX != event.clientX &&
-		controls.mouse.lastY != event.clientY 
-		) {	
+	if (controls.enabled == true) {
 		controls.mouse.lastX = controls.mouse.x;
-		controls.mouse.lastY = controls.mouse.y;
 		controls.mouse.x = event.clientX / client.winW;
+	
+		controls.mouse.lastY = controls.mouse.y;	
 		controls.mouse.y = event.clientY / client.winH;	
+		
 	}
 });
 
@@ -94,13 +95,26 @@ $(document).bind("mousemove", function(event) {
 controls.prototype.rotateCamera = function (delta) {
 	
 	
-		var diffX = controls.mouse.x - controls.mouse.lastX;
-		var diffY = controls.mouse.y - controls.mouse.lastY;
+		var diffX = (controls.mouse.x - controls.mouse.lastX) / 2;
+		var diffY = (controls.mouse.y - controls.mouse.lastY) / 2;
+
+		if (diffX == 0) {
+			controls.mouse.changeX = false;
+		}
+		else {
+			controls.mouse.changeX = true;
+		}
+		if (diffY == 0) {
+			controls.mouse.changeY = false;
+		}
+		else {
+			controls.mouse.changeY = true;
+		}
 
 		client.camera.rotation.y -= controls.radius * Math.sin(diffX * Math.PI / 360 );
 		client.camera.rotation.x -= controls.radius * Math.sin(diffY * Math.PI / 360 );
 		client.camera.updateMatrix();
-		console.log('diffX: ' + diffX + ', diffY: ' + diffY);
+		//console.log('diffX: ' + diffX + ', diffY: ' + diffY);
 		
 	
 

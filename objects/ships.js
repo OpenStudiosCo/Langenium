@@ -45,15 +45,15 @@ function make(details) {
 		var 		velocityYChange = 66 * update.details.d,
 					rotateAngle = (Math.PI / 7.5) * ship.d;
 
-		//if (ship.editor == true) {
-			//velocityYChange *= 20;
+		if (ship.editor == true) {
+			velocityYChange *= 20;
 			if (update.details.pZ > 0 && ship.velocity > -150) { ship.velocity -= 2 }
 			if (update.details.pZ < 0 && ship.velocity < 75) { ship.velocity += 2 }
-		/*}
+		}
 		else {
 			if (update.details.pZ > 0 && ship.velocity > -3.75) { ship.velocity -= 1.75 }
 			if (update.details.pZ < 0 && ship.velocity < 2.5) { ship.velocity += 1.75 }
-		}*/
+		}
 		
 
 		if (update.details.rY > 0) { update.details.rY = rotateAngle; }						// left

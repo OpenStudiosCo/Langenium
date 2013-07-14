@@ -8,13 +8,10 @@ link(rel='stylesheet', href='/website/styles/styles.css')
 link(rel='stylesheet', href='/website/styles/menu.css')
 link(rel='stylesheet', href='/shared/styles/jquery-ui-1.10.2.custom.css')
 link(rel='stylesheet', href='http://fonts.googleapis.com/css?family=Aldrich')
-script(src='/shared/scripts/jquery.min.js')
-script(src='/shared/scripts/jquery.cycle.all.js')
+
 case page
 	when 'pages/home'
 		link(rel='stylesheet', href='/website/styles/pages/home.css')
-		script(src='/website/scripts/slideshow.js')
-		script(src='/website/scripts/news.js')
 	when 'pages/about/'
 		link(rel='stylesheet', href='/website/styles/pages/about.css')
 	when 'pages/gallery_list'
@@ -27,45 +24,7 @@ case page
 		link(rel='stylesheet', href='/website/styles/pages/guide.css')
 	when 'pages/guide_new'
 		link(rel='stylesheet', href='/website/styles/pages/guide.css')
-		script(src='/shared/scripts/tinymce/tinymce.min.js')
-		script(src='/shared/scripts/tinymce/jquery.tinymce.min.js')
-		script
-			tinymce.init({
-				selector: "textarea[rows=20]",
-					theme: "modern",
-					plugins: [
-						"advlist autolink lists link image charmap print preview hr anchor pagebreak",
-						"searchreplace wordcount visualblocks visualchars code fullscreen",
-						"insertdatetime media nonbreaking save table contextmenu directionality",
-						"emoticons template paste"
-					],
-					toolbar1: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image",
-					toolbar2: "print preview media | forecolor backcolor emoticons",
-					templates: [
-						{title: 'Test template 1', content: 'Test 1'},
-						{title: 'Test template 2', content: 'Test 2'}
-					],
-			});
 	when 'pages/guide_edit'
 		link(rel='stylesheet', href='/website/styles/pages/guide.css')
-		script(src='/shared/scripts/tinymce/tinymce.min.js')
-		script(src='/shared/scripts/tinymce/jquery.tinymce.min.js')
-		script
-			tinymce.init({
-				selector: "textarea[rows=20]",
-					theme: "modern",
-					plugins: [
-						"advlist autolink lists link image charmap print preview hr anchor pagebreak",
-						"searchreplace wordcount visualblocks visualchars code fullscreen",
-						"insertdatetime media nonbreaking save table contextmenu directionality",
-						"emoticons template paste"
-					],
-					toolbar1: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image",
-					toolbar2: "print preview media | forecolor backcolor emoticons",
-					templates: [
-						{title: 'Test template 1', content: 'Test 1'},
-						{title: 'Test template 2', content: 'Test 2'}
-					],
-			});
 	when 'pages/community/'
 		link(rel='stylesheet', href='/website/styles/pages/community.css')

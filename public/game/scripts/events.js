@@ -43,6 +43,7 @@ events.prototype.setEventHandlers = function (socket) {
 	});
 
 	socket.on("login", function(data) { 
+		console.log(data)
 		events.login(data);
 	});
 

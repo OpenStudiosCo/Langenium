@@ -42,8 +42,8 @@ function make(details) {
 		ship.d = update.details.d;
 		update.details.socket_id = update.socket_id;
 		update.details.username = ship.username;
-		var 		velocityYChange = 66 * update.details.d,
-					rotateAngle = (Math.PI / 7.5) * ship.d;
+		var 		velocityYChange = 22 * update.details.d,
+					rotateAngle = 0.78539816339 * update.details.d;
 
 		if (ship.editor == true) {
 			velocityYChange *= 20;

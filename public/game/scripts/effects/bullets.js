@@ -63,7 +63,7 @@ bullets.prototype.handleBullets = function (delta){
 		else {
 			objects.ships.collection.forEach(function(ship) {
 				if ((bullet.socket_id != ship.socket_id)&&(ship.position.distanceTo(bullet.position) < 50)) {
-					explosionEffect(bullet.position);
+					effects.particles.explosionEffect(bullet.position);
 					scene.remove(bullet);
 				}
 			});

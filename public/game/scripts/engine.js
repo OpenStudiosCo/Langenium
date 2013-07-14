@@ -87,7 +87,11 @@ engine.prototype.animate = function () {
 	var delta = clock.getDelta();
 
 	if (player && controls.enabled == true) {
+		if (controls.camera_rotating == true) {
+				controls.rotateCamera(delta)
+			}
 		if (controls.flight.enabled == true) {
+			
 			controls.flight.move(player.velocity, player.position, controls.flight.input(delta));
 		}
 		if (controls.character.enabled == true) {

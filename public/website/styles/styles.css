@@ -119,10 +119,11 @@ div#top_nav li {
 }
 div#top_nav li.user img {
 	float: left;
-	margin: -10px 0 0 0;
 } 
 div#top_nav li.user a {
-	margin: 0 .5em;
+	display: block;
+	float: left;
+	margin: .5em;
 }
 /*
 		Breadcrumbs 
@@ -159,7 +160,7 @@ div#top_nav li.user a {
 .breadcrumbs li p.arrow {
 	float: right;
 	font-size: 0px; line-height: 0%; width: 0px;
-	margin-top: 2px;
+	margin-top: -10px;
 
 	border-top: 4px solid #000000;
 	border-left: 8px solid #333333;

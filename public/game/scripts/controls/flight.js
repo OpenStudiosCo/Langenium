@@ -18,14 +18,13 @@ var flight = function() {
     this.camera = new THREE.PerspectiveCamera( 45, (client.winW / client.winH), 1, M * 2 );
     this.camera.position.y = 3;
 	this.camera.position.z = 35;
-	this.camera_rotating = false;
     this.enabled = true;
 
     return this;
 }
 
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-	Function definitions
+	Evemnt Binders
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
 $(document).bind("mousedown", function(event) {
@@ -38,10 +37,10 @@ $(document).bind("mousedown", function(event) {
 				client.isFiring = true;
 				break;
 			case 2:
-				//zoom IGNORE
+				// zoom IGNORE
 				break;
 			case 3:
-				controls.flight.rotateCamera(event);
+				// rotate IGNORE
 				break;
 		}
 	}
@@ -57,18 +56,23 @@ $(document).bind("mouseup", function(event) {
 				client.isFiring = false;
 				break;
 			case 2:
-				//zoom IGNORE
+				// zoom IGNORE
 				break;
 			case 3:
-				//rotate IGNORE
+				// rotate IGNORE
 				break;
 		}
 	}
-
 });
+
 $(document).bind("contextmenu",function(){
     return false;
 }); 
+
+/*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+	Function definitions
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
+
 
 flight.prototype.input = function (delta){
 	var keyboardInput = { d: delta, pZ: 0, pY: 0, rY: 0, fire: client.isFiring, client_position: player.position },
@@ -130,14 +134,12 @@ flight.prototype.input = function (delta){
 	return keyboardInput;
 }
 
-flight.prototype.rotateCamera = function (e) {
-	console.log(e);
-}
-
 flight.prototype.move = function (velocity, playerPosition, data) {
-	
-	var 		velocityYChange = 120 * data.d,
-				rotateAngle = 0.01744444444444444444444444444444 * 50 * data.d;
+	/*
+		This is a client side function to move the world's water, check collisons and softly a ship, however the server response overrides this
+	*/
+	var velocityYChange = 22 * data.d,
+		rotateAngle = 0.78539816339 * data.d;
 
 	
 	if (window.location.href.indexOf("editor") > 0) { 
@@ -232,7 +234,8 @@ flight.prototype.move = function (velocity, playerPosition, data) {
 	
 	
 	sky.updateMatrixWorld();
-		
-	//events.moveShip(player, true, { name: "move", type: "player", details: data });
+	
+	player.move(player, true, { details: data});
+	
 
 }

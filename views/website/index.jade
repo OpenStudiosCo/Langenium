@@ -7,14 +7,14 @@ html
 			#top_nav.span-22.last
 				ul
 					li
-						a(href='#contact') Contact us
+						iframe(src="//www.facebook.com/plugins/like.php?href=http%3A%2F%2Fwww.facebook.com%2Flangenium&amp;send=false&amp;layout=button_count&amp;width=250&amp;show_faces=false&amp;font=verdana&amp;colorscheme=dark&amp;action=like&amp;height=21&amp;appId=623990304295503",scrolling="no",frameborder="0",style="border:none; overflow:hidden; width:250px; height:30px;",allowTransparency="true")
 					li.user
 						if (logged_id == true)
 							img(src=user.profile_img)
 							a(href='#profile')= user.username
-							a(href='/logout') Logout
+							a.logout(href='/logout',target='_new') Logout
 						else
-							a(href='/auth/facebook') Login with Facebook
+							a.login(href='/auth/facebook',target='_new') Login
 			.round-box
 				#header.span-22.last
 					h1.span-7
@@ -40,13 +40,4 @@ html
 					include pages/guide_new
 				when 'pages/community'
 					include pages/community
-	script
-		var _gaq = _gaq || [];
-		_gaq.push(['_setAccount', 'UA-37159175-1']);
-		_gaq.push(['_trackPageview']);
-
-		(function() {
-		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-		})();
+	include footer

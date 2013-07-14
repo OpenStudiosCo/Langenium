@@ -1,4 +1,23 @@
-function bulletEffect(position){
+/*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	Bullets
+	This defines methods for bullet effects
+	
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
+
+
+/*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+    Globals
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
+
+var bullets = function() {
+	this.collection = [];
+	return this;
+};
+
+bullets.prototype.bulletEffect = function (position){
 		var particleCount = 20,
 				particles = new THREE.Geometry(),
 				pMaterial =
@@ -32,14 +51,14 @@ function bulletEffect(position){
 			scene.add(particle_systems[particle_systems.length-1]);
 }
 
-function handleBullets(delta){
-	bullets.forEach(function(bullet, index){
-		bullets[index].translateZ(-SPEED);
-		bullets[index]._lifetime += delta;
+bullets.prototype.handleBullets = function (delta){
+	effects.bullets.collection.forEach(function(bullet, index){
+		effects.bullets.collection[index].translateZ(-SPEED);
+		effects.bullets.collection[index]._lifetime += delta;
 		
-		if (bullets[index]._lifetime > MAX_LIFETIME) {
-			scene.remove(bullets[index]);
-			bullets.splice(index, 1);
+		if (effects.bullets.collection[index]._lifetime > MAX_LIFETIME) {
+			scene.remove(effects.bullets.collection[index]);
+			effects.bullets.collection.splice(index, 1);
 		}
 		else {
 			objects.ships.collection.forEach(function(ship) {
@@ -52,7 +71,7 @@ function handleBullets(delta){
 	});
 }
  
-function addBullet(ship) {
+bullets.prototype.addBullet = function (ship) {
 
 	var geometry = new THREE.CubeGeometry(1, 1, 30);
 	for ( var i = 0; i < geometry.faces.length; i ++ ) {
@@ -63,16 +82,16 @@ function addBullet(ship) {
 	var material = new THREE.MeshBasicMaterial( { vertexColors: THREE.FaceColors } );
 	var pVector = new THREE.Vector3(ship.position.x, ship.position.y, ship.position.z);
 	
-	var 	lBullet = makeBullet(ship.position, pVector, ship.rotation.y, 20, geometry, material),
-			rBullet = makeBullet(ship.position, pVector, ship.rotation.y, -20, geometry, material);
+	var 	lBullet = effects.bullets.makeBullet(ship.position, pVector, ship.rotation.y, 20, geometry, material),
+			rBullet = effects.bullets.makeBullet(ship.position, pVector, ship.rotation.y, -20, geometry, material);
 			
 	lBullet.socket_id = ship.socket_id;			
 	rBullet.socket_id = ship.socket_id;
 	
-	bullets.push(lBullet);
-	scene.add(bullets[bullets.length-1]);
-	bullets.push(rBullet);
-	scene.add(bullets[bullets.length-1]);
+	effects.bullets.collection.push(lBullet);
+	scene.add(effects.bullets.collection[effects.bullets.collection.length-1]);
+	effects.bullets.collection.push(rBullet);
+	scene.add(effects.bullets.collection[effects.bullets.collection.length-1]);
 
 }
 
@@ -83,7 +102,7 @@ var	counter = 0,
 		INTERVAL = .1, 
 		MAX_LIFETIME = 1;
 		
-function makeBullet(position, pVector, rotation, shifter,geometry, material) {
+bullets.prototype.makeBullet = function (position, pVector, rotation, shifter,geometry, material) {
 	var bullet = new THREE.Mesh(geometry, material);
 	
 	bullet.opacity = .8;

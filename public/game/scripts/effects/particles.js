@@ -1,4 +1,22 @@
-function handleParticles(delta){
+/*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	Objects
+	This defines object methods and proxies the sub class functions 
+	
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
+
+
+/*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+    Globals
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
+
+var particles = function() {
+	return this;
+};
+
+particles.prototype.handleParticles = function (delta){
 	particle_systems.forEach(function(particle_system,index){
 		particle_system._lifetime += delta;
 		particle_system.sortParticles = true;
@@ -20,7 +38,7 @@ function handleParticles(delta){
 	});
 }
 
-function explosionEffect(position){
+particles.prototype.explosionEffect = function (position){
 		var particleCount = 10,
 				particles = new THREE.Geometry(),
 				pMaterial =
@@ -54,7 +72,7 @@ function explosionEffect(position){
 			scene.add(particle_systems[particle_systems.length-1]);
 }
 
-function teleportEffect(position){
+particles.prototype.teleportEffect = function (position){
 		var particleCount = 1000,
 				particles = new THREE.Geometry(),
 				pMaterial =
@@ -88,7 +106,7 @@ function teleportEffect(position){
 			scene.add(particle_systems[particle_systems.length-1]);
 }
 
-function cloudEffect(position){
+particles.prototype.cloudEffect = function (position){
 		var 	particle,
 				particleCount = 2000,
 				particles = new THREE.Geometry(),

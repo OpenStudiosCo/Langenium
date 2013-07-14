@@ -51,7 +51,7 @@ water.prototype.makeWater = function(M, pos) {
 	return plane;
 };
 
-function makeEnvScale() {
+water.prototype.makeEnvScale = function() {
 	var env_scale = 10000;
 	
 	if (player) {
@@ -88,7 +88,7 @@ water.prototype.animate = function() {
 
 water.prototype.update = function() {
 	
-	var 	env_scale = makeEnvScale(),
+	var 	env_scale = effects.water.makeEnvScale(),
 			water_length = water_tiles.length,
 			scale_multiplier = env_scale + 1, // to account for the coordinates in the excel sheet when multiplying the tiles and check previous scale
 			expected_tile_count = 1;

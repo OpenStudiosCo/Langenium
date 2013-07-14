@@ -74,7 +74,7 @@ engine.prototype.createScene = function () {
 	
 	effects.water.update();
 	
-	cloudEffect({x: -240000, y: 60000, z: -240000});
+	effects.particles.cloudEffect({x: -240000, y: 60000, z: -240000});
 		
 	hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 1 );
 	hemiLight.name = "light1";
@@ -116,8 +116,8 @@ engine.prototype.animate = function () {
 	
 	TWEEN.update();
 	effects.water.animate();
-	handleParticles(delta);
-	handleBullets(delta);
+	effects.particles.handleParticles(delta);
+	effects.bullets.handleBullets(delta);
 
 	requestAnimationFrame( engine.animate );
 

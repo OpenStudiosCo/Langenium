@@ -13,11 +13,12 @@
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
 var particles = function() {
+	this.systems = [];
 	return this;
 };
 
 particles.prototype.handleParticles = function (delta){
-	particle_systems.forEach(function(particle_system,index){
+	effects.particles.systems.forEach(function(particle_system,index){
 		particle_system._lifetime += delta;
 		particle_system.sortParticles = true;
 		particle_system.material.color.r -= Math.random()*.001;
@@ -33,7 +34,7 @@ particles.prototype.handleParticles = function (delta){
 		particle_system.geometry.__dirtyVertices = true;
 		if (particle_system._lifetime > 1.57) {
 			scene.remove(particle_system);
-			particle_systems.splice(index,1);
+			effects.particles.systems.splice(index,1);
 		}
 	});
 }
@@ -67,9 +68,9 @@ particles.prototype.explosionEffect = function (position){
 			particle_system.min = -1;
 			particle_system._lifetime = 0;
 			particle_system.sortParticles = true;
-			particle_systems.push(particle_system);
+			effects.particles.systems.push(particle_system);
 			// add it to the scene
-			scene.add(particle_systems[particle_systems.length-1]);
+			scene.add(effects.particles.systems[effects.particles.systems.length-1]);
 }
 
 particles.prototype.teleportEffect = function (position){
@@ -101,9 +102,9 @@ particles.prototype.teleportEffect = function (position){
 			particle_system.min = 8;
 			particle_system._lifetime = -2;
 			particle_system.sortParticles = true;
-			particle_systems.push(particle_system);
+			effects.particles.systems.push(particle_system);
 			// add it to the scene
-			scene.add(particle_systems[particle_systems.length-1]);
+			scene.add(effects.particles.systems[effects.particles.systems.length-1]);
 }
 
 particles.prototype.cloudEffect = function (position){

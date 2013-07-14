@@ -141,7 +141,7 @@ events.prototype.detectCollision = function (source, direction, world_map) {
 }
 
 events.prototype.logout = function(ship, index) {
-	teleportEffect(ship.position);
+	effects.particles.teleportEffect(ship.position);
 	scene.remove(ship);
 	ships.splice(index, 1);
 }

@@ -64,6 +64,7 @@ function login(socket, data, db, instances, client_sessions) {
 		var user_ship = function(result) {
 			var ship = result[0];
 			ship.socket_id = socket.id;
+			ship.editor = data.editor;
 			ship.username = player.username;
 			ship.position = player.position;
 			ship.rotation = player.rotation;

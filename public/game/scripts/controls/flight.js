@@ -15,7 +15,7 @@
 // This object
 var flight = function() {
     
-    this.camera = new THREE.PerspectiveCamera( 45, (client.winW / client.winH), 1, M / 3 * 2 );
+    this.camera = new THREE.PerspectiveCamera( 45, (client.winW / client.winH), 1, M * 2 );
     this.camera.position.y = 3;
 	this.camera.position.z = 35;
 	this.camera_rotating = false;
@@ -142,11 +142,11 @@ flight.prototype.move = function (velocity, playerPosition, data) {
 	
 	if (window.location.href.indexOf("editor") > 0) { 
 		if (editor.sky_camera_active == true) {
-			velocity *= 10000 ; 
+			velocity *= 10 ; 
 		}
 		else {
-			velocity *= 50 ; 
-			velocityYChange *= 50;
+			velocity *= 5 ; 
+			velocityYChange *= 5;
 		}
 	}
 
@@ -196,24 +196,24 @@ flight.prototype.move = function (velocity, playerPosition, data) {
 	
 	// moves the water tiles position 
 	
-	for (var tile = 0; tile < water_tiles.length; tile++) {
+	for (var tile = 0; tile < effects.water.water_tiles.length; tile++) {
 	
 		var rotateWater =  data.rY  * -1;
-		water_tiles[tile].material.map.offset.x-= Math.sin(rotateWater) * velocity / 100000;
-		water_tiles[tile].material.map.offset.y -= Math.cos(rotateWater) * velocity / 100000;
+		effects.water.water_tiles[tile].material.map.offset.x-= Math.sin(rotateWater) * velocity / 100000;
+		effects.water.water_tiles[tile].material.map.offset.y -= Math.cos(rotateWater) * velocity / 100000;
 		
 		if (tile == 0) {
-			water_tiles[0].position.x = data.pX;
-			water_tiles[0].position.z = data.pZ;
+			effects.water.water_tiles[0].position.x = data.pX;
+			effects.water.water_tiles[0].position.z = data.pZ;
 		}
 		else {
-			water_tiles[tile].position.x = water_tiles[tile].position.ox + data.pX;
-			water_tiles[tile].position.z = water_tiles[tile].position.oz + data.pZ;
+			effects.water.water_tiles[tile].position.x = effects.water.water_tiles[tile].position.ox + data.pX;
+			effects.water.water_tiles[tile].position.z = effects.water.water_tiles[tile].position.oz + data.pZ;
 		}
-		water_tiles[tile].material.needsUpdate = true;
+		effects.water.water_tiles[tile].material.needsUpdate = true;
 	}	
 	
-	var height_diff = 5000 + 2000 * (water_tiles.length-1);
+	var height_diff = 5000 + 2000 * (effects.water.water_tiles.length-1);
 	
 	sky.position.x = data.pX;
 	

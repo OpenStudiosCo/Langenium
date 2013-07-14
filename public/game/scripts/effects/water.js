@@ -13,7 +13,7 @@
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
 var water = function() {
-   
+   this.water_tiles = [];
    return this;
 };
 
@@ -27,7 +27,7 @@ water.prototype.makeWater = function(M, pos) {
 	
 	var 	water_res = 111,
 			water_texture = 12;
-	if (water_tiles.length > 0) { water_res = 1; }
+	if (effects.water.water_tiles.length > 0) { water_res = 1; }
 	
 	var geometry = new THREE.PlaneGeometry( M, M , water_res, water_res );	
 	geometry.applyMatrix( new THREE.Matrix4().makeRotationX( - Math.PI / 2 ) );
@@ -58,7 +58,7 @@ water.prototype.makeEnvScale = function() {
 		env_scale = new THREE.Vector3().getPositionFromMatrix(player.matrixWorld).y;
 	}
 
-	env_scale = Math.floor(env_scale / (9980 + water_tiles.length * water_tiles.length * water_tiles.length));
+	env_scale = Math.floor(env_scale / (9980 + effects.water.water_tiles.length * effects.water.water_tiles.length * effects.water.water_tiles.length));
 	
 	return env_scale;
 }
@@ -74,22 +74,22 @@ water.prototype.animate = function() {
 		}
 	}
 	
-	if ((water_tiles.length  >= 1)&&(playerHeightOk == true)){
+	if ((effects.water.water_tiles.length  >= 1)&&(playerHeightOk == true)){
 		var myTime = clock.getElapsedTime() * 10;
 		
-		for (var i = 0; i < water_tiles[0].geometry.vertices.length; i++) {
+		for (var i = 0; i < effects.water.water_tiles[0].geometry.vertices.length; i++) {
 			var n = Math.sin( i / 5 + ( myTime + i ) /  7);
-			water_tiles[0].geometry.vertices[i].z += 5.654321 * n;
-			water_tiles[0].geometry.vertices[i].y = 222.654321 * n;
+			effects.water.water_tiles[0].geometry.vertices[i].z += 5.654321 * n;
+			effects.water.water_tiles[0].geometry.vertices[i].y = 222.654321 * n;
 		}
-		water_tiles[0].geometry.verticesNeedUpdate = true;
+		effects.water.water_tiles[0].geometry.verticesNeedUpdate = true;
 	}
 }
 
 water.prototype.update = function() {
 	
 	var 	env_scale = effects.water.makeEnvScale(),
-			water_length = water_tiles.length,
+			water_length = effects.water.water_tiles.length,
 			scale_multiplier = env_scale + 1, // to account for the coordinates in the excel sheet when multiplying the tiles and check previous scale
 			expected_tile_count = 1;
 
@@ -100,8 +100,8 @@ water.prototype.update = function() {
 
 	//console.log("env_scale: "+ env_scale + " exp: " + expected_tile_count + " scale_multiplier: " + scale_multiplier+ " water: " + water.length);
 	
-	if (water_tiles.length < expected_tile_count) { 	
-		if (water_tiles.length == 1) {
+	if (effects.water.water_tiles.length < expected_tile_count) { 	
+		if (effects.water.water_tiles.length == 1) {
 			for (var i = 0; i < scale_multiplier; i++) {
 				effects.water.addTiles(i, expected_tile_count);
 			}
@@ -184,8 +184,8 @@ water.prototype.update = function() {
 	 }
 
 	tile_array.forEach(function(tile){
-		water_tiles.push(tile);
-		scene.add(water_tiles[water_tiles.length-1]);
+		effects.water.water_tiles.push(tile);
+		scene.add(effects.water.water_tiles[effects.water.water_tiles.length-1]);
 	});
 
  };

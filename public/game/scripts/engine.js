@@ -68,9 +68,8 @@ engine.prototype.createScene = function () {
 	sky.name = "sky";
 	scene.add(sky);
 	
-	water_tiles = [];
-	water_tiles.push(new effects.water.makeWater(M));
-	scene.add(water_tiles[0]);
+	effects.water.water_tiles.push(new effects.water.makeWater(M));
+	scene.add(effects.water.water_tiles[0]);
 	
 	effects.water.update();
 	
@@ -87,7 +86,7 @@ engine.prototype.createScene = function () {
 engine.prototype.animate = function () {
 	var delta = clock.getDelta();
 
-	if (controls.enabled == true) {
+	if (player && controls.enabled == true) {
 		if (controls.flight.enabled == true) {
 			controls.flight.move(player.velocity, player.position, controls.flight.input(delta));
 		}

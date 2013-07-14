@@ -63,21 +63,22 @@ function make(details) {
 		if (update.details.pY > 0) { update.details.pY = velocityYChange; } 			// up
 		if (update.details.pY < 0) { update.details.pY = -(velocityYChange); } 		// down
 
-		update.details.rY += ship.rotation.y;
-		update.details.pY += ship.position.y;
+		update.details.rY += parseFloat(ship.rotation.y);
+		update.details.pY += parseFloat(ship.position.y);
 		
 		var 	diffX = ship.velocity * Math.sin(ship.rotation.y),
 				diffZ = ship.velocity * Math.cos(ship.rotation.y);
 
-		ship.position.x += diffX;
-		ship.position.y = update.details.pY;
-		ship.rotation.x = 0;
+		ship.position.x += parseFloat(diffX);
+		ship.position.y = parseFloat(update.details.pY);
+		ship.position.z += parseFloat(diffZ);
+		ship.rotation.x = parseFloat(0);
 		ship.rotation.y = parseFloat(update.details.rY);
-		ship.rotation.z = 0;
-		ship.position.z += diffZ;
+		ship.rotation.z = parseFloat(0);
+		
 
-		update.details.pX = ship.position.x;
-		update.details.pZ = ship.position.z;
+		update.details.pX = parseFloat(ship.position.x);
+		update.details.pZ = parseFloat(ship.position.z);
 
 		_complete(update);
 	};

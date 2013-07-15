@@ -180,6 +180,11 @@ function character_toggle(socket, db, instances, client_sessions) {
 			else {
 				var _callback = function(result) {
 					client.mode = "ship";
+					instances[client_sessions[index].instance_id].instances[0].characters.forEach(function(character, char_index) {
+						if (socket.id == character.socket_id) {
+							instances[client_sessions[index].instance_id].instances[0].characters.splice(char_index, 1);
+						}
+					});
 					var update = {
 						_id: client._id,
 						socket_id: socket.id,

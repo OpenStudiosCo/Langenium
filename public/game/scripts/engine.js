@@ -67,7 +67,7 @@ engine.prototype.createScene = function () {
 	sky = new THREE.Mesh(skyGeo, new THREE.MeshFaceMaterial(sky_materials));
 	sky.name = "sky";
 	scene.add(sky);
-	
+
 	effects.water.water_tiles.push(new effects.water.makeWater(M));
 	scene.add(effects.water.water_tiles[0]);
 	
@@ -81,6 +81,12 @@ engine.prototype.createScene = function () {
 	hemiLight.groundColor.setRGB( 0.6, 0.75, 1 );
 	hemiLight.position.set( 0, M, 0 );
 	scene.add( hemiLight );
+
+
+	effects.particles.createThruster(15, {x: 7800, y: 2500, z: -1800})
+
+	effects.particles.createThruster(1, {x: -7000, y: 2100, z: -7000})
+
 }	
 
 engine.prototype.animate = function () {
@@ -120,6 +126,7 @@ engine.prototype.animate = function () {
 	TWEEN.update();
 	effects.water.animate();
 	effects.particles.handleParticles(delta);
+	effects.particles.animateThrusters(delta);
 	effects.bullets.handleBullets(delta);
 
 	requestAnimationFrame( engine.animate );

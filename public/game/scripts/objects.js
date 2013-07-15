@@ -89,6 +89,17 @@ objects.prototype.renderObject = function (mesh, obj_class, instruction) {
 	if (obj_class == "environment") { 
 		this.world_map.push(mesh);
 		scene.add(this.world_map[this.world_map.length-1]);
+		
+		if (mesh.obj_details.type =='infrastructure' &&
+			mesh.obj_details.sub_type =='platforms' &&
+			mesh.obj_details.name =='union') {
+
+			var 	pos_x = mesh.position.x + Math.sin(mesh.rotation.y) * -1300,
+				 	pos_z = mesh.position.z + Math.cos(mesh.rotation.y) * -2000;
+
+			var thruster_1 = effects.particles.createThruster(15, { x: pos_x, y: mesh.position.y - 1000, z: pos_z});
+			scene.add(thruster_1);
+		}
 	}
 	
 	if (obj_class == "ships" ||
@@ -96,5 +107,6 @@ objects.prototype.renderObject = function (mesh, obj_class, instruction) {
 		objects.ships.make(obj_class, instruction, mesh);
 	}
 	
+
 
 };

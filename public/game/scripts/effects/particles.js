@@ -14,37 +14,20 @@
 
 var particles = function() {
 	this.systems = [];
+	this.thrusters = [];
 	return this;
 };
 
-particles.prototype.handleParticles = function (delta){
-	effects.particles.systems.forEach(function(particle_system,index){
-		particle_system._lifetime += delta;
-		particle_system.sortParticles = true;
-		particle_system.material.color.r -= Math.random()*.001;
-		particle_system.material.color.g += Math.random()*.001;
-		if (particle_system.material.opacity > 0){
-		particle_system.material.opacity *= .99;
-		}
-			particle_system.geometry.vertices.forEach(function(particle,index){
-			  particle.x += Math.random() * particle_system.max - particle_system.min;
-			  particle.y += Math.random() * particle_system.max - particle_system.min;
-			  particle.z += Math.random() * particle_system.max - particle_system.min;
-		});
-		particle_system.geometry.__dirtyVertices = true;
-		if (particle_system._lifetime > 1.57) {
-			scene.remove(particle_system);
-			effects.particles.systems.splice(index,1);
-		}
-	});
-}
+/*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+    Special Effects
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
 particles.prototype.explosionEffect = function (position){
 		var particleCount = 10,
 				particles = new THREE.Geometry(),
 				pMaterial =
 				  new THREE.ParticleBasicMaterial({
-					map: THREE.ImageUtils.loadTexture("/game/assets/textures/particle.png?nocache"),
+					map: THREE.ImageUtils.loadTexture("/game/assets/textures/particles/particle.png?nocache"),
 					size: .125,
 					blending: THREE.AdditiveBlending,
 					transparent: true
@@ -55,9 +38,9 @@ particles.prototype.explosionEffect = function (position){
 				// create a particle with random
 				// position values, -250 -> 250
 				var pX = position.x + Math.random() * 1.1 - .5,
-				  pY = position.y + Math.random() * 1.1 - .5,
-				  pZ = position.z + Math.random() * 1.1 - .5,
-				  particle = new THREE.Vector3(pX, pY, pZ);
+					pY = position.y + Math.random() * 1.1 - .5,
+					pZ = position.z + Math.random() * 1.1 - .5,
+					particle = new THREE.Vector3(pX, pY, pZ);
 				// add it to the geometry
 				particles.vertices.push(particle);
 			}
@@ -78,7 +61,7 @@ particles.prototype.teleportEffect = function (position){
 				particles = new THREE.Geometry(),
 				pMaterial =
 				  new THREE.ParticleBasicMaterial({
-					map: THREE.ImageUtils.loadTexture("/game/assets/textures/particle.png?nocache"),
+					map: THREE.ImageUtils.loadTexture("/game/assets/textures/particles/particle.png?nocache"),
 					size: .5,
 					blending: THREE.AdditiveBlending,
 					transparent: true
@@ -114,7 +97,7 @@ particles.prototype.cloudEffect = function (position){
 				pMaterial =
 				  new THREE.ParticleBasicMaterial({
 				  transparent: true,
-					map: THREE.ImageUtils.loadTexture("/game/assets/textures/cloud10.png?nocache"),
+					map: THREE.ImageUtils.loadTexture("/game/assets/textures/particles/cloud10.png?nocache"),
 					size: 512, alphaTest: 0.5
 					
 						
@@ -158,4 +141,89 @@ particles.prototype.cloudEffect = function (position){
 			scene.add(particle_system);
 }
 
+particles.prototype.handleParticles = function (delta){
+	effects.particles.systems.forEach(function(particle_system,index){
+		particle_system._lifetime += delta;
+		particle_system.sortParticles = true;
+		particle_system.material.color.r -= Math.random()*.001;
+		particle_system.material.color.g += Math.random()*.001;
+		if (particle_system.material.opacity > 0){
+		particle_system.material.opacity *= .99;
+		}
+		particle_system.geometry.vertices.forEach(function(particle,index){
+			particle.x += Math.random() * particle_system.max - particle_system.min;
+			particle.y += Math.random() * particle_system.max - particle_system.min;
+			particle.z += Math.random() * particle_system.max - particle_system.min;
+		});
+		particle_system.geometry.__dirtyVertices = true;
+		if (particle_system._lifetime > 1.57) {
+			scene.remove(particle_system);
+			effects.particles.systems.splice(index,1);
+		}
+	});
+}
+
+/*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+    Object Effects
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
+
+particles.prototype.createThruster = function (scale, position){
+		var particleCount = 70,
+				particles = new THREE.Geometry(),
+				pMaterial =
+				  new THREE.ParticleBasicMaterial({
+					map: THREE.ImageUtils.loadTexture("/game/assets/textures/particles/plasma.png?nocache"),
+					size: 7.5 * scale,
+					blending: THREE.AdditiveBlending,
+					transparent: true,
+					alphaTest: 0.4
+				  });
+
+			// now create the individual particles
+			var	pos_x_max = 29.5 * scale,
+				pos_x_min = 5.5 * scale,
+				pos_y_max = 50 * scale,
+				pos_y_min = 25 * scale;
+
+			for(var p = 0; p < particleCount; p++) {
+				// create a particle with random
+				// position values, -250 -> 250
+				var pX = Math.random() * pos_x_max - pos_x_min,
+					pY = Math.random() * pos_y_max - pos_y_min,
+					pZ = Math.random() * pos_x_max - pos_x_min,
+					particle = new THREE.Vector3(pX, pY, pZ);
+				// add it to the geometry
+				particles.vertices.push(particle);
+			}
+
+			// create the particle system
+			var thruster = new THREE.ParticleSystem(particles, pMaterial);	
+			thruster.sortParticles = true;
+			thruster.max_y = position.y;
+			thruster.min_y = position.y - 75 * scale;
+			thruster.position.x = position.x;
+			thruster.position.y = position.y;
+			thruster.position.z = position.z;
+			thruster.obj_scale = scale;
+			effects.particles.thrusters.push(thruster);
+			// add it to the scene
+			scene.add(thruster);
+}
+
+particles.prototype.animateThrusters = function (delta) {
+	effects.particles.thrusters.forEach(function(thruster, index){
+		thruster.sortParticles = true;
+		thruster.geometry.vertices.forEach(function(particle,i){
+			if (particle.y > thruster.min_y && particle.y < thruster.max_y) {
+				particle.y -= Math.sin(i * delta) * 6.321 * thruster.obj_scale;
+			}
+			else {
+				particle.opacity = 1;
+				particle.y = thruster.max_y - 5 * thruster.obj_scale;
+			}
+		});
+		thruster.geometry.__dirtyVertices = true;
+	
+	});
+};
 

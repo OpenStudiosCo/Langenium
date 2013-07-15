@@ -187,6 +187,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#5b0e0f', end
 }
 #play table {
 	padding: 0 2em;
+	margin: 0 auto;
 }
 #play table td {
 	padding: 0 .5em;

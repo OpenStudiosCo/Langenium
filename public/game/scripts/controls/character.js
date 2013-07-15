@@ -82,25 +82,30 @@ character.prototype.input = function (delta) {
 	}
 	
 	return details;
-
 };
+
 character.prototype.move = function (data) {
 	objects.characters.collection.forEach(function(sprite){
 		if (sprite.socket_id == data.socket_id) {
+			//console.log('x' + sprite.position.x + ', y: ' + sprite.position.y + ', z: ' + sprite.position.z);
 			sprite.moving = data.moving;
 			sprite.face = data.face;
 			
 			// move sub
 			if (sprite.socket_id == player.socket_id) {
-				sprite.rotation.y += data.rY;
+				sprite.rotation.y = parseFloat(data.rY);
 			}
 			else {
 				sprite.rotation.y = client.camera.rotation.y;
 			}
 
-			if (data.pZ != 0) {
-				sprite.translateZ(data.pZ);
+			if (data.pX != 0) {
+				sprite.position.x = parseFloat(data.pX);
 			}
+			if (data.pZ != 0) {
+				sprite.position.z = parseFloat(data.pZ);
+			}
+			
 		}
 
 

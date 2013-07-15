@@ -150,32 +150,49 @@ function character_toggle(socket, db, instances, client_sessions) {
 	client_sessions.forEach(function(client, index){
 		if (client.sessionId == socket.id) {
 			if (client.mode == "ship") {
-				var _callback = function(result) {
-					var character = result[0];
-					client.mode = "character";
-					character.socket_id = socket.id;
-					character.object = {
-						type: "characters",
-						name: result[0].type // character job name
+				instances[client_sessions[index].instance_id].instances[0].ships.forEach(function(ship){
+					if (ship.socket_id == socket.id) {
+						var _callback = function(result) {
+							var character = result[0];
+							client.mode = "character";
+							character.socket_id = socket.id;
+							character.face = 'back';
+							character.moving = false;
+							character.position = {
+								x: ship.position.x,
+								y: ship.position.y,
+								z: ship.position.z
+							};
+							character.rotation = {
+								x: ship.rotation.x,
+								y: ship.rotation.y,
+								z: ship.rotation.z
+							};
+							character.object = {
+								type: "characters",
+								name: result[0].type // character job name
+							}
+							var update = {
+								_id: client._id,
+								socket_id: socket.id,
+								obj_class: "players",
+								type: "character_toggle",
+								details: result[0],
+								username: client.username
+							};
+							
+							if (instances[client.instance_id].instances) {
+								instances[client.instance_id].addObjectToContainer(character, instances[client.instance_id].instances[0].characters);
+							}
+							else {
+								instances[client.instance_id].addObjectToWorld(character, instances[client.instance_id].characters);
+							}
+							instances.master.instances[0].update_queue.push(update);
+						};
+						db.queryClientDB("characters", { player_id: client._id }, _callback);
 					}
-					var update = {
-						_id: client._id,
-						socket_id: socket.id,
-						obj_class: "players",
-						type: "character_toggle",
-						details: result[0],
-						username: client.username
-					};
-					
-					if (instances[client.instance_id].instances) {
-						instances[client.instance_id].addObjectToContainer(character, instances[client.instance_id].instances[0].characters);
-					}
-					else {
-						instances[client.instance_id].addObjectToWorld(character, instances[client.instance_id].characters);
-					}
-					instances.master.instances[0].update_queue.push(update);
-				};
-				db.queryClientDB("characters", { player_id: client._id }, _callback);
+				});
+				
 			}
 			else {
 				var _callback = function(result) {

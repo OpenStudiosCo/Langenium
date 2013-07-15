@@ -29,7 +29,22 @@ function make(details) {
 			username - player username
 	*/
 	details.move_character = function (character, world, update, _complete){
+		character.moving = update.details.moving;
+		character.face = update.details.face;
 		
+		character.rotation.y += parseFloat(update.details.rY);
+		
+
+		if (update.details.pZ != 0) {
+			character.position.x += parseFloat(update.details.pZ * Math.sin(character.rotation.y));
+			character.position.z += parseFloat(update.details.pZ * Math.cos(character.rotation.y));
+		}
+
+		update.details.pX = character.position.x;
+		update.details.pY = character.position.y;
+		update.details.pZ = character.position.z;
+		update.details.rY = character.rotation.y;
+
 		_complete(update);
 	}
 

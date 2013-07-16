@@ -168,12 +168,12 @@ particles.prototype.handleParticles = function (delta){
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
 particles.prototype.createThruster = function (scale, position){
-		var particleCount = 21,
+		var particleCount = 20,
 				particles = new THREE.Geometry(),
 				pMaterial =
 				  new THREE.ParticleBasicMaterial({
 					map: THREE.ImageUtils.loadTexture("/game/assets/textures/particles/plasma.png?nocache"),
-					size: 7.5 * scale,
+					size: 6.5 * scale,
 					blending: THREE.AdditiveBlending,
 					transparent: true,
 					alphaTest: 0.4
@@ -200,7 +200,7 @@ particles.prototype.createThruster = function (scale, position){
 			var thruster = new THREE.ParticleSystem(particles, pMaterial);	
 			thruster.sortParticles = true;
 			thruster.max_y = position.y;
-			thruster.min_y = position.y - 65 * scale;
+			thruster.min_y = position.y - 45 * scale;
 			thruster.position.x = position.x;
 			thruster.position.y = position.y;
 			thruster.position.z = position.z;

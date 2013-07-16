@@ -128,7 +128,7 @@ controls.prototype.zoom = function (e) {
 
 	var new_fov = client.camera.fov - delta / 11.321312;
 	
-	if (new_fov > 18 && new_fov < 100) {
+	if (new_fov > 15 && new_fov < 80) {
 		client.camera.fov = new_fov;
 	}
 

@@ -20,7 +20,7 @@ var characters = function() {
 characters.prototype.make = function (socket_id, character, position) {
 	var charTexture = new THREE.ImageUtils.loadTexture( character.texture_url );
 	var material = new THREE.MeshBasicMaterial( { map: charTexture, transparent: true, side:THREE.DoubleSide, alphaTest: 0.5 } );
-	var geometry = new THREE.PlaneGeometry(.5, .5, 10, 10);
+	var geometry = new THREE.PlaneGeometry(.5, .5, 1, 1);
 
 	var new_character = new THREE.Mesh(geometry, material);
 	new_character.socket_id = socket_id;

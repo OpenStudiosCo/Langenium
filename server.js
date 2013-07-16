@@ -29,6 +29,7 @@ var 	// 3rd Party Libs
 		io = require('socket.io').listen(8080),
 		fb = new fbsdk.Facebook({ appId: app_id, secret: app_secret }),
 		FacebookStrategy = require('passport-facebook').Strategy,
+		THREE = require('./three.js'),
 		// Langenium Modules
 		db = require("./db.js"),
 		events = require('./events.js'),
@@ -148,7 +149,7 @@ function makeUniverse() {
 	Sets up the main map
 */
 	// Create container and first object 
-	instances.master = instance.make(io, "container");
+	instances.master = instance.make(io, "container", THREE, db);
 	instances.master.instances.push(
 		instance.make(io, "world")
 	);
@@ -185,7 +186,7 @@ function makeUniverse() {
 	var objects = function(result) { 
 		
 		result.forEach(function(object){
-			instances.master.addObjectToContainer(object, instances.master);
+			instances.master.addObjectToContainer(object, instances.master, THREE, db);
 		}); 
 	};
 	

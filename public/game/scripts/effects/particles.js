@@ -15,6 +15,7 @@
 var particles = function() {
 	this.systems = [];
 	this.thrusters = [];
+	this.plasma = [];
 	return this;
 };
 
@@ -168,46 +169,46 @@ particles.prototype.handleParticles = function (delta){
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
 particles.prototype.createThruster = function (scale, position){
-		var particleCount = 20,
-				particles = new THREE.Geometry(),
-				pMaterial =
-				  new THREE.ParticleBasicMaterial({
-					map: THREE.ImageUtils.loadTexture("/game/assets/textures/particles/plasma.png?nocache"),
-					size: 6.5 * scale,
-					blending: THREE.AdditiveBlending,
-					transparent: true,
-					alphaTest: 0.4
-				  });
+	var particleCount = 15,
+		particles = new THREE.Geometry(),
+		pMaterial =
+		  new THREE.ParticleBasicMaterial({
+			map: THREE.ImageUtils.loadTexture("/game/assets/textures/particles/plasma.png?nocache"),
+			size: 7.5 * scale,
+			blending: THREE.AdditiveBlending,
+			transparent: true,
+			alphaTest: 0.3
+		  });
 
-			// now create the individual particles
-			var	pos_x_max = 29.5 * scale,
-				pos_x_min = 5.5 * scale,
-				pos_y_max = 50 * scale,
-				pos_y_min = 25 * scale;
+	// now create the individual particles
+	var	pos_x_max = 29.5 * scale,
+		pos_x_min = 5.5 * scale,
+		pos_y_max = 50 * scale,
+		pos_y_min = 25 * scale;
 
-			for(var p = 0; p < particleCount; p++) {
-				// create a particle with random
-				// position values, -250 -> 250
-				var pX = Math.random() * pos_x_max - pos_x_min,
-					pY = Math.random() * pos_y_max - pos_y_min,
-					pZ = Math.random() * pos_x_max - pos_x_min,
-					particle = new THREE.Vector3(pX, pY, pZ);
-				// add it to the geometry
-				particles.vertices.push(particle);
-			}
+	for(var p = 0; p < particleCount; p++) {
+		// create a particle with random
+		// position values, -250 -> 250
+		var pX = Math.random() * pos_x_max - pos_x_min,
+			pY = Math.random() * pos_y_max - pos_y_min,
+			pZ = Math.random() * pos_x_max - pos_x_min,
+			particle = new THREE.Vector3(pX, pY, pZ);
+		// add it to the geometry
+		particles.vertices.push(particle);
+	}
 
-			// create the particle system
-			var thruster = new THREE.ParticleSystem(particles, pMaterial);	
-			thruster.sortParticles = true;
-			thruster.max_y = position.y;
-			thruster.min_y = position.y - 45 * scale;
-			thruster.position.x = position.x;
-			thruster.position.y = position.y;
-			thruster.position.z = position.z;
-			thruster.obj_scale = scale;
-			effects.particles.thrusters.push(thruster);
-			// add it to the scene
-			scene.add(thruster);
+	// create the particle system
+	var thruster = new THREE.ParticleSystem(particles, pMaterial);	
+	thruster.sortParticles = true;
+	thruster.max_y = position.y;
+	thruster.min_y = position.y - 35 * scale;
+	thruster.position.x = position.x;
+	thruster.position.y = position.y;
+	thruster.position.z = position.z;
+	thruster.obj_scale = scale;
+	effects.particles.thrusters.push(thruster);
+	// add it to the scene
+	scene.add(thruster);
 }
 
 particles.prototype.animateThrusters = function (delta) {
@@ -225,4 +226,64 @@ particles.prototype.animateThrusters = function (delta) {
 	
 	});
 };
+
+particles.prototype.createPlasma = function (scale, position) {
+	var particleCount = 15,
+		particles = new THREE.Geometry(),
+		pMaterial =
+		  new THREE.ParticleBasicMaterial({
+			map: THREE.ImageUtils.loadTexture("/game/assets/textures/particles/plasma.png?nocache"),
+			size: .75 * scale,
+			blending: THREE.AdditiveBlending,
+			transparent: true,
+			alphaTest: 0.3
+		  });
+
+	// now create the individual particles
+	var	pos_x_max = 2.95 * scale,
+		pos_x_min = .55 * scale,
+		pos_y_max = 5 * scale,
+		pos_y_min = 2.5 * scale;
+
+	for(var p = 0; p < particleCount; p++) {
+		// create a particle with random
+		// position values, -250 -> 250
+		var pX = Math.random() * pos_x_max - pos_x_min,
+			pY = Math.random() * pos_y_max - pos_y_min,
+			pZ = Math.random() * pos_x_max - pos_x_min,
+			particle = new THREE.Vector3(pX, pY, pZ);
+		// add it to the geometry
+		particles.vertices.push(particle);
+	}
+
+	// create the particle system
+	var plasma = new THREE.ParticleSystem(particles, pMaterial);	
+	plasma.sortParticles = true;
+	plasma.max_y = position.y;
+	plasma.min_y = position.y - 3.5 * scale;
+	plasma.position.x = position.x;
+	plasma.position.y = position.y;
+	plasma.position.z = position.z;
+	plasma.obj_scale = scale;
+	effects.particles.plasma.push(plasma);
+	// add it to the scene
+	scene.add(plasma);
+};
+
+particles.prototype.animatePlasma = function (delta) {
+	effects.particles.plasma.forEach(function(plasma, index){
+		plasma.sortParticles = true;
+		plasma.geometry.vertices.forEach(function(particle,i){
+			if (particle.y > plasma.min_y && particle.y < plasma.max_y) {
+				particle.y -= i + Math.sin(i * delta) * .6321 * plasma.obj_scale;
+			}
+			else {
+				particle.y = plasma.max_y - .5 * plasma.obj_scale;
+			}
+		});
+		plasma.geometry.__dirtyVertices = true;
+	
+	});
+};
+
 

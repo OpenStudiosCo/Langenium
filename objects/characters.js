@@ -28,10 +28,12 @@ function make(details) {
 		Parameters:
 			username - player username
 	*/
-	details.move_character = function (character, world, update, _complete){
+	details.move_character = function (delta, character, world, update, _complete){
 		character.moving = update.details.moving;
 		character.face = update.details.face;
 		
+
+		// This needs to be fixed up as currently a character could theoretically teleport by overriding the pX, pY, pZ values
 		character.rotation.y += parseFloat(update.details.rY);
 		
 

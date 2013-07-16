@@ -16,7 +16,7 @@
 var character = function() {
     this.enabled = false;
     this.camera = new THREE.PerspectiveCamera( 35, (client.winW / client.winH), 1, M * 2 );
-    this.camera.position.z = 25;
+    this.camera.position.z = 13;
     this.camera.position.y = 0;
     return this;
 }

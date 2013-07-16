@@ -126,12 +126,24 @@ controls.prototype.zoom = function (e) {
 
 	var delta = controls.extractWheelDelta(e);
 
-	var new_fov = client.camera.fov - delta / 11.321312;
+	var new_fov = client.camera.position.z - delta / 11.321312;
 	
-	if (new_fov > 15 && new_fov < 80) {
-		client.camera.fov = new_fov;
+	if (controls.character.enabled == true) {
+		if (new_fov > 2 && new_fov < 50) {
+			client.camera.position.z = new_fov;
+		}
 	}
-
+	if (controls.flight.enabled == true) {
+		if (new_fov > 15 && new_fov < 100) {
+			client.camera.position.z = new_fov;
+		}
+	}
+	if (controls.editor.enabled == true) {
+		if (new_fov > 5 && new_fov < 500) {
+			client.camera.position.z = new_fov;
+		}
+	}
+	
   	client.camera.updateProjectionMatrix();
 }
 

@@ -40,6 +40,7 @@ function make(container) {
 
 
 function update(container) {
+	//console.log(container);
 	var new_time = new Date().getTime();
 	container.delta = (new_time - container.last_time) / 1000;
 	container.last_time = new_time;

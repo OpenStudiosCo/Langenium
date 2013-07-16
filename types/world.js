@@ -61,7 +61,7 @@ function update(delta, io, world) {
 				if (update.type == "move_ship" || update.type == "move_character") {
 					obj.input_status = true; // determine if the ship should glide with velocity forward or not
 				}
-				obj[update.type](obj, world, update, _complete);
+				obj[update.type](delta, obj, world, update, _complete);
 			}
 		});
 	});
@@ -85,7 +85,7 @@ function update(delta, io, world) {
 				}
 			};
 	
-			ship.move_ship(ship, world, update, _complete);
+			ship.move_ship(delta, ship, world, update, _complete);
 		}
 		else {
 			ship.input_status = false;

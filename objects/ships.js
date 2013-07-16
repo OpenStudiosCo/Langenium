@@ -12,16 +12,14 @@
 
 module.exports.make = make;
 
-
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 	Global Variables
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 		
-		
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 	Function Definitions
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
-function make(details) {
+function make(details, THREE) {
 	/* 
 		Adds a ship to the world
 		
@@ -29,7 +27,7 @@ function make(details) {
 			username - ship username
 	*/
 
-	details.move_ship = function (ship, world, update, _complete) {
+	details.move_ship = function (delta, ship, world, update, _complete) {
 		/*
 			if (details.client_position) {
 				console.log("Client:")
@@ -39,11 +37,11 @@ function make(details) {
 			}
 		*/
 		
-		ship.d = update.details.d;
+		ship.d = delta;
 		update.details.socket_id = update.socket_id;
 		update.details.username = ship.username;
-		var 		velocityYChange = 22 * update.details.d,
-					rotateAngle = 0.78539816339 * update.details.d;
+		var 		velocityYChange = 22 * delta,
+					rotateAngle = 0.01744444444444444444444444444444 * 2;
 
 		if (ship.editor == true) {
 			velocityYChange *= 20;
@@ -79,9 +77,42 @@ function make(details) {
 
 		update.details.pX = parseFloat(ship.position.x);
 		update.details.pZ = parseFloat(ship.position.z);
+		/*
+		var moveVector = new THREE.Vector3(update.details.pX, update.details.pY, update.details.pZ);
+		var playerPositionVector = new THREE.Vector3(ship.position.x, ship.position.y, ship.position.z);
 
+		var collisions = detectCollision(playerPositionVector, moveVector, world.environment);
+
+		if (collisions.length > 0) {
+			collisions.forEach(function(collision, index){
+
+				if (collision.distance < 90) {
+					if (collision.point.x > playerPosition.x) 
+						{ data.rY -= collision.distance / 10000; }
+					if (collision.point.x < playerPosition.x) 
+						{ data.rY += collision.distance / 10000; }
+
+					if (data.pX != 0) {
+						data.pX *= -.001;
+					}
+					if (data.pY != 0) {
+						data.pY *= -.001;
+					}
+					if (data.pZ != 0) {
+						data.pZ *= -.001;
+					}
+				}
+			}); 
+		}
+		*/
 		_complete(update);
 	};
 
 	return details;
+}
+
+function detectCollision(source, direction, world_map) {
+	var raycaster = new THREE.Raycaster(source, direction.normalize());
+	var intersects = raycaster.intersectObjects(world_map);
+	return intersects;
 }

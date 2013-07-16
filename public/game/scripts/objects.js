@@ -85,6 +85,13 @@ objects.prototype.makeObjectMesh = function (instruction, geometry, materials) {
 };
 
 objects.prototype.renderObject = function (mesh, obj_class, instruction) {
+	// Convert all to floats to resolve stupid issues
+	instruction.position.x = parseFloat(instruction.position.x);
+	instruction.position.y = parseFloat(instruction.position.y);
+	instruction.position.z = parseFloat(instruction.position.z);
+	instruction.rotation.x = parseFloat(instruction.rotation.x);
+	instruction.rotation.y = parseFloat(instruction.rotation.y);
+	instruction.rotation.z = parseFloat(instruction.rotation.z);
 
 	if (obj_class == "environment") { 
 		this.world_map.push(mesh);
@@ -94,22 +101,22 @@ objects.prototype.renderObject = function (mesh, obj_class, instruction) {
 			mesh.obj_details.sub_type =='platforms' &&
 			mesh.obj_details.name =='union') {
 
-			var 	pos_x = mesh.position.x + Math.sin(mesh.rotation.y) * -1850,
-				 	pos_z = mesh.position.z + Math.cos(mesh.rotation.y) * -2250;
+			var 	pos_x = instruction.position.x + Math.sin(instruction.rotation.y) * -1950,
+				 	pos_z = instruction.position.z + Math.cos(instruction.rotation.y) * -2250;
 
-			var thruster_1 = effects.particles.createThruster(15, { x: pos_x, y: mesh.position.y - 900, z: pos_z });
+			var thruster_1 = effects.particles.createThruster(15, { x: pos_x, y: instruction.position.y - 900, z: pos_z });
 			scene.add(thruster_1);
 
-			pos_x = mesh.position.x + Math.sin(mesh.rotation.y);
-			pos_z = mesh.position.z + Math.cos(mesh.rotation.y) * -100;		
+			pos_x = instruction.position.x + Math.sin(instruction.rotation.y) * -100;
+			pos_z = instruction.position.z + Math.cos(instruction.rotation.y) * -100;		
 
-			var thruster_2 = effects.particles.createThruster(15, { x: pos_x, y: mesh.position.y - 900, z: pos_z });
+			var thruster_2 = effects.particles.createThruster(15, { x: pos_x, y: instruction.position.y - 900, z: pos_z });
 			scene.add(thruster_2);
 
-			pos_x = mesh.position.x + Math.sin(mesh.rotation.y) * 1650;
-			pos_z = mesh.position.z + Math.cos(mesh.rotation.y) * 2150;	
+			pos_x = instruction.position.x + Math.sin(instruction.rotation.y) * 1950;
+			pos_z = instruction.position.z + Math.cos(instruction.rotation.y) * 2200;	
 
-			var thruster_3 = effects.particles.createThruster(15, { x: pos_x, y: mesh.position.y - 900, z: pos_z });
+			var thruster_3 = effects.particles.createThruster(15, { x: pos_x, y: instruction.position.y - 900, z: pos_z });
 			scene.add(thruster_3);
 		}
 	}

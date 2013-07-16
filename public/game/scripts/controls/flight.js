@@ -141,7 +141,7 @@ flight.prototype.move = function (velocity, playerPosition, data) {
 		This is a client side function to move the world's water, check collisons and softly a ship, however the server response overrides this
 	*/
 	var velocityYChange = 22 * data.d,
-		rotateAngle = 0.78539816339 * data.d;
+		rotateAngle = 0.01744444444444444444444444444444 * 2;
 
 	
 	if (window.location.href.indexOf("editor") > 0) { 

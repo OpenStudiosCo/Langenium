@@ -38,7 +38,7 @@ function make(details) {
 
 	
 
-	details.character_toggle = function(character_update, world, update, _complete) {
+	details.character_toggle = function(delta, character_update, world, update, _complete) {
 		_complete(update);
 	}
 

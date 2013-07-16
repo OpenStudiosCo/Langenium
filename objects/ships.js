@@ -44,7 +44,7 @@ function make(details, THREE) {
 					rotateAngle = 0.01744444444444444444444444444444 * 2;
 
 		if (ship.editor == true) {
-			velocityYChange *= 20;
+			velocityYChange *= 100;
 			if (update.details.pZ > 0 && ship.velocity > -150) { ship.velocity -= 2 }
 			if (update.details.pZ < 0 && ship.velocity < 75) { ship.velocity += 2 }
 		}

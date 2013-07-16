@@ -112,16 +112,16 @@ particles.prototype.cloudEffect = function (position){
 				  var noise = new SimplexNoise();
 				
 				var pX = position.x, pY = position.y, pZ = position.z;
-				var n = noise.noise3d(pX, pY, pZ);
+				var n = noise.noise4d(pX, pY, pZ, p);
 				
 				for (var j = 0; j < 100; j++) {
-					pX +=   Math.random() * 5000;
-					pY += Math.random() * n * -133;
-					pZ +=   Math.random() * 5000;
+					pX +=   Math.random() * 2500;
+					pY +=   Math.random() * n * -133;
+					pZ +=   Math.random() * 2500;
 					for (var k = 0; k < 100; k++) {
-						pX += Math.random() *n;
+						pX += Math.random() / n;
 						pY -= Math.random() * n;
-						pZ += Math.random() *n;
+						pZ += Math.random() * n;
 					}
 				
 				}
@@ -137,7 +137,7 @@ particles.prototype.cloudEffect = function (position){
 			particle_system.min = 8;
 			particle_system._lifetime = -2;
 			particle_system.sortParticles = true;
-
+			particle_system.rotation.y = Math.random();
 			// add it to the scene
 			scene.add(particle_system);
 }

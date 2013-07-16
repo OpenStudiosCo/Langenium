@@ -113,8 +113,8 @@ objects.prototype.renderObject = function (mesh, obj_class, instruction) {
 			var thruster_2 = effects.particles.createThruster(15, { x: pos_x, y: instruction.position.y - 900, z: pos_z });
 			scene.add(thruster_2);
 
-			pos_x = instruction.position.x + Math.sin(instruction.rotation.y) * 1950;
-			pos_z = instruction.position.z + Math.cos(instruction.rotation.y) * 2200;	
+			pos_x = instruction.position.x + Math.sin(instruction.rotation.y) * 2050;
+			pos_z = instruction.position.z + Math.cos(instruction.rotation.y) * 2150;	
 
 			var thruster_3 = effects.particles.createThruster(15, { x: pos_x, y: instruction.position.y - 900, z: pos_z });
 			scene.add(thruster_3);

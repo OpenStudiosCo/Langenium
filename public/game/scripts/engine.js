@@ -73,7 +73,8 @@ engine.prototype.createScene = function () {
 	
 	effects.water.update();
 	
-	effects.particles.cloudEffect({x: -240000, y: 60000, z: -240000});
+	effects.particles.cloudEffect({x: -24000, y: 40000, z: -24000});
+	effects.particles.cloudEffect({x: 0, y: 45000, z: 0});
 		
 	hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 1 );
 	hemiLight.name = "light1";

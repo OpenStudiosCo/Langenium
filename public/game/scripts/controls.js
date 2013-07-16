@@ -126,10 +126,10 @@ controls.prototype.zoom = function (e) {
 
 	var delta = controls.extractWheelDelta(e);
 
-	var new_fov = client.camera.position.z - delta / 11.321312;
+	var new_fov = client.camera.position.z - delta / 21.321312;
 	
 	if (controls.character.enabled == true) {
-		if (new_fov > 2 && new_fov < 50) {
+		if (new_fov > 11 && new_fov < 25) {
 			client.camera.position.z = new_fov;
 		}
 	}

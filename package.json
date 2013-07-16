@@ -18,7 +18,8 @@
     "mongojs" :  "*",
     "socket.io"   :  "*",
     "jade"   :  "*",
-    "three" : "*"
+    "three" : "*",
+    "xmlhttprequest":"*"
   }, 
   "license": "MIT",
   "engines": {

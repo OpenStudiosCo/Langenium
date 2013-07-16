@@ -82,11 +82,6 @@ engine.prototype.createScene = function () {
 	hemiLight.position.set( 0, M, 0 );
 	scene.add( hemiLight );
 
-
-	effects.particles.createThruster(15, {x: 7800, y: 2500, z: -1800})
-
-	effects.particles.createThruster(1, {x: -7000, y: 2100, z: -7000})
-
 }	
 
 engine.prototype.animate = function () {

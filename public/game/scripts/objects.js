@@ -94,10 +94,10 @@ objects.prototype.renderObject = function (mesh, obj_class, instruction) {
 			mesh.obj_details.sub_type =='platforms' &&
 			mesh.obj_details.name =='union') {
 
-			var 	pos_x = mesh.position.x + Math.sin(mesh.rotation.y) * -1300,
-				 	pos_z = mesh.position.z + Math.cos(mesh.rotation.y) * -2000;
+			var 	pos_x = mesh.position.x + Math.sin(mesh.rotation.y) * -1850,
+				 	pos_z = mesh.position.z + Math.cos(mesh.rotation.y) * -2260;
 
-			var thruster_1 = effects.particles.createThruster(15, { x: pos_x, y: mesh.position.y - 1000, z: pos_z});
+			var thruster_1 = effects.particles.createThruster(15, { x: pos_x, y: mesh.position.y - 900, z: pos_z });
 			scene.add(thruster_1);
 		}
 	}

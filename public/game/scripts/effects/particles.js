@@ -168,7 +168,7 @@ particles.prototype.handleParticles = function (delta){
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
 particles.prototype.createThruster = function (scale, position){
-		var particleCount = 70,
+		var particleCount = 21,
 				particles = new THREE.Geometry(),
 				pMaterial =
 				  new THREE.ParticleBasicMaterial({
@@ -200,7 +200,7 @@ particles.prototype.createThruster = function (scale, position){
 			var thruster = new THREE.ParticleSystem(particles, pMaterial);	
 			thruster.sortParticles = true;
 			thruster.max_y = position.y;
-			thruster.min_y = position.y - 75 * scale;
+			thruster.min_y = position.y - 65 * scale;
 			thruster.position.x = position.x;
 			thruster.position.y = position.y;
 			thruster.position.z = position.z;
@@ -215,10 +215,9 @@ particles.prototype.animateThrusters = function (delta) {
 		thruster.sortParticles = true;
 		thruster.geometry.vertices.forEach(function(particle,i){
 			if (particle.y > thruster.min_y && particle.y < thruster.max_y) {
-				particle.y -= Math.sin(i * delta) * 6.321 * thruster.obj_scale;
+				particle.y -= i + Math.sin(i * delta) * 6.321 * thruster.obj_scale;
 			}
 			else {
-				particle.opacity = 1;
 				particle.y = thruster.max_y - 5 * thruster.obj_scale;
 			}
 		});

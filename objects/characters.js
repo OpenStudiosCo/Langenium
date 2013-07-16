@@ -32,7 +32,7 @@ function make(details) {
 		character.moving = update.details.moving;
 		character.face = update.details.face;
 		
-
+		//console.log(character);
 		// This needs to be fixed up as currently a character could theoretically teleport by overriding the pX, pY, pZ values
 		character.rotation.y += parseFloat(update.details.rY);
 		

@@ -91,8 +91,8 @@ ships.prototype.make = function (obj_class, instruction, mesh) {
 			});
 		}
 	};
-	
-	if (instruction.socket_id && instruction.socket_id == events.socket.socket.sessionid) {
+	console.log(instruction)
+	if (!player && instruction.socket_id && instruction.socket_id == events.socket.socket.sessionid) {
 		controls.enabled = true;
 		player = mesh;
 		player.bullets = [];
@@ -124,21 +124,6 @@ ships.prototype.make = function (obj_class, instruction, mesh) {
 		ship.velocity = 0;
 		
 		objects.ships.collection.push(ship);
-		scene.add(objects.ships.collection[objects.ships.collection.length-1]);
-		objects.ships.animation_queue.push(objects.ships.collection[objects.ships.collection.length-1]);
-	}
-	if (instruction.bot_id) {
-		var bot = mesh;
-		bot.bot_id = instruction.bot_id;
-		bot.bullets = [];
-		bot.moveInterval = new Date().getTime();
-		bot.material.materials.forEach(function(material,index){
-			bot.material.materials[index].morphTargets = true;
-		});
-
-		bot.velocity = 0;
-		
-		objects.ships.collection.push(bot);
 		scene.add(objects.ships.collection[objects.ships.collection.length-1]);
 		objects.ships.animation_queue.push(objects.ships.collection[objects.ships.collection.length-1]);
 	}

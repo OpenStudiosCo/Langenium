@@ -43,7 +43,6 @@ events.prototype.setEventHandlers = function (socket) {
 	});
 
 	socket.on("login", function(data) { 
-		console.log(data)
 		events.login(data);
 	});
 
@@ -82,9 +81,21 @@ events.prototype.setEventHandlers = function (socket) {
 			}
 
 			if (update.type == "character_toggle") {
-				
-				objects.ships.collection.forEach(function(ship){
-					if (update.socket_id != player.socket_id) {
+				//console.log(update);
+				if (update.socket_id == player.socket_id) {
+					if (update.details.object.type == "characters" && controls.character.enabled == false) {
+						objects.characters.make(update.socket_id, objects.characters[update.details.object.name], player.position);
+						client.camera = controls.character.camera;
+						controls.character.enabled = true;
+					}
+					if (update.details.object.type == "ships" && controls.flight.enabled == false) {
+						objects.characters.remove(update.socket_id);
+						client.camera = controls.flight.camera;
+						controls.flight.enabled = true;
+					}
+				}
+				else {
+					objects.ships.collection.forEach(function(ship){
 						if (ship.socket_id == update.socket_id) {
 							if (update.details.object.type == "characters") {
 								objects.characters.make(update.socket_id, objects.characters[update.details.object.name], ship.position);
@@ -93,23 +104,10 @@ events.prototype.setEventHandlers = function (socket) {
 								objects.characters.remove(update.socket_id);
 							}
 						}
-					}
-					if (update.socket_id == player.socket_id) {
 						
-						if (update.details.object.type == "characters" && controls.character.enabled == false) {
-
-							objects.characters.make(update.socket_id, objects.characters[update.details.object.name], ship.position);
-							client.camera = controls.character.camera;
-							controls.character.enabled = true;
-						}
-						if (update.details.object.type == "ships" && controls.flight.enabled == false) {
-							objects.characters.remove(update.socket_id);
-							client.camera = controls.flight.camera;
-							controls.flight.enabled = true;
-						}
-					}
-				});
-				
+						
+					});
+				}
 			} 
 		});
 		
@@ -144,5 +142,5 @@ events.prototype.detectCollision = function (source, direction, world_map) {
 events.prototype.logout = function(ship, index) {
 	effects.particles.teleportEffect(ship.position);
 	scene.remove(ship);
-	ships.splice(index, 1);
+	objects.ships.collection.splice(index, 1);
 }

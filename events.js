@@ -95,13 +95,21 @@ function logout(socket, db, instances, client_sessions) {
 	client_sessions.forEach(function(client, index){
 		if (client.sessionId == socket.id) {
 			socket.broadcast.emit('logout', { socket_id: socket.id }); // change to sessionID later
-
+			instances[client_sessions[index].instance_id].instances[0].characters.forEach(function(character, character_index) {
+				if (socket.id == character.socket_id) {
+					instances[client_sessions[index].instance_id].instances[0].characters.splice(character_index, 1);
+				}
+			});
 			instances[client_sessions[index].instance_id].instances[0].players.forEach(function(player, player_index) {
 				if (socket.id == player.socket_id) {
 					instances[client_sessions[index].instance_id].instances[0].players.splice(player_index, 1);
 				}
 			});
-			
+			instances[client_sessions[index].instance_id].instances[0].ships.forEach(function(ship, ship_index) {
+				if (socket.id == ship.socket_id) {
+					instances[client_sessions[index].instance_id].instances[0].ships.splice(ship_index, 1);
+				}
+			});
 			client_sessions.splice(index, 1);
 			delete socket;
 		}			
@@ -221,11 +229,9 @@ function character_toggle(socket, db, instances, client_sessions) {
 function initializeClient(socket, instance, db) {
 
 	for (var objects in instance) {
-
-		if (typeof(instance[objects]) == "object" && objects != "players") {
-			var instruction = {};
-			instruction[objects] = instance[objects];
-			
+		var instruction = {};
+		instruction[objects] = instance[objects];
+		if (objects == "environment" || objects == "ships") {
 			var send_instructions = function (instruction) {
 				if (instruction.class == 'ships') {
 					socket.emit("load", instruction );
@@ -237,6 +243,19 @@ function initializeClient(socket, instance, db) {
 			};
 			
 			prepareLoadInstructions(instruction[objects], db, send_instructions);
+		}
+		if (objects == "characters") {
+			instance.characters.forEach(function(character){
+				var instruction = {
+					_id: character._id,
+					socket_id: character.socket_id,
+					obj_class: "players",
+					type: "character_toggle",
+					details: character.details,
+					username: character.username
+				};
+				socket.emit("character_toggle", instruction);
+			});
 		}
 	}
 }

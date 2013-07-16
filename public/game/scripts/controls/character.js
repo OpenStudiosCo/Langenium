@@ -87,7 +87,6 @@ character.prototype.input = function (delta) {
 character.prototype.move = function (data) {
 	objects.characters.collection.forEach(function(sprite){
 		if (sprite.socket_id == data.socket_id) {
-			//console.log('x' + sprite.position.x + ', y: ' + sprite.position.y + ', z: ' + sprite.position.z);
 			sprite.moving = data.moving;
 			sprite.face = data.face;
 			

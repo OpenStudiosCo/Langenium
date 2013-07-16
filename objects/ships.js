@@ -40,7 +40,7 @@ function make(details, THREE) {
 		ship.d = delta;
 		update.details.socket_id = update.socket_id;
 		update.details.username = ship.username;
-		var 		velocityYChange = 22 * delta,
+		var 		velocityYChange = 3.3333,
 					rotateAngle = 0.01744444444444444444444444444444 * 2;
 
 		if (ship.editor == true) {

@@ -20,14 +20,7 @@ var engine = function() {
 		
 	this.duration = 100,
 	this.keyframes = 5,
-	this.interpolation = this.duration / this.keyframes,
-	this.objects = 	{
-						players: [],
-						bots: [],
-						projectiles: [],
-						environment: []
-					};
-
+	this.interpolation = this.duration / this.keyframes;
 	// Not implemented yet, but will be used for simplifying animation queue
 
     return this;

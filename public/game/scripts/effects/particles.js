@@ -208,7 +208,7 @@ particles.prototype.createThruster = function (scale, position){
 	thruster.obj_scale = scale;
 	effects.particles.thrusters.push(thruster);
 	// add it to the scene
-	scene.add(thruster);
+	return thruster;
 }
 
 particles.prototype.animateThrusters = function (delta) {

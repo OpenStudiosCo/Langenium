@@ -122,6 +122,9 @@ object_properties.prototype.draw_bounding_box = function(object, position, max, 
 };
 
 object_properties.prototype.transform_object = function(object, property, sub_property, value) {
+	if (object.children.length > 0) {
+		console.log(object.children);
+	}
 	if (sub_property) {
 		object[property][sub_property] = value;
 	}

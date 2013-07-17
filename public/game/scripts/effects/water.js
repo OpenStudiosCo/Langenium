@@ -14,6 +14,7 @@
 
 var water = function() {
    this.water_tiles = [];
+   this.animation = new Worker('/game/scripts/workers/water_animation.js');
    return this;
 };
 

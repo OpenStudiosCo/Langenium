@@ -91,7 +91,7 @@ ships.prototype.make = function (obj_class, instruction, mesh) {
 			});
 		}
 	};
-	console.log(instruction)
+	
 	if (!player && instruction.socket_id && instruction.socket_id == events.socket.socket.sessionid) {
 		controls.enabled = true;
 		player = mesh;

@@ -169,10 +169,18 @@ particles.prototype.handleParticles = function (delta){
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
 particles.prototype.createThruster = function (scale, position){
+	var plasmaTexture = new THREE.ImageUtils.loadTexture('/game/assets/textures/particles/plasma.png?nocache');
+	
+	// use "this." to create global object
+	var uniforms = 
+	{
+		baseTexture: { type: "t", value: plasmaTexture },
+		mixAmount: 	 { type: "f", value: 0.0 }
+	};
 	var particleCount = 15,
 		particles = new THREE.Geometry(),
-		pMaterial =
-		  new THREE.ParticleBasicMaterial({
+
+		pMaterial = new THREE.ParticleBasicMaterial({
 			map: THREE.ImageUtils.loadTexture("/game/assets/textures/particles/plasma.png?nocache"),
 			size: 7.5 * scale,
 			blending: THREE.AdditiveBlending,
@@ -227,23 +235,23 @@ particles.prototype.animateThrusters = function (delta) {
 	});
 };
 
-particles.prototype.createPlasma = function (scale, position) {
+particles.prototype.createShipThruster = function (mesh, scale, position) {
 	var particleCount = 15,
 		particles = new THREE.Geometry(),
 		pMaterial =
 		  new THREE.ParticleBasicMaterial({
 			map: THREE.ImageUtils.loadTexture("/game/assets/textures/particles/plasma.png?nocache"),
-			size: .75 * scale,
+			size: .25 * scale,
 			blending: THREE.AdditiveBlending,
 			transparent: true,
 			alphaTest: 0.3
 		  });
 
 	// now create the individual particles
-	var	pos_x_max = 2.95 * scale,
-		pos_x_min = .55 * scale,
-		pos_y_max = 5 * scale,
-		pos_y_min = 2.5 * scale;
+	var	pos_x_max = .013 * scale,
+		pos_x_min = .012 * scale,
+		pos_y_max = .013 * scale,
+		pos_y_min = .012 * scale;
 
 	for(var p = 0; p < particleCount; p++) {
 		// create a particle with random
@@ -259,26 +267,28 @@ particles.prototype.createPlasma = function (scale, position) {
 	// create the particle system
 	var plasma = new THREE.ParticleSystem(particles, pMaterial);	
 	plasma.sortParticles = true;
-	plasma.max_y = position.y;
-	plasma.min_y = position.y - 3.5 * scale;
+	plasma.max_z = position.z;
+	plasma.min_z = position.z - .05 * scale;
 	plasma.position.x = position.x;
 	plasma.position.y = position.y;
 	plasma.position.z = position.z;
+	plasma.scale.set(10,10,10);
 	plasma.obj_scale = scale;
 	effects.particles.plasma.push(plasma);
 	// add it to the scene
-	scene.add(plasma);
+	mesh.add(plasma);
 };
 
-particles.prototype.animatePlasma = function (delta) {
+particles.prototype.animateShipThrusters = function (delta) {
 	effects.particles.plasma.forEach(function(plasma, index){
 		plasma.sortParticles = true;
+		var velocity = -plasma.parent.velocity;
 		plasma.geometry.vertices.forEach(function(particle,i){
-			if (particle.y > plasma.min_y && particle.y < plasma.max_y) {
-				particle.y -= i + Math.sin(i * delta) * .6321 * plasma.obj_scale;
+			if (particle.z > plasma.min_z && particle.z < plasma.max_z) {
+				particle.z -= Math.sin(i * delta) * .06321 * velocity;
 			}
 			else {
-				particle.y = plasma.max_y - .5 * plasma.obj_scale;
+				particle.z = plasma.max_z - .005 * velocity;
 			}
 		});
 		plasma.geometry.__dirtyVertices = true;

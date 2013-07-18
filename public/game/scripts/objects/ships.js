@@ -28,7 +28,9 @@ ships.prototype.make = function (obj_class, instruction, mesh) {
 	};
 
 	mesh.move = function(ship, isPlayer, instruction){
-		
+		if (instruction.velocity) {
+			ship.velocity = instruction.velocity;
+		}
 		if (instruction.details.fire == true) {
 			effects.bullets.addBullet(ship);
 		}
@@ -92,6 +94,12 @@ ships.prototype.make = function (obj_class, instruction, mesh) {
 		}
 	};
 	
+	effects.particles.createShipThruster(mesh, 2.5, { x: 0, y: 0, z: 0 });
+	mesh.children[0].position.x = -.1;
+	mesh.children[0].position.y = 1.25;
+	mesh.children[0].position.z = 1.5;
+	mesh.children[0].rotation.y = 3.14;
+
 	if (!player && instruction.socket_id && instruction.socket_id == events.socket.socket.sessionid) {
 		controls.enabled = true;
 		player = mesh;

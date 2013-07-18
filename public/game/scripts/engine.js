@@ -116,7 +116,7 @@ engine.prototype.animate = function () {
 	effects.water.animate();
 	effects.particles.handleParticles(delta);
 	effects.particles.animateThrusters(delta);
-	effects.particles.animatePlasma(delta);
+	effects.particles.animateShipThrusters(delta);
 	effects.bullets.handleBullets(delta);
 
 	requestAnimationFrame( engine.animate );

@@ -74,7 +74,7 @@ function make(details, THREE) {
 		ship.rotation.y = parseFloat(update.details.rY);
 		ship.rotation.z = parseFloat(0);
 		
-
+		update.velocity = parseFloat(ship.velocity);
 		update.details.pX = parseFloat(ship.position.x);
 		update.details.pZ = parseFloat(ship.position.z);
 		/*

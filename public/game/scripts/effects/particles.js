@@ -236,22 +236,22 @@ particles.prototype.animateThrusters = function (delta) {
 };
 
 particles.prototype.createShipThruster = function (mesh, scale, position) {
-	var particleCount = 15,
+	var particleCount = 10,
 		particles = new THREE.Geometry(),
 		pMaterial =
 		  new THREE.ParticleBasicMaterial({
-			map: THREE.ImageUtils.loadTexture("/game/assets/textures/particles/plasma.png?nocache"),
-			size: .25 * scale,
+			map: THREE.ImageUtils.loadTexture("/game/assets/textures/particles/ember.png?nocache"),
+			size: .65 * scale,
 			blending: THREE.AdditiveBlending,
 			transparent: true,
 			alphaTest: 0.3
 		  });
 
 	// now create the individual particles
-	var	pos_x_max = .013 * scale,
-		pos_x_min = .012 * scale,
-		pos_y_max = .013 * scale,
-		pos_y_min = .012 * scale;
+	var	pos_x_max = .009 * scale,
+		pos_x_min = .007 * scale,
+		pos_y_max = .005 * scale,
+		pos_y_min = .005 * scale;
 
 	for(var p = 0; p < particleCount; p++) {
 		// create a particle with random
@@ -261,6 +261,11 @@ particles.prototype.createShipThruster = function (mesh, scale, position) {
 			pZ = Math.random() * pos_x_max - pos_x_min,
 			particle = new THREE.Vector3(pX, pY, pZ);
 		// add it to the geometry
+		if (p == 0) {
+			pX = 0;
+			pY = 0;
+			pZ = 0;
+		}
 		particles.vertices.push(particle);
 	}
 
@@ -268,7 +273,7 @@ particles.prototype.createShipThruster = function (mesh, scale, position) {
 	var plasma = new THREE.ParticleSystem(particles, pMaterial);	
 	plasma.sortParticles = true;
 	plasma.max_z = position.z;
-	plasma.min_z = position.z - .05 * scale;
+	plasma.min_z = position.z - .025;
 	plasma.position.x = position.x;
 	plasma.position.y = position.y;
 	plasma.position.z = position.z;
@@ -284,11 +289,13 @@ particles.prototype.animateShipThrusters = function (delta) {
 		plasma.sortParticles = true;
 		var velocity = -plasma.parent.velocity;
 		plasma.geometry.vertices.forEach(function(particle,i){
-			if (particle.z > plasma.min_z && particle.z < plasma.max_z) {
-				particle.z -= Math.sin(i * delta) * .06321 * velocity;
-			}
-			else {
-				particle.z = plasma.max_z - .005 * velocity;
+			if (i != 0) {
+				if (particle.z > plasma.min_z * velocity && particle.z < plasma.max_z * velocity) {
+					particle.z -= Math.sin(i * delta) * .06321 * velocity;
+				}
+				else {
+					particle.z = plasma.max_z - .005 * velocity;
+				}
 			}
 		});
 		plasma.geometry.__dirtyVertices = true;

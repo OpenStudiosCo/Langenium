@@ -76,14 +76,15 @@ bullets.prototype.addBullet = function (ship) {
 	var geometry = new THREE.CubeGeometry(1, 1, 30);
 	for ( var i = 0; i < geometry.faces.length; i ++ ) {
 		
-		geometry.faces[ i ].color.setHex( 0xFF6600 );
+		geometry.faces[ i ].color.setHex( 0xFFFF00 );
 	}
 	
-	var material = new THREE.MeshBasicMaterial( { vertexColors: THREE.FaceColors } );
+	var material = new THREE.MeshBasicMaterial( { vertexColors: THREE.FaceColors, transparent: true, opacity: 0.8 } );
 	var pVector = new THREE.Vector3(ship.position.x, ship.position.y, ship.position.z);
 	
-	var 	lBullet = effects.bullets.makeBullet(ship.position, pVector, ship.rotation.y, 20, geometry, material),
-			rBullet = effects.bullets.makeBullet(ship.position, pVector, ship.rotation.y, -20, geometry, material);
+	var position = ship.position;
+	var 	lBullet = effects.bullets.makeBullet(position, pVector, ship.rotation.y, 20, geometry, material),
+			rBullet = effects.bullets.makeBullet(position, pVector, ship.rotation.y, -20, geometry, material);
 			
 	lBullet.socket_id = ship.socket_id;			
 	rBullet.socket_id = ship.socket_id;

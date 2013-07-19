@@ -2,6 +2,9 @@
 	Langenium Game Styles
 	Author: Paul Brzeski
 **************************************************************/
+html, body {
+	background-color: #000000;
+}
 body {
 	margin: 0;
 	overflow: hidden;

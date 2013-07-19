@@ -18,7 +18,7 @@ var engine = function() {
     /* Game engine */
 	this.renderer,
 		
-	this.duration = 100,
+	this.duration = 150,
 	this.keyframes = 5,
 	this.interpolation = this.duration / this.keyframes;
 	// Not implemented yet, but will be used for simplifying animation queue

@@ -50,12 +50,12 @@ var textures = function() {
 		{
 			name: "Dark-Glass",
 			vertex: true,
-			opacity: 0.95,
+			opacity: 0.1,
 			colours: [
+				new THREE.Color( 0x001122 ),
 				new THREE.Color( 0x112233 ),
-				new THREE.Color( 0x112233 ),
-				new THREE.Color( 0x116699),
-				new THREE.Color( 0x113355 )]	}
+				new THREE.Color( 0x112244 ),
+				new THREE.Color( 0x112233 )]	}
 	];
 	
 	this.sprites = new sprites();

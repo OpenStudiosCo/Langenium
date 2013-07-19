@@ -17,7 +17,8 @@ var character = function() {
     this.enabled = false;
     this.camera = new THREE.PerspectiveCamera( 35, (client.winW / client.winH), 1, M * 2 );
     this.camera.position.z = 13;
-    this.camera.position.y = 0;
+    this.camera.position.y = 5;
+    this.camera.rotation.x = -.25
     return this;
 }
 
@@ -71,16 +72,21 @@ character.prototype.input = function (delta) {
 
 	events.socket.emit('move_character', details);
 	
-	if (controls.character.camera.rotation.x != 0 && (controls.camera_rotating == false || controls.mouse.changeX == false)) {
-		controls.character.camera.rotation.x *= .96;
+	if (controls.character.camera.rotation.x != -.25 && (controls.camera_rotating == false || controls.mouse.changeX == false)) {
+		if (controls.character.camera.rotation.x > -.25) {
+			controls.character.camera.rotation.x -= delta;
+		}
+		if (controls.character.camera.rotation.x < -.25) {
+			controls.character.camera.rotation.x *= .999;
+		}
 	}
 	if (controls.character.camera.rotation.y != 0 && (controls.camera_rotating == false || controls.mouse.changeY == false)) {
-		controls.character.camera.rotation.y *= .96;
+		controls.character.camera.rotation.y *= .89;
 	}
 	if (controls.character.camera.rotation.z != 0 && (controls.camera_rotating == false || controls.mouse.changeX == false)) {
-		controls.character.camera.rotation.z *= .96;
+		controls.character.camera.rotation.z *= .89;
 	}
-	
+
 	return details;
 };
 

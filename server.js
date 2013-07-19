@@ -148,48 +148,21 @@ function makeUniverse() {
 /*
 	Sets up the main map
 */
-	// Create container and first object 
-	instances.master = instance.make(io, "container", THREE, db);
-	instances.master.instances.push(
-		instance.make(io, "world")
-	);
+	
+	var instances_callback = function(results) {
+		results.forEach(function(instance_result){
+			instances[instance_result.instance_id] = instance.make(io, instance_result.type, THREE, db);
+			instances[instance_result.instance_id].instances.push(instance.make(io, instance_result.child_id));
+			var objects = function(obj_result) { 
+				obj_result.forEach(function(object){
+					instances[instance_result.instance_id].addObjectToContainer(object, instances[instance_result.instance_id], THREE, db);
+				}); 
+			};
 
-	var bot = {
-		class: "bots",
-		instance_id: "master",
-		object: {
-			_id: "51dee691fc48c32330000000",
-			name: "mercenary",
-			sub_type: "winthrom",
-			type: "ship" 
-		},
-		position: {
-			x: -5000,
-     		y: 2000,
-     		z: -5000 
-		},
-		rotation: {
-			x: 0,
-			y: 0,
-			z: 0
-		},
-		scale: 10
-	};
-	for (var i = 0; i < 1; i++) {
-		bot.bot_id = 'bot_' + i;
-		bot._id = 'bot_' + i;
-		instances.master.addObjectToContainer(bot, instances.master);	
+			db.queryClientDB("instance_objects", { instance_id: instance_result.instance_id }, objects);
+		});
 	}
-	
-	
-	// Check the database for any objects that belong to this instance and add them
-	var objects = function(result) { 
-		
-		result.forEach(function(object){
-			instances.master.addObjectToContainer(object, instances.master, THREE, db);
-		}); 
-	};
-	
-	db.queryClientDB("instance_objects", { instance_id: "master" }, objects);
+
+	db.queryClientDB("instances", { }, instances_callback );
 
 }

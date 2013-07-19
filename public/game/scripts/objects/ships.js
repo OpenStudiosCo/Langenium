@@ -31,9 +31,7 @@ ships.prototype.make = function (obj_class, instruction, mesh) {
 		if (instruction.velocity) {
 			ship.velocity = instruction.velocity;
 		}
-		if (instruction.details.fire == true) {
-			effects.bullets.addBullet(ship);
-		}
+	
 		if (instruction.details.pY != 0){
 			ship.position.y = instruction.details.pY;
 		}
@@ -52,7 +50,7 @@ ships.prototype.make = function (obj_class, instruction, mesh) {
 		if (rotate > 0){
 			if (ship.rotation.z < .5) {
 				ship.rotation.z += rotate_factor;
-				if (isPlayer == true && controls.flight.camera.rotation.y < .25) { 
+				if (isPlayer == true && controls.camera_rotating == false && controls.flight.camera.rotation.y < .25) { 
 					controls.flight.camera.rotation.y += rotate_factor;	
 					controls.flight.camera.rotation.z -= rotate_factor; 
 				}
@@ -60,7 +58,7 @@ ships.prototype.make = function (obj_class, instruction, mesh) {
 			else {
 				rotate_factor = rotate / 6;
 				ship.rotation.z += rotate_factor;
-				if (isPlayer == true && controls.flight.camera.rotation.y < .35) { 
+				if (isPlayer == true && controls.camera_rotating == false && controls.flight.camera.rotation.y < .35) { 
 					controls.flight.camera.rotation.y += rotate_factor;	
 					controls.flight.camera.rotation.z -= rotate_factor; 
 				}
@@ -70,7 +68,7 @@ ships.prototype.make = function (obj_class, instruction, mesh) {
 		if (rotate < 0) {
 			if (ship.rotation.z > -.5) {
 				ship.rotation.z += rotate_factor;
-				if (isPlayer == true && controls.flight.camera.rotation.y > -.25) { 
+				if (isPlayer == true && controls.camera_rotating == false && controls.flight.camera.rotation.y > -.25) { 
 					controls.flight.camera.rotation.y += rotate_factor; 
 					controls.flight.camera.rotation.z -= rotate_factor; 
 				}
@@ -78,12 +76,15 @@ ships.prototype.make = function (obj_class, instruction, mesh) {
 			else {
 				rotate_factor = rotate / 6;
 				ship.rotation.z += rotate_factor;
-				if (isPlayer == true && controls.flight.camera.rotation.y > -.35) { 
+				if (isPlayer == true && controls.camera_rotating == false && controls.flight.camera.rotation.y > -.35) { 
 					controls.flight.camera.rotation.y += rotate_factor; 
 					controls.flight.camera.rotation.z -= rotate_factor; 
 				}
 			}
 			ship.rotation.y = instruction.details.rY;
+		}
+		if (instruction.details.fire == true) {
+			effects.bullets.addBullet(ship);
 		}
 		if (isPlayer == true) {
 			objects.characters.collection.forEach(function(character){

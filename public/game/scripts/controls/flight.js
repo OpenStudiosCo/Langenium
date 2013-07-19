@@ -124,15 +124,30 @@ flight.prototype.input = function (delta){
 	}
 
 	if (controls.flight.camera.rotation.x != 0 && (controls.camera_rotating == false || controls.mouse.changeX == false)) {
-		controls.flight.camera.rotation.x *= .96;
+		controls.flight.camera.rotation.x *= .89;
 	}
 	if (keyboardInput.rY == 0 && controls.flight.camera.rotation.y != 0 && (controls.camera_rotating == false || controls.mouse.changeX == false)) {
-		controls.flight.camera.rotation.y *= .96;
+		controls.flight.camera.rotation.y *= .89;
 	}
 	if (keyboardInput.rY == 0 && controls.flight.camera.rotation.z != 0 && (controls.camera_rotating == false || controls.mouse.changeX == false)) {
-		controls.flight.camera.rotation.z *= .96;
+		controls.flight.camera.rotation.z *= .89;
 	}
-	
+
+	if (controls.flight.camera.position.x != 0 && (controls.camera_rotating == false || controls.mouse.changeX == false)) {
+		controls.flight.camera.position.x *= .89;
+	}
+
+	if (controls.flight.camera.position.z != 35 && (controls.camera_rotating == false || controls.mouse.changeX == false)) {
+		if (controls.flight.camera.position.z < 0) {
+			controls.flight.camera.position.z *= .89;
+		}
+		else {
+			if (controls.flight.camera.position.z < 36) {
+				controls.flight.camera.position.z += delta * 55;
+			}
+		}
+	}
+
 	return keyboardInput;
 }
 

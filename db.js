@@ -20,7 +20,7 @@ module.exports.queryWebsiteDB = queryWebsiteDB;
 
 var 		db_user = process.env['DB_USERNAME'],
 			db_pass = process.env['DB_PASSWORD'],
-			db_url = db_user+':'+db_pass+'@langenium.com:27017/',
+			db_url = db_user+':'+db_pass+'@127.0.0.1:27017/',
 			mongojs  = require("mongojs"),
 			client_db = mongojs(db_url + 'client'),
 			website_db = mongojs(db_url + 'dev_website');

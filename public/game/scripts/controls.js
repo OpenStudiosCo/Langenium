@@ -110,7 +110,7 @@ controls.prototype.rotateCamera = function (delta) {
 		else {
 			controls.mouse.changeY = true;
 		}
-
+		
 		client.camera.rotation.y -= controls.radius * Math.sin(diffX * Math.PI / 360 );
 		client.camera.rotation.x -= controls.radius * Math.sin(diffY * Math.PI / 360 );
 		client.camera.updateMatrix();

@@ -100,7 +100,7 @@ bullets.prototype.addBullet = function (ship) {
 
 var	counter = 0,
 		SPEED = 120, 
-		INTERVAL = .1, 
+		INTERVAL = .05, 
 		MAX_LIFETIME = 1;
 		
 bullets.prototype.makeBullet = function (position, pVector, rotation, shifter,geometry, material) {

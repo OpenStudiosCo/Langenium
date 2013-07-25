@@ -39,6 +39,10 @@ script(src='/game/scripts/objects/ships.js')
 script(src='/game/scripts/textures.js')
 script(src='/game/scripts/textures/sprites.js')
 script(src='/game/scripts/ui.js')
+script(type='x-shader/x-vertex', id='vertexShader')
+	include shaders/water.vertexShader
+script(type='x-shader/x-fragment', id='fragmentShader')
+	include shaders/water.fragmentShader
 script(type='text/javascript')
 	/*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 		Globals

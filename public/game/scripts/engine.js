@@ -113,7 +113,7 @@ engine.prototype.animate = function () {
 	});
 	
 	TWEEN.update();
-	effects.water.animate();
+	effects.water.animate(delta);
 	effects.particles.handleParticles(delta);
 	effects.particles.animateThrusters(delta);
 	effects.particles.animateShipThrusters(delta);

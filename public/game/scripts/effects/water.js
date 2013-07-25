@@ -13,8 +13,23 @@
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
 var water = function() {
-   this.water_tiles = [];
-   return this;
+	this.water_tiles = [];
+	var waterTexture = THREE.ImageUtils.loadTexture( "/game/assets/textures/water2.jpg" );
+	waterTexture.wrapS = waterTexture.wrapT = THREE.RepeatWrapping;
+	waterTexture.repeat.set( 512, 512 );
+	var noiseTexture = THREE.ImageUtils.loadTexture( "/game/assets/textures/noise.png" );
+	noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
+
+	this.uniforms = {	
+						baseTexture: 	{ type: "t", value: waterTexture },
+						baseSpeed: 		{ type: "f", value: .015 },
+						noiseTexture: 	{ type: "t", value: noiseTexture },
+						noiseScale:		{ type: "f", value: .2 },
+						alpha: 			{ type: "f", value: 0.5 },
+						time: 			{ type: "f", value: 1.0 },
+						amplitude: 		{ type: "f", value: 0.0 },
+					};
+	return this;
 };
 
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -32,18 +47,11 @@ water.prototype.makeWater = function(M, pos) {
 	var geometry = new THREE.PlaneGeometry( M, M , water_res, water_res );	
 	geometry.applyMatrix( new THREE.Matrix4().makeRotationX( - Math.PI / 2 ) );
 	
-	var waterTexture = THREE.ImageUtils.loadTexture( "/game/assets/textures/water.jpg" );
-	waterTexture.wrapS = waterTexture.wrapT = THREE.RepeatWrapping;
-	waterTexture.repeat.set( water_texture, water_texture );
-	
-	var material = new THREE.MeshLambertMaterial( {
-		color: 0x006699,
-		shading: THREE.SmoothShading, 
-		side:THREE.DoubleSide, depthWrite: false, alphaTest: 0.5,
-		map: waterTexture,
-		transparent: true,
-		opacity: 0.75,
-		fog: true
+	var material = new THREE.ShaderMaterial( {
+		uniforms: effects.water.uniforms,
+		vertexShader:   document.getElementById( 'vertexShader'   ).textContent,
+		fragmentShader: document.getElementById( 'fragmentShader' ).textContent
+
 	} );
 
 	var plane = new THREE.Mesh( geometry, material );
@@ -63,8 +71,14 @@ water.prototype.makeEnvScale = function() {
 	return env_scale;
 }
 
-water.prototype.animate = function() {
+water.prototype.animate = function(delta) {
 	// need a nicer way to do this
+
+	effects.water.uniforms.time.value += delta;
+	effects.water.uniforms.amplitude.value += 1000;
+
+
+	/*
 	var playerHeightOk = false;
 	
 	if (!player) { playerHeightOk = true; }
@@ -84,6 +98,7 @@ water.prototype.animate = function() {
 		}
 		effects.water.water_tiles[0].geometry.verticesNeedUpdate = true;
 	}
+	*/
 }
 
 water.prototype.update = function() {

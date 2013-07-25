@@ -16,9 +16,9 @@
 var character = function() {
     this.enabled = false;
     this.camera = new THREE.PerspectiveCamera( 35, (client.winW / client.winH), 1, M * 2 );
-    this.camera.position.z = 13;
+    this.camera.position.z = 9;
     this.camera.position.y = 5;
-    this.camera.rotation.x = -.25
+    this.camera.rotation.x = -.5
     return this;
 }
 
@@ -72,11 +72,11 @@ character.prototype.input = function (delta) {
 
 	events.socket.emit('move_character', details);
 	
-	if (controls.character.camera.rotation.x != -.25 && (controls.camera_rotating == false || controls.mouse.changeX == false)) {
-		if (controls.character.camera.rotation.x > -.25) {
+	if (controls.character.camera.rotation.x != -.5 && (controls.camera_rotating == false || controls.mouse.changeX == false)) {
+		if (controls.character.camera.rotation.x > -.5) {
 			controls.character.camera.rotation.x -= delta;
 		}
-		if (controls.character.camera.rotation.x < -.25) {
+		if (controls.character.camera.rotation.x < -.5) {
 			controls.character.camera.rotation.x *= .999;
 		}
 	}

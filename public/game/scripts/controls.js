@@ -114,14 +114,14 @@ controls.prototype.rotateCamera = function (delta) {
 		}
 		
 		if (client.camera.rotation.y < 1.35 && client.camera.rotation.y > -1.35) {
-			client.camera.rotation.y -= controls.radius * Math.sin(diffX * Math.PI / 180 );
+			client.camera.rotation.y -= 2500 * Math.sin(diffX * Math.PI / controls.radius );
 		}
 		if (client.camera.rotation.x < 2 && client.camera.rotation.x > -2) {
-			client.camera.rotation.x -= controls.radius * Math.sin(diffY * Math.PI / 180 );
+			client.camera.rotation.x -= 1000 * Math.sin(diffY * Math.PI / controls.radius );
 		}
 
 		if (controls.flight.camera.position.x < 25 && controls.flight.camera.position.x > -25) {
-			controls.flight.camera.position.x += Math.sin(controls.flight.camera.rotation.y) * 2.12;
+			controls.flight.camera.position.x += Math.sin(controls.flight.camera.rotation.y) * 3.12;
 		}
 		
 		if (controls.flight.camera.position.z < 100 && controls.flight.camera.position.z > 5) {
@@ -141,7 +141,7 @@ controls.prototype.zoom = function (e) {
 	var new_fov = client.camera.position.z - delta / 21.321312;
 	
 	if (controls.character.enabled == true) {
-		if (new_fov > 11 && new_fov < 25) {
+		if (new_fov > 6 && new_fov < 18) {
 			client.camera.position.z = new_fov;
 		}
 	}

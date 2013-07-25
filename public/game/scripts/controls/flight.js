@@ -214,7 +214,7 @@ flight.prototype.move = function (velocity, playerPosition, data) {
 	}
 	
 	// moves the water tiles position 
-	
+	/*
 	for (var tile = 0; tile < effects.water.water_tiles.length; tile++) {
 	
 		var rotateWater =  data.rY  * -1;
@@ -231,7 +231,7 @@ flight.prototype.move = function (velocity, playerPosition, data) {
 		}
 		effects.water.water_tiles[tile].material.needsUpdate = true;
 	}	
-	
+	*/
 	var height_diff = 5000 + 2000 * (effects.water.water_tiles.length-1);
 	
 	sky.position.x = data.pX;

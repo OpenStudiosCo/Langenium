@@ -18,30 +18,30 @@ var water = function() {
 	var waterTexture = THREE.ImageUtils.loadTexture( "/game/assets/textures/water2.jpg" );
 	waterTexture.wrapS = waterTexture.wrapT = THREE.RepeatWrapping;
 	// multiplier for distortion speed 		
-	var baseSpeed = 0.02;
+	var baseSpeed = 0.00062;
 	// number of times to repeat texture in each direction
-	var repeatS = repeatT = 4.0;
+	var repeatS = repeatT = 12.0;
 
 	var noiseTexture = THREE.ImageUtils.loadTexture( "/game/assets/textures/noise.png" );
 	noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping; 
 	// magnitude of noise effect
-	var noiseScale = 0.125;
+	var noiseScale = 0.5;
 	
 	// texture to additively blend with base image texture
 	var blendTexture = new THREE.ImageUtils.loadTexture( '/game/assets/textures/water2.jpg' );
 	blendTexture.wrapS = blendTexture.wrapT = THREE.RepeatWrapping; 
 	// multiplier for distortion speed 
-	var blendSpeed = 0.01;
+	var blendSpeed = 0.000123;
 	// adjust lightness/darkness of blended texture
-	var blendOffset = 0.25;
+	var blendOffset = 0.125;
 
 	// texture to determine normal displacement
 	var bumpTexture = noiseTexture;
 	bumpTexture.wrapS = bumpTexture.wrapT = THREE.RepeatWrapping; 
 	// multiplier for distortion speed 		
-	var bumpSpeed   = 0.15;
+	var bumpSpeed   = .00000021321;
 	// magnitude of normal displacement
-	var bumpScale   = 400.0;
+	var bumpScale   = 2050.0;
 
 	this.uniforms = {	
 						baseTexture: 	{ type: "t", value: waterTexture },
@@ -59,6 +59,9 @@ var water = function() {
 						alpha: 			{ type: "f", value: 0.65 },
 						time: 			{ type: "f", value: 1.0 }
 					};
+
+;
+
 	return this;
 };
 
@@ -110,28 +113,6 @@ water.prototype.animate = function(delta) {
 
 	effects.water.uniforms.time.value += delta;
 	
-		
-	/*
-	var playerHeightOk = false;
-	
-	if (!player) { playerHeightOk = true; }
-	else {
-		if (player.position.y < 80000) {
-			playerHeightOk = true;
-		}
-	}
-	
-	if ((effects.water.water_tiles.length  >= 1)&&(playerHeightOk == true)){
-		var myTime = clock.getElapsedTime() * 10;
-		
-		for (var i = 0; i < effects.water.water_tiles[0].geometry.vertices.length; i++) {
-			var n = Math.sin( i / 5 + ( myTime + i ) /  7);
-			effects.water.water_tiles[0].geometry.vertices[i].z += 5.654321 * n;
-			effects.water.water_tiles[0].geometry.vertices[i].y = 222.654321 * n;
-		}
-		effects.water.water_tiles[0].geometry.verticesNeedUpdate = true;
-	}
-	*/
 }
 
 water.prototype.update = function() {

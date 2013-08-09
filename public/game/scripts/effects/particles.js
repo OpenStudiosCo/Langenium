@@ -184,6 +184,7 @@ particles.prototype.createThruster = function (scale, position){
 			map: THREE.ImageUtils.loadTexture("/game/assets/textures/particles/plasma.png?nocache"),
 			size: 7.5 * scale,
 			blending: THREE.AdditiveBlending,
+			opacity: 0.9,
 			transparent: true,
 			alphaTest: 0.3
 		  });
@@ -243,6 +244,7 @@ particles.prototype.createShipThruster = function (mesh, scale, position) {
 			map: THREE.ImageUtils.loadTexture("/game/assets/textures/particles/ember.png?nocache"),
 			size: .65 * scale,
 			blending: THREE.AdditiveBlending,
+			opacity: 0.9,
 			transparent: true,
 			alphaTest: 0.3
 		  });

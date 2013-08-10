@@ -150,8 +150,25 @@ header
 				menu.sub_menu
 					a.make_window(href='#',title='Make window')
 						i.icon-external-link
-					ul.unstyled
+					select(multiple="multiple", size="25").unstyled
 						include library.jade
+					#object_preview
+					table
+						tr.name
+							td.title
+								strong Name
+							td.value
+						tr.type
+							td.title
+								strong Type
+							td.value
+						tr.type
+							td.title
+								strong Sub-type
+							td.value
+					a.button.add(href='#')
+						i.icon-plus-sign-alt
+						|  Add
 			li.button.editor_settings
 				a(href='#') 
 					i.icon-gears.icon-large

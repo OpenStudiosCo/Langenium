@@ -2,20 +2,37 @@
 	Langenium Editor Object Library Styles
 	Author: Paul Brzeski
 **************************************************************/
-
-.object_library menu ul.unstyled li {
-	display: block;
-	height: 50px;
+.object_library menu {
+	padding: 1em;
+	height: 430px;
+	width: 578px;
 }
 
-.object_library menu ul.unstyled li .name {
+.object_library select {
+	margin-top: 5px;
 	float: left;
-	font-weight: bold;
 }
-.object_library menu ul.unstyled li .type {
+
+.object_library.window select {
+	margin-top: 15px;
 	float: left;
-	
 }
-.object_library menu ul.unstyled li .scale {
-	display: none;
+
+.object_library #object_preview {
+	float: left;
+	width: 330px;
+	margin: 1em;
+}
+
+.object_library table {
+	float: left;
+	margin: -2em 1em 1em 1em;
+}
+
+.object_library td {
+	padding: .25em;
+}
+
+.object_library .button.add {
+	float: right;
 }

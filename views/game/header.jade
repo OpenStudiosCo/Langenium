@@ -76,8 +76,8 @@ script(type='text/javascript')
 
 	// Align top-left
 	stats.domElement.style.position = 'absolute';
-	stats.domElement.style.left = '0px';
-	stats.domElement.style.top = '0px'
+	stats.domElement.style.right = '10px';
+	stats.domElement.style.top = '10px'
 	
 
 	setInterval( function () {
@@ -89,6 +89,7 @@ script(type='text/javascript')
 		stats.end();
 
 	}, 1000 / 66 );
+	
 
 	/*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 		Start the game engine
@@ -100,5 +101,6 @@ script(type='text/javascript')
 		engine.animate();
 
 		$('#ui').append(stats.domElement);
-		
+		events.chart.addTimeSeries(events.latency, { strokeStyle: 'rgba(0, 255, 0, 1)', fillStyle: 'rgba(0, 255, 0, 0.2)', lineWidth: 1 });
+		events.chart.streamTo(document.getElementById("latencyBox"), 500);
 	});

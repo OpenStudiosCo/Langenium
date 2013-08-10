@@ -20,28 +20,28 @@ var water = function() {
 	// multiplier for distortion speed 		
 	var baseSpeed = 0.00062;
 	// number of times to repeat texture in each direction
-	var repeatS = repeatT = 12.0;
+	var repeatS = repeatT = 4.0;
 
 	var noiseTexture = THREE.ImageUtils.loadTexture( "/game/assets/textures/noise.png" );
 	noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping; 
 	// magnitude of noise effect
-	var noiseScale = 0.5;
+	var noiseScale = 0.35;
 	
 	// texture to additively blend with base image texture
 	var blendTexture = new THREE.ImageUtils.loadTexture( '/game/assets/textures/water2.jpg' );
 	blendTexture.wrapS = blendTexture.wrapT = THREE.RepeatWrapping; 
 	// multiplier for distortion speed 
-	var blendSpeed = 0.000123;
+	var blendSpeed = 0.0000123;
 	// adjust lightness/darkness of blended texture
-	var blendOffset = 0.45;
+	var blendOffset = 0.5;
 
 	// texture to determine normal displacement
 	var bumpTexture = noiseTexture;
 	bumpTexture.wrapS = bumpTexture.wrapT = THREE.RepeatWrapping; 
 	// multiplier for distortion speed 		
-	var bumpSpeed   = .00000021321;
+	var bumpSpeed   = .0000000021321;
 	// magnitude of normal displacement
-	var bumpScale   = 2050.0;
+	var bumpScale   = 50.0;
 
 	this.uniforms = {	
 						baseTexture: 	{ type: "t", value: waterTexture },
@@ -56,7 +56,7 @@ var water = function() {
 						bumpTexture:	{ type: "t", value: bumpTexture },
 						bumpSpeed: 		{ type: "f", value: bumpSpeed },
 						bumpScale: 		{ type: "f", value: bumpScale },
-						alpha: 			{ type: "f", value: 0.65 },
+						alpha: 			{ type: "f", value: 0.85 },
 						time: 			{ type: "f", value: 1.0 }
 					};
 
@@ -73,7 +73,7 @@ var water = function() {
 
 water.prototype.makeWater = function(M, pos) {
 	
-	var 	water_res = 1;
+	var 	water_res = 33;
 	if (effects.water.water_tiles.length > 0) { water_res = 1; }
 	
 	var geometry = new THREE.PlaneGeometry( M, M , water_res, water_res );	

@@ -15,8 +15,11 @@
 // This object
 var events = function() {
     this.socket = this.setEventHandlers(
-            io.connect(this.getUrl())
-        );
+        io.connect(this.getUrl())
+    );
+   	this.latency = new TimeSeries();
+	this.chart = new SmoothieChart();
+	
     return this;
 }
 
@@ -52,6 +55,14 @@ events.prototype.setEventHandlers = function (socket) {
 				events.logout(ship, index);
 			}
 		});
+	});
+	socket.on("ping", function(data){
+		if (player) {
+			player.latency = data.latency;
+		}
+		events.latency.append(new Date().getTime(), data.latency);
+		$("#latencyLabel").html("<h3>&nbsp;" + data.latency + "ms</h3>");
+		socket.emit("pong", data);
 	});
 	socket.on("update", function(updates){
 

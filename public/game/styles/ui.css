@@ -44,4 +44,23 @@
 #ui {
 	z-index: 2;
 	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+}
+
+#latencyBox {
+	top: 10px;
+	left: 10px;
+}
+
+#latencyLabel {
+	position: absolute;
+	z-index: 3;
+	left: 10px;
+}
+#latencyLabel h3 {
+	color: #FFFFFF;
+	font-size: 0.8em;
 }

@@ -23,18 +23,19 @@ module.exports.make = make;
 
 /* Instance Types */
 var 	types = {
-					container: require("./types/container.js"),
-					world: require("./types/world.js"),
+					container: require("./instance/types/container.js"),
+					outdoor: require("./instance/types/outdoor.js"),
+					indoor: require("./instance/types/indoor.js")
 };
 		
 /* Object Definitions */
 var 	objects = {
-					players: require("./objects/players.js"),
-					bots: require("./objects/bots.js"),
-					projectiles: require("./objects/projectiles.js"),
-					environment: require("./objects/environment.js"),
-					ships: require("./objects/ships.js"),
-					characters: require("./objects/characters.js")
+					players: require("./instance/objects/players.js"),
+					bots: require("./instance/objects/bots.js"),
+					projectiles: require("./instance/objects/projectiles.js"),
+					environment: require("./instance/objects/environment.js"),
+					ships: require("./instance/objects/ships.js"),
+					characters: require("./instance/objects/characters.js")
 };
 		
 		
@@ -61,11 +62,13 @@ function make(io, type, THREE, db) {
 	}
 	
 	// The child types below are individual worlds
-	if (type == "world") { 
-		instance.addObjectToWorld = function(details) { addObjectToWorld(details, instance, THREE, db) };
-		return types.world.make(io, instance, objects); 
+	if (type == "outdoor") { 
+		return types.outdoor.make(io, instance, objects); 
 	}
-
+	
+	if (type == "indoor") { 
+		return types.indoor.make(io, instance, objects); 
+	}
 }
 
 function addObjectToContainer(details, container, THREE, db) {
@@ -78,37 +81,6 @@ function addObjectToContainer(details, container, THREE, db) {
 			THREE	provider to THREE.JS
 			db 		provider to database module
 	*/
-	var callback = function(result) {
-		console.log("----------------------------------------------------------------------");
-		console.log(details);
-		console.log(result);
-		result.forEach(function(obj){
-			var scale = details.scale ? details.scale : obj.details.scale;
-			var loader =  new THREE.JSONLoader();
-			loader.load(obj.details.url, function(geometry, materials){
-				var mesh = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial( materials ) );
-				mesh.geometry.computeBoundingBox();
-				mesh.scale = new THREE.Vector3(scale,scale,scale);
-				mesh.position.x = details.position.x;
-				mesh.position.y = details.position.y;
-				mesh.position.z = details.position.z;
-				mesh.matrixAutoUpdate = true;
-				mesh.updateMatrix();
-				mesh.updateMatrixWorld();
-
-				details.obj_mesh = mesh;
-				
-				
-			});	
-		});
-			
-	};
 	container.instances[0][details.class].push( objects[details.class].make(details, THREE) ); // defaults to world 0 for now
 
-	//db.queryClientDB("objects", {type: details.object.type, sub_type: details.object.sub_type, name: details.object.name}, callback);
 }
-
-function addObjectToWorld(details, world, THREE, db) {
-	world[details.type].push(objects[details.type].make());
-}
-

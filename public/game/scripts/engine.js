@@ -49,12 +49,12 @@ engine.prototype.createScene = function () {
 		 
 	for ( var i = 0; i < skyGeo.faces.length; i++ ) 
 	{
-			if  (skyGeo.faces[ i ].centroid.y >  -16000) {
-				skyGeo.faces[ i ].materialIndex = 0;
-			}
-			else {
-				skyGeo.faces[ i ].materialIndex = 1;
-			}
+		if  (skyGeo.faces[ i ].centroid.y >  -16000) {
+			skyGeo.faces[ i ].materialIndex = 0;
+		}
+		else {
+			skyGeo.faces[ i ].materialIndex = 1;
+		}
 	}
 	
 	sky = new THREE.Mesh(skyGeo, new THREE.MeshFaceMaterial(sky_materials));
@@ -76,7 +76,7 @@ engine.prototype.createScene = function () {
 	hemiLight.position.set( 0, M, 0 );
 	scene.add( hemiLight );
 
-}	
+}
 
 engine.prototype.animate = function () {
 	var delta = clock.getDelta();

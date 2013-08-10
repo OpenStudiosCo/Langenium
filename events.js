@@ -120,35 +120,29 @@ function move_ship(socket, data, db, instances, client_sessions) {
 	//console.log(instances.master.instances[0].environment);
 	client_sessions.forEach(function(client, index){
 		if (client.sessionId == socket.id) {
-			var update = {
+			instances.master.instances[0].update_queue.push({
 				_id: client._id,
 				socket_id: socket.id,
 				obj_class: "ships",
 				type: "move_ship",
 				details: data,
 				username: client.username
-			};
-			instances.master.instances[0].update_queue.push(update);
+			});
 		}
 	});
 
 }
 function move_character(socket, data, db, instances, client_sessions) {
 	//console.log(instances.master.instances[0].environment);
-
 	client_sessions.forEach(function(client, index){
-		
 		if (client.sessionId == data.socket_id) {
-
-			var update = {
+			instances.master.instances[0].update_queue.push({
 				_id: client._id,
 				socket_id: data.socket_id,
 				obj_class: "characters",
 				type: "move_character",
 				details: data
-			};
-
-			instances.master.instances[0].update_queue.push(update);
+			});
 		}
 	});
 
@@ -180,14 +174,6 @@ function character_toggle(socket, db, instances, client_sessions) {
 								type: "characters",
 								name: result[0].type // character job name
 							}
-							var update = {
-								_id: client._id,
-								socket_id: socket.id,
-								obj_class: "players",
-								type: "character_toggle",
-								details: result[0],
-								username: client.username
-							};
 							
 							if (instances[client.instance_id].instances) {
 								instances[client.instance_id].addObjectToContainer(character, instances[client.instance_id].instances[0].characters);
@@ -195,7 +181,14 @@ function character_toggle(socket, db, instances, client_sessions) {
 							else {
 								instances[client.instance_id].addObjectToWorld(character, instances[client.instance_id].characters);
 							}
-							instances.master.instances[0].update_queue.push(update);
+							instances.master.instances[0].update_queue.push({
+								_id: client._id,
+								socket_id: socket.id,
+								obj_class: "players",
+								type: "character_toggle",
+								details: result[0],
+								username: client.username
+							});
 						};
 						db.queryClientDB("characters", { player_id: client._id }, _callback);
 					}

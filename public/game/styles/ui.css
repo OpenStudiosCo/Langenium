@@ -40,3 +40,8 @@
 #transform .controls > .slider-control {
 	width:70%; float:left; margin:15px;
 }
+
+#ui {
+	z-index: 2;
+	position: absolute;
+}

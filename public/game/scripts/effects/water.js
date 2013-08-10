@@ -33,7 +33,7 @@ var water = function() {
 	// multiplier for distortion speed 
 	var blendSpeed = 0.000123;
 	// adjust lightness/darkness of blended texture
-	var blendOffset = 0.125;
+	var blendOffset = 0.45;
 
 	// texture to determine normal displacement
 	var bumpTexture = noiseTexture;

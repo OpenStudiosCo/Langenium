@@ -17,7 +17,7 @@ script(src='/shared/scripts/socket.io.min.js')
 script(src='/shared/scripts/three.min.js')
 script(src='/shared/scripts/tween.min.js')
 script(src='/shared/scripts/THREEx.KeyboardState.js')
-script(src='/shared/scripts/Stats.js')
+script(src='/shared/scripts/stats.min.js')
 script(src='/shared/scripts/smoothie.js')
 script(src='/shared/scripts/SimplexNoise.js')
 script(src='/game/scripts/client.js')
@@ -71,7 +71,24 @@ script(type='text/javascript')
 	ui = new user_interface();
 	ui.makeDialog("playerPosition", ui.playerPosition);
 
+	var stats = new Stats();
+	stats.setMode(0); // 0: fps, 1: ms
+
+	// Align top-left
+	stats.domElement.style.position = 'absolute';
+	stats.domElement.style.left = '0px';
+	stats.domElement.style.top = '0px'
 	
+
+	setInterval( function () {
+
+		stats.begin();
+
+		// your code goes here
+
+		stats.end();
+
+	}, 1000 / 66 );
 
 	/*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 		Start the game engine
@@ -81,5 +98,7 @@ script(type='text/javascript')
 
 		client.initialize();
 		engine.animate();
+
+		$('#ui').append(stats.domElement);
 		
 	});

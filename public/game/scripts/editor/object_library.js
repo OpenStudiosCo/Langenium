@@ -49,42 +49,38 @@ object_library.prototype.previewObject = function (_id, name, type, sub_type, ur
 
 	var loader = new THREE.JSONLoader();
 	loader.load(url, function(geometry, materials) {
-			if (editor.object_library.preview.children.length > 0) {
-				editor.object_library.preview.children.forEach(function(obj){
-					editor.object_library.preview.remove(obj);
-				});
-			}
-			var useVertexOverrides = false;
-			if ((type != "terrain")&&(type != "ships")&&(type != "bots")) {
-				useVertexOverrides = true;
-			}
+		if (editor.object_library.preview.children.length > 0) {
+			editor.object_library.preview.children.forEach(function(obj){
+				editor.object_library.preview.remove(obj);
+			});
+		}
+		var useVertexOverrides = false;
+		if ((type != "terrain")&&(type != "ships")&&(type != "bots")) {
+			useVertexOverrides = true;
+		}
 
-			textures.prepare(geometry, materials, useVertexOverrides);
-			
-			var mesh = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial( materials ) );
-			mesh.geometry.computeBoundingBox();
-			mesh.position.set(0.0,0.0,0.0);
-			mesh.rotation.set(0.0,0.0,0.0);
-			mesh.scale.set(100, 100, 100);
-			mesh.matrixAutoUpdate = true;
-			mesh.updateMatrix();
-			mesh.geometry.colorsNeedUpdate = true;
+		textures.prepare(geometry, materials, useVertexOverrides);
+		
+		var mesh = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial( materials ) );
+		mesh.geometry.computeBoundingBox();
+		mesh.position.set(0.0,0.0,0.0);
+		mesh.rotation.set(0.0,0.0,0.0);
+		mesh.scale.set(100, 100, 100);
+		mesh.matrixAutoUpdate = true;
+		mesh.updateMatrix();
+		mesh.geometry.colorsNeedUpdate = true;
 
-			var hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 1 );
-			hemiLight.name = "light1";
-			hemiLight.color.setRGB( 0.9, 0.95, 1 );
-			hemiLight.groundColor.setRGB( 0.6, 0.75, 1 );
-			hemiLight.position.set( 0, M, 0 );
-			editor.object_library.preview.add( hemiLight );
-			editor.object_library.preview.add(mesh);
-			editor.object_library.preview_camera.position.y = -100 / 2;
-			editor.object_library.preview_camera.position.z = 15 * 100;
-
-
+		var hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 1 );
+		hemiLight.name = "light1";
+		hemiLight.color.setRGB( 0.9, 0.95, 1 );
+		hemiLight.groundColor.setRGB( 0.6, 0.75, 1 );
+		hemiLight.position.set( 0, M, 0 );
+		editor.object_library.preview.add( hemiLight );
+		editor.object_library.preview.add(mesh);
+		editor.object_library.preview_camera.position.y = -100 / 2;
+		editor.object_library.preview_camera.position.z = 15 * 100;
 
 	});
-	
-
 }
 
 object_library.prototype.addObject = function (_id, name, type, sub_type, url, scale) {

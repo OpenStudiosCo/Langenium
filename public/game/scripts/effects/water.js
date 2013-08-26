@@ -18,30 +18,30 @@ var water = function() {
 	var waterTexture = THREE.ImageUtils.loadTexture( "/game/assets/textures/water2.jpg" );
 	waterTexture.wrapS = waterTexture.wrapT = THREE.RepeatWrapping;
 	// multiplier for distortion speed 		
-	var baseSpeed = 0.00162;
+	var baseSpeed = 0.0012;
 	// number of times to repeat texture in each direction
 	var repeatS = repeatT = 4.0;
 
 	var noiseTexture = THREE.ImageUtils.loadTexture( "/game/assets/textures/noise.png" );
 	noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping; 
 	// magnitude of noise effect
-	var noiseScale = .35;
+	var noiseScale = .5;
 	
 	// texture to additively blend with base image texture
 	var blendTexture = new THREE.ImageUtils.loadTexture( '/game/assets/textures/water2.jpg' );
 	blendTexture.wrapS = blendTexture.wrapT = THREE.RepeatWrapping; 
 	// multiplier for distortion speed 
-	var blendSpeed = 0.00123;
+	var blendSpeed = 0.001;
 	// adjust lightness/darkness of blended texture
-	var blendOffset = 0.5;
+	var blendOffset = 0.25;
 
 	// texture to determine normal displacement
 	var bumpTexture = noiseTexture;
 	bumpTexture.wrapS = bumpTexture.wrapT = THREE.RepeatWrapping; 
 	// multiplier for distortion speed 		
-	var bumpSpeed   = .0000000121321;
+	var bumpSpeed   = .0015;
 	// magnitude of normal displacement
-	var bumpScale   = 150.0;
+	var bumpScale   = 400.0;
 
 	this.uniforms = {	
 						baseTexture: 	{ type: "t", value: waterTexture },
@@ -60,8 +60,32 @@ var water = function() {
 						time: 			{ type: "f", value: 1.0 }
 					};
 
-;
 
+	// Reflection code
+	/* 
+	this.textureCamera = new THREE.PerspectiveCamera( 90, (client.winW / client.winH), 1, M * 2 );
+	
+	this.screenScene = new THREE.Scene();
+	this.firstRenderTarget = new THREE.WebGLRenderTarget( 4096, 4096, { format: THREE.RGBFormat } );
+	this.screenMaterial = new THREE.MeshBasicMaterial( { map: this.firstRenderTarget } );
+	this.screenCamera = new THREE.OrthographicCamera( 
+		window.innerWidth  / -2, window.innerWidth  /  2, 
+		window.innerHeight /  2, window.innerHeight / -2, 
+		-M, M );
+
+	this.screenCamera.position.z = 1;
+	this.screenScene.add( this.screenCamera );
+
+	this.screenGeometry = new THREE.PlaneGeometry( window.innerWidth, window.innerHeight );
+	
+	this.quad = new THREE.Mesh( this.screenGeometry, this.screenMaterial );
+	//this.quad.rotation.z = 2;
+
+	this.screenScene.add( this.quad );
+
+	this.finalRenderTarget = new THREE.WebGLRenderTarget( 4096, 4096, { format: THREE.RGBFormat } );
+	this.planeMaterial = new THREE.MeshBasicMaterial( { map: this.finalRenderTarget } );
+	*/
 	return this;
 };
 
@@ -73,7 +97,7 @@ var water = function() {
 
 water.prototype.makeWater = function(M, pos) {
 	
-	var 	water_res = 33;
+	var 	water_res = 1;
 	if (effects.water.water_tiles.length > 0) { water_res = 1; }
 	
 	var geometry = new THREE.PlaneGeometry( M, M , water_res, water_res );	
@@ -81,8 +105,8 @@ water.prototype.makeWater = function(M, pos) {
 
 	var material = new THREE.ShaderMaterial( {
 		uniforms: effects.water.uniforms,
-		vertexShader:   document.getElementById( 'vertexShader'   ).textContent,
-		fragmentShader: document.getElementById( 'fragmentShader' ).textContent
+		vertexShader:   document.getElementById( 'water_vertexShader'   ).textContent,
+		fragmentShader: document.getElementById( 'water_fragmentShader' ).textContent
 
 	} );
 

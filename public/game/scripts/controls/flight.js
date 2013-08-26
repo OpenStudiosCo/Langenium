@@ -213,6 +213,13 @@ flight.prototype.move = function (velocity, playerPosition, data) {
 		}); 
 	}
 	
+	// move the reflection camera
+	/*
+		effects.water.textureCamera.position.x = player.position.x;
+		effects.water.textureCamera.position.z = player.position.z;
+		effects.water.textureCamera.lookAt(player.position);
+	*/
+	
 	// moves the water tiles position 
 	/*
 	for (var tile = 0; tile < effects.water.water_tiles.length; tile++) {

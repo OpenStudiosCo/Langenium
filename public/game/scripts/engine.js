@@ -63,7 +63,7 @@ engine.prototype.createScene = function () {
 
 	effects.water.water_tiles.push(new effects.water.makeWater(M));
 	scene.add(effects.water.water_tiles[0]);
-	
+	scene.add(effects.water.textureCamera);
 	effects.water.update();
 	
 	//effects.particles.cloudEffect({x: -24000, y: 40000, z: -24000});
@@ -121,5 +121,10 @@ engine.prototype.animate = function () {
 
 	requestAnimationFrame( engine.animate );
 
+	// Reflection code
+	//engine.renderer.render( scene, effects.water.textureCamera, effects.water.firstRenderTarget, true );
+	//engine.renderer.render( effects.water.screenScene, effects.water.screenCamera, effects.water.finalRenderTarget, true );
+
 	engine.renderer.render( scene, client.camera );
+
 }

@@ -15,6 +15,7 @@
 	uniform float alpha;
 
 	varying vec2 vUv;
+	varying vec3 newPosition;
 
 	void main() 
 	{
@@ -27,8 +28,13 @@
 		vec4 noiseGeneratorTimeShift2 = texture2D( noiseTexture, uvTimeShift2 );
 		vec2 uvNoiseTimeShift2 = vUv + noiseScale * vec2( noiseGeneratorTimeShift2.g, noiseGeneratorTimeShift2.b );
 		vec4 blendColor = texture2D( blendTexture, uvNoiseTimeShift2 * vec2(repeatS, repeatT) ) - blendOffset * vec4(1.0, 1.0, 1.0, 1.0);
+		
+		vec3 lightPosition = vec3(0.0, 0.0, 0.0);
+		vec3 rfld = reflect( -lightPosition, newPosition );
+		vec4 reflection = vec4(rfld, 1.0);
 
-		vec4 theColor = baseColor + blendColor;
+		vec4 theColor = baseColor + blendColor + reflection;
 		theColor.a = alpha;
+		
 		gl_FragColor = theColor;
 	}  

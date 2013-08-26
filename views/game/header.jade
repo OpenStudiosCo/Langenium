@@ -40,9 +40,13 @@ script(src='/game/scripts/objects/ships.js')
 script(src='/game/scripts/textures.js')
 script(src='/game/scripts/textures/sprites.js')
 script(src='/game/scripts/ui.js')
-script(type='x-shader/x-vertex', id='vertexShader')
+script(type='x-shader/x-vertex', id='cloud_vertexShader')
+	include shaders/cloud.vertexShader
+script(type='x-shader/x-fragment', id='cloud_fragmentShader')
+	include shaders/cloud.fragmentShader
+script(type='x-shader/x-vertex', id='water_vertexShader')
 	include shaders/water.vertexShader
-script(type='x-shader/x-fragment', id='fragmentShader')
+script(type='x-shader/x-fragment', id='water_fragmentShader')
 	include shaders/water.fragmentShader
 script(type='text/javascript')
 	/*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\

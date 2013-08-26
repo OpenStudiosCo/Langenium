@@ -98,7 +98,7 @@ controls.prototype.rotateCamera = function (delta) {
 	
 	
 		var diffX = (controls.mouse.x - controls.mouse.lastX);
-		var diffY = (controls.mouse.y - controls.mouse.lastY) / 4;
+		var diffY = (controls.mouse.y - controls.mouse.lastY);
 
 		if (diffX == 0) {
 			controls.mouse.changeX = false;
@@ -112,22 +112,25 @@ controls.prototype.rotateCamera = function (delta) {
 		else {
 			controls.mouse.changeY = true;
 		}
+
+		
+		
 		
 		if (client.camera.rotation.y < 1.35 && client.camera.rotation.y > -1.35) {
-			client.camera.rotation.y -= 2500 * Math.sin(diffX * Math.PI / controls.radius );
+			client.camera.rotation.y -= diffX;
 		}
 		if (client.camera.rotation.x < 2 && client.camera.rotation.x > -2) {
-			client.camera.rotation.x -= 1000 * Math.sin(diffY * Math.PI / controls.radius );
+			client.camera.rotation.x -= diffY;
 		}
 
 		if (controls.flight.camera.position.x < 25 && controls.flight.camera.position.x > -25) {
-			controls.flight.camera.position.x += Math.sin(controls.flight.camera.rotation.y) * 3.12;
+			controls.flight.camera.position.x += Math.sin(controls.flight.camera.rotation.y) * 4.12;
 		}
 		
 		if (controls.flight.camera.position.z < 100 && controls.flight.camera.position.z > 5) {
-			controls.flight.camera.position.z -= Math.cos(controls.flight.camera.rotation.y) * 2.12;
+			controls.flight.camera.position.z -= Math.cos(controls.flight.camera.rotation.y) * .52;
 		}
-
+		
 		client.camera.updateMatrix();
 		//console.log('diffX: ' + diffX + ', diffY: ' + diffY);
 }

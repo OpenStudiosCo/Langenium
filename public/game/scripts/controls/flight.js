@@ -122,7 +122,7 @@ flight.prototype.input = function (delta){
 	if (move == true) {
 		events.socket.emit('move_ship', keyboardInput);
 	}
-
+	
 	if (controls.flight.camera.rotation.x != 0 && (controls.camera_rotating == false || controls.mouse.changeX == false)) {
 		controls.flight.camera.rotation.x *= .89;
 	}
@@ -132,6 +132,7 @@ flight.prototype.input = function (delta){
 	if (keyboardInput.rY == 0 && controls.flight.camera.rotation.z != 0 && (controls.camera_rotating == false || controls.mouse.changeX == false)) {
 		controls.flight.camera.rotation.z *= .89;
 	}
+
 
 	if (controls.flight.camera.position.x != 0 && (controls.camera_rotating == false || controls.mouse.changeX == false)) {
 		controls.flight.camera.position.x *= .89;
@@ -147,7 +148,7 @@ flight.prototype.input = function (delta){
 			}
 		}
 	}
-
+	
 	return keyboardInput;
 }
 

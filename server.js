@@ -153,20 +153,19 @@ function makeUniverse() {
 		results.forEach(function(instance_result){
 			
 			instances[instance_result.instance_id] = instance.make(io, instance_result.type, THREE, db);
-
+			
 			// Create the main overworld
 			if (instance_result.instance_id == "master") {
-				instances[instance_result.instance_id].instances.push(instance.make(io, instance_result.child_id));
 				var objects = function(obj_result) { 
 					obj_result.forEach(function(object){
-						instances[instance_result.instance_id].addObjectToContainer(object, instances[instance_result.instance_id], THREE, db);
+						instances[instance_result.instance_id].addObject(object, instances[instance_result.instance_id], THREE, db);
 					}); 
 				};
 				db.queryClientDB("instance_objects", { instance_id: instance_result.instance_id }, objects);
 			}
 		
 		});
-		console.log(instances.user_hangars.instances);
+		console.log(instances);
 	}
 
 	db.queryClientDB("instances", { }, instances_callback );

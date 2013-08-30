@@ -31,6 +31,9 @@ function make(io, outdoor, objects) {
 	*/
 	outdoor.update_queue = [];
 
+	outdoor.transmit_interval = 3;
+	outdoor.interval_ticks = 0;
+
 	outdoor.update = function(delta) { update(delta, io, outdoor); };
 
 	for (var object in objects) {
@@ -43,6 +46,7 @@ function make(io, outdoor, objects) {
 
 // Private function
 function update(delta, io, outdoor) {
+
 	var processed_changes = [];
 	// Player velocities reduce to 0 over time
 	
@@ -65,32 +69,39 @@ function update(delta, io, outdoor) {
 			}
 		});
 	});
-	outdoor.ships.forEach(function(ship){
-		if (ship.input_status == false) {
-			var _complete = function(processed_change) {
-				processed_changes.push(processed_change);
-			};
-			ship.velocity *= .996;
-			var update = {
-				socket_id: ship.socket_id,
-				type: "move_ship",
-				username: ship.username,
-				obj_class: 'players',
-				details: {
-					d: delta,
-					pZ: 0,
-					pY: 0,
-					rY: 0,
-					fire: false	
-				}
-			};
-	
-			ship.move_ship(delta, ship, outdoor, update, _complete);
-		}
-		else {
-			ship.input_status = false;
-		}
-	});
+	if (outdoor.interval_ticks >= outdoor.transmit_interval) {
+		outdoor.interval_ticks = 0;
+		outdoor.ships.forEach(function(ship){
+			if (ship.input_status == false) {
+				var _complete = function(processed_change) {
+					processed_changes.push(processed_change);
+				};
+				ship.velocity *= .996;
+				var update = {
+					socket_id: ship.socket_id,
+					type: "move_ship",
+					username: ship.username,
+					obj_class: 'players',
+					details: {
+						d: delta,
+						pZ: 0,
+						pY: 0,
+						rY: 0,
+						fire: false	
+					}
+				};
+		
+				ship.move_ship(delta, ship, outdoor, update, _complete);
+			}
+			else {
+				ship.input_status = false;
+			}
+		});
+	}
+	else {
+		outdoor.interval_ticks++;
+	}
+
 	io.sockets.emit('update', processed_changes);
 }
 

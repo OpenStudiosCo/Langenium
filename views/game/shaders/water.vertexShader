@@ -16,7 +16,5 @@
 	{ 
 	    vUv = uv;
 		
-	    newPosition = position + normal;
-		
-		gl_Position = projectionMatrix * modelViewMatrix * vec4( newPosition, 1.0 );
+		gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 	}

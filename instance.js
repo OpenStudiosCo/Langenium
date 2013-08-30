@@ -23,19 +23,18 @@ module.exports.make = make;
 
 /* Instance Types */
 var 	types = {
-					container: require("./instance/types/container.js"),
 					outdoor: require("./instance/types/outdoor.js"),
 					indoor: require("./instance/types/indoor.js")
 };
 		
 /* Object Definitions */
 var 	objects = {
-					players: require("./instance/objects/players.js"),
-					bots: require("./instance/objects/bots.js"),
-					projectiles: require("./instance/objects/projectiles.js"),
-					environment: require("./instance/objects/environment.js"),
-					ships: require("./instance/objects/ships.js"),
-					characters: require("./instance/objects/characters.js")
+	players: require("./instance/objects/players.js"),
+	bots: require("./instance/objects/bots.js"),
+	projectiles: require("./instance/objects/projectiles.js"),
+	environment: require("./instance/objects/environment.js"),
+	ships: require("./instance/objects/ships.js"),
+	characters: require("./instance/objects/characters.js")
 };
 		
 		
@@ -54,14 +53,12 @@ function make(io, type, THREE, db) {
 			db 		provider to database module
 	*/
 	var instance = {};
-	
-	// Containers contain clocks and handle 'chambers' or 'worlds'
-	if (type == "container") { 
-		instance.addObjectToContainer = function(details) { addObjectToContainer(details, instance, THREE, db) };
-		return types.container.make(instance); 
-	}
-	
-	// The child types below are individual worlds
+	instance.addObject= function(details) { addObject(details, instance, THREE, db) };
+	instance.delta = 0;
+	instance.last_time = new Date().getTime();
+
+	instance.clock = setInterval( function(){ update(instance); }, 1000 / 66);
+	// Containers contain clocks and handle 'scenes' or 'worlds'
 	if (type == "outdoor") { 
 		return types.outdoor.make(io, instance, objects); 
 	}
@@ -71,7 +68,7 @@ function make(io, type, THREE, db) {
 	}
 }
 
-function addObjectToContainer(details, container, THREE, db) {
+function addObject(details, instance, THREE, db) {
 	/* 
 		Adds an object 
 		
@@ -81,6 +78,15 @@ function addObjectToContainer(details, container, THREE, db) {
 			THREE	provider to THREE.JS
 			db 		provider to database module
 	*/
-	container.instances[0][details.class].push( objects[details.class].make(details, THREE) ); // defaults to world 0 for now
+	instance[details.class].push( objects[details.class].make(details, THREE) ); // defaults to world 0 for now
 
+}
+
+function update(instance) {
+	//console.log(container);
+	var new_time = new Date().getTime();
+	instance.delta = (new_time - instance.last_time) / 1000;
+	instance.last_time = new_time;
+	
+	instance.update(instance.delta);
 }

@@ -31,7 +31,7 @@ function make(io, outdoor, objects) {
 	*/
 	outdoor.update_queue = [];
 
-	outdoor.transmit_interval = 3;
+	outdoor.transmit_interval = 1;
 	outdoor.interval_ticks = 0;
 
 	outdoor.update = function(delta) { update(delta, io, outdoor); };

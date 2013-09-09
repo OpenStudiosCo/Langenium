@@ -2,13 +2,12 @@ header
 	menu.header_menu
 		ul.unstyled
 			li.button.username_menu
-				a.button(href='#')
+				a.button(title='Authentication', href='#')
 					if (logged_in == true)
 						img(src=user.profile_img)
 						=  user.username
 					else
 						i.icon-user.icon-large
-						|   Username
 				menu.sub_menu
 					ul.unstyled
 						if (logged_in == true)
@@ -22,9 +21,8 @@ header
 									i.icon-key
 									|  Login
 			li.button.texture_editor
-				a(href='#') 
+				a(title='Texture editor',href='#') 
 					i.icon-edit.icon-large
-					|  Texture editor
 				menu.sub_menu
 					a.make_window(href='#',title='Make window')
 						i.icon-external-link
@@ -47,9 +45,8 @@ header
 										td
 											| (texture preview)
 			li.button.object_presets
-				a(href='#')
+				a(title='Object presets',href='#')
 					i.icon-tasks.icon-large
-					|  Object presets
 				menu.sub_menu
 					a.make_window(href='#',title='Make window')
 						i.icon-external-link

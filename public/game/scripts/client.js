@@ -19,6 +19,8 @@ var client = function() {
 	this.winW = 1024;
 	this.winH = 768;
 
+	if (window.location.href.indexOf("editor") > 0) { this.is_editor = true; } else { this.is_editor = false; }
+
 	return this;
 }
 
@@ -33,13 +35,10 @@ client.prototype.initialize = function () {
 	engine.renderer = new THREE.WebGLRenderer({
 		antialias : true
 	});
-
-	//default to flight camera
-	client.camera = controls.flight.camera;
-	
-	engine.createScene();
 	
 	engine.renderer.setSize( client.winW, client.winH);
+
+	events.socket.emit("login", { username: "Saggy Nuts", editor: client.is_editor });
 	$("#game").append(engine.renderer.domElement);
 	
 	window.addEventListener( 'resize', client.onWindowResize, false );

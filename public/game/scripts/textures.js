@@ -63,6 +63,10 @@ var textures = function() {
     return this;
 };
 
+/*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+	Function definitions
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
+
 textures.prototype.prepare = function(geometry, materials, useVertexOverrides) {
 	materials.forEach(function(material, material_index){
 		textures.materials.forEach(function(material_details){
@@ -82,11 +86,12 @@ textures.prototype.prepare = function(geometry, materials, useVertexOverrides) {
 	if (useVertexOverrides == true) {
 		geometry.faces.forEach(function(face,index) {
 			textures.materials.forEach(function(material_details){
+				console.log()
 				if (materials[face.materialIndex].name == material_details.name && material_details.colours) {
 					face.vertexColors[0] = material_details.colours[0];
 					face.vertexColors[1] = material_details.colours[1];
 					face.vertexColors[2] = material_details.colours[2];
-					face.vertexColors[3] = material_details.colours[3];
+				//	face.vertexColors[3] = material_details.colours[3]; // for some reason in r60 the union platforms changed into triangle surfaces??
 				}
 			});
 		});

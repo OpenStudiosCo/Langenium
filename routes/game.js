@@ -31,10 +31,17 @@ exports.play = function(req, res) {
 	render(req, res, 'game/client', { title: "Langenium - Game - Client Alpha", editor: false });
 };
 exports.editor = function(req, res) {
-	var callback = function(result) {
-		render(req, res, 'game/editor', { title: "Langenium - Game - Map Editor Alpha", editor: true, objects: result });
+	var objects, instances;
+	var objects_callback = function(result) {
+		objects = result;
+		db.queryClientDB("instances", { }, instance_callback);
+		
 	};
-	db.queryClientDB("objects", { }, callback);
+	var instance_callback = function(result) {
+		instances = result;
+		render(req, res, 'game/editor', { title: "Langenium - Game - Map Editor Alpha", editor: true, objects: objects, instances: instances });
+	};
+	db.queryClientDB("objects", { }, objects_callback);
 };
 
 // Modals

@@ -37,6 +37,7 @@ script(src='/game/scripts/objects/characters.js')
 script(src='/game/scripts/objects/environment.js')
 script(src='/game/scripts/objects/projectiles.js')
 script(src='/game/scripts/objects/ships.js')
+script(src='/game/scripts/scenes.js')
 script(src='/game/scripts/textures.js')
 script(src='/game/scripts/textures/sprites.js')
 script(src='/game/scripts/ui.js')
@@ -102,7 +103,19 @@ script(type='text/javascript')
 
 	$(document).ready(function(){
 
+
+		// This is where code to set environment types needs to go:
+		// client.initialize();
+		
+
 		client.initialize();
+
+		//default to flight camera... for now
+		client.camera = controls.flight.camera;
+
+		// to be replaced by:
+		// engine.loadScene(instructions);
+		engine.createScene();
 		engine.animate();
 
 		$('#ui').append(stats.domElement);

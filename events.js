@@ -68,15 +68,21 @@ function login(socket, data, db, instances, client_sessions) {
 			ship.velocity = 0;
 			// check if we're dealing with a container
 			instances[player.instance_id].addObject(ship, instances[player.instance_id].ships);
-			initializeClient(socket, instances[player.instance_id], db);
 			
+			db.queryClientDB("instances", { instance_id: player.instance_id}, user_instance);
 
 		};
+
+		var user_instance = function(result) {
+			socket.emit("load_scene", result[0]);
+			initializeClient(socket, instances[player.instance_id], db);
+		}
 
 
 		db.queryClientDB("players", { username: data.username }, loginUser);
 	
 	}
+	
 										
 }
 
@@ -215,11 +221,11 @@ function initializeClient(socket, instance, db) {
 		if (objects == "environment" || objects == "ships") {
 			var send_instructions = function (instruction) {
 				if (instruction.class == 'ships') {
-					socket.emit("load", instruction );
-					socket.broadcast.emit("load", instruction );
+					socket.emit("load_object", instruction );
+					socket.broadcast.emit("load_object", instruction );
 				}
 				else {
-					socket.emit("load", instruction );
+					socket.emit("load_object", instruction );
 				}
 			};
 			

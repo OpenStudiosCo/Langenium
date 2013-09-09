@@ -74,6 +74,8 @@ script(type='text/javascript')
 	//	Setup the global socket variable
 	events = new events();
 
+	scenes = new scenes();
+
 	ui = new user_interface();
 	ui.makeDialog("playerPosition", ui.playerPosition);
 
@@ -103,20 +105,8 @@ script(type='text/javascript')
 
 	$(document).ready(function(){
 
-
-		// This is where code to set environment types needs to go:
-		// client.initialize();
-		
-
 		client.initialize();
 
-		//default to flight camera... for now
-		client.camera = controls.flight.camera;
-
-		// to be replaced by:
-		// engine.loadScene(instructions);
-		engine.createScene();
-		engine.animate();
 
 		$('#ui').append(stats.domElement);
 		events.chart.addTimeSeries(events.latency, { strokeStyle: 'rgba(0, 255, 0, 1)', fillStyle: 'rgba(0, 255, 0, 0.2)', lineWidth: 1 });

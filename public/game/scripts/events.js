@@ -38,7 +38,14 @@ events.prototype.getUrl = function () {
 }
 events.prototype.setEventHandlers = function (socket) {
     
-	socket.on("load", function(data) { 
+	socket.on("load_scene", function(data) { 
+		console.log("load_scene");
+		scenes.load(data);
+		engine.animate();
+	});
+
+	socket.on("load_object", function(data) { 
+		console.log("load_object");
 		objects.loadObject(data);
 	});
 
@@ -123,8 +130,13 @@ events.prototype.setEventHandlers = function (socket) {
 	return socket;
 }
 
+
+
+// This is for authentication
 events.prototype.login = function(user) {
 	
+	
+
 	if (window.location.href.indexOf("editor") >= 0) {
 		$('.username_menu > .button').html('');
 		$('.username_menu > .button').append('<img src="https://graph.facebook.com/'+user.facebook_id+'/picture?width=20&height=20" /> '); 

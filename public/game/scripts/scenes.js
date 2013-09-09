@@ -29,14 +29,11 @@ var scenes = function() {
 	Function definitions
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
-scenes.prototype.loadScene = function() {
+scenes.prototype.load = function(instance) {
 	// create a new THREE.Scene and setup rendering callback in engine render block
-};
-
-engine.prototype.createScene = function () {
-/* 
-	Create basic scene objects - sky, etc
-*/
+	console.log(instance);
+	// default to flight camera
+	client.camera = controls.flight.camera;
 	scene = new THREE.Scene();
 	//scene.add(camera);
 	
@@ -78,5 +75,5 @@ engine.prototype.createScene = function () {
 	hemiLight.groundColor.setRGB( 0.6, 0.75, 1 );
 	hemiLight.position.set( 0, M, 0 );
 	scene.add( hemiLight );
-
-}
+	
+};

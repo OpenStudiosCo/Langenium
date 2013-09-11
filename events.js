@@ -44,20 +44,33 @@ function login(socket, data, db, instances, client_sessions) {
 			player.socket_id = socket.id;
 			player.input_status = false;
 
-			// check if we're dealing with a container
-			
 			instances[player.instance_id].addObject(player, instances[player.instance_id].players);
-			
 
-			client_sessions.push({	_id: player._id,
-									sessionId: socket.id,
-									mode: "ship",
-									socket: socket,
-									instance_id: player.instance_id,
-									username: player.username });
-			db.queryClientDB("ships", { player_id: result[0]._id }, user_ship);
+			if (instances[player.instance_id].type == 'outdoor') {
+				client_sessions.push({	_id: player._id,
+										sessionId: socket.id,
+										mode: "ship",
+										socket: socket,
+										instance_id: player.instance_id,
+										username: player.username });
+
+				db.queryClientDB("ships", { player_id: player._id }, user_ship);
+			}	
+			if (instances[player.instance_id].type == 'indoor') {
+				client_sessions.push({	_id: player._id,
+										sessionId: socket.id,
+										mode: "character",
+										socket: socket,
+										instance_id: player.instance_id,
+										username: player.username });
+				db.queryClientDB("characters", { player_id: player._id }, user_character);
+			}	
+
+
+			
 		};
 
+		// Login a player as a ship
 		var user_ship = function(result) {
 			var ship = result[0];
 			ship.socket_id = socket.id;
@@ -72,6 +85,22 @@ function login(socket, data, db, instances, client_sessions) {
 			db.queryClientDB("instances", { instance_id: player.instance_id}, user_instance);
 
 		};
+
+		// Login a player as a character
+		var user_character = function(result) {
+			var character = result[0];
+			character.socket_id = socket.id;
+			character.editor = data.editor;
+			character.username = player.username;
+			character.position = player.position;
+			character.rotation = player.rotation;
+			
+			// check if we're dealing with a container
+			instances[player.instance_id].addObject(character, instances[player.instance_id].characters);
+			
+			db.queryClientDB("instances", { instance_id: player.instance_id}, user_instance);
+		}
+
 
 		var user_instance = function(result) {
 			socket.emit("load_scene", result[0]);
@@ -232,17 +261,7 @@ function initializeClient(socket, instance, db) {
 			prepareLoadInstructions(instruction[objects], db, send_instructions);
 		}
 		if (objects == "characters") {
-			instance.characters.forEach(function(character){
-				var instruction = {
-					_id: character._id,
-					socket_id: character.socket_id,
-					obj_class: "players",
-					type: "character_toggle",
-					details: character.details,
-					username: character.username
-				};
-				socket.emit("character_toggle", instruction);
-			});
+			console.log(instance)
 		}
 	}
 }

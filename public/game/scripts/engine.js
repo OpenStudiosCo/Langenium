@@ -17,7 +17,7 @@ var engine = function() {
     
     /* Game engine */
 	this.renderer,
-		
+	this.scene = new THREE.Scene();
 	this.duration = 150,
 	this.keyframes = 5,
 	this.interpolation = this.duration / this.keyframes;
@@ -34,8 +34,6 @@ engine.prototype.createScene = function () {
 /* 
 	Create basic scene objects - sky, etc
 */
-	scene = new THREE.Scene();
-	//scene.add(camera);
 	
 	var skyGeo = new THREE.CylinderGeometry(M / 2, M / 2, M, 64	, 64, false);
 

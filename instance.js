@@ -53,6 +53,7 @@ function make(io, type, THREE, db) {
 			db 		provider to database module
 	*/
 	var instance = {};
+	instance.type = type;
 	instance.addObject= function(details) { addObject(details, instance, THREE, db) };
 	instance.delta = 0;
 	instance.last_time = new Date().getTime();

@@ -31,44 +31,46 @@ var scenes = function() {
 
 scenes.prototype.load = function(instance) {
 	// create a new THREE.Scene and setup rendering callback in engine render block
-	console.log(instance);
-	// default to flight camera
-	client.camera = controls.flight.camera;
 	scene = new THREE.Scene();
-	//scene.add(camera);
+	// default to flight camera
+	// need to set some kind of default for camera/ship/character bindings
 	
-	var skyGeo = new THREE.CylinderGeometry(M / 2, M / 2, M, 64	, 64, false);
-
-	var sky_materials = [ new THREE.MeshBasicMaterial({ 
-			color: 0x66CCFF,
-			shading: THREE.SmoothShading, 
-			side: THREE.DoubleSide
-		}),
-		 new THREE.MeshBasicMaterial( { color: 0x002244, side: THREE.DoubleSide,  } )
-		 ];
-		 
-	for ( var i = 0; i < skyGeo.faces.length; i++ ) 
-	{
-		if  (skyGeo.faces[ i ].centroid.y >  -16000) {
-			skyGeo.faces[ i ].materialIndex = 0;
-		}
-		else {
-			skyGeo.faces[ i ].materialIndex = 1;
-		}
-	}
 	
-	sky = new THREE.Mesh(skyGeo, new THREE.MeshFaceMaterial(sky_materials));
-	sky.name = "sky";
-	scene.add(sky);
-
-	effects.water.water_tiles.push(new effects.water.makeWater(M));
-	scene.add(effects.water.water_tiles[0]);
-	scene.add(effects.water.textureCamera);
-	effects.water.update();
-	
-	//effects.particles.cloudEffect({x: -24000, y: 40000, z: -24000});
-	//effects.particles.cloudEffect({x: 0, y: 45000, z: 0});
+	if (instance.type == 'outdoor') {
+		client.camera = controls.flight.camera;	
 		
+		var skyGeo = new THREE.CylinderGeometry(M / 2, M / 2, M, 64	, 64, false);
+
+		var sky_materials = [ new THREE.MeshBasicMaterial({ 
+				color: 0x66CCFF,
+				shading: THREE.SmoothShading, 
+				side: THREE.DoubleSide
+			}),
+			 new THREE.MeshBasicMaterial( { color: 0x002244, side: THREE.DoubleSide,  } )
+			 ];
+			 
+		for ( var i = 0; i < skyGeo.faces.length; i++ ) 
+		{
+			if  (skyGeo.faces[ i ].centroid.y >  -16000) {
+				skyGeo.faces[ i ].materialIndex = 0;
+			}
+			else {
+				skyGeo.faces[ i ].materialIndex = 1;
+			}
+		}
+		
+		sky = new THREE.Mesh(skyGeo, new THREE.MeshFaceMaterial(sky_materials));
+		sky.name = "sky";
+		scene.add(sky);
+
+		effects.water.water_tiles.push(new effects.water.makeWater(M));
+		scene.add(effects.water.water_tiles[0]);
+		scene.add(effects.water.textureCamera);
+		effects.water.update();
+	}	
+	if (instance.type == 'indoor') {
+		client.camera = controls.character.camera;
+	}
 	hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 1 );
 	hemiLight.name = "light1";
 	hemiLight.color.setRGB( 0.9, 0.95, 1 );

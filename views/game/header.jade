@@ -55,26 +55,23 @@ script(type='text/javascript')
 	\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
 	// Global variables for the THREE JS client
-	var scene, sky, M = 500000;
+	var sky, M = 500000;
 	var keyboard = new THREEx.KeyboardState(), clock = new THREE.Clock();
 	var player, bots = [];
 
+
+	// Initialize internal libraries
 	client = new client();
 	client.updateWinSizeVariables();
 
 	engine = new engine();
-
 	controls = new controls();
 	objects = new objects();
-	
 	textures = new textures();
-
 	effects = new effects();
-
-	//	Setup the global socket variable
 	events = new events();
-
 	scenes = new scenes();
+
 
 	ui = new user_interface();
 	ui.makeDialog("playerPosition", ui.playerPosition);
@@ -106,7 +103,6 @@ script(type='text/javascript')
 	$(document).ready(function(){
 
 		client.initialize();
-
 
 		$('#ui').append(stats.domElement);
 		events.chart.addTimeSeries(events.latency, { strokeStyle: 'rgba(0, 255, 0, 1)', fillStyle: 'rgba(0, 255, 0, 0.2)', lineWidth: 1 });

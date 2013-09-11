@@ -38,7 +38,7 @@ client.prototype.initialize = function () {
 	
 	engine.renderer.setSize( client.winW, client.winH);
 
-	events.socket.emit("login", { username: "Saggy Nuts", editor: client.is_editor });
+	events.socket.emit("login", { username: "Droopy", editor: client.is_editor });
 	$("#game").append(engine.renderer.domElement);
 	
 	window.addEventListener( 'resize', client.onWindowResize, false );

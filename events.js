@@ -261,7 +261,7 @@ function initializeClient(socket, instance, db) {
 			prepareLoadInstructions(instruction[objects], db, send_instructions);
 		}
 		if (objects == "characters") {
-			console.log(instance)
+			socket.emit("load_character", instruction);
 		}
 	}
 }

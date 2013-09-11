@@ -45,6 +45,7 @@ character.prototype.input = function (delta) {
 	};
 	
 	if (keyboard.pressed("W")) {
+		
 		details.pZ = -details.velocity;
 		details.moving = true;
 		details.face = 'back';
@@ -91,8 +92,11 @@ character.prototype.input = function (delta) {
 };
 
 character.prototype.move = function (data) {
+
 	objects.characters.collection.forEach(function(sprite){
+
 		if (sprite.socket_id == data.socket_id) {
+			
 			sprite.moving = data.moving;
 			sprite.face = data.face;
 			

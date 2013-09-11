@@ -29,14 +29,10 @@ var scenes = function() {
 	Function definitions
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
-scenes.prototype.load = function(instance) {
-	// create a new THREE.Scene and setup rendering callback in engine render block
-	scene = new THREE.Scene();
-	// default to flight camera
-	// need to set some kind of default for camera/ship/character bindings
-	
+scenes.prototype.load = function(instance) {	
 	
 	if (instance.type == 'outdoor') {
+		controls.flight.enabled = true;
 		client.camera = controls.flight.camera;	
 		
 		var skyGeo = new THREE.CylinderGeometry(M / 2, M / 2, M, 64	, 64, false);
@@ -61,14 +57,15 @@ scenes.prototype.load = function(instance) {
 		
 		sky = new THREE.Mesh(skyGeo, new THREE.MeshFaceMaterial(sky_materials));
 		sky.name = "sky";
-		scene.add(sky);
+		engine.scene.add(sky);
 
 		effects.water.water_tiles.push(new effects.water.makeWater(M));
-		scene.add(effects.water.water_tiles[0]);
-		scene.add(effects.water.textureCamera);
+		engine.scene.add(effects.water.water_tiles[0]);
+		engine.scene.add(effects.water.textureCamera);
 		effects.water.update();
 	}	
 	if (instance.type == 'indoor') {
+		controls.character.enabled = true;
 		client.camera = controls.character.camera;
 	}
 	hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 1 );
@@ -76,6 +73,6 @@ scenes.prototype.load = function(instance) {
 	hemiLight.color.setRGB( 0.9, 0.95, 1 );
 	hemiLight.groundColor.setRGB( 0.6, 0.75, 1 );
 	hemiLight.position.set( 0, M, 0 );
-	scene.add( hemiLight );
+	engine.scene.add( hemiLight );
 	
 };

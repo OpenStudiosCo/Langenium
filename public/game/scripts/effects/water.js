@@ -238,7 +238,7 @@ water.prototype.update = function() {
 
 	tile_array.forEach(function(tile){
 		effects.water.water_tiles.push(tile);
-		scene.add(effects.water.water_tiles[effects.water.water_tiles.length-1]);
+		engine.scene.add(effects.water.water_tiles[effects.water.water_tiles.length-1]);
 	});
 
  };

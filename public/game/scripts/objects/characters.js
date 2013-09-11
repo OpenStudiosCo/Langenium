@@ -30,19 +30,19 @@ characters.prototype.make = function (socket_id, character, position) {
 	new_character.scale.set(10,10,10);
 
 
-	if (socket_id == player.socket_id) {
+	if (!player || socket_id == player.socket_id) {
 		new_character.add(controls.character.camera);	
 	}
 	objects.characters.collection.push(new_character);
 	textures.sprites.animation_queue.push(objects.characters.collection[objects.characters.collection.length-1]);
 
-	scene.add(objects.characters.collection[objects.characters.collection.length-1]);
+	engine.scene.add(objects.characters.collection[objects.characters.collection.length-1]);
 }
 
 characters.prototype.remove = function (socket_id) {
 	objects.characters.collection.forEach(function(character, index){
 		if (character.socket_id == socket_id) {
-			scene.remove(character);
+			engine.scene.remove(character);
 			objects.characters.collection.splice(index, 1)
 		}
 	});

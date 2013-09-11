@@ -88,6 +88,7 @@ engine.prototype.animate = function () {
 			controls.flight.move(player.velocity, player.position, controls.flight.input(delta));
 		}
 		if (controls.character.enabled == true) {
+			
 			controls.character.input(delta);
 		}
 	}
@@ -123,6 +124,6 @@ engine.prototype.animate = function () {
 	//engine.renderer.render( scene, effects.water.textureCamera, effects.water.firstRenderTarget, true );
 	//engine.renderer.render( effects.water.screenScene, effects.water.screenCamera, effects.water.finalRenderTarget, true );
 
-	engine.renderer.render( scene, client.camera );
+	engine.renderer.render( engine.scene, client.camera );
 
 }

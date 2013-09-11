@@ -18,7 +18,7 @@ var flight = function() {
     this.camera = new THREE.PerspectiveCamera( 45, (client.winW / client.winH), 1, M * 2 );
     this.camera.position.y = 3;
 	this.camera.position.z = 35;
-    this.enabled = true;
+    this.enabled = false;
 
     return this;
 }

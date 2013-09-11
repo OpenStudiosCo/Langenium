@@ -116,7 +116,7 @@ ships.prototype.make = function (obj_class, instruction, mesh) {
 		
 		player.add(client.camera);
 		
-		scene.add(player);
+		engine.scene.add(player);
 		objects.ships.collection.push(player);
 		objects.ships.animation_queue.push(player);
 	}
@@ -133,7 +133,7 @@ ships.prototype.make = function (obj_class, instruction, mesh) {
 		ship.velocity = 0;
 		
 		objects.ships.collection.push(ship);
-		scene.add(objects.ships.collection[objects.ships.collection.length-1]);
+		engine.scene.add(objects.ships.collection[objects.ships.collection.length-1]);
 		objects.ships.animation_queue.push(objects.ships.collection[objects.ships.collection.length-1]);
 	}
 	

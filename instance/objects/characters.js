@@ -34,12 +34,12 @@ function make(details) {
 		
 		//console.log(character);
 		// This needs to be fixed up as currently a character could theoretically teleport by overriding the pX, pY, pZ values
-		character.rotation.y += parseFloat(update.details.rY);
+		character.rotation.y = parseFloat(character.rotation.y + update.details.rY);
 		
 
 		if (update.details.pZ != 0) {
-			character.position.x += parseFloat(update.details.pZ * Math.sin(character.rotation.y));
-			character.position.z += parseFloat(update.details.pZ * Math.cos(character.rotation.y));
+			character.position.x = parseFloat(character.position.x + update.details.pZ * Math.sin(character.rotation.y));
+			character.position.z = parseFloat(character.position.z + update.details.pZ * Math.cos(character.rotation.y));
 		}
 
 		update.details.pX = character.position.x;

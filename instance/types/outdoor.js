@@ -62,7 +62,7 @@ function update(delta, io, outdoor) {
 				//if (update.type == "move_character") {
 					
 				
-				if (update.type == "move_ship" || update.type == "move_character") {
+				if (update.type == "move_ship") {
 					obj.input_status = true; // determine if the ship should glide with velocity forward or not
 				}
 				obj[update.type](delta, obj, outdoor, update, _complete);

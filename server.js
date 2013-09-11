@@ -165,7 +165,7 @@ function makeUniverse() {
 			}
 		
 		});
-		console.log(instances);
+
 	}
 
 	db.queryClientDB("instances", { }, instances_callback );

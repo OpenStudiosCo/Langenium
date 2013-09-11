@@ -48,7 +48,7 @@ bullets.prototype.bulletEffect = function (position){
 			particle_system.sortParticles = true;
 			particle_systems.push(particle_system);
 			// add it to the scene
-			scene.add(particle_systems[particle_systems.length-1]);
+			engine.scene.add(particle_systems[particle_systems.length-1]);
 }
 
 bullets.prototype.handleBullets = function (delta){
@@ -57,14 +57,14 @@ bullets.prototype.handleBullets = function (delta){
 		effects.bullets.collection[index]._lifetime += delta;
 		
 		if (effects.bullets.collection[index]._lifetime > MAX_LIFETIME) {
-			scene.remove(effects.bullets.collection[index]);
+			engine.scene.remove(effects.bullets.collection[index]);
 			effects.bullets.collection.splice(index, 1);
 		}
 		else {
 			objects.ships.collection.forEach(function(ship) {
 				if ((bullet.socket_id != ship.socket_id)&&(ship.position.distanceTo(bullet.position) < 50)) {
 					effects.particles.explosionEffect(bullet.position);
-					scene.remove(bullet);
+					engine.scene.remove(bullet);
 				}
 			});
 		}
@@ -90,9 +90,9 @@ bullets.prototype.addBullet = function (ship) {
 	rBullet.socket_id = ship.socket_id;
 	
 	effects.bullets.collection.push(lBullet);
-	scene.add(effects.bullets.collection[effects.bullets.collection.length-1]);
+	engine.scene.add(effects.bullets.collection[effects.bullets.collection.length-1]);
 	effects.bullets.collection.push(rBullet);
-	scene.add(effects.bullets.collection[effects.bullets.collection.length-1]);
+	engine.scene.add(effects.bullets.collection[effects.bullets.collection.length-1]);
 
 }
 

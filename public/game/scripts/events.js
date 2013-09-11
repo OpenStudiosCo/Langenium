@@ -39,7 +39,6 @@ events.prototype.getUrl = function () {
 events.prototype.setEventHandlers = function (socket) {
     
 	socket.on("load_scene", function(data) { 
-		console.log("load_scene");
 		scenes.load(data);
 		engine.animate();
 	});
@@ -47,6 +46,18 @@ events.prototype.setEventHandlers = function (socket) {
 	socket.on("load_object", function(data) { 
 		console.log("load_object");
 		objects.loadObject(data);
+	});
+	socket.on("load_character", function(data) { 
+		
+		data.characters.forEach(function(character){
+			
+			objects.characters.make(character.socket_id, objects.characters[character.type], character.position);	
+			if (events.socket.socket.sessionid == character.socket_id) {
+				controls.enabled = true;
+				player = objects.characters.collection[objects.characters.collection.length-1]
+			}
+		});
+		
 	});
 
 	socket.on("login", function(data) { 
@@ -91,6 +102,7 @@ events.prototype.setEventHandlers = function (socket) {
 			}
 
 			if (update.type == "move_character") {
+				
 				controls.character.move(update.details);
 				
 			}

@@ -41,6 +41,8 @@ script(src='/game/scripts/scenes.js')
 script(src='/game/scripts/textures.js')
 script(src='/game/scripts/textures/sprites.js')
 script(src='/game/scripts/ui.js')
+- if (editor==true)
+	include editor/scripts
 script(type='x-shader/x-vertex', id='cloud_vertexShader')
 	include shaders/cloud.vertexShader
 script(type='x-shader/x-fragment', id='cloud_fragmentShader')
@@ -95,6 +97,12 @@ script(type='text/javascript')
 
 	}, 1000 / 66 );
 	
+	if (client.is_editor == true) {
+		var editor = new editor();
+
+		var ray = new THREE.Raycaster();
+		var projector = new THREE.Projector();
+	}
 
 	/*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 		Start the game engine

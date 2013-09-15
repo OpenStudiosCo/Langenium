@@ -41,7 +41,7 @@ $(document).ready(function(){
 
 object_properties.prototype.select = function() {
 	editor.object_properties.unbind_events();
-	scene.children.forEach(function(scene_object, index){
+	engine.scene.children.forEach(function(scene_object, index){
 		scene_object.children.forEach(function(object_child){
 			if (object_child.name == "bounding_box") {
 				scene_object.remove(object_child);
@@ -49,7 +49,7 @@ object_properties.prototype.select = function() {
 		});
 	});
 	var selected_id = $('.object_properties select.object_list').val();
-	scene.children.forEach(function(object, index){
+	engine.scene.children.forEach(function(object, index){
 		if(object.id == selected_id) {
 			$('.object_properties .details .instance_name p').html(object.name);
 			switch(object.obj_details.status) {
@@ -198,7 +198,7 @@ object_properties.prototype.unbind_events = function() {
 object_properties.prototype.modified = function() {
 	if (object.obj_details.status == 'Saved') {
 		var selected_id = $('.object_properties select.object_list').val();
-		scene.children.forEach(function(object, index){
+		engine.scene.children.forEach(function(object, index){
 			if(object.id == selected_id) {
 				object.obj_details.status = 'Modified';
 			}
@@ -209,7 +209,7 @@ object_properties.prototype.modified = function() {
 
 object_properties.prototype.create = function(e){
 	var selected_id = $('.object_properties select.object_list').val();
-	scene.children.forEach(function(object, index){
+	engine.scene.children.forEach(function(object, index){
 		if(object.id == selected_id) {
 			
 			var create_details = {
@@ -243,7 +243,7 @@ object_properties.prototype.create = function(e){
 }
 object_properties.prototype.update = function(e){
 	var selected_id = $('.object_properties select.object_list').val();
-	scene.children.forEach(function(object, index){
+	engine.scene.children.forEach(function(object, index){
 		if(object.id == selected_id) {
 			var create_details = {
 				_id: object.obj_details._id,
@@ -277,7 +277,7 @@ object_properties.prototype.update = function(e){
 }
 object_properties.prototype.delete = function(e){
 	var selected_id = $('.object_properties select.object_list').val();
-	scene.children.forEach(function(object, index){
+	engine.scene.children.forEach(function(object, index){
 		if(object.id == selected_id) {
 			$.ajax({
 				url: '/editor/delete_object',

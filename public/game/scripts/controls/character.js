@@ -70,24 +70,31 @@ character.prototype.input = function (delta) {
 		events.socket.emit('character_toggle');
 	}
 
-
-	events.socket.emit('move_character', details);
-	
-	if (controls.character.camera.rotation.x != -.5 && (controls.camera_rotating == false || controls.mouse.changeX == false)) {
-		if (controls.character.camera.rotation.x > -.5) {
-			controls.character.camera.rotation.x -= delta;
+	if (details.moving == true) {
+		events.socket.emit('move_character', details);	
+	}
+	else {
+		objects.characters.collection.forEach(function(sprite){
+			if (sprite.socket_id == events.socket.socket.sessionid) {
+				sprite.moving = false;
+			}
+		});
+		
+		if (controls.character.camera.rotation.x != -.5 && (controls.camera_rotating == false || controls.mouse.changeX == false)) {
+			if (controls.character.camera.rotation.x > -.5) {
+				controls.character.camera.rotation.x -= delta / 1000;
+			}
+			if (controls.character.camera.rotation.x < -.5) {
+				controls.character.camera.rotation.x *= .999;
+			}
 		}
-		if (controls.character.camera.rotation.x < -.5) {
-			controls.character.camera.rotation.x *= .999;
+		if (controls.character.camera.rotation.y != 0 && (controls.camera_rotating == false || controls.mouse.changeY == false)) {
+			controls.character.camera.rotation.y *= .89;
+		}
+		if (controls.character.camera.rotation.z != 0 && (controls.camera_rotating == false || controls.mouse.changeX == false)) {
+			controls.character.camera.rotation.z *= .89;
 		}
 	}
-	if (controls.character.camera.rotation.y != 0 && (controls.camera_rotating == false || controls.mouse.changeY == false)) {
-		controls.character.camera.rotation.y *= .89;
-	}
-	if (controls.character.camera.rotation.z != 0 && (controls.camera_rotating == false || controls.mouse.changeX == false)) {
-		controls.character.camera.rotation.z *= .89;
-	}
-
 	return details;
 };
 

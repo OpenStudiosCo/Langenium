@@ -22,7 +22,7 @@ var object_library = function() {
 
 	this.preview = new THREE.Scene();
 
-	$("#object_preview").append(this.preview_renderer.domElement);
+	
 	setInterval(function(){
 		
 		editor.object_library.preview.children.forEach(function(child) {
@@ -39,6 +39,10 @@ var object_library = function() {
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     Functions
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
+
+$(document).ready(function () {
+	$("#object_preview").append(editor.object_library.preview_renderer.domElement);
+});
 
 object_library.prototype.previewObject = function (_id, name, type, sub_type, url, scale) {
 	

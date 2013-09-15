@@ -14,8 +14,8 @@
 var client = function() {
 
 	this.camera;
+	this.instance_id;
 	this.isFiring = false;
-	this.username = "Saggy Nuts";
 	this.winW = 1024;
 	this.winH = 768;
 

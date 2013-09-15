@@ -144,7 +144,8 @@ controls.prototype.zoom = function (e) {
 	var new_fov = client.camera.position.z - delta / 21.321312;
 	
 	if (controls.character.enabled == true) {
-		if (new_fov > 6 && new_fov < 18) {
+		new_fov = client.camera.position.z - delta / 333.321312;
+		if (new_fov > 8 && new_fov < 12) {
 			client.camera.position.z = new_fov;
 		}
 	}

@@ -61,7 +61,7 @@ exports.create_object = function(req, res) {
 	if (req.user) {
 		var new_object = {
 			class: req.query.obj_class,
-			instance_id: "master",
+			instance_id: req.user.instance_id,
 			position: {
 				x: req.query.pX,
 				y: req.query.pY,

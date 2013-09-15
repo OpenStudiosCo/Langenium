@@ -31,7 +31,7 @@ $(document).bind("mousedown", function(event) {
 	if (window.location.href.indexOf("editor") > 0 && controls.enabled == true) {
 		var raycaster = new THREE.Raycaster( client.camera_position, controls.editor.cursor_position.sub( client.camera_position ).normalize() );
 
-		var intersects = raycaster.intersectObjects( scene.__objects );
+		var intersects = raycaster.intersectObjects( engine.scene.__objects );
 
 		if ( intersects.length > 0 ) {
 			editor.selected.new(
@@ -53,7 +53,7 @@ $(document).bind("mousedown", function(event) {
 
 $(document).bind("mousemove", function(event) {
 	if (window.location.href.indexOf("editor") > 0) {
-		if (controls && controls.editor) {
+		if (controls.enabled == true && controls.editor) {
 			controls.editor.cursor_position = new THREE.Vector3( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1, 0.5 );
 			projector.unprojectVector( controls.editor.cursor_position, client.camera );
 

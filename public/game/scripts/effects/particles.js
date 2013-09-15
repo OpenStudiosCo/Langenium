@@ -54,7 +54,7 @@ particles.prototype.explosionEffect = function (position){
 			particle_system.sortParticles = true;
 			effects.particles.systems.push(particle_system);
 			// add it to the scene
-			scene.add(effects.particles.systems[effects.particles.systems.length-1]);
+			engine.scene.add(effects.particles.systems[effects.particles.systems.length-1]);
 }
 
 particles.prototype.teleportEffect = function (position){
@@ -88,7 +88,7 @@ particles.prototype.teleportEffect = function (position){
 			particle_system.sortParticles = true;
 			effects.particles.systems.push(particle_system);
 			// add it to the scene
-			scene.add(effects.particles.systems[effects.particles.systems.length-1]);
+			engine.scene.add(effects.particles.systems[effects.particles.systems.length-1]);
 }
 
 particles.prototype.cloudEffect = function (position){
@@ -139,7 +139,7 @@ particles.prototype.cloudEffect = function (position){
 			particle_system.sortParticles = true;
 			particle_system.rotation.y = Math.random();
 			// add it to the scene
-			scene.add(particle_system);
+			engine.scene.add(particle_system);
 }
 
 particles.prototype.handleParticles = function (delta){
@@ -158,7 +158,7 @@ particles.prototype.handleParticles = function (delta){
 		});
 		particle_system.geometry.__dirtyVertices = true;
 		if (particle_system._lifetime > 1.57) {
-			scene.remove(particle_system);
+			engine.scene.remove(particle_system);
 			effects.particles.systems.splice(index,1);
 		}
 	});

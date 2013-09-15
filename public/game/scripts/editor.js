@@ -21,6 +21,7 @@ var editor = function() {
 	this.toolbars = new toolbars();
 	this.object_library = new object_library();
 	this.object_properties = new object_properties();
+	this.texture_editor = new texture_editor();
 	this.selected = new selected();
 	return this;
 };

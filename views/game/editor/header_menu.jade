@@ -26,12 +26,39 @@ header
 				menu.sub_menu
 					a.make_window(href='#',title='Make window')
 						i.icon-external-link
+					select
+							option Create new
+					input(type='text')
+					a.button(href='#') Save
+					table
+						thead
+							tr
+								td
+									Layers
+								td
+									Preview
+						tbody
+							tr
+								td 
+									ul.unstyled
+										li
+											h3
+												a(href='#') Patterns
+										li
+											h3
+												a(href='#') Fills
+										li
+											h3
+												a(href='#') Interpolation
+								td
+									ul.unstyled
+										li
+											Layer preview
+										li
+											Texture preview
 					ul.unstyled
 						li
-							select
-								option Create new
-							input(type='text')
-							a.button(href='#') Save
+							
 						li
 							table
 								thead	

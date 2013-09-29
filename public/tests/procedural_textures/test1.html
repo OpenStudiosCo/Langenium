@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Initial drawing texture experiments</title>
+</head>
+<style>
+	canvas {
+		width: 1024px;
+		height: 1024x;
+	}
+</style>
+<body>
+
+<canvas id='texture1' width='1024' height='1024'>
+	<p>Something went wrong :[</p>
+</canvas>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script type='text/javascript'>
+	var texture1 = document.getElementById('texture1');
+
+	if (texture1.getContext) {
+		var texture1_context = texture1.getContext('2d');
+		// Create the yellow face
+		var twopi = Math.PI * 2;
+		for (var i = 0; i < 200; i++) {
+		
+				for (var j = 0; j < 200; j++) {
+				var red = 55 + Math.random() * 25 * Math.sin(i * j); // anywhere between 100 and 255
+				var green = 55 + Math.random() * 10 * Math.sin(i * j); 
+				var blue = 55 + Math.random() * 10 * Math.sin( i * j);
+				
+				red = Math.floor(red);
+				green = Math.floor(green);
+				blue = Math.floor(blue);
+				var colorv = 'rgba('+ red +',' + green + ',' + blue + ',1)';
+			
+
+				texture1_context.fillStyle = colorv;
+				texture1_context.beginPath();
+				texture1_context.arc(i * 8, j * 8,9,0,Math.PI * 2,true);
+				texture1_context.closePath();
+
+				texture1_context.fill();
+			}
+		}
+	}
+</script>
+</body>
+</html>

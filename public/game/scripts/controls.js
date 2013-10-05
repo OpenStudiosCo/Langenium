@@ -97,8 +97,8 @@ $(document).bind("mousemove", function(event) {
 controls.prototype.rotateCamera = function (delta) {
 	
 	
-		var diffX = (controls.mouse.x - controls.mouse.lastX);
-		var diffY = (controls.mouse.y - controls.mouse.lastY);
+		var diffX = Math.sin(controls.mouse.x - controls.mouse.lastX);
+		var diffY = Math.tan(controls.mouse.y - controls.mouse.lastY);
 
 		if (diffX == 0) {
 			controls.mouse.changeX = false;
@@ -113,24 +113,14 @@ controls.prototype.rotateCamera = function (delta) {
 			controls.mouse.changeY = true;
 		}
 
-		
-		
-		
-		if (client.camera.rotation.y < 1.35 && client.camera.rotation.y > -1.35) {
+		if (client.camera.rotation.y < 1.75 && client.camera.rotation.y > -1.75) {
 			client.camera.rotation.y -= diffX;
 		}
-		if (client.camera.rotation.x < 2 && client.camera.rotation.x > -2) {
+		if (client.camera.rotation.x < 3 && client.camera.rotation.x > -3) {
 			client.camera.rotation.x -= diffY;
 		}
 
-		if (controls.flight.camera.position.x < 25 && controls.flight.camera.position.x > -25) {
-			controls.flight.camera.position.x += Math.sin(controls.flight.camera.rotation.y) * 4.12;
-		}
-		
-		if (controls.flight.camera.position.z < 100 && controls.flight.camera.position.z > 5) {
-			controls.flight.camera.position.z -= Math.cos(controls.flight.camera.rotation.y) * .52;
-		}
-		
+
 		client.camera.updateMatrix();
 		//console.log('diffX: ' + diffX + ', diffY: ' + diffY);
 }
@@ -141,7 +131,7 @@ controls.prototype.zoom = function (e) {
 
 	var delta = controls.extractWheelDelta(e);
 
-	var new_fov = client.camera.position.z - delta / 21.321312;
+	var new_fov = Math.sin(delta);
 	
 	if (controls.character.enabled == true) {
 		new_fov = client.camera.position.z - delta / 333.321312;

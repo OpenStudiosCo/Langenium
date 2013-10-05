@@ -13,10 +13,7 @@
 
 var 	// Variables
 		instances = {},
-		client_sessions = [],
-		host_url = process.env['HOST_URL'],
-		app_id = process.env['APP_ID'],
-		app_secret = process.env['APP_SECRET'];
+		client_sessions = [];
 
 var 	// 3rd Party Libs
 		connect = require('connect'),
@@ -27,8 +24,7 @@ var 	// 3rd Party Libs
 		// Fire up libs
 		server = require('http').createServer(app),
 		io = require('socket.io').listen(8080),
-		fb = new fbsdk.Facebook({ appId: app_id, secret: app_secret }),
-		FacebookStrategy = require('passport-facebook').Strategy,
+		fb = new fbsdk.Facebook({ appId: process.env['APP_ID'], secret: process.env['APP_SECRET'] }),
 		THREE = require('./three.js'),
 		// Langenium Modules
 		db = require("./db.js"),
@@ -65,84 +61,21 @@ app.configure(function () {
 
 });
 
-routes.setProviders(app, db, fb, instances);
+routes.setProviders(app, db, fb, instances, io, passport);
 routes.bind();
 
-// Setup Facebook authentication
-passport.serializeUser(function(user, done) {
-	done(null, user);
-});
 
-passport.deserializeUser(function(obj, done) {
-	done(null, obj);
-});
-passport.use(new FacebookStrategy({
-	clientID: app_id,
-	clientSecret: app_secret,
-	callbackURL: "http://" + host_url + "/auth/facebook/callback"
-  },
-  function(accessToken, refreshToken, profile, done) {
-  	
-  	var checkUserExists = function(result){
-		if (result.length == 0) {
-			db.addUser(profile._json.username, profile._json.id);
-		}
-  	};
- 	var user = { 
- 		username: profile._json.username, 
- 		facebook_id: profile._json.id
- 	};
-  	db.queryWebsiteDB("users", { facebook_id: profile._json.id }, checkUserExists);
-	return done(null, user);
-  }
-));
 
-app.get('/logout', function(req, res){
-  req.logout();
-  res.redirect('/logged_in');
-});
 
 
 // Start server
 server.listen(process.env['HTTP_PORT']); // dev
-app.get('/auth/facebook', function(req,res,next){
-	if (req.user) {
-		return res.redirect('/logged_in');
-	}
-	else {
-		passport.authenticate('facebook')(req,res,next);
-	}
-});
-app.get('/auth/facebook/callback', function(req, res, next) {
-	passport.authenticate('facebook', function(err, user, info) {
-		if (err) { return next(err); }
-		if (!user) { console.log("User not found"); return res.redirect('/'); }
-		req.logIn(user, function(err) {
-		  if (err) { console.log(err); return next(err); }
-		  else {
-			io.sockets.emit("login", { username: req.user.username, facebook_id: req.user.facebook_id });
-			return res.redirect('/logged_in');
-		  }
-		});
-	})(req, res, next);
-});
+
+events.bind_events(io, db, instances, client_sessions);
+
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 	Function Definitions
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
-io.set('log level', 2); // supresses the console output
-io.sockets.on('connection', function (socket) {
-	
-	// Ping and Pong
-	socket.emit("ping", { time: new Date().getTime(), latency: 0 }); 
-	socket.on("pong", function(data){ events.pong(socket, data); });
-
-	// Player
-	socket.on("login", function(data){ events.login(socket, data, db, instances, client_sessions); });
-	socket.on("disconnect" , function ()  { events.logout(socket, db, instances, client_sessions); });
-	socket.on("move_ship" , function(data){ events.move_ship(socket, data, db, instances, client_sessions); });
-	socket.on("move_character" , function(data){ events.move_character(socket, data, db, instances, client_sessions); });
-	socket.on("character_toggle" , function(){ events.character_toggle(socket, db, instances, client_sessions); });
-});
 
 function makeUniverse() {
 /*

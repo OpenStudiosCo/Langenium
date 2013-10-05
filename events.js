@@ -1,33 +1,33 @@
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 	Events
 		This class parses socket inputs into various functions
 	
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
+exports.bind_events = function (io, db, instances, client_sessions) {
+	io.set('log level', 2); // supresses the console output
+	io.sockets.on('connection', function (socket) {
+		
+		// Ping and Pong
+		socket.emit("ping", { time: new Date().getTime(), latency: 0 }); 
+		socket.on("pong", function(data){ pong(socket, data); });
 
-/*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-	Exports Functions
-\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
-
-module.exports.login = login;
-module.exports.logout = logout;
-module.exports.pong = pong;
-module.exports.move_ship = move_ship;
-module.exports.move_character = move_character;
-module.exports.character_toggle = character_toggle;
-
-
-/*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-	Global Variables
-\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
-
+		// Player
+		socket.on("login", function(data){ login(socket, data, db, instances, client_sessions); });
+		socket.on("disconnect" , function ()  { logout(socket, db, instances, client_sessions); });
+		socket.on("move_ship" , function(data){ move_ship(socket, data, db, instances, client_sessions); });
+		socket.on("move_character" , function(data){ move_character(socket, data, db, instances, client_sessions); });
+		socket.on("character_toggle" , function(){ character_toggle(socket, db, instances, client_sessions); });
+	});
+}
 
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 	Function Definitions
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
-function login(socket, data, db, instances, client_sessions) {
+var login = function(socket, data, db, instances, client_sessions) {
 	/* 
 		Returns the standard container type instance object
 		
@@ -115,9 +115,7 @@ function login(socket, data, db, instances, client_sessions) {
 										
 }
 
-
-
-function logout(socket, db, instances, client_sessions) {
+var logout = function(socket, db, instances, client_sessions) {
 
 	client_sessions.forEach(function(client, index){
 		if (client.sessionId == socket.id) {
@@ -143,7 +141,7 @@ function logout(socket, db, instances, client_sessions) {
 	});
 }
 
-function move_ship(socket, data, db, instances, client_sessions) {
+var move_ship = function(socket, data, db, instances, client_sessions) {
 	//console.log(instances.master.instances[0].environment);
 	client_sessions.forEach(function(client, index){
 		if (client.sessionId == socket.id) {
@@ -157,9 +155,9 @@ function move_ship(socket, data, db, instances, client_sessions) {
 			});
 		}
 	});
-
 }
-function move_character(socket, data, db, instances, client_sessions) {
+
+var move_character = function(socket, data, db, instances, client_sessions) {
 	//console.log(instances.master.instances[0].environment);
 	client_sessions.forEach(function(client, index){
 		if (client.sessionId == data.socket_id) {
@@ -172,9 +170,9 @@ function move_character(socket, data, db, instances, client_sessions) {
 			});
 		}
 	});
-
 }
-function character_toggle(socket, db, instances, client_sessions) {
+
+var character_toggle = function(socket, db, instances, client_sessions) {
 	//console.log(instances.master.instances[0].environment);
 	client_sessions.forEach(function(client, index){
 		if (client.sessionId == socket.id) {
@@ -242,7 +240,17 @@ function character_toggle(socket, db, instances, client_sessions) {
 	});
 }
 
-function initializeClient(socket, instance, db) {
+var pong = function(socket, data) {
+	var time = new Date().getTime(); 
+	var latency = time - data.time;
+	socket.emit("ping", { time: new Date().getTime(), latency: latency });
+}
+
+/*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+	Helper Functions
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
+
+var initializeClient = function(socket, instance, db) {
 
 	for (var objects in instance) {
 		var instruction = {};
@@ -266,7 +274,7 @@ function initializeClient(socket, instance, db) {
 	}
 }
 
-function prepareLoadInstructions(instance_objects, db, send_instructions) {
+var prepareLoadInstructions = function(instance_objects, db, send_instructions) {
 	instance_objects.forEach(function(instance_object, index){
 		
 		var callback = function(result) {
@@ -296,9 +304,4 @@ function prepareLoadInstructions(instance_objects, db, send_instructions) {
 	});
 }
 
-function pong(socket, data) {
-	var time = new Date().getTime(); 
-	var latency = time - data.time;
-	socket.emit("ping", { time: new Date().getTime(), latency: latency });
-}
 

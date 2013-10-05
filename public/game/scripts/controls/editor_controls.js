@@ -31,7 +31,7 @@ $(document).bind("mousedown", function(event) {
 	if (window.location.href.indexOf("editor") > 0 && controls.enabled == true) {
 		var raycaster = new THREE.Raycaster( client.camera_position, controls.editor.cursor_position.sub( client.camera_position ).normalize() );
 
-		var intersects = raycaster.intersectObjects( engine.scene.__objects );
+		var intersects = raycaster.intersectObjects( engine.scene.children );
 
 		if ( intersects.length > 0 ) {
 			editor.selected.new(

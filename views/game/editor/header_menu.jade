@@ -2,12 +2,13 @@ header
 	menu.header_menu
 		ul.unstyled
 			li.button.username_menu
-				a.button(title='Authentication', href='#')
+				a.button(title='User', href='#')
 					if (logged_in == true)
 						img(src=user.profile_img)
 						=  user.username
 					else
 						i.icon-user.icon-large
+					|  User
 				menu.sub_menu
 					ul.unstyled
 						if (logged_in == true)
@@ -23,6 +24,7 @@ header
 			li.button.texture_editor
 				a(title='Texture editor',href='#') 
 					i.icon-edit.icon-large
+					|  Texture editor
 				menu.sub_menu
 					a.make_window(href='#',title='Make window')
 						i.icon-external-link
@@ -74,15 +76,18 @@ header
 			li.button.object_presets
 				a(title='Object presets',href='#')
 					i.icon-tasks.icon-large
+					|  Object presets
 				menu.sub_menu
 					a.make_window(href='#',title='Make window')
 						i.icon-external-link
 			li.button.object_groups
 				a(title='Object groups',href='#') 
 					i.icon-group.icon-large
+					|  Object groups
 			li.button.object_properties
 				a(title='Object properties',href='#') 
 					i.icon-gear.icon-large
+					|  Object properties
 				menu.sub_menu
 					a.make_window(href='#',title='Make window')
 						i.icon-external-link
@@ -168,6 +173,7 @@ header
 			li.button.object_library
 				a(title='Object library',href='#') 
 					i.icon-reorder.icon-large
+					|  Object library
 				menu.sub_menu
 					a.make_window(href='#',title='Make window')
 						i.icon-external-link
@@ -193,3 +199,4 @@ header
 			li.button.editor_settings
 				a(title='Editor settings',href='#') 
 					i.icon-gears.icon-large
+					|  Editor settings

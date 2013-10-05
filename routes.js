@@ -14,6 +14,9 @@ var app,
 	db,
 	fb,
 	instances,
+	io,
+	passport,
+	auth = require('./routes/auth.js'),
 	website = require('./routes/website.js'),
 	game = require('./routes/game.js');
 
@@ -22,14 +25,19 @@ var app,
 	Pages
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
-exports.setProviders = function (application, database, facebook, instance_provider) {
+exports.setProviders = function (application, database, facebook, instance_provider, socketio, passport_provider) {
 	app = application;
 	db = database;
 	fb = facebook;
 	instances = instance_provider;
+	io = socketio;
+	passport = passport_provider;
 }
 
 exports.bind = function () {
+
+	auth.configure_passport(passport, io);
+
 	// Bind website 
 	website.setProviders(db, fb);
 
@@ -74,4 +82,32 @@ exports.bind = function () {
 		res.writeHead(200, {"Content-Type": "application/json"});
   		res.end(JSON.stringify(req.user ? req.user : {}));
 	});
+
+	app.get('/auth/facebook', function(req,res,next){
+		if (req.user) {
+			return res.redirect('/logged_in');
+		}
+		else {
+			passport.authenticate('facebook')(req,res,next);
+		}
+	});
+
+	app.get('/auth/facebook/callback', function(req, res, next) {
+		passport.authenticate('facebook', function(err, user, info) {
+			if (err) { return next(err); }
+			if (!user) { console.log("User not found"); return res.redirect('/'); }
+			req.logIn(user, function(err) {
+			  if (err) { console.log(err); return next(err); }
+			  else {
+				io.sockets.emit("login", { username: req.user.username, facebook_id: req.user.facebook_id });
+				return res.redirect('/logged_in');
+			  }
+			});
+		})(req, res, next);
+	});
+	app.get('/logout', function(req, res){
+	  req.logout();
+	  res.redirect('/logged_in');
+	});
+
 }

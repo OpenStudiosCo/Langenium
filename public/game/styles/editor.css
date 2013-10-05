@@ -88,6 +88,13 @@ header {
 	padding: .5em;
 }
 
+.header_menu > ul > li.button a i,
+.header_menu ul li.username_menu a img,
+.footer_menu > ul > li.button a i {
+	padding-right: .5em;
+
+}
+
 menu.sub_menu {
 	display: none;
 	float: left;
@@ -201,4 +208,14 @@ footer {
 .footer_menu .camera_info ul,
 .footer_menu .cursor_info ul {
 	margin-top: -2.5px;
+}
+
+
+/* 
+	Specific button overrides
+*/
+
+.header_menu ul li.username_menu a img {
+	width: 20px;
+	height: 20px;
 }

@@ -123,6 +123,9 @@ character.prototype.move = function (data) {
 			}
 			
 		}
+		else {
+			sprite.rotation.y = player.rotation.y;
+		}
 
 
 	});

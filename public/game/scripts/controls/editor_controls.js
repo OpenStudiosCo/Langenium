@@ -19,7 +19,7 @@ var editor_controls = function() {
 	this.camera.position.y = 5000;
 	this.camera.rotation.x = -.85;
 	this.enabled = false;
-
+	
     return this;
 }
 
@@ -29,24 +29,44 @@ var editor_controls = function() {
 
 $(document).bind("mousedown", function(event) {
 	if (window.location.href.indexOf("editor") > 0 && controls.enabled == true) {
-		var raycaster = new THREE.Raycaster( client.camera_position, controls.editor.cursor_position.sub( client.camera_position ).normalize() );
+		var raycaster = new THREE.Raycaster( client.camera_position, controls.editor.cursor_position.sub( client.camera_position ).normalize() );	
 
 		var intersects = raycaster.intersectObjects( engine.scene.children );
 
 		if ( intersects.length > 0 ) {
-			editor.selected.new(
-				intersects[0].object.id,
-				intersects[0].object.name,
-				intersects[0].object.position,
-				intersects[0].object.scale.x
-			);
-			$('.object_properties select.object_list option').each(function(index, obj_item){
-				var obj_item_id = $(obj_item).val();
-				if (intersects[0].object.id == obj_item_id) {
-					$(obj_item).attr('selected','selected');
-					editor.object_properties.select();
+			
+			if (intersects[0].object.id == scenes.grid.id) {
+
+				var other_face = intersects[ 0 ].faceIndex;
+
+				if (other_face % 2 == 0) {
+					other_face += 1;
 				}
-			});
+				else {
+					other_face -= 1;
+				}
+				console.log(intersects[ 0 ].object.geometry.vertices[intersects[0].face.a])
+				console.log(intersects[ 0 ].object.geometry.vertices[intersects[ 0 ].object.geometry.faces[other_face].a])
+				var new_red = 0.8 * Math.random() + 0.2;
+				intersects[ 0 ].face.color.setRGB( new_red , 0, 0 ); 
+				intersects[ 0 ].object.geometry.faces[other_face].color.setRGB( new_red, 0, 0 ); 
+				intersects[ 0 ].object.geometry.colorsNeedUpdate = true;
+			}
+			else {
+				editor.selected.new(
+					intersects[0].object.id,
+					intersects[0].object.name,
+					intersects[0].object.position,
+					intersects[0].object.scale.x
+				);
+				$('.object_properties select.object_list option').each(function(index, obj_item){
+					var obj_item_id = $(obj_item).val();
+					if (intersects[0].object.id == obj_item_id) {
+						$(obj_item).attr('selected','selected');
+						editor.object_properties.select();
+					}
+				});
+			}
 		}
 	}
 });

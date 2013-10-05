@@ -36,7 +36,7 @@ exports.setProviders = function (application, database, facebook, instance_provi
 
 exports.bind = function () {
 
-	auth.configure_passport(passport, io);
+	auth.configure_passport(passport, db);
 
 	// Bind website 
 	website.setProviders(db, fb);

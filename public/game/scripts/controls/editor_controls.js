@@ -36,8 +36,8 @@ $(document).bind("mousedown", function(event) {
 
 		if ( intersects.length > 0 ) {
 			
-			if (intersects[0].object.id = scenes.grid.object.id) {
-
+			if (intersects[0].object.id == scenes.grid.object.id) {
+				scenes.grid.select_cell(intersects[0]);
 			}
 			else {
 				editor.selected.new(
@@ -73,7 +73,7 @@ $(document).bind("mousemove", function(event) {
 
 
 			if (scenes.grid.object) {
-				scenes.grid.select_cell();
+				scenes.grid.highlight_cell();
 			}
 		}
 	}

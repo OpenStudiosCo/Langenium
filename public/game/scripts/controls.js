@@ -120,7 +120,9 @@ controls.prototype.rotateCamera = function (delta) {
 			client.camera.rotation.x -= diffY;
 		}
 
-
+		if (controls.character.enabled == true) {
+			client.camera.position.y -= diffX;
+		}
 		client.camera.updateMatrix();
 		//console.log('diffX: ' + diffX + ', diffY: ' + diffY);
 }
@@ -135,8 +137,12 @@ controls.prototype.zoom = function (e) {
 	
 	if (controls.character.enabled == true) {
 		new_fov = client.camera.position.z - delta / 333.321312;
-		if (new_fov > 8 && new_fov < 12) {
+		if ((new_fov > 8 && new_fov < 12)||
+			(new_fov > 4 && new_fov < 100) &&
+			client.is_editor == true) {
+			client.camera.position.y = new_fov / 2;
 			client.camera.position.z = new_fov;
+
 		}
 	}
 	if (controls.flight.enabled == true) {
@@ -149,7 +155,6 @@ controls.prototype.zoom = function (e) {
 			client.camera.position.z = new_fov;
 		}
 	}
-	
   	client.camera.updateProjectionMatrix();
 }
 

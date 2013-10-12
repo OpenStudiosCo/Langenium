@@ -19,6 +19,7 @@ var editor_controls = function() {
 	this.camera.position.y = 5000;
 	this.camera.rotation.x = -.85;
 	this.enabled = false;
+	this.hovered_object;
 	
     return this;
 }
@@ -35,54 +36,48 @@ $(document).bind("mousedown", function(event) {
 
 		if ( intersects.length > 0 ) {
 			
-			if (intersects[0].object.id == scenes.grid.id) {
-
-				var other_face = intersects[ 0 ].faceIndex;
-
-				if (other_face % 2 == 0) {
-					other_face += 1;
+			editor.selected.new(
+				intersects[0].object.id,
+				intersects[0].object.name,
+				intersects[0].object.position,
+				intersects[0].object.scale.x
+			);
+			$('.object_properties select.object_list option').each(function(index, obj_item){
+				var obj_item_id = $(obj_item).val();
+				if (intersects[0].object.id == obj_item_id) {
+					$(obj_item).attr('selected','selected');
+					editor.object_properties.select();
 				}
-				else {
-					other_face -= 1;
-				}
-				console.log(intersects[ 0 ].object.geometry.vertices[intersects[0].face.a])
-				console.log(intersects[ 0 ].object.geometry.vertices[intersects[ 0 ].object.geometry.faces[other_face].a])
-				var new_red = 0.8 * Math.random() + 0.2;
-				intersects[ 0 ].face.color.setRGB( new_red , 0, 0 ); 
-				intersects[ 0 ].object.geometry.faces[other_face].color.setRGB( new_red, 0, 0 ); 
-				intersects[ 0 ].object.geometry.colorsNeedUpdate = true;
-			}
-			else {
-				editor.selected.new(
-					intersects[0].object.id,
-					intersects[0].object.name,
-					intersects[0].object.position,
-					intersects[0].object.scale.x
-				);
-				$('.object_properties select.object_list option').each(function(index, obj_item){
-					var obj_item_id = $(obj_item).val();
-					if (intersects[0].object.id == obj_item_id) {
-						$(obj_item).attr('selected','selected');
-						editor.object_properties.select();
-					}
-				});
-			}
+			});
+		
 		}
 	}
 });
 
 $(document).bind("mousemove", function(event) {
 	if (window.location.href.indexOf("editor") > 0) {
-		if (controls.enabled == true && controls.editor) {
+
+		if (client.camera_position &&
+			controls.enabled == true && 
+			controls.editor) {
 			controls.editor.cursor_position = new THREE.Vector3( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1, 0.5 );
 			projector.unprojectVector( controls.editor.cursor_position, client.camera );
 
 			$('.cursor_info .x').html('x: ' + Math.round(controls.editor.cursor_position.x));
 			$('.cursor_info .y').html('y: ' + Math.round(controls.editor.cursor_position.y));
 			$('.cursor_info .z').html('z: ' + Math.round(controls.editor.cursor_position.z));
+
+
+			if (scenes.grid.object) {
+				scenes.grid.select_cell();
+			}
 		}
 	}
 });
+
+editor_controls.prototype.grid_hover = function () {
+
+}
 
 // these are not for flight control, they're keyboard inputs for the editor specifically
 editor_controls.prototype.input = function (delta){

@@ -13,6 +13,8 @@
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
 var scenes = function() {
+	this.rooms = new rooms();
+	this.grid = new grid();
 	return this;
 };
 
@@ -68,17 +70,7 @@ scenes.prototype.load = function(instance) {
 		controls.character.enabled = true;
 		client.camera = controls.character.camera;
 		if (client.is_editor) {
-			var grid_geometry = new THREE.PlaneGeometry(1000, 1000, 100, 100);
-			var grid_material = new THREE.MeshBasicMaterial({ color: 0x333333, vertexColors: THREE.FaceColors});
-				
-			
-			
-			grid_geometry.applyMatrix( new THREE.Matrix4().makeRotationX( - Math.PI / 2 ) );
-
-			scenes.grid = new THREE.Mesh(grid_geometry.clone(), grid_material);
-			scenes.grid.position.y = -3;
-			engine.scene.add(scenes.grid);
-
+			scenes.grid.create();
 		}
 	}
 	hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 1 );
@@ -89,26 +81,3 @@ scenes.prototype.load = function(instance) {
 	engine.scene.add( hemiLight );
 	
 };
-
-// Scratch functions (place these somewhere smart later!)
-// Draws the basic grid
-function draw_grid () {
-	var size = 1000; // creates 1000 cells by default
-	var regions = {
-		NW: { x: -1, y: 1 },
-		NE: { x: 1, y: 1},
-		SW: { x: -1, y: -1},
-		SE: { x: 1, y: -1} 
-	};
-
-	for (var i = 0; i <= size; i++) {
-		console.log("i:" + i);
-		for (var r in regions){
-			console.log("r:"+r);
-			console.log(regions[r].x * i * 100)
-			console.log(regions[r].y * i * 100)
-		}
-	}
-
-}
-

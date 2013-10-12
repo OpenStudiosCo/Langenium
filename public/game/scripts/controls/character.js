@@ -80,17 +80,39 @@ character.prototype.input = function (delta) {
 			}
 		});
 		
-		if (controls.character.camera.rotation.x != -.5 && (controls.camera_rotating == false || controls.mouse.changeX == false)) {
-			if (controls.character.camera.rotation.x > -.5) {
-				controls.character.camera.rotation.x -= delta / 1000;
-			}
-			if (controls.character.camera.rotation.x < -.5) {
-				controls.character.camera.rotation.x *= .999;
-			}
+		if (!controls.character.reset_camera_x &&
+			controls.character.camera.rotation.x != -.5 && (controls.camera_rotating == false || controls.mouse.changeX == false)) {
+			controls.character.reset_camera_x = new TWEEN.Tween( {x : controls.character.camera.rotation.x, y: 0 })
+												.to({x: -0.5, y: 0}, 500)
+												.delay(500)
+												.onUpdate(function(){
+													if (controls.camera_rotating == false) {
+														controls.character.camera.rotation.x = this.x;
+													}
+											
+												})
+												.onComplete(function(){
+													delete controls.character.reset_camera_x;
+												})
+												.start();
 		}
-		if (controls.character.camera.rotation.y != 0 && (controls.camera_rotating == false || controls.mouse.changeY == false)) {
-			controls.character.camera.rotation.y *= .89;
+		if (!controls.character.reset_camera_y &&
+			controls.character.camera.rotation.y != 0 && (controls.camera_rotating == false || controls.mouse.changeY == false)) {
+			controls.character.reset_camera_y = new TWEEN.Tween( {x : controls.character.camera.rotation.y, y: 0 })
+												.to({x: 0, y: 0}, 500)
+												.delay(500)
+												.onUpdate(function(){
+													if (controls.camera_rotating == false) {
+														controls.character.camera.rotation.y = this.x;
+													}
+												
+												})
+												.onComplete(function(){
+													delete controls.character.reset_camera_y;
+												})
+												.start();
 		}
+	
 		if (controls.character.camera.rotation.z != 0 && (controls.camera_rotating == false || controls.mouse.changeX == false)) {
 			controls.character.camera.rotation.z *= .89;
 		}

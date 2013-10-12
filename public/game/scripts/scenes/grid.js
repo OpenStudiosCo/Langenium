@@ -61,18 +61,45 @@ grid.prototype.select_cell = function() {
 		if (intersects[0].object.id == scenes.grid.object.id) {
 			scenes.grid.clear_selection();
 			var other_face = intersects[ 0 ].faceIndex;
-
+			var triangle_1, triangle_2;
+			
 			if (other_face % 2 == 0) {
 				other_face += 1;
+				triangle_1 = intersects[ 0 ].face;
+				triangle_2 = scenes.grid.object.geometry.faces[other_face];
 			}
 			else {
 				other_face -= 1;
+				triangle_1 = scenes.grid.object.geometry.faces[other_face];
+				triangle_2 = intersects[ 0 ].face;
 			}
 
+		
 			var new_red = 0.8 * Math.random() + 0.2;
-			intersects[ 0 ].face.color.setRGB( new_red , 0, 0 ); 
-			intersects[ 0 ].object.geometry.faces[other_face].color.setRGB( new_red, 0, 0 ); 
+			triangle_1.color.setRGB( new_red , 0, 0 ); 
+			triangle_2.color.setRGB( new_red, 0, 0 ); 
 			intersects[ 0 ].object.geometry.colorsNeedUpdate = true;
+
+			var material = new THREE.LineBasicMaterial({
+		        color: 'yellow'
+		    });
+
+		    var geometry = new THREE.Geometry();
+		    geometry.vertices.push(scenes.grid.object.geometry.vertices[triangle_1.a]);
+		    geometry.vertices.push(scenes.grid.object.geometry.vertices[triangle_1.b]);
+		    geometry.vertices.push(scenes.grid.object.geometry.vertices[triangle_2.b]);
+			geometry.vertices.push(scenes.grid.object.geometry.vertices[triangle_2.a]);
+			geometry.vertices.push(scenes.grid.object.geometry.vertices[triangle_2.b]);
+			geometry.vertices.push(scenes.grid.object.geometry.vertices[triangle_2.c]);
+			geometry.vertices.push(scenes.grid.object.geometry.vertices[triangle_1.a]);
+
+
+
+
+			var bounding_box = new THREE.Line(geometry, material);
+		    bounding_box.name = "bounding_box";
+		    
+		    scenes.grid.object.add(bounding_box);
 		}
 	};
 }

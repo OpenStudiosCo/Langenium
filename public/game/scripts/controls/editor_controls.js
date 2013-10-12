@@ -36,20 +36,24 @@ $(document).bind("mousedown", function(event) {
 
 		if ( intersects.length > 0 ) {
 			
-			editor.selected.new(
-				intersects[0].object.id,
-				intersects[0].object.name,
-				intersects[0].object.position,
-				intersects[0].object.scale.x
-			);
-			$('.object_properties select.object_list option').each(function(index, obj_item){
-				var obj_item_id = $(obj_item).val();
-				if (intersects[0].object.id == obj_item_id) {
-					$(obj_item).attr('selected','selected');
-					editor.object_properties.select();
-				}
-			});
-		
+			if (intersects[0].object.id = scenes.grid.object.id) {
+
+			}
+			else {
+				editor.selected.new(
+					intersects[0].object.id,
+					intersects[0].object.name,
+					intersects[0].object.position,
+					intersects[0].object.scale.x
+				);
+				$('.object_properties select.object_list option').each(function(index, obj_item){
+					var obj_item_id = $(obj_item).val();
+					if (intersects[0].object.id == obj_item_id) {
+						$(obj_item).attr('selected','selected');
+						editor.object_properties.select();
+					}
+				});
+			}
 		}
 	}
 });

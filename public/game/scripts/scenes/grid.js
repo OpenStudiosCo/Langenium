@@ -13,7 +13,8 @@
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
 var grid = function() {
-
+	this.highlighted = {};
+	this.selected = {};
 	return this;
 };
 
@@ -64,54 +65,49 @@ grid.prototype.highlight_cell = function() {
 			
 			if (other_face % 2 == 0) {
 				other_face += 1;
-				triangle_1 = intersects[ 0 ].face;
-				triangle_2 = scenes.grid.object.geometry.faces[other_face];
+				scenes.grid.highlighted.triangle_1 = intersects[ 0 ].face;
+				scenes.grid.highlighted.triangle_2 = scenes.grid.object.geometry.faces[other_face];
 			}
 			else {
 				other_face -= 1;
-				triangle_1 = scenes.grid.object.geometry.faces[other_face];
-				triangle_2 = intersects[ 0 ].face;
+				scenes.grid.highlighted.triangle_1 = scenes.grid.object.geometry.faces[other_face];
+				scenes.grid.highlighted.triangle_2 = intersects[ 0 ].face;
 			}
 		
-			var new_red = 0.8 * Math.random() + 0.2;
-			triangle_1.color.setRGB( new_red , 0, 0 ); 
-			triangle_2.color.setRGB( new_red, 0, 0 ); 
+			var new_red = 2.0;
+			scenes.grid.highlighted.triangle_1.color.setRGB( new_red , 0, 0 ); 
+			scenes.grid.highlighted.triangle_2.color.setRGB( new_red, 0, 0 ); 
 			intersects[ 0 ].object.geometry.colorsNeedUpdate = true;
+
+	
 		}
 	};
 }
 
-grid.prototype.select_cell = function(intersect) {
-	var other_face = intersect.faceIndex;
-	var triangle_1, triangle_2;
-	if (other_face % 2 == 0) {
-		other_face += 1;
-		triangle_1 = intersect.face;
-		triangle_2 = scenes.grid.object.geometry.faces[other_face];
-	}
-	else {
-		other_face -= 1;
-		triangle_1 = scenes.grid.object.geometry.faces[other_face];
-		triangle_2 = intersect.face;
-	}
+grid.prototype.select_cell = function() {
+	scenes.grid.selected.triangle_1 = scenes.grid.highlighted.triangle_1;
+	scenes.grid.selected.triangle_2 = scenes.grid.highlighted.triangle_2;
+	
+	scenes.grid.clear_selection();
 	var material = new THREE.LineBasicMaterial({
         color: 'yellow'
     });
-
-    var geometry = new THREE.Geometry();
-    geometry.vertices.push(scenes.grid.object.geometry.vertices[triangle_1.a]);
-    geometry.vertices.push(scenes.grid.object.geometry.vertices[triangle_1.b]);
-    geometry.vertices.push(scenes.grid.object.geometry.vertices[triangle_2.b]);
-	geometry.vertices.push(scenes.grid.object.geometry.vertices[triangle_2.a]);
-	geometry.vertices.push(scenes.grid.object.geometry.vertices[triangle_2.b]);
-	geometry.vertices.push(scenes.grid.object.geometry.vertices[triangle_2.c]);
-	geometry.vertices.push(scenes.grid.object.geometry.vertices[triangle_1.a]);
+	var geometry = new THREE.Geometry();
+    geometry.vertices.push(scenes.grid.object.geometry.vertices[scenes.grid.selected.triangle_1.a]);
+    geometry.vertices.push(scenes.grid.object.geometry.vertices[scenes.grid.selected.triangle_1.b]);
+    geometry.vertices.push(scenes.grid.object.geometry.vertices[scenes.grid.selected.triangle_2.b]);
+	geometry.vertices.push(scenes.grid.object.geometry.vertices[scenes.grid.selected.triangle_2.a]);
+	geometry.vertices.push(scenes.grid.object.geometry.vertices[scenes.grid.selected.triangle_2.b]);
+	geometry.vertices.push(scenes.grid.object.geometry.vertices[scenes.grid.selected.triangle_2.c]);
+	geometry.vertices.push(scenes.grid.object.geometry.vertices[scenes.grid.selected.triangle_1.a]);
 
 	var bounding_box = new THREE.Line(geometry, material);
     bounding_box.name = "bounding_box";
-    console.log(bounding_box)
     
-    engine.scene.add(bounding_box);
+    
+    scenes.grid.object.add(bounding_box);
+
+
 }
 
 grid.prototype.clear_selection = function() {

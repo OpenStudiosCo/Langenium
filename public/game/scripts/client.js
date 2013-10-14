@@ -37,8 +37,16 @@ client.prototype.initialize = function () {
 	});
 	
 	engine.renderer.setSize( client.winW, client.winH);
+	var username;
 
-	events.socket.emit("login", { username: "Droopy", editor: client.is_editor });
+	if (client.is_editor == true) {
+		username = "Droopy";
+	}
+	else {
+		username = "Saggy";
+	}
+
+	events.socket.emit("login", { username: username, editor: client.is_editor });
 	$("#game").append(engine.renderer.domElement);
 	
 	window.addEventListener( 'resize', client.onWindowResize, false );

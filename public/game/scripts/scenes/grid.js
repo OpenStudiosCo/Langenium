@@ -93,12 +93,16 @@ grid.prototype.select_cell = function() {
         color: 'yellow'
     });
 	var geometry = new THREE.Geometry();
+	//Side 1 (|  )
     geometry.vertices.push(scenes.grid.object.geometry.vertices[scenes.grid.selected.triangle_1.a]);
     geometry.vertices.push(scenes.grid.object.geometry.vertices[scenes.grid.selected.triangle_1.b]);
+    // Side 2 ( _ )
     geometry.vertices.push(scenes.grid.object.geometry.vertices[scenes.grid.selected.triangle_2.b]);
 	geometry.vertices.push(scenes.grid.object.geometry.vertices[scenes.grid.selected.triangle_2.a]);
+	// Side 3 (  |)
 	geometry.vertices.push(scenes.grid.object.geometry.vertices[scenes.grid.selected.triangle_2.b]);
-	geometry.vertices.push(scenes.grid.object.geometry.vertices[scenes.grid.selected.triangle_2.c]);
+	geometry.vertices.push(scenes.grid.object.geometry.vertices[scenes.grid.selected.triangle_1.c]);
+	// Side 4 ( ¯ )
 	geometry.vertices.push(scenes.grid.object.geometry.vertices[scenes.grid.selected.triangle_1.a]);
 
 	var bounding_box = new THREE.Line(geometry, material);

@@ -6,6 +6,8 @@
 	
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
+var os = require('os');
+
 exports.bind_events = function (io, db, instances, client_sessions) {
 	io.set('log level', 2); // supresses the console output
 	io.sockets.on('connection', function (socket) {
@@ -20,12 +22,28 @@ exports.bind_events = function (io, db, instances, client_sessions) {
 		socket.on("move_ship" , function(data){ move_ship(socket, data, db, instances, client_sessions); });
 		socket.on("move_character" , function(data){ move_character(socket, data, db, instances, client_sessions); });
 		socket.on("character_toggle" , function(){ character_toggle(socket, db, instances, client_sessions); });
+
+		socket.on("server_stats", function(data) { getServerStats(socket, data, db, instances, client_sessions); });
 	});
 }
 
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 	Function Definitions
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
+
+var getServerStats = function(socket, data, db, instances, client_sessions) {
+	var data = {
+		cpu: os.cpus(),
+		loadavg: os.loadavg(),
+		memory: {
+			usage: process.memoryUsage(),
+			free: os.freemem(),
+			total: os.totalmem()
+		}
+	};
+	socket.emit('server_stats', data);
+
+};
 
 var login = function(socket, data, db, instances, client_sessions) {
 	/* 

@@ -1,28 +1,28 @@
-header
-	menu.header_menu
-		ul.unstyled
-			li.button.username_menu
-				a.button(title='User', href='#')
+header.navbar.navbar-inverse.navbar-fixed-top
+	.navbar-inner.nav-collapse.collapse
+		.nav
+			.btn-group
+				a.btn.dropdown-toggle.btn-inverse(title='User', data-toggle="dropdown", href='#')
 					if (logged_in == true)
 						img(src=user.profile_img)
 						=  user.username
 					else
 						i.icon-user.icon-large
 					|  User
-				menu.sub_menu
-					ul.unstyled
-						if (logged_in == true)
-							li
-								a.logout(href='/logout',target='_new') 
-									i.icon-power-off
-									menu|  Logout
-						else
-							li
-								a.login(href='/auth/facebook',target='_new')
-									i.icon-key
-									|  Login
-			li.button.texture_editor
-				a(title='Texture editor',href='#') 
+					i.caret
+				ul.dropdown-menu
+					if (logged_in == true)
+						li
+							a.logout(href='/logout',target='_new') 
+								i.icon-power-off
+								menu|  Logout
+					else
+						li
+							a.login(href='/auth/facebook',target='_new')
+								i.icon-key
+								|  Login
+			li.texture_editor
+				a.btn.btn-inverse(title='Texture editor',href='#') 
 					i.icon-edit.icon-large
 					|  Texture editor
 				menu.sub_menu
@@ -31,7 +31,7 @@ header
 					select
 							option Create new
 					input(type='text')
-					a.button(href='#') Save
+					a.btn.btn-inverse(href='#') Save
 					table
 						thead
 							tr
@@ -73,19 +73,19 @@ header
 											textarea(cols='80', rows='10')
 										td
 											| (texture preview)
-			li.button.object_presets
-				a(title='Object presets',href='#')
+			li.object_presets
+				a.btn.btn-inverse(title='Object presets',href='#')
 					i.icon-tasks.icon-large
 					|  Object presets
 				menu.sub_menu
 					a.make_window(href='#',title='Make window')
 						i.icon-external-link
-			li.button.object_groups
-				a(title='Object groups',href='#') 
+			li.object_groups
+				a.btn.btn-inverse(title='Object groups',href='#') 
 					i.icon-group.icon-large
 					|  Object groups
-			li.button.object_properties
-				a(title='Object properties',href='#') 
+			li.object_properties
+				a.btn.btn-inverse(title='Object properties',href='#') 
 					i.icon-gear.icon-large
 					|  Object properties
 				menu.sub_menu
@@ -170,8 +170,8 @@ header
 									a.minus(href='#')
 										i.icon-minus-sign-alt
 
-			li.button.object_library
-				a(title='Object library',href='#') 
+			li.object_library
+				a.btn.btn-inverse(title='Object library',href='#') 
 					i.icon-reorder.icon-large
 					|  Object library
 				menu.sub_menu
@@ -193,10 +193,10 @@ header
 							td.title
 								strong Sub-type
 							td.value
-					a.button.add(href='#')
+					a.btn.btn-inverse.add(href='#')
 						i.icon-plus-sign-alt
 						|  Add
-			li.button.editor_settings
-				a(title='Editor settings',href='#') 
+			li.editor_settings
+				a.btn.btn-inverse(title='Editor settings',href='#') 
 					i.icon-gears.icon-large
 					|  Editor settings

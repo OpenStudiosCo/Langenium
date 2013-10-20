@@ -1,7 +1,7 @@
-footer 
-	menu.footer_menu
-		ul
-			li.button
+footer.navbar.navbar-inverse.navbar-fixed-bottom
+	menu..navbar-inner.nav-collapse.collapse
+		ul.nav
+			li.camera_settings
 				menu.sub_menu
 					ul.unstyled
 						li
@@ -16,14 +16,14 @@ footer
 							a(href='#',onclick='controls.editor.toggleCamera("character")')
 								i.icon-facetime-video	
 								|  Character View
-				a(title='Camera',href='#') 
+				a.btn.btn-inverse(title='Camera',href='#') 
 					i.icon-camera.icon-large
 					|  Camera
-			li.button
+			li.scene_changer
 				menu.sub_menu
 					ul.unstyled
 						include instances
-				a(title='Scene changer',href='#')
+				a.btn.btn-inverse(title='Scene changer',href='#')
 					i.icon-picture
 					|  Scene changer
 			li.selected 
@@ -33,8 +33,6 @@ footer
 			li.stats
 				#latencyLabel(style="position: absolute;")
 				canvas#latencyBox(width="97", height="43", style="display: inline-block; position: absolute;")
-			li.logo
-				a(href='/editor') Langenium Map Editor
 			li.camera_info
 				i.icon-facetime-video.icon-3x.pull-left
 				ul.unstyled.pull-left

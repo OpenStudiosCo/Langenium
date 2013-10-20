@@ -24,7 +24,7 @@ var toolbars = function() {
 
 // Events
 $(document).ready(function(){
-	$('.header_menu .button > a, .footer_menu .button > a').click(toggleSubMenu);
+	$('.navbar.navbar-inverse.navbar-fixed-top li > a.btn, .navbar.navbar-inverse.navbar-fixed-bottom li > a.btn').click(toggleSubMenu);
 	$('#game').click(hideAllSubMenus);	
 	$('.username_menu .login').click(function(e){
 		var callback = function(data) {
@@ -41,6 +41,7 @@ $(document).ready(function(){
 
 function toggleSubMenu (e) {
 	e.preventDefault();
+	
 	$(this).siblings('.sub_menu').slideToggle();
 }
 

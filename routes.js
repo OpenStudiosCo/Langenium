@@ -17,6 +17,7 @@ var app,
 	io,
 	passport,
 	auth = require('./routes/auth.js'),
+	admin = require('./routes/admin.js'),
 	website = require('./routes/website.js'),
 	game = require('./routes/game.js');
 
@@ -38,10 +39,9 @@ exports.bind = function () {
 
 	auth.configure_passport(passport, db);
 
-	// Bind website 
+	// Bind providers for routes 
 	website.setProviders(db, fb);
-
-	// Bind game client
+	admin.setProviders(db, fb, instances, io);
 	game.setProviders(db, fb, instances);
 
 	// Route bindings
@@ -67,6 +67,13 @@ exports.bind = function () {
 	app.get('/editor/create_object', game.create_object);
 	app.get('/editor/update_object', game.update_object);
 	app.get('/editor/delete_object', game.delete_object);
+
+	//		Admin
+	app.get('/admin', admin.index);
+	app.get('/admin/scene_director', admin.scene_director);
+
+
+
 	//		Security overrides
 	app.get('/wiki/*', website.redirect);
 	//		Self closing page, might need to rename later but CBF

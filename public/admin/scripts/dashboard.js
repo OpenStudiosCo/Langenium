@@ -82,7 +82,9 @@ function setEventHandlers(socket) {
 			
 		}
 		else {
+			// Process 
 			memory_chart.seriesSet[0].timeSeries.append(timestamp, Math.round(100 * (data.memory.usage.heapUsed / data.memory.usage.heapTotal)));
+			// System
 			memory_chart.seriesSet[1].timeSeries.append(timestamp, Math.round(100 * (data.memory.free / data.memory.total)));
 		}
 

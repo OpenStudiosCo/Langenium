@@ -19,7 +19,9 @@
     "socket.io"   :  "*",
     "jade"   :  "*",
     "three" : "*",
-    "xmlhttprequest":"*"
+    "xmlhttprequest":"*",
+    "node-dir": "*",
+    "mongoose": "*"
   }, 
   "license": "MIT",
   "engines": {

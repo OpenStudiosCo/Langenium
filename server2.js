@@ -21,6 +21,9 @@ var 	// 3rd Party Libs
 		app = express(),
 		passport  = require('passport'),
 		fbsdk = require('facebook-sdk'),
+		mongoose = require('mongoose'),
+		path = require('path'),
+		dir = require('node-dir'),
 		// Fire up libs
 		server = require('http').createServer(app),
 		io = require('socket.io').listen(8080),
@@ -32,6 +35,7 @@ var 	// 3rd Party Libs
 		instance = require('./instance.js'),
 		//Routes
 		routes = require('./routes.js');
+
 	
 
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -61,11 +65,19 @@ app.configure(function () {
 
 });
 
-routes.setProviders(app, db, fb, instances, io, passport);
-routes.bind();
+// Initialize models
+var models = import_libs('./models/', 'initialize');
 
-
-
+/*
+var controllers;
+// Bind controllers
+fs.readdirSync('./controllers').forEach(function (file) {
+  if(file.substr(-3) == '.js') {
+      controllers[file.substr(-3)] = require('./controllers/' + file);
+      controllers[file.substr(-3)].bind(app, db, fb, instances, io, passport);
+  }
+});
+*/
 
 
 // Start server
@@ -76,6 +88,38 @@ events.bind_events(io, db, instances, client_sessions);
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 	Function Definitions
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
+
+function import_libs(directory_path, callback_name) {
+/*
+
+	Imports all files from the directories 
+
+*/
+	var return_obj = {};
+	dir.paths(directory_path,
+
+	    function(err, paths) {
+	        if (err) throw err;	
+	        
+	        paths.files.forEach(function(file_path){
+	        	
+	        	if (file_path.indexOf('\\') >= 0) {
+		        	path_segments = file_path.replace('\\','//').split('//');
+		        	file_path = './/' + file_path;
+		        }
+		        else {
+		        	path_segments = filename.split('//');	
+		        	file_path = './/' + file_path;
+		        }
+		        
+		        return_obj[path_segments[path_segments.length-1].replace('.js','')] = require(file_path);
+	        });
+			
+	        return return_obj;
+	    }
+	);
+
+}
 
 function makeUniverse() {
 /*

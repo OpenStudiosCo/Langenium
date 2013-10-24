@@ -1,8 +1,8 @@
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
-	Website
-	This is the controller that exposes and controls the website
+	System Management
+	This is the controller that exposes and controls admin system management
 
 
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
@@ -13,11 +13,8 @@
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
 module.exports = function(modules) {
-	var website = {};
-	website.blog = require('./website/blog.js')(modules);
-	website.forum = require('./website/forum.js')(modules);
-	website.gallery = require('./website/gallery.js')(modules);
-	website.guide = require('./website/guide.js')(modules);
-	website.page = require('./website/page.js')(modules);
-	return website;
+	var website_editor = {};
+	website_editor.pages = require('./website_editor/pages.js')(modules);
+	website_editor.blog = require('./website_editor/blog.js')(modules);
+	return website_editor;
 }

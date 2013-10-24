@@ -1,8 +1,8 @@
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
-	Website
-	This is the controller that exposes and controls the website
+	Game management
+	This is the controller that exposes and controls admin game management
 
 
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
@@ -13,11 +13,10 @@
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
 module.exports = function(modules) {
-	var website = {};
-	website.blog = require('./website/blog.js')(modules);
-	website.forum = require('./website/forum.js')(modules);
-	website.gallery = require('./website/gallery.js')(modules);
-	website.guide = require('./website/guide.js')(modules);
-	website.page = require('./website/page.js')(modules);
-	return website;
+	var game_management = {};
+	game_management.scene_director = require('./game_management/scene_director.js');
+	game_management.object_editor = require('./game_management/object_editor.js');
+	game_management.texture_painter = require('./game_management/texture_painter.js');
+	game_management.mechanics = require('./game_management/mechanics.js');
+	return game_management;
 }

@@ -1,8 +1,8 @@
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
-	Game
-	This is the model that defines the models for the game
+	Scene
+	This is the model that defines the models for the game's scenes
 
 
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
@@ -10,10 +10,8 @@
 // Standard pattern to allow this file to be chained up in the modules container
 
 module.exports= function(modules) {
-	var game = {};
-	game.objects = require('./game/objects.js')(modules);
-	game.renderer = require('./game/renderer.js')(modules);
-	game.scene = require('./game/scene.js')(modules);
-	game.ui = require('./game/ui.js')(modules);
-	return game;
+	var scene = {};
+	scene.instance = require('./scene/instance.js')(modules);
+	scene.types = require('./scene/types.js')(modules);
+	return scene;
 }

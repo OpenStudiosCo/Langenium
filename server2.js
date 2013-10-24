@@ -15,7 +15,7 @@ var 	// Variables
 		instances = {},
 		client_sessions = [];
 
-var 	// 3rd Party Libs
+var 	// Container for 3rd Party Libs and models and controllers. This allows everything to easily talk to each other
 		modules = {
 			connect: require('connect'),
 			express: require('express.io'),
@@ -25,7 +25,9 @@ var 	// 3rd Party Libs
 			path: require('path'),
 			fs: require('fs'),
 			io: require('socket.io').listen(8080),
-			THREE: require('./three.js')
+			THREE: require('./three.js'),
+			models: {},
+			controllers: {}
 		}
 
 modules.fb = new modules.fbsdk.Facebook({ appId: process.env['APP_ID'], secret: process.env['APP_SECRET'] });
@@ -62,28 +64,26 @@ app.configure(function () {
 });
 
 // Initialize models
-var models = {};
 modules.fs.readdirSync('./models').forEach(function (file) {
 	var filename = file.replace('.js','');
 	if(file.substr(-3) == '.js') {
-		models[filename] = require('./models/' + file);
-		models[filename] = models[filename].bind(modules);
+		modules.models[filename] = require('./models/' + file)(modules);
 	}
 });
 
-console.log(models)
 
-var controllers;
+
 // Bind controllers
 modules.fs.readdirSync('./controllers').forEach(function (file) {
 	var filename = file.replace('.js','');
 	if(file.substr(-3) == '.js') {
-		controllers[filename] = require('./controllers/' + file);
-		controllers[filename] = controllers[filename].bind(modules);
+		modules.controllers[filename] = require('./controllers/' + file)(modules);
 	}
 });
 
+console.log(modules.models)
 
+console.log(modules.controllers)
 
 // Start server
 server.listen(process.env['HTTP_PORT']); // dev

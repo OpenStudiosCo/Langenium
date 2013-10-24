@@ -1,8 +1,8 @@
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
-	Website
-	This is the controller that exposes and controls the website
+	Dashboard
+	This is the controller that exposes and controls admin dashboard
 
 
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
@@ -13,11 +13,7 @@
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
 module.exports = function(modules) {
-	var website = {};
-	website.blog = require('./website/blog.js')(modules);
-	website.forum = require('./website/forum.js')(modules);
-	website.gallery = require('./website/gallery.js')(modules);
-	website.guide = require('./website/guide.js')(modules);
-	website.page = require('./website/page.js')(modules);
-	return website;
+	var dashboard = {};
+	dashboard.server_stats = require('./dashboard/server_stats.js')(modules);
+	return dashboard;
 }

@@ -1,8 +1,8 @@
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
-	Website
-	This is the controller that exposes and controls the website
+	Admin
+	This is the controller that exposes and controls the admin area
 
 
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
@@ -13,11 +13,9 @@
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
 module.exports = function(modules) {
-	var website = {};
-	website.blog = require('./website/blog.js')(modules);
-	website.forum = require('./website/forum.js')(modules);
-	website.gallery = require('./website/gallery.js')(modules);
-	website.guide = require('./website/guide.js')(modules);
-	website.page = require('./website/page.js')(modules);
-	return website;
+	var admin = {};
+	admin.dashboard = require('./admin/dashboard.js')(modules);
+	admin.game_management = require('./admin/game_management.js')(modules);
+	admin.system_management = require('./admin/system_management.js')(modules);
+	return admin;
 }

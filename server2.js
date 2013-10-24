@@ -27,7 +27,15 @@ var 	// Container for 3rd Party Libs and models and controllers. This allows eve
 			io: require('socket.io').listen(8080),
 			THREE: require('./three.js'),
 			models: {},
-			controllers: {}
+			controllers: {},
+			import_classes: function(modules, module_obj, path) {
+				modules.fs.readdirSync(path).forEach(function (file) {
+					var filename = file.replace('.js','');
+					if(file.substr(-3) == '.js') {
+						module_obj[filename] = require(path + '/' + file)(modules);
+					}
+				});
+			}
 		}
 
 modules.fb = new modules.fbsdk.Facebook({ appId: process.env['APP_ID'], secret: process.env['APP_SECRET'] });
@@ -64,26 +72,15 @@ app.configure(function () {
 });
 
 // Initialize models
-modules.fs.readdirSync('./models').forEach(function (file) {
-	var filename = file.replace('.js','');
-	if(file.substr(-3) == '.js') {
-		modules.models[filename] = require('./models/' + file)(modules);
-	}
-});
-
-
-
-// Bind controllers
-modules.fs.readdirSync('./controllers').forEach(function (file) {
-	var filename = file.replace('.js','');
-	if(file.substr(-3) == '.js') {
-		modules.controllers[filename] = require('./controllers/' + file)(modules);
-	}
-});
-
+console.log("Initializing models");
+modules.import_classes(modules, modules.models, './models');
 console.log(modules.models)
 
+// Initialize controllers
+console.log("Initializing controllers");
+modules.import_classes(modules, modules.controllers, './controllers');
 console.log(modules.controllers)
+
 
 // Start server
 server.listen(process.env['HTTP_PORT']); // dev

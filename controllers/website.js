@@ -1,8 +1,8 @@
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
-	Scene
-	This is the model that defines the server side objects for game sccenes
+	Router
+	This is the router that exposes client accessible parts of the engine
 
 
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
@@ -12,26 +12,6 @@
 	Setup Globals
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
-// Instance
-
-var scene = {
-	lol: 'hi'
-};
-
-exports.initialize = function(mongoose) {
-	return new mongoose.Schema({
-
-	});
+exports.bind = function(modules) {
+	
 }
-
-exports.scene = function() {
-	var scene = new mongoose.Schema({
-		title: String
-	});
-
-}
-
-
-
-module.export = scene;
-

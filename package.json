@@ -20,7 +20,6 @@
     "jade"   :  "*",
     "three" : "*",
     "xmlhttprequest":"*",
-    "node-dir": "*",
     "mongoose": "*"
   }, 
   "license": "MIT",

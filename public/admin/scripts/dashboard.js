@@ -48,8 +48,8 @@ function getSocketURL() {
 }
 
 function setEventHandlers(socket) {
-	socket.emit("server_stats");
-	socket.on("server_stats", function(data) { 
+	socket.emit("admin:dashboard:server_stats:subscribe");
+	socket.on("admin:dashboard:server_stats:update", function(data) { 
 		var timestamp = new Date().getTime();
 		// CPU chart
 		if (!cpu_chart) {
@@ -88,6 +88,5 @@ function setEventHandlers(socket) {
 			memory_chart.seriesSet[1].timeSeries.append(timestamp, Math.round(100 * (data.memory.free / data.memory.total)));
 		}
 
-		socket.emit("server_stats");
 	});
 }

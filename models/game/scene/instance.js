@@ -11,5 +11,18 @@
 
 module.exports= function(modules) {
 	var instance = {};
+
+	instance.subscribe = function(req) {
+		// Add user to scene as either character or ship, 
+	}
+
+	instance.input = function(req) {
+		// Switch between character and ship type of input 
+	}
+
+	instance.update = function(req) {
+		// Send an update of the game state
+	}
+
 	return instance;
 }

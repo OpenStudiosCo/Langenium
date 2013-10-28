@@ -15,5 +15,10 @@
 module.exports = function(modules) {
 	var dashboard = {};
 	dashboard.server_stats = require('./dashboard/server_stats.js')(modules);
+
+	dashboard.index = function(req, res) {
+		modules.render(req, res, 'admin/index', { title: "Dashboard - Admin - Langenium", page: 'dashboard' });
+	}
+
 	return dashboard;
 }

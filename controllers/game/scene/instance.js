@@ -11,5 +11,14 @@
 
 module.exports= function(modules) {
 	var instance = {};
+
+	instance.input = function(socket, modules, data) {
+
+	}
+
+	instance.subscribe = function(socket, modules, data) {
+		
+	}
+
 	return instance;
 }

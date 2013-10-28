@@ -1,7 +1,7 @@
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
-
-	Page
+	
+	Mechanics
 	This is the controller that exposes and controls individual website pages
 
 
@@ -13,6 +13,11 @@
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
 module.exports = function(modules) {
-	var page = {};
-	return page;
+	var mechanics = {};
+
+	mechanics.index = function(req, res) {
+		modules.render(req, res, 'admin/index', { title: "Mechanics - Admin - Langenium", page: 'mechanics' });
+	}
+
+	return mechanics;
 }

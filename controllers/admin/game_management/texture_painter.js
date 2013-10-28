@@ -1,7 +1,7 @@
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
-	Page
+	Texture Painter
 	This is the controller that exposes and controls individual website pages
 
 
@@ -13,6 +13,11 @@
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
 module.exports = function(modules) {
-	var page = {};
-	return page;
+	var texture_painter = {};
+
+	texture_painter.index = function(req, res) {
+		modules.render(req, res, 'admin/index', { title: "Texture Painter - Admin - Langenium", page: 'texture_painter' });
+	}
+
+	return texture_painter;
 }

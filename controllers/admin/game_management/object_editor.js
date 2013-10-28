@@ -1,7 +1,7 @@
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
-
-	Page
+	
+	Object Editor
 	This is the controller that exposes and controls individual website pages
 
 
@@ -13,6 +13,11 @@
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
 module.exports = function(modules) {
-	var page = {};
-	return page;
+	var object_editor = {};
+
+	object_editor.index = function(req, res) {
+		modules.render(req, res, 'admin/index', { title: "Object Editor - Admin - Langenium", page: 'object_editor' });
+	}
+	
+	return object_editor;
 }

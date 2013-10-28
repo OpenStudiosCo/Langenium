@@ -17,7 +17,7 @@ module.exports= function(modules) {
 	}
 
 	instance.subscribe = function(socket, modules, data) {
-		
+		console.log(data);
 	}
 
 	return instance;

@@ -13,19 +13,19 @@ var 	modules = require('./modules')();
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
 // Initialize models
-console.log("Initializing models");
+//console.log("Initializing models");
 modules.import_classes(modules, modules.models, './models');
-console.log(modules.models)
+//console.log(modules.models)
 
 // Initialize controllers
-console.log("Initializing controllers");
+//console.log("Initializing controllers");
 modules.import_classes(modules, modules.controllers, './controllers');
-console.log(modules.controllers)
+//console.log(modules.controllers)
 
 // Initialize routes
-console.log("Initializing routes");
+//console.log("Initializing routes");
 modules.import_classes(modules, modules.routes, './routes');
-console.log(modules.app.routes)
+//console.log(modules.app.routes)
 
 // Start server
 modules.app.listen(process.env['HTTP_PORT']); // dev

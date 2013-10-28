@@ -49,7 +49,12 @@ function getSocketURL() {
 
 function setEventHandlers(socket) {
 	socket.emit("admin:dashboard:server_stats:subscribe");
+	socket.emit("admin:dashboard:server_log:subscribe");
 	socket.emit("game:scene:instance:subscribe", { hello: "hello"});
+	socket.on("admin:dashboard:server_log:update", function(data) {
+		
+		$('textarea.well').prepend(data);
+	});
 	socket.on("admin:dashboard:server_stats:update", function(data) { 
 		var timestamp = new Date().getTime();
 		// CPU chart

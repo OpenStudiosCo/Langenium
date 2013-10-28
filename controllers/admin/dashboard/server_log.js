@@ -1,8 +1,8 @@
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
-	Server stats
-	This is the controller that exposes and controls admin dashboard server stats
+	Server log
+	This is the controller that exposes and controls admin dashboard server log
 
 
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
@@ -13,27 +13,20 @@
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
 module.exports = function(modules) {
-	var server_stats = {};
+	var server_log = {};
 
-	server_stats.get_data = function() {
-		return {
-			cpu: modules.os.cpus(),
-			loadavg: modules.os.loadavg(),
-			memory: {
-				usage: process.memoryUsage(),
-				free: modules.os.freemem(),
-				total: modules.os.totalmem()
-			}
-		};
+	process.stdout.write = (function(write) {
+	    return function(string, encoding, fd) {
+	        write.apply(process.stdout, arguments);
+	        var d = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '') ;
+			
+	        modules.io.sockets.in('server_log').emit('admin:dashboard:server_log:update', d + " " + string.replace( /\033\[[0-9;]*m/g, "" ));	
+	    }
+	})(process.stdout.write);
+
+	server_log.subscribe = function(socket) {
+		socket.join('server_log');
 	}
 
-	
-
-	server_stats.clock = setInterval( function(){ modules.io.sockets.in('server_stats').emit('admin:dashboard:server_stats:update', server_stats.get_data()); }, 1000 / 66);
-
-	server_stats.subscribe = function(socket) {
-		socket.join('server_stats');
-	}
-
-	return server_stats;
+	return server_log;
 }

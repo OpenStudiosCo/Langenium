@@ -25,8 +25,9 @@ module.exports = function(modules) {
 	// Sockets
 	modules.io.on('connection', function(socket) {
 		socket.on('admin:dashboard:server_stats:subscribe', function () { modules.controllers.admin.dashboard.server_stats.subscribe(socket) });
+		socket.on('admin:dashboard:server_log:subscribe', function () { modules.controllers.admin.dashboard.server_log.subscribe(socket) });
 	});
-	
+
 
 
 }

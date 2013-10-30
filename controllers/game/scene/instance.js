@@ -1,8 +1,8 @@
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
-	Objects
-	This is the model that defines the models for the game's objects
+	Instance
+	This is the controller that defines the functionality for the game's scene instances
 
 
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
@@ -12,12 +12,30 @@
 module.exports= function(modules) {
 	var instance = {};
 
+	instance.collection = [];
+
 	instance.input = function(socket, modules, data) {
 
 	}
 
 	instance.subscribe = function(socket, modules, data) {
 		console.log(data);
+	}
+
+	instance.create = function(scene) {
+		var newInstance = new modules.models.game.scene.instance.model({
+			scene_id: scene._id,
+			name: scene.name,
+			description: scene.description,
+			environment: scene.environment,
+			objects: {
+				bots: [],
+				characters: [],
+				environment: [],
+				ships: []
+			}
+		});
+		instance.collection.push(newInstance);
 	}
 
 	return instance;

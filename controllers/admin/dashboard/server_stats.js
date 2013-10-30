@@ -27,8 +27,6 @@ module.exports = function(modules) {
 		};
 	}
 
-	
-
 	server_stats.clock = setInterval( function(){ modules.io.sockets.in('server_stats').emit('admin:dashboard:server_stats:update', server_stats.get_data()); }, 1000 / 66);
 
 	server_stats.subscribe = function(socket) {

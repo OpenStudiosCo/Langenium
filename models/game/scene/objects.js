@@ -1,8 +1,8 @@
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
-	Ships
-	This is the model that defines the models for the game's ship objects
+	Objects
+	This is the model that defines the models for the scene's objects
 
 
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
@@ -10,20 +10,35 @@
 // Standard pattern to allow this file to be chained up in the modules container
 
 module.exports= function(modules) {
-	var ships = {};
+	var objects = {};
 
-	ships.schema = new modules.mongoose.Schema ({
+	objects.schema = new modules.mongoose.Schema ({
 		category: String,
+		scene_id: modules.mongoose.Schema.Types.ObjectId,
 		details: {
 			_id: modules.mongoose.Schema.Types.ObjectId,
 			name: String,
-			sub_type: String,
-			type: String
+			type: String,
+			sub_type: String
 		},
-		player_id: modules.mongoose.Schema.Types.ObjectId
+		position: {
+			x: Number,
+			y: Number,
+			z: Number
+		},
+		rotation: {
+			x: Number,
+			y: Number,
+			z: Number
+		},
+		scale: {
+			x: Number,
+			y: Number,
+			z: Number
+		},
+		startup: String
 	});
+	objects.model = modules.mongoose.model('scene_objects', objects.schema);
 	
-	ships.model = modules.mongoose.model('ships', ships.schema);
-
-	return ships;
+	return objects;
 }

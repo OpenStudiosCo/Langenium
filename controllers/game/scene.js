@@ -12,6 +12,7 @@
 module.exports= function(modules) {
 	var scene = {};
 	scene.instance = require('./scene/instance.js')(modules);
+	scene.objects = require('./scene/objects.js')(modules);
 	scene.types = require('./scene/types.js')(modules);
 	return scene;
 }

@@ -1,8 +1,8 @@
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
-	Objects
-	This is the model that defines the models for the game's objects
+	Instance
+	This is the model that defines the models for the game's scene instances
 
 
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
@@ -12,17 +12,30 @@
 module.exports= function(modules) {
 	var instance = {};
 
-	instance.subscribe = function(req) {
-		// Add user to scene as either character or ship, 
+	instance.schema = new modules.mongoose.Schema ({
+		scene_id: modules.mongoose.Schema.Types.ObjectId,
+		name: String,
+		description: String,
+		environment: String,
+		startup: String,
+		objects: {
+			bots: [],
+			characters: [],
+			environment: [],
+			ships: []
+		}
+	});
+
+	instance.schema.methods.create_clock = function(callback, instance_obj) {
+		return setInterval( function(){ callback(instance_obj); }, 1000 / 66);
 	}
 
-	instance.input = function(req) {
-		// Switch between character and ship type of input 
-	}
+	instance.schema.methods.update = function(obj) {
+		// do some stuff with my objects
+		console.log(obj);
+	};
 
-	instance.update = function(req) {
-		// Send an update of the game state
-	}
-
+	instance.model = modules.mongoose.model('instances', instance.schema);
+	
 	return instance;
 }

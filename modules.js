@@ -50,14 +50,12 @@ module.exports = function() {
 		}
 	};
 
-	var db_options = {
+	// Connect to database
+
+	modules.mongoose.connect('127.0.0.1:27017/langenium', {
 		user: process.env['DB_USERNAME'],
 		pass: process.env['DB_PASSWORD']
-	};
-
-	modules.mongoose.connect('127.0.0.1:27017/langenium', db_options);
-
-	console.log(modules.mongoose.connections[0]);
+	});
 
 	// More 3rd party modules that are dependent on the other set already being initialized
 	modules.fb = new modules.fbsdk.Facebook({ appId: process.env['APP_ID'], secret: process.env['APP_SECRET'] });

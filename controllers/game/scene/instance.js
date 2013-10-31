@@ -23,12 +23,13 @@ module.exports= function(modules) {
 	};
 
 	instance.client_setup = function(socket, instance_obj) {
-		socket.emit('load_scene', instance_obj)
-		var object_types = ['bots','characters','environment','ships'];
-		for (var object_type in object_types) {
+		socket.emit('load_scene', instance_obj);
 
+		var object_types = ['bots','characters','environment','ships'];
+		for (var i in object_types) {
+			console.log(instance_obj.objects[object_types[i]]);
 		}
-		console.log(instance_obj.objects)
+		
 	}
 
 	instance.input = function(socket, data) {

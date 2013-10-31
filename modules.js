@@ -47,6 +47,9 @@ module.exports = function() {
 				variables.logged_in = false;	
 			}
 			res.render(template, variables);
+		},
+		add_clock: function(obj, callback) {
+			obj.clock = setInterval( function(){ callback(obj); }, 1000 / 66);
 		}
 	};
 

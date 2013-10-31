@@ -18,7 +18,7 @@ module.exports= function(modules) {
 		details: {
 			_id: modules.mongoose.Schema.Types.ObjectId,
 			name: String,
-			type: String,
+			type: { type: String }, // type is a reserved word so this is a hack
 			sub_type: String
 		},
 		position: {
@@ -35,8 +35,7 @@ module.exports= function(modules) {
 			x: Number,
 			y: Number,
 			z: Number
-		},
-		startup: String
+		}
 	});
 	objects.model = modules.mongoose.model('scene_objects', objects.schema);
 	

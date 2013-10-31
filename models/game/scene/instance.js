@@ -18,21 +18,23 @@ module.exports= function(modules) {
 		description: String,
 		environment: String,
 		startup: String,
+		last_time: Number,
+		delta: Number,
 		objects: {
 			bots: [],
 			characters: [],
 			environment: [],
 			ships: []
-		}
+		},
+		update_queue: []
 	});
-
-	instance.schema.methods.create_clock = function(callback, instance_obj) {
-		return setInterval( function(){ callback(instance_obj); }, 1000 / 66);
-	}
-
-	instance.schema.methods.update = function(obj) {
+	
+	instance.schema.methods.update = function(instance_obj) {
 		// do some stuff with my objects
-		console.log(obj);
+		var new_time = new Date().getTime();
+		instance_obj.delta = (new_time - instance_obj.last_time);
+		instance_obj.last_time = new_time;
+		//console.log(instance_obj);
 	};
 
 	instance.model = modules.mongoose.model('instances', instance.schema);

@@ -15,12 +15,12 @@ module.exports= function(modules) {
 	ships.schema = new modules.mongoose.Schema ({
 		category: String,
 		details: {
-			_id: modules.mongoose.Schema.Types.ObjectId,
+			object_id: modules.mongoose.Schema.Types.ObjectId,
 			name: String,
 			sub_type: String,
-			type: String
+			type: { type: String }
 		},
-		player_id: modules.mongoose.Schema.Types.ObjectId
+		user_id: modules.mongoose.Schema.Types.ObjectId
 	});
 	
 	ships.model = modules.mongoose.model('ships', ships.schema);

@@ -43,7 +43,7 @@ client.prototype.initialize = function () {
 		username = "Droopy";
 	}
 	else {
-		username = "Saggy";
+		username = "Droopy";
 	}
 
 	events.socket.emit("game:scene:instance:subscribe", { username: username, editor: client.is_editor });

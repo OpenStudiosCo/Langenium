@@ -16,7 +16,7 @@ module.exports= function(modules) {
 		category: String,
 		name: String,
 		type: String,
-		player_id: modules.mongoose.Schema.Types.ObjectId
+		user_id: modules.mongoose.Schema.Types.ObjectId
 	});
 	
 	characters.model = modules.mongoose.model('characters', characters.schema);

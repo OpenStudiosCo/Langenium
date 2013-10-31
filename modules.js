@@ -67,6 +67,19 @@ module.exports = function() {
 	modules.io = require('socket.io').listen(8080);
 	modules.io.set('log level', 2);
 
+	// This should go into some kind of utility class... it applies to both admin and game.. maybe website? 
+	var pong = function(socket, data) {
+		var time = new Date().getTime(); 
+		var latency = time - data.time;
+		socket.emit("ping", { time: new Date().getTime(), latency: latency });
+	}
+
+	modules.io.on('connection', function(socket) {
+		socket.emit('ping', { time: new Date().getTime(), latency: 0 });
+		socket.on('pong', function (data) { pong(socket, data) });
+	});
+
+
 	// Configure express app
 	modules.app.configure(function () {
 		

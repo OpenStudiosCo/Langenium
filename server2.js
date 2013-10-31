@@ -37,22 +37,12 @@ modules.import_classes(modules, modules.routes, './routes');
 modules.models.game.scene.model.find({}, function(err, scenes) {
 	scenes.forEach(function(scene,index) {
 		if (scene.startup == 'auto') {
-			modules.controllers.game.scene.instance.create(scene, function() {
+			modules.controllers.game.scene.instance.create(scene, function(index) {
 				modules.add_clock(
-					modules.controllers.game.scene.instance.collection[modules.controllers.game.scene.instance.collection.length-1], 
-					modules.controllers.game.scene.instance.collection[modules.controllers.game.scene.instance.collection.length-1].update
-				);	
-				//console.log(modules.controllers.game.scene.instance.collection)
-					var plop = new modules.models.user.model({
-						username: "plog",
-						characters: [
-							{ object_id:  "51d68ed1fc48c37630000000" },
-							{ object_id:  "526fae95ba40eb100a000001" }
-						]
-					});
-					console.log(plop)
+					modules.controllers.game.scene.instance.collection[index], 
+					modules.controllers.game.scene.instance.collection[index].update
+				);
 			});
-			
 		}
 	});
 });

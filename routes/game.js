@@ -20,8 +20,8 @@ module.exports = function(modules) {
 			
 	// Sockets
 	modules.io.on('connection', function(socket) {
-		socket.on('game:scene:instance:subscribe', function (data) { modules.controllers.game.scene.instance.subscribe(socket, modules, data) });
-		socket.on('game:scene:instance:input', function (data) { modules.controllers.game.scene.instance.input(socket, modules, data) });
+		socket.on('game:scene:instance:subscribe', function (data) { modules.controllers.game.scene.instance.subscribe(socket, data) });
+		socket.on('game:scene:instance:input', function (data) { modules.controllers.game.scene.instance.input(socket, data) });
 	});
 
 }

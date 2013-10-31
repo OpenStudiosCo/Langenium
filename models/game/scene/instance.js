@@ -28,14 +28,6 @@ module.exports= function(modules) {
 		},
 		update_queue: []
 	});
-	
-	instance.schema.methods.update = function(instance_obj) {
-		// do some stuff with my objects
-		var new_time = new Date().getTime();
-		instance_obj.delta = (new_time - instance_obj.last_time);
-		instance_obj.last_time = new_time;
-		//console.log(instance_obj);
-	};
 
 	instance.model = modules.mongoose.model('instances', instance.schema);
 	

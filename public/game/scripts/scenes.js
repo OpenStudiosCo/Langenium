@@ -34,7 +34,7 @@ var scenes = function() {
 
 scenes.prototype.load = function(instance) {	
 	
-	if (instance.type == 'outdoor') {
+	if (instance.environment == 'outdoor') {
 		controls.flight.enabled = true;
 		client.camera = controls.flight.camera;	
 		
@@ -67,7 +67,7 @@ scenes.prototype.load = function(instance) {
 		engine.scene.add(effects.water.textureCamera);
 		effects.water.update();
 	}	
-	if (instance.type == 'indoor') {
+	if (instance.environment == 'indoor') {
 		controls.character.enabled = true;
 		client.camera = controls.character.camera;
 		if (client.is_editor) {

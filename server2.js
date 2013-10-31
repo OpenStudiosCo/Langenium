@@ -40,7 +40,7 @@ modules.models.game.scene.model.find({}, function(err, scenes) {
 			modules.controllers.game.scene.instance.create(scene, function(index) {
 				modules.add_clock(
 					modules.controllers.game.scene.instance.collection[index], 
-					modules.controllers.game.scene.instance.collection[index].update
+					modules.controllers.game.scene.instance.update
 				);
 			});
 		}

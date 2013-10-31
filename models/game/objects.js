@@ -27,7 +27,7 @@ module.exports= function(modules) {
 		},
 		name: String,
 		sub_type: String,
-		type: String
+		type: { type: String } // type is a reserved word so this is a hack
 	});
 	
 	objects.model = modules.mongoose.model('objects', objects.schema);

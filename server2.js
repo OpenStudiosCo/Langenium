@@ -43,6 +43,14 @@ modules.models.game.scene.model.find({}, function(err, scenes) {
 					modules.controllers.game.scene.instance.collection[modules.controllers.game.scene.instance.collection.length-1].update
 				);	
 				//console.log(modules.controllers.game.scene.instance.collection)
+					var plop = new modules.models.user.model({
+						username: "plog",
+						characters: [
+							{ object_id:  "51d68ed1fc48c37630000000" },
+							{ object_id:  "526fae95ba40eb100a000001" }
+						]
+					});
+					console.log(plop)
 			});
 			
 		}

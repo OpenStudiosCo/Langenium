@@ -16,7 +16,7 @@ module.exports= function(modules) {
 		category: String,
 		scene_id: modules.mongoose.Schema.Types.ObjectId,
 		details: {
-			_id: modules.mongoose.Schema.Types.ObjectId,
+			object_id: modules.mongoose.Schema.Types.ObjectId,
 			name: String,
 			type: { type: String }, // type is a reserved word so this is a hack
 			sub_type: String

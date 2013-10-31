@@ -46,7 +46,7 @@ client.prototype.initialize = function () {
 		username = "Saggy";
 	}
 
-	events.socket.emit("login", { username: username, editor: client.is_editor });
+	events.socket.emit("game:scene:instance:subscribe", { username: username, editor: client.is_editor });
 	$("#game").append(engine.renderer.domElement);
 	
 	window.addEventListener( 'resize', client.onWindowResize, false );

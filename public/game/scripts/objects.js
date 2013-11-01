@@ -48,6 +48,7 @@ objects.prototype.loadObject = function (instruction) {
 		objects.renderObject(mesh, instruction['class'], instruction);
 	}
 	else {
+		console.log(instruction)
 		loader.load(instruction.url, function(geometry, materials) {
 			mesh = objects.makeObjectMesh(instruction, geometry, materials);
 			var cachedObject = { url: instruction.url, geometry: geometry, materials: materials};

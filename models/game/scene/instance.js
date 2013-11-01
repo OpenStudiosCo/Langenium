@@ -24,6 +24,7 @@ module.exports= function(modules) {
 			bots: [],
 			characters: [],
 			environment: [],
+			players: [],
 			ships: []
 		},
 		update_queue: []

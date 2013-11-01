@@ -12,7 +12,11 @@
 module.exports= function(modules) {
 	var instance = {};
 
+	// user for cross navigation of instances
 	instance.collection = [];
+
+	// used for cross navigation of clients
+	instance.client_sessions = [];
 
 	instance.update = function(instance_obj) {
 		// do some stuff with my objects
@@ -25,11 +29,61 @@ module.exports= function(modules) {
 	instance.client_setup = function(socket, instance_obj) {
 		socket.emit('load_scene', instance_obj);
 
-		var object_types = ['bots','characters','environment','ships'];
-		for (var i in object_types) {
-			console.log(instance_obj.objects[object_types[i]]);
+		var sprite_callback = function(instance_sprite, sprites) {
+			console.log(sprites);
+		};
+
+		var mesh_callback = function(instance_mesh, objects) {
+			var instruction = {};
+			instruction = instance_mesh;
+			instruction.name = objects[0].name;
+			instruction.obj_type = objects[0].type;
+			instruction.url = objects[0].details.url;
+			if (!instruction.scale) {
+				instruction.scale = objects[0].scale;
+			}
+			console.log(typeof instruction)
+			socket.emit('load_object', instruction);
+		}; 
+
+		var looper = function(model, obj_array, callback) {
+			obj_array.forEach(function(instance_object, index) {
+				model.find({ _id: instance_object.details.object_id }, function(err, obj_results) {
+					callback(instance_object, obj_results)
+				});
+			});
 		}
+
+		looper(modules.models.game.objects.characters.model, instance_obj.objects.characters, sprite_callback);
+		looper(modules.models.game.objects.model, instance_obj.objects.environment, mesh_callback);
+		looper(modules.models.game.objects.model, instance_obj.objects.ships, mesh_callback);
 		
+	}
+
+	instance.add_player = function(socket, user, instance_obj) {
+		// Defaulting to first character and ship for now... this will have it's own mechanisms later
+
+		instance.client_sessions.push(new modules.models.user.session.model({
+			user_id: user._id,
+			sessionId: socket.id,
+			mode: instance_obj.environment == 'indoor' ? 'character' : 'ship',
+			socket: socket,
+			instance_id: instance_obj._id, // note: this is not the scene ID
+			username: user.username
+		}));
+		
+		if (instance_obj.environment == 'indoor') {
+			modules.models.game.objects.characters.model.find({ _id: user.characters[0].object_id }, function(err, characters) {
+				instance_obj.objects.characters.push(v[0]);
+				instance.client_setup(socket, instance_obj);
+			});
+		}
+		else {
+			modules.models.game.objects.ships.model.find({ _id: user.ships[0].object_id }, function(err, ships) {
+				instance_obj.objects.ships.push(ships[0]);
+				instance.client_setup(socket, instance_obj);				
+			});
+		}
 	}
 
 	instance.input = function(socket, data) {
@@ -46,7 +100,8 @@ module.exports= function(modules) {
 					// send the load scene instructions
 					
 					socket.join('game:scene:instance:'+instance_obj.scene_id.toString());
-					instance.client_setup(socket, instance_obj)
+
+					instance.add_player(socket, users[0], instance_obj)
 					instance_found = true;
 
 				}

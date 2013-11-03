@@ -26,7 +26,7 @@ module.exports= function(modules) {
 		//modules.io.sockets.in('game:scene:instance:'+instance_obj.scene_id.toString()).emit('admin:dashboard:server_stats:update', server_stats.get_data());
 	};
 
-	instance.client_setup = function(socket, instance_obj) {
+	instance.client_setup = function(user, socket, instance_obj) {
 		socket.emit('load_scene', instance_obj);
 
 		var sprite_callback = function(instance_sprite, sprites) {
@@ -34,15 +34,36 @@ module.exports= function(modules) {
 		};
 
 		var mesh_callback = function(instance_mesh, objects) {
-			var instruction = {};
-			instruction = instance_mesh;
-			instruction.name = objects[0].name;
-			instruction.obj_type = objects[0].type;
-			instruction.url = objects[0].details.url;
-			if (!instruction.scale) {
-				instruction.scale = objects[0].scale;
-			}
-			console.log(typeof instruction)
+			var instruction = modules.models.game.client.message.load_object.model({
+				_id: instance_mesh._id,
+				socket_id: socket.id,
+				category: instance_mesh.category,
+				url: objects[0].details.url,
+				status: 'Saved',
+				details: {
+					object_id: objects[0]._id,
+					name: objects[0].name,
+					type: objects[0].type,
+					sub_type: objects[0].sub_type
+				},
+				position: {
+					x: instance_mesh.category == 'ships' ? user.position.x : instance_mesh.position.x,
+					y: instance_mesh.category == 'ships' ? user.position.x : instance_mesh.position.y,
+					z: instance_mesh.category == 'ships' ? user.position.x : instance_mesh.position.z
+				},
+				rotation: {
+					x: instance_mesh.category == 'ships' ? user.rotation.x : instance_mesh.rotation.x,
+					y: instance_mesh.category == 'ships' ? user.rotation.x : instance_mesh.rotation.x,
+					z: instance_mesh.category == 'ships' ? user.rotation.x : instance_mesh.rotation.x,
+				},
+				scale: {
+					x: instance_mesh.scale ? instance_mesh.scale.x : objects[0].details.scale.x,
+					y: instance_mesh.scale ? instance_mesh.scale.y : objects[0].details.scale.y,
+					z: instance_mesh.scale ? instance_mesh.scale.z : objects[0].details.scale.z
+				}
+			});		
+
+
 			socket.emit('load_object', instruction);
 		}; 
 
@@ -75,13 +96,13 @@ module.exports= function(modules) {
 		if (instance_obj.environment == 'indoor') {
 			modules.models.game.objects.characters.model.find({ _id: user.characters[0].object_id }, function(err, characters) {
 				instance_obj.objects.characters.push(v[0]);
-				instance.client_setup(socket, instance_obj);
+				instance.client_setup(user, socket, instance_obj);
 			});
 		}
 		else {
 			modules.models.game.objects.ships.model.find({ _id: user.ships[0].object_id }, function(err, ships) {
 				instance_obj.objects.ships.push(ships[0]);
-				instance.client_setup(socket, instance_obj);				
+				instance.client_setup(user, socket, instance_obj);				
 			});
 		}
 	}

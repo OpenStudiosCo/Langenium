@@ -20,6 +20,11 @@ module.exports= function(modules) {
 			y: Number,
 			z: Number
 		},
+		rotation: {
+			x: Number,
+			y: Number,
+			z: Number
+		},
 		characters: [{
 			object_id:  modules.mongoose.Schema.Types.ObjectId
 		}],

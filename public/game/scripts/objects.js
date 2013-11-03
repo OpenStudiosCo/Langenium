@@ -45,22 +45,21 @@ objects.prototype.loadObject = function (instruction) {
 	if ((cacheIndex >= 0)&&(window.location.href.indexOf("editor") < 0)) {
 		var cachedObject = objects.cache[cacheIndex];
 		mesh = objects.makeObjectMesh(instruction, cachedObject.geometry, cachedObject.materials);
-		objects.renderObject(mesh, instruction['class'], instruction);
+		objects.renderObject(mesh, instruction.category, instruction);
 	}
 	else {
-		console.log(instruction)
 		loader.load(instruction.url, function(geometry, materials) {
 			mesh = objects.makeObjectMesh(instruction, geometry, materials);
 			var cachedObject = { url: instruction.url, geometry: geometry, materials: materials};
 			objects.cache.push(cachedObject);	
-			objects.renderObject(mesh, instruction['class'], instruction);
+			objects.renderObject(mesh, instruction.category, instruction);
 		});
 	}
 };
 
 objects.prototype.makeObjectMesh = function (instruction, geometry, materials) {
 	var useVertexOverrides = false;
-	if ((instruction['class'] != "terrain")&&(instruction['class'] != "ships")&&(instruction['class'] != "bots")) {
+	if ((instruction.category != "terrain")&&(instruction.category != "ships")&&(instruction.category != "bots")) {
 		useVertexOverrides = true;
 	}
 
@@ -69,17 +68,17 @@ objects.prototype.makeObjectMesh = function (instruction, geometry, materials) {
 	object = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial( materials ) );
 	object.obj_details = {
 		_id: instruction._id,
-		object_id: instruction.object._id,
-		name: instruction.object.name,
-		type: instruction.object.type,
-		sub_type: instruction.object.sub_type,
+		object_id: instruction.details.object_id,
+		name: instruction.details.name,
+		type: instruction.details.type,
+		sub_type: instruction.details.sub_type,
 		status: instruction.status ? instruction.status : 'Saved'
 	};
 	object.geometry.computeBoundingBox();
-	object.name = instruction['class'];
+	object.name = instruction.category;
 	object.position.set(parseFloat(instruction.position.x), parseFloat(instruction.position.y), parseFloat(instruction.position.z));
 	object.rotation.set(parseFloat(instruction.rotation.x), parseFloat(instruction.rotation.y), parseFloat(instruction.rotation.z));
-	object.scale.set(parseFloat(instruction.scale), parseFloat(instruction.scale), parseFloat(instruction.scale));
+	object.scale.set(parseFloat(instruction.scale.x), parseFloat(instruction.scale.y), parseFloat(instruction.scale.z));
 	object.matrixAutoUpdate = true;
 	object.updateMatrix();
 	object.geometry.colorsNeedUpdate = true;
@@ -90,6 +89,7 @@ objects.prototype.makeObjectMesh = function (instruction, geometry, materials) {
 };
 
 objects.prototype.renderObject = function (mesh, obj_class, instruction) {
+
 	// Convert all to floats to resolve stupid issues
 	instruction.position.x = parseFloat(instruction.position.x);
 	instruction.position.y = parseFloat(instruction.position.y);

@@ -50,7 +50,6 @@ function getSocketURL() {
 function setEventHandlers(socket) {
 	socket.emit("admin:dashboard:server_stats:subscribe");
 	socket.emit("admin:dashboard:server_log:subscribe");
-	socket.emit("game:scene:instance:subscribe", { hello: "hello"});
 	socket.on("admin:dashboard:server_log:update", function(data) {
 		
 		$('.well').prepend(data);

@@ -36,7 +36,6 @@ module.exports= function(modules) {
 		var mesh_callback = function(instance_mesh, objects) {
 			var instruction = modules.models.game.client.message.load_object.model({
 				_id: instance_mesh._id,
-				socket_id: socket.id,
 				category: instance_mesh.category,
 				url: objects[0].details.url,
 				status: 'Saved',
@@ -48,13 +47,13 @@ module.exports= function(modules) {
 				},
 				position: {
 					x: instance_mesh.category == 'ships' ? user.position.x : instance_mesh.position.x,
-					y: instance_mesh.category == 'ships' ? user.position.x : instance_mesh.position.y,
-					z: instance_mesh.category == 'ships' ? user.position.x : instance_mesh.position.z
+					y: instance_mesh.category == 'ships' ? user.position.y : instance_mesh.position.y,
+					z: instance_mesh.category == 'ships' ? user.position.z : instance_mesh.position.z
 				},
 				rotation: {
 					x: instance_mesh.category == 'ships' ? user.rotation.x : instance_mesh.rotation.x,
-					y: instance_mesh.category == 'ships' ? user.rotation.x : instance_mesh.rotation.x,
-					z: instance_mesh.category == 'ships' ? user.rotation.x : instance_mesh.rotation.x,
+					y: instance_mesh.category == 'ships' ? user.rotation.y : instance_mesh.rotation.y,
+					z: instance_mesh.category == 'ships' ? user.rotation.z : instance_mesh.rotation.z,
 				},
 				scale: {
 					x: instance_mesh.scale ? instance_mesh.scale.x : objects[0].details.scale.x,
@@ -63,7 +62,13 @@ module.exports= function(modules) {
 				}
 			});		
 
-
+			if (instance_mesh.category == 'ships') {
+				instance.client_sessions.forEach(function(session, index){
+					if (session.user_id.toString() == instance_mesh.user_id.toString()) {
+						instruction.socket_id = session.sessionId;
+					}
+				});
+			}
 			socket.emit('load_object', instruction);
 		}; 
 

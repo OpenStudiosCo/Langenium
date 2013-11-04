@@ -64,7 +64,6 @@ scenes.prototype.load = function(instance) {
 
 		effects.water.water_tiles.push(new effects.water.makeWater(M));
 		engine.scene.add(effects.water.water_tiles[0]);
-		engine.scene.add(effects.water.textureCamera);
 		effects.water.update();
 	}	
 	if (instance.environment == 'indoor') {

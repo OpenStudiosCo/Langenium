@@ -60,32 +60,6 @@ var water = function() {
 						time: 			{ type: "f", value: 1.0 }
 					};
 
-
-	// Reflection code
-	/* 
-	this.textureCamera = new THREE.PerspectiveCamera( 90, (client.winW / client.winH), 1, M * 2 );
-	
-	this.screenScene = new THREE.Scene();
-	this.firstRenderTarget = new THREE.WebGLRenderTarget( 4096, 4096, { format: THREE.RGBFormat } );
-	this.screenMaterial = new THREE.MeshBasicMaterial( { map: this.firstRenderTarget } );
-	this.screenCamera = new THREE.OrthographicCamera( 
-		window.innerWidth  / -2, window.innerWidth  /  2, 
-		window.innerHeight /  2, window.innerHeight / -2, 
-		-M, M );
-
-	this.screenCamera.position.z = 1;
-	this.screenScene.add( this.screenCamera );
-
-	this.screenGeometry = new THREE.PlaneGeometry( window.innerWidth, window.innerHeight );
-	
-	this.quad = new THREE.Mesh( this.screenGeometry, this.screenMaterial );
-	//this.quad.rotation.z = 2;
-
-	this.screenScene.add( this.quad );
-
-	this.finalRenderTarget = new THREE.WebGLRenderTarget( 4096, 4096, { format: THREE.RGBFormat } );
-	this.planeMaterial = new THREE.MeshBasicMaterial( { map: this.finalRenderTarget } );
-	*/
 	return this;
 };
 
@@ -133,10 +107,7 @@ water.prototype.makeEnvScale = function() {
 }
 
 water.prototype.animate = function(delta) {
-	// need a nicer way to do this
-
 	effects.water.uniforms.time.value += delta;
-	
 }
 
 water.prototype.update = function() {

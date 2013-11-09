@@ -22,7 +22,7 @@ module.exports = function(modules) {
 	modules.io.on('connection', function(socket) {
 		socket.on('game:scene:instance:subscribe', function (data) { modules.controllers.game.scene.instance.subscribe(socket, data) });
 		socket.on('game:scene:instance:input', function (data) { modules.controllers.game.scene.instance.input(socket, data) });
-		socket.on('move_ship', function (data) { console.log(data) });
+		socket.on('move_ship', function (data) {  });
 	});
 
 }

@@ -120,7 +120,7 @@ flight.prototype.input = function (delta){
 	}
 	
 	if (move == true) {
-		events.socket.emit('move_ship', keyboardInput);
+		events.socket.emit('game:scene:instance:input', keyboardInput);
 	}
 	
 	if (controls.flight.camera.rotation.x != 0 && (controls.camera_rotating == false || controls.mouse.changeX == false)) {

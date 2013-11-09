@@ -11,5 +11,10 @@
 
 module.exports= function(modules) {
 	var ships = {};
+
+	ships.move = function() {
+		
+	};
+
 	return ships;
 }

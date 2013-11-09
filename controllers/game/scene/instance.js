@@ -113,7 +113,22 @@ module.exports= function(modules) {
 	}
 
 	instance.input = function(socket, data) {
-
+		instance.client_sessions.forEach(function(session){
+			if (session.sessionId == socket.id) {
+				instance.collection.forEach(function(instance_obj){
+					if (instance_obj._id.toString() == session.instance_id.toString()) {
+						if (session.mode == 'ship') {
+							instance_obj.objects.ships.forEach(function(ship){
+								if (ship.user_id.toString() == session.user_id.toString()) {
+									console.log(ship)
+								}
+							});
+						}	
+					}
+				});
+			}
+		});
+	
 	};
 
 	instance.subscribe = function(socket, data) {

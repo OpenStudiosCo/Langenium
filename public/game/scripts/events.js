@@ -44,6 +44,7 @@ events.prototype.setEventHandlers = function (socket) {
 	});
 
 	socket.on("load_object", function(data) { 
+		console.log(data)
 		objects.loadObject(data);
 	});
 	socket.on("load_character", function(data) { 
@@ -172,6 +173,6 @@ events.prototype.detectCollision = function (source, direction, world_map) {
 
 events.prototype.logout = function(ship, index) {
 	effects.particles.teleportEffect(ship.position);
-	scene.remove(ship);
+	engine.scene.remove(ship);
 	objects.ships.collection.splice(index, 1);
 }

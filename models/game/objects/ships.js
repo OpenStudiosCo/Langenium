@@ -14,13 +14,27 @@ module.exports= function(modules) {
 
 	ships.schema = new modules.mongoose.Schema ({
 		category: String,
+		input_status: Boolean,
+		socket_id: String,
+		username: String,
 		details: {
 			object_id: modules.mongoose.Schema.Types.ObjectId,
 			name: String,
 			sub_type: String,
 			type: { type: String }
 		},
-		user_id: modules.mongoose.Schema.Types.ObjectId
+		velocity: Number,
+		user_id: modules.mongoose.Schema.Types.ObjectId,
+		position: {
+			x: Number,
+			y: Number,
+			z: Number
+		},
+		rotation: {
+			x: Number,
+			y: Number,
+			z: Number
+		}
 	});
 	
 	ships.model = modules.mongoose.model('ships', ships.schema);

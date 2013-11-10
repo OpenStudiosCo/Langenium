@@ -50,3 +50,8 @@ modules.models.game.scene.model.find({}, function(err, scenes) {
 // Start server
 modules.app.listen(process.env['HTTP_PORT']); // dev
 
+// FOR DEBUGGING ONLY
+if (process.env['HOST_URL'].indexOf('dev') >= 0) {
+	global.modules = modules;
+}
+

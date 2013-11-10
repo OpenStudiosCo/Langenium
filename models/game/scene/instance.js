@@ -12,6 +12,8 @@
 module.exports= function(modules) {
 	var instance = {};
 
+	instance.update = require('./instance/update.js')(modules);
+
 	instance.schema = new modules.mongoose.Schema ({
 		scene_id: modules.mongoose.Schema.Types.ObjectId,
 		name: String,
@@ -20,6 +22,8 @@ module.exports= function(modules) {
 		startup: String,
 		last_time: Number,
 		delta: Number,
+		interval_ticks: Number,
+		transmit_interval: Number,
 		objects: {
 			bots: [],
 			characters: [],

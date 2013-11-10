@@ -20,6 +20,7 @@ module.exports = function(modules) {
 			
 	// Sockets
 	modules.io.on('connection', function(socket) {
+		socket.on('disconnect', function () { modules.controllers.game.scene.instance.remove_player(socket) });
 		socket.on('game:scene:instance:subscribe', function (data) { modules.controllers.game.scene.instance.subscribe(socket, data) });
 		socket.on('game:scene:instance:input', function (data) { modules.controllers.game.scene.instance.input(socket, data) });
 		socket.on('move_ship', function (data) {  });

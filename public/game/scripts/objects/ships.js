@@ -16,7 +16,6 @@ var ships = function() {
 }
 
 ships.prototype.make = function (obj_class, instruction, mesh) {
-	console.log(instruction)
 	mesh.ship_attributes = {
 		health: instruction.health,
 		faction: instruction.faction,

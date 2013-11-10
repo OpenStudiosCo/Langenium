@@ -19,10 +19,65 @@ module.exports= function(modules) {
 	instance.client_sessions = [];
 
 	instance.update = function(instance_obj) {
-		// do some stuff with my objects
+		// Proces the obj delta
 		var new_time = new Date().getTime();
 		instance_obj.delta = (new_time - instance_obj.last_time);
 		instance_obj.last_time = new_time;
+
+		// Process enqueued scene updates
+		var processed_changes = [];
+
+		instance_obj.update_queue.forEach(function(update, index){
+
+			var _complete = function(processed_change) {
+				processed_changes.push(processed_change);
+				instance_obj.update_queue.splice(index, 1);
+			
+			};
+			if (update.type == 'move_ship') {
+				update.object.input_status = true;
+			}
+			modules.controllers.game.objects[update.obj_class][update.type](instance_obj.delta, update, _complete)
+
+		});
+
+		if (instance_obj.interval_ticks >= instance_obj.transmit_interval) {
+			instance_obj.interval_ticks = 0;
+			instance_obj.objects.ships.forEach(function(ship){
+				if (ship.input_status == false) {
+					var _complete = function(processed_change) {
+						processed_changes.push(processed_change);
+					};
+					ship.velocity *= .996;
+					var update = new modules.models.game.scene.instance.update.model({
+							object: ship,
+							socket_id: ship.socket_id,
+							type: "move_ship",
+							username: ship.username,
+							obj_class: 'ships',
+							details: {
+								d: instance_obj.delta / 1000,
+								pZ: 0,
+								pY: 0,
+								rY: 0,
+								fire: false	
+							}
+						});
+					modules.controllers.game.objects.ships.move_ship(
+						instance_obj.delta,
+						update,
+						_complete
+					);
+				}
+				else {
+					ship.input_status = false;
+				}
+			});
+		}
+		else {
+			instance_obj.interval_ticks++;
+		}
+		modules.io.sockets.in('game:scene:instance:'+instance_obj.scene_id.toString()).emit('update', processed_changes);
 		//modules.io.sockets.in('game:scene:instance:'+instance_obj.scene_id.toString()).emit('admin:dashboard:server_stats:update', server_stats.get_data());
 	};
 
@@ -64,12 +119,18 @@ module.exports= function(modules) {
 
 			if (instance_mesh.category == 'ships') {
 				instance.client_sessions.forEach(function(session, index){
-					if (session.user._id.toString() == instance_mesh.user_id.toString()) {
+					
+					if (session.sessionId == socket.id){
 						instruction.socket_id = session.sessionId;
+						socket.broadcast.to('game:scene:instance:'+instance_obj.scene_id.toString()).emit('load_object', instruction);
 					}
+
 				});
 			}
+		
 			socket.emit('load_object', instruction);
+			
+
 		}; 
 
 		var looper = function(model, obj_array, callback) {
@@ -100,16 +161,64 @@ module.exports= function(modules) {
 		
 		if (instance_obj.environment == 'indoor') {
 			modules.models.game.objects.characters.model.find({ _id: user.characters[0].object_id }, function(err, characters) {
+				characters[0].position.x = user.position.x;
+				characters[0].position.y = user.position.y;
+				characters[0].position.z = user.position.z;
+
+				characters[0].rotation.x = user.rotation.x;
+				characters[0].rotation.y = user.rotation.y;
+				characters[0].rotation.z = user.rotation.z;
+
 				instance_obj.objects.characters.push(characters[0]);
+
 				instance.client_setup(user, socket, instance_obj);
 			});
 		}
 		else {
 			modules.models.game.objects.ships.model.find({ _id: user.ships[0].object_id }, function(err, ships) {
+				ships[0].position.x = user.position.x;
+				ships[0].position.y = user.position.y;
+				ships[0].position.z = user.position.z;
+
+				ships[0].rotation.x = user.rotation.x;
+				ships[0].rotation.y = user.rotation.y;
+				ships[0].rotation.z = user.rotation.z;
+
+				ships[0].velocity = 0;
+				ships[0].input_status = false;
+				ships[0].socket_id = socket.id;
+				ships[0].username = user.username;
+
 				instance_obj.objects.ships.push(ships[0]);
 				instance.client_setup(user, socket, instance_obj);				
 			});
 		}
+	}
+
+	instance.remove_player = function(socket) {
+		instance.client_sessions.forEach(function(session, session_index){
+			instance.collection.forEach(function(instance_obj){
+				if (instance_obj._id.toString() == session.instance_id.toString()) {
+					socket.broadcast.to('game:scene:instance:'+instance_obj.scene_id.toString()).emit('logout', { socket_id: session.sessionId });
+					if (session.mode =='character') {
+						instance_obj.objects.characters.forEach(function(character, character_index){
+							if (character.socket_id == session.sessionId){
+								instance_obj.objects.characters.splice(character_index, 1);
+							}
+						});
+					}
+					if (session.mode =='ship') {
+						instance_obj.objects.ships.forEach(function(ship, ship_index){
+							if (ship.socket_id == session.sessionId){
+								instance_obj.objects.ships.splice(ship_index, 1);
+							}
+						});
+					}
+				}
+			});
+			instance.client_sessions.splice(session_index, 1);
+		});
+
 	}
 
 	instance.input = function(socket, data) {
@@ -119,10 +228,19 @@ module.exports= function(modules) {
 					if (instance_obj._id.toString() == session.instance_id.toString()) {
 						if (session.mode == 'ship') {
 							instance_obj.objects.ships.forEach(function(ship){
-								if (ship.user_id.toString() == session.user._id.toString()) {
-									console.log(session)
+								if (ship.socket_id == session.sessionId) {
+									instance_obj.update_queue.push(new modules.models.game.scene.instance.update.model({
+										object: ship,
+										_id: session.user._id,
+										socket_id: socket.id,
+										obj_class: "ships",
+										type: "move_ship",
+										details: data,
+										username: session.user.username
+									}));
 								}
 							});
+
 						}	
 					}
 				});
@@ -169,7 +287,9 @@ module.exports= function(modules) {
 			description: scene.description,
 			environment: scene.environment,
 			last_epoch: new Date().getTime(),
-			delta: 0
+			delta: 0,
+			interval_ticks: 0,
+			transmit_interval: 1
 		});
 
 		modules.models.game.scene.objects.model.find({ scene_id: newInstance.scene_id }, function(err, scene_objects) {

@@ -64,7 +64,7 @@ module.exports= function(modules) {
 
 			if (instance_mesh.category == 'ships') {
 				instance.client_sessions.forEach(function(session, index){
-					if (session.user_id.toString() == instance_mesh.user_id.toString()) {
+					if (session.user._id.toString() == instance_mesh.user_id.toString()) {
 						instruction.socket_id = session.sessionId;
 					}
 				});
@@ -90,7 +90,7 @@ module.exports= function(modules) {
 		// Defaulting to first character and ship for now... this will have it's own mechanisms later
 
 		instance.client_sessions.push(new modules.models.user.session.model({
-			user_id: user._id,
+			user: user,
 			sessionId: socket.id,
 			mode: instance_obj.environment == 'indoor' ? 'character' : 'ship',
 			socket: socket,
@@ -100,7 +100,7 @@ module.exports= function(modules) {
 		
 		if (instance_obj.environment == 'indoor') {
 			modules.models.game.objects.characters.model.find({ _id: user.characters[0].object_id }, function(err, characters) {
-				instance_obj.objects.characters.push(v[0]);
+				instance_obj.objects.characters.push(characters[0]);
 				instance.client_setup(user, socket, instance_obj);
 			});
 		}
@@ -119,8 +119,8 @@ module.exports= function(modules) {
 					if (instance_obj._id.toString() == session.instance_id.toString()) {
 						if (session.mode == 'ship') {
 							instance_obj.objects.ships.forEach(function(ship){
-								if (ship.user_id.toString() == session.user_id.toString()) {
-									console.log(ship)
+								if (ship.user_id.toString() == session.user._id.toString()) {
+									console.log(session)
 								}
 							});
 						}	

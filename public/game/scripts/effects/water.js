@@ -15,6 +15,8 @@
 var water = function() {
 	this.water_tiles = [];
 
+	this.mirror;
+
 	var waterTexture = THREE.ImageUtils.loadTexture( "/game/assets/textures/water2.jpg" );
 	waterTexture.wrapS = waterTexture.wrapT = THREE.RepeatWrapping;
 	// multiplier for distortion speed 		
@@ -72,8 +74,7 @@ var water = function() {
 water.prototype.makeWater = function(M, pos) {
 	
 	var 	water_res = 1;
-	if (effects.water.water_tiles.length > 0) { water_res = 1; }
-	
+		
 	var geometry = new THREE.PlaneGeometry( M, M , water_res, water_res );	
 	geometry.applyMatrix( new THREE.Matrix4().makeRotationX( - Math.PI / 2 ) );
 
@@ -90,6 +91,11 @@ water.prototype.makeWater = function(M, pos) {
 	var plane = new THREE.Mesh( geometry, material );
 	plane.name = "ocean";
 	plane.frustrumCulled = false;	
+
+	if (effects.water.water_tiles.length == 0) {
+		effects.water.mirror = new THREE.Mirror( engine.renderer, client.camera, { clipBias: 0.003, textureWidth: client.winW, textureHeight: client.winH, color: 0x777777 } );
+		plane.add(effects.water.mirror)
+	}
 
 	return plane;
 };
@@ -108,6 +114,7 @@ water.prototype.makeEnvScale = function() {
 
 water.prototype.animate = function(delta) {
 	effects.water.uniforms.time.value += delta;
+	effects.water.mirror.material.uniforms.time.value += delta;
 }
 
 water.prototype.update = function() {

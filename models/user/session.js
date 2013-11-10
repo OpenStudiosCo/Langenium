@@ -13,7 +13,7 @@ module.exports= function(modules) {
 	var session = {};
 
 	session.schema = new modules.mongoose.Schema({
-		user_id: modules.mongoose.Schema.Types.ObjectId,
+		user: {},
 		sessionId: String,
 		mode: String,
 		socket: Object,

@@ -88,10 +88,10 @@ module.exports= function(modules) {
 			console.log(sprites);
 		};
 
-		var mesh_callback = function(instance_mesh, objects) {
+		var mesh_callback = function(instance_array_object, objects) {
 			var instruction = modules.models.game.client.message.load_object.model({
-				_id: instance_mesh._id,
-				category: instance_mesh.category,
+				_id: instance_array_object._id,
+				category: instance_array_object.category,
 				url: objects[0].details.url,
 				status: 'Saved',
 				details: {
@@ -101,28 +101,31 @@ module.exports= function(modules) {
 					sub_type: objects[0].sub_type
 				},
 				position: {
-					x: instance_mesh.category == 'ships' ? user.position.x : instance_mesh.position.x,
-					y: instance_mesh.category == 'ships' ? user.position.y : instance_mesh.position.y,
-					z: instance_mesh.category == 'ships' ? user.position.z : instance_mesh.position.z
+					x: instance_array_object.category == 'ships' ? user.position.x : instance_array_object.position.x,
+					y: instance_array_object.category == 'ships' ? user.position.y : instance_array_object.position.y,
+					z: instance_array_object.category == 'ships' ? user.position.z : instance_array_object.position.z
 				},
 				rotation: {
-					x: instance_mesh.category == 'ships' ? user.rotation.x : instance_mesh.rotation.x,
-					y: instance_mesh.category == 'ships' ? user.rotation.y : instance_mesh.rotation.y,
-					z: instance_mesh.category == 'ships' ? user.rotation.z : instance_mesh.rotation.z,
+					x: instance_array_object.category == 'ships' ? user.rotation.x : instance_array_object.rotation.x,
+					y: instance_array_object.category == 'ships' ? user.rotation.y : instance_array_object.rotation.y,
+					z: instance_array_object.category == 'ships' ? user.rotation.z : instance_array_object.rotation.z,
 				},
 				scale: {
-					x: instance_mesh.scale ? instance_mesh.scale.x : objects[0].details.scale.x,
-					y: instance_mesh.scale ? instance_mesh.scale.y : objects[0].details.scale.y,
-					z: instance_mesh.scale ? instance_mesh.scale.z : objects[0].details.scale.z
+					x: instance_array_object.scale ? instance_array_object.scale.x : objects[0].details.scale.x,
+					y: instance_array_object.scale ? instance_array_object.scale.y : objects[0].details.scale.y,
+					z: instance_array_object.scale ? instance_array_object.scale.z : objects[0].details.scale.z
 				}
 			});		
 
-			if (instance_mesh.category == 'ships') {
+			if (instance_array_object.category == 'ships') {
 				instance.client_sessions.forEach(function(session, index){
-					
-					if (session.sessionId == socket.id){
+					if (instance_array_object.socket_id == session.sessionId) {
 						instruction.socket_id = session.sessionId;
 						socket.broadcast.to('game:scene:instance:'+instance_obj.scene_id.toString()).emit('load_object', instruction);
+					}
+					console.log(modules.controllers.game.scene.instance.collection[0].objects.ships.length)
+					if (session.sessionId == socket.id){
+						
 					}
 
 				});
@@ -134,9 +137,9 @@ module.exports= function(modules) {
 		}; 
 
 		var looper = function(model, obj_array, callback) {
-			obj_array.forEach(function(instance_object, index) {
-				model.find({ _id: instance_object.details.object_id }, function(err, obj_results) {
-					callback(instance_object, obj_results)
+			obj_array.forEach(function(instance_array_object, index) {
+				model.find({ _id: instance_array_object.details.object_id }, function(err, obj_results) {
+					callback(instance_array_object, obj_results)
 				});
 			});
 		}
@@ -197,26 +200,30 @@ module.exports= function(modules) {
 
 	instance.remove_player = function(socket) {
 		instance.client_sessions.forEach(function(session, session_index){
-			instance.collection.forEach(function(instance_obj){
-				if (instance_obj._id.toString() == session.instance_id.toString()) {
-					socket.broadcast.to('game:scene:instance:'+instance_obj.scene_id.toString()).emit('logout', { socket_id: session.sessionId });
-					if (session.mode =='character') {
-						instance_obj.objects.characters.forEach(function(character, character_index){
-							if (character.socket_id == session.sessionId){
-								instance_obj.objects.characters.splice(character_index, 1);
-							}
-						});
+			if (session.sessionId == socket.id) {
+				instance.collection.forEach(function(instance_obj) {
+					if (instance_obj._id.toString() == session.instance_id.toString()) {	
+						socket.broadcast.to('game:scene:instance:'+instance_obj.scene_id.toString()).emit('logout', { socket_id: socket.id });
+						instance.client_sessions.splice(session_index, 1);
+						if (session.mode =='character') {
+							instance_obj.objects.characters.forEach(function(character, character_index){
+								if (character.socket_id == session.sessionId){
+									instance_obj.objects.characters.splice(character_index, 1);
+								}
+							});
+						}
+						if (session.mode =='ship') {
+							instance_obj.objects.ships.forEach(function(ship, ship_index){
+								if (ship.socket_id == session.sessionId){
+									instance_obj.objects.ships.splice(ship_index, 1);
+								}
+							});
+						}
+						
 					}
-					if (session.mode =='ship') {
-						instance_obj.objects.ships.forEach(function(ship, ship_index){
-							if (ship.socket_id == session.sessionId){
-								instance_obj.objects.ships.splice(ship_index, 1);
-							}
-						});
-					}
-				}
-			});
-			instance.client_sessions.splice(session_index, 1);
+				});
+			}
+			
 		});
 
 	}

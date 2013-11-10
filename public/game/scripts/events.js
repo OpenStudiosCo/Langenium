@@ -44,7 +44,6 @@ events.prototype.setEventHandlers = function (socket) {
 	});
 
 	socket.on("load_object", function(data) { 
-		console.log(data)
 		objects.loadObject(data);
 	});
 	socket.on("load_character", function(data) { 

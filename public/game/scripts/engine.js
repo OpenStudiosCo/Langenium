@@ -66,7 +66,6 @@ engine.prototype.animate = function () {
 	});
 	
 	TWEEN.update();
-	
 	effects.water.animate(delta);
 	effects.particles.handleParticles(delta);
 	effects.particles.animateThrusters(delta);
@@ -78,7 +77,7 @@ engine.prototype.animate = function () {
 	// Reflection code
 	//engine.renderer.render( scene, effects.water.textureCamera, effects.water.firstRenderTarget, true );
 	//engine.renderer.render( effects.water.screenScene, effects.water.screenCamera, effects.water.finalRenderTarget, true );
-	effects.water.mirror.render();
+
 	engine.renderer.render( engine.scene, client.camera );
 
 }

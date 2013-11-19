@@ -23,6 +23,8 @@ module.exports = function() {
 		fs: require('fs'),
 		os: require('os'),
 		THREE: require('./three.js'),
+		stylus: require('stylus'),
+		nib: require('nib'),
 		// Class object containers
 		routes: {},
 		models: {},
@@ -79,7 +81,15 @@ module.exports = function() {
 		socket.on('pong', function (data) { pong(socket, data) });
 	});
 
-
+	function compile (str, path) {
+	  			return modules.stylus(str)
+	  			.use(modules.nib())
+	  			.set('filename', path)
+	  			//.set('compress', true)
+	  			
+	  			
+	  			;
+	};
 	// Configure express app
 	modules.app.configure(function () {
 		
@@ -89,13 +99,18 @@ module.exports = function() {
 		modules.app.use(modules.connect.compress());
 		modules.app.use(modules.connect.session({ secret: 'keyboard cat' }));
 		modules.app.use(modules.connect.logger('dev'));
-		modules.app.use(modules.connect.static(__dirname + '/public'));
+		
 	 	modules.app.use(modules.connect.favicon("public/favicon.ico"));
 	 	modules.app.use(modules.express.methodOverride());
 		modules.app.use(modules.fb);
 		modules.app.use(modules.passport.initialize());
 	  	modules.app.use(modules.passport.session());
-
+	  	modules.app.use(modules.stylus.middleware({
+	  		src: __dirname + '/public',
+	  		compile: compile
+	  	}));
+	  	modules.app.use(modules.connect.static(__dirname + '/public')); // This has to be after stylus so that the CSS files get regenerated on change
+	  	
 		modules.app.set('views', __dirname + '/views');
 		modules.app.set('view engine', 'jade');
 		modules.app.locals.pretty = true;

@@ -14,6 +14,14 @@
 
 module.exports = function(modules) {
 	var website = {};
-	modules.import_classes(modules, website, './controllers/website');
+	
+	website.index = function() {};
+
+	website.blog = require('./website/blog.js')(modules);
+	website.forum = require('./website/forum.js')(modules);
+	website.gallery = require('./website/gallery.js')(modules);
+	website.guide = require('./website/guide.js')(modules);
+	website.page = require('./website/page.js')(modules);
+
 	return website;
 }

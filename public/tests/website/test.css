@@ -1,0 +1,191 @@
+body {
+  width: 100%;
+}
+body *zoom:1:before,
+body *zoom:1:after {
+  content: "";
+  display: table;
+}
+body *zoom:1:after {
+  clear: both;
+}
+html {
+  font-family: arial "Arial" sans;
+}
+#bg {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  left: 0px;
+  top: 0px;
+  z-index: -1;
+/* Ensure div tag stays behind content; -999 might work, too. */
+}
+.stretch {
+  width: 100%;
+  height: 100%;
+}
+.panel1 {
+  overflow: visible;
+  border-style: solid;
+  border-width: 55px;
+  -webkit-border-image: url("border-01.png") 81 round;
+  -moz-border-image: url("border-01.png") 81 round;
+  -o-border-image: url("border-01.png") 81 round;
+  border-image: url("border-01.png") 81 fill round;
+  -webkit-transition-delay: 0s;
+  -moz-transition-delay: 0s;
+  -o-transition-delay: 0s;
+  -ms-transition-delay: 0s;
+  transition-delay: 0s;
+  -webkit-transition-duration: 0.5s;
+  -moz-transition-duration: 0.5s;
+  -o-transition-duration: 0.5s;
+  -ms-transition-duration: 0.5s;
+  transition-duration: 0.5s;
+  -webkit-transition-property: all;
+  -moz-transition-property: all;
+  -o-transition-property: all;
+  -ms-transition-property: all;
+  transition-property: all;
+  -webkit-transition-timing-function: ease;
+  -moz-transition-timing-function: ease;
+  -o-transition-timing-function: ease;
+  -ms-transition-timing-function: ease;
+  transition-timing-function: ease;
+}
+.panel2 {
+  border-style: solid;
+  border-width: 33px;
+  -webkit-border-image: url("border-02.png") 34 37 36 32 repeat;
+  -moz-border-image: url("border-02.png") 34 37 36 32 repeat;
+  -o-border-image: url("border-02.png") 34 37 36 32 repeat;
+  border-image: url("border-02.png") 34 37 36 32 fill repeat;
+}
+.panel3 {
+  border-style: solid;
+  border-width: 36px;
+  -webkit-border-image: url("border-03.png") 80 77 round;
+  -moz-border-image: url("border-03.png") 80 77 round;
+  -o-border-image: url("border-03.png") 80 77 round;
+  border-image: url("border-03.png") 80 77 fill round;
+}
+.panel4 {
+  border-style: solid;
+  border-width: 36px;
+  -webkit-border-image: url("border-04.png") 80 77 stretch;
+  -moz-border-image: url("border-04.png") 80 77 stretch;
+  -o-border-image: url("border-04.png") 80 77 stretch;
+  border-image: url("border-04.png") 80 77 fill stretch;
+}
+.panel5 {
+  border-style: solid;
+  border-width: 35px;
+  -webkit-border-image: url("border-05.png") 80 77 stretch;
+  -moz-border-image: url("border-05.png") 80 77 stretch;
+  -o-border-image: url("border-05.png") 80 77 stretch;
+  border-image: url("border-05.png") 80 77 fill stretch;
+}
+.panel1,
+.panel2,
+.panel3,
+.panel4,
+.panel5 {
+  display: inline;
+  float: left;
+  overflow: hidden;
+  width: 31.25%;
+  margin: 0 1.0416666666666665%;
+  *width: 31.25% -correction;
+  *margin: 0 1.0416666666666665% -correction;
+}
+.contents {
+  color: #999;
+  padding: 5px;
+  margin: 0px;
+}
+a.textbox {
+  border-style: solid;
+  border-width: 20px;
+  -webkit-border-image: url("border-04.png") 71 69 69 72 stretch;
+  -moz-border-image: url("border-04.png") 71 69 69 72 stretch;
+  -o-border-image: url("border-04.png") 71 69 69 72 stretch;
+  border-image: url("border-04.png") 71 69 69 72 fill stretch;
+  color: #666;
+  text-decoration: none;
+  margin: 0.75em 0 0 0;
+  float: left;
+}
+a.textbox:hover {
+  color: #999;
+  -moz-border-image: url("border-08.png") 71 69 69 72 stretch;
+  -webkit-border-image: url("border-08.png") 71 69 69 72 stretch;
+  -o-border-image: url("border-08.png") 71 69 69 72 stretch;
+  -webkit-border-image: url("border-08.png") 71 69 69 72 stretch;
+  -moz-border-image: url("border-08.png") 71 69 69 72 stretch;
+  -o-border-image: url("border-08.png") 71 69 69 72 stretch;
+  border-image: url("border-08.png") 71 69 69 72 fill stretch;
+  -webkit-transition: all 0.25s ease;
+  -moz-transition: all 0.25s ease;
+  -ms-transition: all 0.25s ease;
+  -o-transition: all 0.25s ease;
+  -webkit-transition: all 0.25s ease;
+  -moz-transition: all 0.25s ease;
+  -o-transition: all 0.25s ease;
+  -ms-transition: all 0.25s ease;
+  transition: all 0.25s ease;
+}
+a.textbox:active {
+  color: #fff;
+}
+a.button {
+  border-style: solid;
+  border-width: 20px;
+  -moz-border-image: url("border-05.png") 71 69 69 72 stretch;
+  -webkit-border-image: url("border-05.png") 71 69 69 72 stretch;
+  -o-border-image: url("border-05.png") 71 69 69 72 stretch;
+  -webkit-border-image: url("border-05.png") 71 69 69 72 stretch;
+  -moz-border-image: url("border-05.png") 71 69 69 72 stretch;
+  -o-border-image: url("border-05.png") 71 69 69 72 stretch;
+  border-image: url("border-05.png") 71 69 69 72 fill stretch;
+  color: #333;
+  text-decoration: none;
+  margin: 0.75em 0 0 0;
+  float: left;
+}
+a.button:hover {
+  color: #999;
+  border-width: 20px;
+  -moz-border-image: url("border-07.png") 71 69 69 72 stretch;
+  -webkit-border-image: url("border-07.png") 71 69 69 72 stretch;
+  -o-border-image: url("border-07.png") 71 69 69 72 stretch;
+  -webkit-border-image: url("border-07.png") 71 69 69 72 stretch;
+  -moz-border-image: url("border-07.png") 71 69 69 72 stretch;
+  -o-border-image: url("border-07.png") 71 69 69 72 stretch;
+  border-image: url("border-07.png") 71 69 69 72 fill stretch;
+  -webkit-transition: all 0.25s ease;
+  -moz-transition: all 0.25s ease;
+  -ms-transition: all 0.25s ease;
+  -o-transition: all 0.25s ease;
+  -webkit-transition: all 0.25s ease;
+  -moz-transition: all 0.25s ease;
+  -o-transition: all 0.25s ease;
+  -ms-transition: all 0.25s ease;
+  transition: all 0.25s ease;
+}
+a.button:active {
+  color: #fff;
+}
+ul {
+  padding: 0;
+}
+li {
+  list-style: none inside;
+  float: left;
+  clear: both;
+  margin: -10px 0 0 0;
+}
+#logo {
+  float: left;
+  clear: both;
+}

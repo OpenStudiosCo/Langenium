@@ -14,5 +14,9 @@
 
 module.exports = function(modules) {
 	var gallery = {};
+
+	gallery.index = function(req, res) {};
+	gallery.list = function(req, res) {};
+	
 	return gallery;
 }

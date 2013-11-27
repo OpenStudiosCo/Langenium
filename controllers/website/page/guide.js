@@ -14,5 +14,9 @@
 
 module.exports = function(modules) {
 	var guide = {};
+
+	guide.index = function(req, res) {};
+	guide.save = function(req, res) {};
+
 	return guide;
 }

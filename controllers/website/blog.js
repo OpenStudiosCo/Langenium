@@ -14,5 +14,8 @@
 
 module.exports = function(modules) {
 	var blog = {};
+
+	blog.index = function(req, res) {};
+
 	return blog;
 }

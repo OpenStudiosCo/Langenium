@@ -35,6 +35,8 @@ client.prototype.initialize = function () {
 	engine.renderer = new THREE.WebGLRenderer({
 		antialias : true
 	});
+	engine.renderer.autoClear = true;
+	engine.renderer.setClearColor( 0x000000, 1 );
 	
 	engine.renderer.setSize( client.winW, client.winH);
 	var username;

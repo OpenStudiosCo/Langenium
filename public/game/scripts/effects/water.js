@@ -48,7 +48,7 @@ var water = function() {
 
 water.prototype.makeWater = function(M, pos) {
 	
-	var 	plane;
+	var plane;
 	if (effects.water.water_tiles.length > 0) {
 		plane = new THREE.Mesh(effects.water.makeGeometry(M, 1), effects.water.makeMaterial());
 	}

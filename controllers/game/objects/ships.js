@@ -13,14 +13,14 @@ module.exports= function(modules) {
 	var ships = {};
 
 	ships.move_ship = function(delta, update, _complete) {
-		var 		velocityYChange = 3.3333,
+		var 		velocityYChange = 33.3333,
 					rotateAngle = 0.01744444444444444444444444444444 * 2;	
 		
 		update.details.socket_id = update.socket_id;
 		update.details.username = update.object.username;
 
-		if (update.details.pZ > 0 && update.object.velocity > -7.5) { update.object.velocity -= 1.75 }		// forward
-		if (update.details.pZ < 0 && update.object.velocity < 3.5) { update.object.velocity += 1.75 }		// back
+		if (update.details.pZ > 0 && update.object.velocity > -37.5) { update.object.velocity -= 3.175 }		// forward
+		if (update.details.pZ < 0 && update.object.velocity < 23.5) { update.object.velocity += 3.175 }		// back
 
 		if (update.details.rY > 0) { update.details.rY = rotateAngle; }										// left
 		if (update.details.rY < 0) { update.details.rY = -rotateAngle; }									// right

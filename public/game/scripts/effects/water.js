@@ -53,7 +53,7 @@ water.prototype.makeWater = function(M, pos) {
 		plane = new THREE.Mesh(effects.water.makeGeometry(M, 1), effects.water.makeMaterial());
 	}
 	else {
-		effects.water.mirror = new THREE.Mirror( engine.renderer, client.camera, { clipBias: 0.003, textureWidth: M, textureHeight: M, color: 0x777777 } );
+		effects.water.mirror = new THREE.Mirror( engine.renderer, client.camera, { clipBias: 0.003, textureWidth: client.winW, textureHeight: client.winH, color: 0x777777 } );
 		plane = new THREE.Mesh(effects.water.makeGeometry(M, 1), effects.water.mirror.material);
 		plane.add(effects.water.mirror);
 	}

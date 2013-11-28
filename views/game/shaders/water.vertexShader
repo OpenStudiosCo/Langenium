@@ -1,10 +1,8 @@
-	
+	uniform mat4 textureMatrix;
+	varying vec4 mirrorCoord;
+
 	uniform sampler2D noiseTexture;
 	uniform float noiseScale;
-
-	uniform sampler2D bumpTexture;
-	uniform float bumpSpeed;
-	uniform float bumpScale;
 
 	uniform float time;
 

@@ -17,48 +17,25 @@ var water = function() {
 
 	var waterTexture = THREE.ImageUtils.loadTexture( "/game/assets/textures/water2.jpg" );
 	waterTexture.wrapS = waterTexture.wrapT = THREE.RepeatWrapping;
-	// multiplier for distortion speed 		
-	var baseSpeed = 0.0012;
+	
 	// number of times to repeat texture in each direction
 	var repeatS = repeatT = 4.0;
 
 	var noiseTexture = THREE.ImageUtils.loadTexture( "/game/assets/textures/noise.png" );
 	noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping; 
-	// magnitude of noise effect
-	var noiseScale = .5;
-	
-	// texture to additively blend with base image texture
-	var blendTexture = new THREE.ImageUtils.loadTexture( '/game/assets/textures/water2.jpg' );
-	blendTexture.wrapS = blendTexture.wrapT = THREE.RepeatWrapping; 
-	// multiplier for distortion speed 
-	var blendSpeed = 0.001;
-	// adjust lightness/darkness of blended texture
-	var blendOffset = 0.25;
-
-	// texture to determine normal displacement
-	var bumpTexture = noiseTexture;
-	bumpTexture.wrapS = bumpTexture.wrapT = THREE.RepeatWrapping; 
-	// multiplier for distortion speed 		
-	var bumpSpeed   = .0015;
-	// magnitude of normal displacement
-	var bumpScale   = 400.0;
 
 	this.uniforms = {	
 						baseTexture: 	{ type: "t", value: waterTexture },
-						baseSpeed:		{ type: "f", value: baseSpeed },
+						baseSpeed:		{ type: "f", value: 0.012511 }, 		// multiplier for distortion speed 		
 						repeatS:		{ type: "f", value: repeatS },
 						repeatT:		{ type: "f", value: repeatT },
 						noiseTexture:	{ type: "t", value: noiseTexture },
-						noiseScale:		{ type: "f", value: noiseScale },
-						blendTexture:	{ type: "t", value: blendTexture },
-						blendSpeed: 	{ type: "f", value: blendSpeed },
-						blendOffset: 	{ type: "f", value: blendOffset },
-						bumpTexture:	{ type: "t", value: bumpTexture },
-						bumpSpeed: 		{ type: "f", value: bumpSpeed },
-						bumpScale: 		{ type: "f", value: bumpScale },
+						noiseScale:		{ type: "f", value: 0.05337 }, 		// magnitude of noise effect
 						alpha: 			{ type: "f", value: 0.85 },
-						time: 			{ type: "f", value: 1.0 }
+						time: 			{ type: "f", value: 1.0 },
+						textureMatrix: { type: "m4", value: new THREE.Matrix4() }
 					};
+	this.mirror;
 
 	return this;
 };
@@ -71,28 +48,37 @@ var water = function() {
 
 water.prototype.makeWater = function(M, pos) {
 	
-	var 	water_res = 1;
-	if (effects.water.water_tiles.length > 0) { water_res = 1; }
-	
-	var geometry = new THREE.PlaneGeometry( M, M , water_res, water_res );	
-	geometry.applyMatrix( new THREE.Matrix4().makeRotationX( - Math.PI / 2 ) );
+	var 	plane;
+	if (effects.water.water_tiles.length > 0) {
+		plane = new THREE.Mesh(effects.water.makeGeometry(M, 1), effects.water.makeMaterial());
+	}
+	else {
+		effects.water.mirror = new THREE.Mirror( engine.renderer, client.camera, { clipBias: 0.003, textureWidth: M, textureHeight: M, color: 0x777777 } );
+		plane = new THREE.Mesh(effects.water.makeGeometry(M, 1), effects.water.mirror.material);
+		plane.add(effects.water.mirror);
+	}
 
+	plane.name = "ocean";
+	plane.frustrumCulled = false;	
+	plane.rotateX( - Math.PI / 2 );
+	return plane;
+};
+
+water.prototype.makeGeometry = function(M, water_res) {
+	var geometry = new THREE.PlaneGeometry( M, M , water_res, water_res );	
+	return geometry;
+}
+
+water.prototype.makeMaterial = function() {
 	var material = new THREE.ShaderMaterial( {
 		uniforms: effects.water.uniforms,
 		vertexShader:   document.getElementById( 'water_vertexShader'   ).textContent,
 		fragmentShader: document.getElementById( 'water_fragmentShader' ).textContent
-
 	} );
-
 	material.side = THREE.DoubleSide;
 	material.transparent = true;
-
-	var plane = new THREE.Mesh( geometry, material );
-	plane.name = "ocean";
-	plane.frustrumCulled = false;	
-
-	return plane;
-};
+	return material;
+}
 
 water.prototype.makeEnvScale = function() {
 	var env_scale = 10000;

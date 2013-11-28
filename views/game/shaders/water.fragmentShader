@@ -1,40 +1,34 @@
+uniform vec3 mirrorColor;
+uniform sampler2D mirrorSampler;
+
+uniform sampler2D baseTexture; // 337
+uniform float baseSpeed;
+uniform sampler2D noiseTexture;
+uniform float noiseScale;
+uniform float alpha;
+uniform float time;
+
+varying vec4 mirrorCoord;
+varying vec2 vUv;
+
+float blendOverlay(float base, float blend) {
+	return( base < 0.5 ? ( 2.0 * base * blend ) : (1.0 - 2.0 * ( 1.0 - base ) * ( 1.1 - blend ) ) );
+}
+
+void main() {
+
+	vec4 color = texture2DProj(mirrorSampler, mirrorCoord);
+	color = vec4(blendOverlay(mirrorColor.r, color.r), blendOverlay(mirrorColor.g, color.g), blendOverlay(mirrorColor.b, color.b), 1.0);
+	color.a = alpha; // 337
 	
-	uniform sampler2D baseTexture;
-	uniform float baseSpeed;
-	uniform float repeatS;
-	uniform float repeatT;
+	vec2 uvTimeShift = vUv + vec2( -0.7, 1.5 ) * time * baseSpeed;
+	vec4 noiseGeneratorTimeShift = texture2D( noiseTexture, uvTimeShift );
+	vec2 uvNoiseTimeShift = vUv + noiseScale * vec2( noiseGeneratorTimeShift.r, noiseGeneratorTimeShift.b );
+	vec4 baseColor = texture2D( baseTexture, uvNoiseTimeShift );
 
-	uniform sampler2D noiseTexture;
-	uniform float noiseScale;
+	// gl_FragColor = color;
+	// gl_FragColor = texture2D( overlayTexture, vUv );
+	gl_FragColor = baseColor * 1.15 + color * .5;
+	
 
-	uniform sampler2D blendTexture;
-	uniform float blendSpeed;
-	uniform float blendOffset;
-
-	uniform float time;
-	uniform float alpha;
-
-	varying vec2 vUv;
-	varying vec3 newPosition;
-
-	void main() 
-	{
-		vec2 uvTimeShift = vUv + vec2( -0.7, 1.5 ) * time * baseSpeed;	
-		vec4 noiseGeneratorTimeShift = texture2D( noiseTexture, uvTimeShift );
-		vec2 uvNoiseTimeShift = vUv + noiseScale * vec2( noiseGeneratorTimeShift.r, noiseGeneratorTimeShift.b );
-		vec4 baseColor = texture2D( baseTexture, uvNoiseTimeShift * vec2(repeatS, repeatT) );
-
-		vec2 uvTimeShift2 = vUv + vec2( 1.3, -1.7 ) * time * blendSpeed;	
-		vec4 noiseGeneratorTimeShift2 = texture2D( noiseTexture, uvTimeShift2 );
-		vec2 uvNoiseTimeShift2 = vUv + noiseScale * vec2( noiseGeneratorTimeShift2.g, noiseGeneratorTimeShift2.b );
-		vec4 blendColor = texture2D( blendTexture, uvNoiseTimeShift2 * vec2(repeatS, repeatT) ) - blendOffset * vec4(1.0, 1.0, 1.0, 1.0);
-		
-		vec3 lightPosition = vec3(0.0, 0.0, 0.0);
-		vec3 rfld = reflect( -lightPosition, newPosition );
-		vec4 reflection = vec4(rfld, 1.0);
-
-		vec4 theColor = baseColor + blendColor + reflection;
-		theColor.a = alpha;
-		
-		gl_FragColor = theColor;
-	}  
+}

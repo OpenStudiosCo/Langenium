@@ -186,7 +186,7 @@ particles.prototype.createThruster = function (scale, position){
 			blending: THREE.AdditiveBlending,
 			opacity: 0.9,
 			transparent: true,
-			alphaTest: 0.3
+			alphaTest: 0.13
 		  });
 
 	// now create the individual particles
@@ -246,7 +246,7 @@ particles.prototype.createShipThruster = function (mesh, scale, position) {
 			blending: THREE.AdditiveBlending,
 			opacity: 0.9,
 			transparent: true,
-			alphaTest: 0.3
+			alphaTest: 0.13
 		  });
 
 	// now create the individual particles

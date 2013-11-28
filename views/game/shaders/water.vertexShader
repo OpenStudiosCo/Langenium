@@ -4,8 +4,16 @@
 	uniform sampler2D noiseTexture;
 	uniform float noiseScale;
 
-	uniform float time;
+	uniform sampler2D noiseTexture2;
+	uniform float noiseSpeed2;
+	uniform float noiseScale2;
 
+	uniform sampler2D noiseTexture3;
+	uniform float noiseSpeed3;
+	uniform float noiseScale3;
+
+	uniform float time;
+	uniform float alpha;
 	varying vec2 vUv;
 
 	varying vec3 newPosition;

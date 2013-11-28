@@ -62,9 +62,7 @@ scenes.prototype.load = function(instance) {
 		sky.name = "sky";
 		engine.scene.add(sky);
 
-		effects.water.water_tiles.push(new effects.water.makeWater(M));
-		engine.scene.add(effects.water.water_tiles[0]);
-		effects.water.update();
+		engine.scene.add(new effects.water.makeWater(M))
 	}	
 	if (instance.environment == 'indoor') {
 		controls.character.enabled = true;

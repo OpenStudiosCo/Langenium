@@ -214,42 +214,11 @@ flight.prototype.move = function (velocity, playerPosition, data) {
 		}); 
 	}
 	
-	// move the reflection camera
-	/*
-		effects.water.textureCamera.position.x = player.position.x;
-		effects.water.textureCamera.position.z = player.position.z;
-		effects.water.textureCamera.lookAt(player.position);
-	*/
-	
-	// moves the water tiles position 
-	/*
-	for (var tile = 0; tile < effects.water.water_tiles.length; tile++) {
-	
-		var rotateWater =  data.rY  * -1;
-		effects.water.water_tiles[tile].material.map.offset.x-= Math.sin(rotateWater) * velocity / 100000;
-		effects.water.water_tiles[tile].material.map.offset.y -= Math.cos(rotateWater) * velocity / 100000;
-		
-		if (tile == 0) {
-			effects.water.water_tiles[0].position.x = data.pX;
-			effects.water.water_tiles[0].position.z = data.pZ;
-		}
-		else {
-			effects.water.water_tiles[tile].position.x = effects.water.water_tiles[tile].position.ox + data.pX;
-			effects.water.water_tiles[tile].position.z = effects.water.water_tiles[tile].position.oz + data.pZ;
-		}
-		effects.water.water_tiles[tile].material.needsUpdate = true;
-	}	
-	*/
-	var height_diff = 5000 + 2000 * (effects.water.water_tiles.length-1);
-	
 	sky.position.x = data.pX;
-	
 	sky.position.z = data.pZ;
-	
 	
 	var 	sky_scale = 1 + (player.position.y / 20000);
 	
-	effects.water.update();
 	
 	// set sky scale
 	if (sky_scale > 1) {

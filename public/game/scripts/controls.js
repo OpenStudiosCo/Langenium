@@ -133,7 +133,7 @@ controls.prototype.zoom = function (e) {
 
 	var delta = controls.extractWheelDelta(e);
 
-	var new_fov = Math.sin(delta);
+	var new_fov = delta;
 	
 	if (controls.character.enabled == true) {
 		new_fov = client.camera.position.z - delta / 333.321312;

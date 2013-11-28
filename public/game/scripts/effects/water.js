@@ -33,8 +33,10 @@ var water = function() {
 						noiseScale:		{ type: "f", value: 0.05337 }, 		// magnitude of noise effect
 						alpha: 			{ type: "f", value: 0.85 },
 						time: 			{ type: "f", value: 1.0 },
-						textureMatrix: { type: "m4", value: new THREE.Matrix4() }
-					};
+						mirrorColor: 	{ type: "c", value: new THREE.Color(0x7F7F7F) },
+						mirrorSampler: 	{ type: "t", value: null },
+						textureMatrix: 	{ type: "m4", value: new THREE.Matrix4() }
+					}
 	this.mirror;
 
 	return this;

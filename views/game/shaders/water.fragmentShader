@@ -1,5 +1,6 @@
 uniform vec3 mirrorColor;
 uniform sampler2D mirrorSampler;
+varying vec4 mirrorCoord;
 
 uniform sampler2D baseTexture; // 337
 uniform float baseSpeed;
@@ -8,7 +9,6 @@ uniform float noiseScale;
 uniform float alpha;
 uniform float time;
 
-varying vec4 mirrorCoord;
 varying vec2 vUv;
 
 float blendOverlay(float base, float blend) {
@@ -28,7 +28,7 @@ void main() {
 
 	// gl_FragColor = color;
 	// gl_FragColor = texture2D( overlayTexture, vUv );
-	gl_FragColor = baseColor * 1.15 + color * .5;
+	gl_FragColor = baseColor * .5 + color * .5;
 	
 
 }

@@ -122,11 +122,16 @@ THREE.Mirror = function ( renderer, camera, options ) {
 	var mirrorUniforms = THREE.UniformsUtils.clone( mirrorShader.uniforms );
 
 	this.material = new THREE.ShaderMaterial( {
-
+		/*
 		fragmentShader: mirrorShader.fragmentShader,
 		vertexShader: mirrorShader.vertexShader,
 		uniforms: mirrorUniforms
+		*/
 
+		uniforms: effects.water.uniforms,
+		vertexShader:   document.getElementById( 'water_vertexShader'   ).textContent,
+		fragmentShader: document.getElementById( 'water_fragmentShader' ).textContent
+		
 	} );
 
 	this.material.uniforms.mirrorSampler.value = this.texture;

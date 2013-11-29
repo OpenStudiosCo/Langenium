@@ -12,7 +12,6 @@ uniform sampler2D noiseTexture2;
 uniform float noiseSpeed2;
 uniform float noiseScale2;
 
-uniform sampler2D noiseTexture3;
 uniform float noiseSpeed3;
 uniform float noiseScale3;
 
@@ -26,16 +25,20 @@ float blendOverlay(float base, float blend) {
 
 void main() {
 	
-	vec2 uvTimeShift = vUv + vec2( -0.7, 1.5 ) * time * baseSpeed;
+	vec2 uvTimeShift = vUv + vec2( -0.71, 1.55 ) * time * baseSpeed;
 	vec4 noiseGeneratorTimeShift = texture2D( noiseTexture, uvTimeShift );
-	vec2 uvNoiseTimeShift = vUv + noiseScale * vec2( noiseGeneratorTimeShift.r, noiseGeneratorTimeShift.g );
-	vec4 baseColor = texture2D( baseTexture, uvNoiseTimeShift ) - 0.05 * vec4(1.0, 1.0, 1.0, 1.0); // Adjust light and dark
+	vec2 uvNoiseTimeShift = vUv + noiseScale * vec2( noiseGeneratorTimeShift.r, noiseGeneratorTimeShift.b );
+	vec4 baseColor = texture2D( baseTexture, uvNoiseTimeShift * vec2(128, 128)) - 0.05 * vec4(1.0, 1.0, 1.0, 1.0); // Adjust light and dark
 
-	vec2 uvTimeShift2 = vUv + vec2( 1.3, -1.7 ) * time * noiseSpeed2;	
-	vec4 baseColor2 = texture2D( noiseTexture2, uvTimeShift2 ) - 0.22 * vec4(1.0, 1.0, 1.0, 1.0); // Adjust light and dark
+	vec2 uvTimeShift2 = vUv + vec2( .3, -.7 ) * time * noiseSpeed2;	
+	vec4 noiseGeneratorTimeShift2 = texture2D( noiseTexture, uvTimeShift2 );
+	vec2 uvNoiseTimeShift2 = vUv + noiseScale2 * vec2( noiseGeneratorTimeShift2.g, noiseGeneratorTimeShift2.b );
+	vec4 baseColor2 = texture2D( noiseTexture, uvNoiseTimeShift2 * vec2(32, 32)) - 0.32 * vec4(1.0, 1.0, 1.0, 1.0); // Adjust light and dark
 
 	vec2 uvTimeShift3 = vUv + vec2( 1.3, -1.7 ) * time * noiseSpeed3;	
-	vec4 baseColor3 = texture2D( noiseTexture3, uvTimeShift3 ) - 0.22 * vec4(1.0, 1.0, 1.0, 1.0); // Adjust light and dark
+	vec4 noiseGeneratorTimeShift3 = texture2D( noiseTexture, uvTimeShift3 );
+	vec2 uvNoiseTimeShift3 = vUv + noiseScale3 * vec2( noiseGeneratorTimeShift3.g, noiseGeneratorTimeShift3.b );
+	vec4 baseColor3 = texture2D( noiseTexture, uvNoiseTimeShift3 * vec2(512, 512)) - 0.32 * vec4(1.0, 1.0, 1.0, 1.0); // Adjust light and dark
 
 	vec4 finalColor = baseColor + vec4(blendOverlay(baseColor2.r,baseColor3.r),blendOverlay(baseColor2.g,baseColor3.g),blendOverlay(baseColor2.b,baseColor3.b), 1.0);
 	finalColor.a = alpha;

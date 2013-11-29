@@ -74,11 +74,7 @@ engine.prototype.animate = function () {
 	effects.bullets.handleBullets(delta);
 
 	requestAnimationFrame( engine.animate );
-
-	// Reflection code
-	//engine.renderer.render( scene, effects.water.textureCamera, effects.water.firstRenderTarget, true );
-	//engine.renderer.render( effects.water.screenScene, effects.water.screenCamera, effects.water.finalRenderTarget, true );
-
+	
 	engine.renderer.render( engine.scene, client.camera );
 
 }

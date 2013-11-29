@@ -133,7 +133,7 @@ controls.prototype.zoom = function (e) {
 
 	var delta = controls.extractWheelDelta(e);
 
-	var new_fov = delta;
+	var new_fov;
 	
 	if (controls.character.enabled == true) {
 		new_fov = client.camera.position.z - delta / 333.321312;
@@ -146,11 +146,13 @@ controls.prototype.zoom = function (e) {
 		}
 	}
 	if (controls.flight.enabled == true) {
+		new_fov = client.camera.position.z - delta / 33.321312;
 		if (new_fov > 15 && new_fov < 100) {
 			client.camera.position.z = new_fov;
 		}
 	}
 	if (controls.editor.enabled == true) {
+		new_fov = client.camera.position.z - delta / 333.321312;
 		if (new_fov > 35 && new_fov < 500) {
 			client.camera.position.z = new_fov;
 		}

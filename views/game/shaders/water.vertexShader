@@ -21,6 +21,14 @@
 	void main() 
 	{ 
 	    vUv = uv;
+
+	    
+	    //vec2 uvTimeShift = vUv + vec2( 1.1, 1.9 ) * time * 0.15; // bumpSpeed;
+		//vec4 bumpData = texture2D( noiseTexture, uvTimeShift );
+		
+		//float displacement = bumpData.g * 50.0; // bumpScale
+		//vec3 bumpedPosition = position + normal * displacement;
+
 		
 		vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
 		vec4 worldPosition = modelMatrix * vec4( position, 1.0 );

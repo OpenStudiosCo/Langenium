@@ -18,6 +18,7 @@ var flight = function() {
     this.camera = new THREE.PerspectiveCamera( 45, (client.winW / client.winH), 1, M * 2 );
     this.camera.position.y = 3;
 	this.camera.position.z = 35;
+	this.camera.fov = 70;
     this.enabled = false;
 
     return this;
@@ -122,7 +123,7 @@ flight.prototype.input = function (delta){
 	if (move == true) {
 		events.socket.emit('game:scene:instance:input', keyboardInput);
 	}
-	
+	/*
 	if (controls.flight.camera.rotation.x != 0 && (controls.camera_rotating == false || controls.mouse.changeX == false)) {
 		controls.flight.camera.rotation.x *= .89;
 	}
@@ -148,7 +149,7 @@ flight.prototype.input = function (delta){
 			}
 		}
 	}
-	
+	*/
 	return keyboardInput;
 }
 

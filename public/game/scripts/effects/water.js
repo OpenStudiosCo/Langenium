@@ -20,20 +20,10 @@ var water = function() {
 	var noiseTexture = THREE.ImageUtils.loadTexture( "/game/assets/textures/noise.png" );
 	noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping; 
 
-	this.uniforms = {	
-		baseTexture: 	{ type: "t", value: waterTexture },
-		baseSpeed:		{ type: "f", value: 0.0012511 }, 		
+	this.uniforms = {		
 		alpha: 			{ type: "f", value: 0.45 },
 		time: 			{ type: "f", value: 0.0 },
-		
-		noiseTexture:	{ type: "t", value: noiseTexture },
-		noiseScale:		{ type: "f", value: 0.0325337 }, 	
-		
-		noiseSpeed2: 	{ type: "f", value: .0000011152121 },
-		noiseScale2: 	{ type: "f", value: 0.042134 },
-		
-		noiseSpeed3: 	{ type: "f", value: .000001315337 },
-		noiseScale3: 	{ type: "f", value: 0.01121212 },
+		scale: 			{ type: "f", value: .00005 },
 		
 		mirrorColor: 	{ type: "c", value: new THREE.Color(0x7F7F7F) },
 		mirrorSampler: 	{ type: "t", value: null },

@@ -11,12 +11,9 @@
 
 	varying vec2 vUv;
 
-	varying vec3 newPosition;
-
 	void main() 
 	{ 
 	    vUv = uv;
-		
 		// mirror stuff
 		vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
 		vec4 worldPosition = modelMatrix * vec4( position, 1.0 );
@@ -25,7 +22,7 @@
 		vNormal = normalize( normalMatrix * normal );
 		vViewPosition = cameraPosition - mvPosition.xyz;
 
-		vTexCoord3D = scale * ( position.xyz + vec3( 0.0, 0.0, -time * 575.325337 ) );
+		vTexCoord3D = scale * ( position.xyz + vec3( 0.0, 0.0, -time * 75.5337 ) );
 
 		gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 	}

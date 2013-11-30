@@ -24,7 +24,6 @@ var water = function() {
 		alpha: 			{ type: "f", value: 0.45 },
 		time: 			{ type: "f", value: 0.0 },
 		scale: 			{ type: "f", value: .00015337 },
-		bias: 			{ type: "f", value: .5 }, // blur strength
 		
 		mirrorColor: 	{ type: "c", value: new THREE.Color(0x7F7F7F) },
 		mirrorSampler: 	{ type: "t", value: null },
@@ -46,7 +45,7 @@ water.prototype.makeWater = function(M, pos) {
 	var plane;
 	
 	effects.water.mirror = new THREE.Mirror( engine.renderer, client.camera, { clipBias: 0.003, textureWidth: client.winW, textureHeight: client.winH, color: 0x777777 } );
-	plane = new THREE.Mesh(new THREE.PlaneGeometry( M * 2, M * 2 , 100, 100 ), effects.water.mirror.material);
+	plane = new THREE.Mesh(new THREE.PlaneGeometry( M * 2, M * 2 , 200, 200 ), effects.water.mirror.material);
 	plane.add(effects.water.mirror);
 
 	plane.name = "ocean";

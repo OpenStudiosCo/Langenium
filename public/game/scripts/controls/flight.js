@@ -123,9 +123,9 @@ flight.prototype.input = function (delta){
 	if (move == true) {
 		events.socket.emit('game:scene:instance:input', keyboardInput);
 	}
-	/*
+	
 	if (controls.flight.camera.rotation.x != 0 && (controls.camera_rotating == false || controls.mouse.changeX == false)) {
-		controls.flight.camera.rotation.x *= .89;
+		//controls.flight.camera.rotation.x *= .89;
 	}
 	if (keyboardInput.rY == 0 && controls.flight.camera.rotation.y != 0 && (controls.camera_rotating == false || controls.mouse.changeX == false)) {
 		controls.flight.camera.rotation.y *= .89;
@@ -149,7 +149,7 @@ flight.prototype.input = function (delta){
 			}
 		}
 	}
-	*/
+	
 	return keyboardInput;
 }
 

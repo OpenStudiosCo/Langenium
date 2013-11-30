@@ -23,7 +23,8 @@ var water = function() {
 	this.uniforms = {		
 		alpha: 			{ type: "f", value: 0.45 },
 		time: 			{ type: "f", value: 0.0 },
-		scale: 			{ type: "f", value: .00005 },
+		scale: 			{ type: "f", value: .00015337 },
+		bias: 			{ type: "f", value: .5 }, // blur strength
 		
 		mirrorColor: 	{ type: "c", value: new THREE.Color(0x7F7F7F) },
 		mirrorSampler: 	{ type: "t", value: null },

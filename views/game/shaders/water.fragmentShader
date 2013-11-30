@@ -8,6 +8,7 @@ varying vec3 vViewPosition;
 
 uniform float alpha;
 uniform float time;
+uniform float bias;
 varying vec2 vUv;
 
 float blendOverlay(float base, float blend) {
@@ -94,17 +95,22 @@ float snoise( vec3 v ) {
 
 	vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3) ), 0.0 );
 	m = m * m;
-	return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1),
+	return 21.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1),
 								dot(p2,x2), dot(p3,x3) ) );
 }
 
 float heightMap( vec3 coord ) {
 	float n = abs( snoise( coord ) );
 
-	n += 0.25   * abs( snoise( coord * 2.0 ) );
-	n += 0.25   * abs( snoise( coord * 4.0 ) );
-	n += 0.125  * abs( snoise( coord * 8.0 ) );
-	n += 0.0625 * abs( snoise( coord * 16.0 ) );
+	n += 0.125   * abs( snoise( coord * 4.0 ) );
+	n += 0.125   * abs( snoise( coord * 5.0 ) );
+	n += 0.025   * abs( snoise( coord * 6.0 ) );
+	n += 0.00625 * abs( snoise( coord * 7.0 ) );
+
+	n += 0.425   * abs( snoise( coord * 1.0 ) );
+	n += 0.425   * abs( snoise( coord * 3.0 ) );
+	n += 0.225   * abs( snoise( coord * 4.0 ) );
+	n += 0.001625 * abs( snoise( coord * 7.0 ) );
 
 	return n;
 }
@@ -125,38 +131,36 @@ void main(void) {
 	float n = heightMap( vTexCoord3D );
 
 	// color
-
-	gl_FragColor = vec4( vec3( 0.5 - n, 1.0 - n, 1.5 - n ), 1.0 ) + color * .75;
+	gl_FragColor = vec4( vec3( 0.75 - n, 1.5 - n, 1.85 - n ), 1.0 ) * .85 + color * .75;
 
 	// normal
 
-	const float e = 0.001;
+	const float e = .001;
 
 	float nx = heightMap( vTexCoord3D + vec3( e, 0.0, 0.0 ) );
 	float ny = heightMap( vTexCoord3D + vec3( 0.0, e, 0.0 ) );
 	float nz = heightMap( vTexCoord3D + vec3( 0.0, 0.0, e ) );
 
-	vec3 normal = normalize( vNormal + 0.05 * vec3( n - nx, n - ny, n - nz ) / e );
+	vec3 normal = normalize( vNormal + 0.005 * vec3( n - nx, n - ny, n - nz ) / e );
 
 	// diffuse light
 
-	vec3 vLightWeighting = vec3( 0.1 );
+	vec3 vLightWeighting = vec3( 0.000000001 );
 
-	vec4 lDirection = viewMatrix * vec4( normalize( vec3( 0.125, 0.0, 0.25 ) ), 0.0 );
-	float directionalLightWeighting = dot( normal, normalize( lDirection.xyz ) ) * 0.25 + 0.75;
+	vec4 lDirection = viewMatrix * vec4( normalize( vec3( 0.00125, 0.0, 0.0025 ) ), 0.0 );
+	float directionalLightWeighting = dot( normal, normalize( lDirection.xyz ) ) * 0.0125 + 0.5337;
 	vLightWeighting += vec3( 1.0 ) * directionalLightWeighting;
 
 	// specular light
-
 	vec3 dirHalfVector = normalize( lDirection.xyz + normalize( vViewPosition ) );
 
 	float dirDotNormalHalf = dot( normal, dirHalfVector );
 
 	float dirSpecularWeight = 0.0;
 	if ( dirDotNormalHalf >= 0.0 )
-		dirSpecularWeight = ( 1.0 - n ) * pow( dirDotNormalHalf, 5.0 );
+		dirSpecularWeight = ( 1.0 - n) * pow( dirDotNormalHalf, .0025 );
 
-	vLightWeighting += vec3( 0.0, 0.125, 0.25 ) * dirSpecularWeight * n * 1.0;
+	vLightWeighting += vec3( 0.0, 0.001125, 0.00125 ) * dirSpecularWeight * n * 1.0;
 	
-	gl_FragColor *= vec4( vLightWeighting, 1.0 ) * .5337; //
+	gl_FragColor *= vec4( vLightWeighting, 1.0 ) * .75 - color * .0125; //
 }

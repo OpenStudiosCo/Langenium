@@ -230,7 +230,7 @@ flight.prototype.move = function (velocity, playerPosition, data) {
 	
 	sky.updateMatrixWorld();
 	
-	player.move(player, true, { details: data});
+	//player.move(player, true, { details: data});
 	
 
 }

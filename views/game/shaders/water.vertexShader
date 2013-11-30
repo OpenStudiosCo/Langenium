@@ -8,6 +8,7 @@
 	uniform float time;
 	uniform float scale;
 	uniform float alpha;
+
 	varying vec2 vUv;
 
 	varying vec3 newPosition;
@@ -15,18 +16,16 @@
 	void main() 
 	{ 
 	    vUv = uv;
-
-	    
-	    vec4 mPosition = modelViewMatrix * vec4( position, 1.0 );
-		vNormal = normalize( normalMatrix * normal );
-		vViewPosition = cameraPosition - mPosition.xyz;
-
-		vTexCoord3D = scale * ( position.xyz + vec3( 0.0, 0.0, -time * 275.5337 ) );
 		
 		// mirror stuff
 		vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
 		vec4 worldPosition = modelMatrix * vec4( position, 1.0 );
 		mirrorCoord = textureMatrix * worldPosition;
+
+		vNormal = normalize( normalMatrix * normal );
+		vViewPosition = cameraPosition - mvPosition.xyz;
+
+		vTexCoord3D = scale * ( position.xyz + vec3( 0.0, 0.0, -time * 575.325337 ) );
 
 		gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 	}

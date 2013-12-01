@@ -51,7 +51,7 @@ module.exports = function() {
 			res.render(template, variables);
 		},
 		add_clock: function(obj, callback) {
-			obj.clock = setInterval( function(){ callback(obj); }, 1000 / 33);
+			obj.clock = setInterval( function(){ callback(obj); }, 1000 / 66);
 		}
 	};
 

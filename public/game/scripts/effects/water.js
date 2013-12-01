@@ -14,17 +14,14 @@
 
 var water = function() {
 
-	var waterTexture = THREE.ImageUtils.loadTexture( "/game/assets/textures/water3.jpg" );
-	waterTexture.wrapS = waterTexture.wrapT = THREE.RepeatWrapping;
-
-	var noiseTexture = THREE.ImageUtils.loadTexture( "/game/assets/textures/noise.png" );
-	noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping; 
+	//var noiseTexture = THREE.ImageUtils.loadTexture( "/game/assets/textures/noise.png" );
+	//noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping; 
 
 	this.uniforms = {		
 		alpha: 			{ type: "f", value: 0.45 },
 		time: 			{ type: "f", value: 0.0 },
-		scale: 			{ type: "f", value: .00015337 },
-		
+		scale: 			{ type: "f", value: .00015337 },	
+		//noiseTexture:  	{ type: "t", value: noiseTexture },
 		mirrorColor: 	{ type: "c", value: new THREE.Color(0x7F7F7F) },
 		mirrorSampler: 	{ type: "t", value: null },
 		textureMatrix: 	{ type: "m4", value: new THREE.Matrix4() }
@@ -45,7 +42,7 @@ water.prototype.makeWater = function(M, pos) {
 	var plane;
 	
 	effects.water.mirror = new THREE.Mirror( engine.renderer, client.camera, { clipBias: 0.003, textureWidth: client.winW, textureHeight: client.winH, color: 0x777777 } );
-	plane = new THREE.Mesh(new THREE.PlaneGeometry( M * 2, M * 2 , 200, 200 ), effects.water.mirror.material);
+	plane = new THREE.Mesh(new THREE.PlaneGeometry( M * 4, M * 4 , 1, 1 ), effects.water.mirror.material);
 	plane.add(effects.water.mirror);
 
 	plane.name = "ocean";

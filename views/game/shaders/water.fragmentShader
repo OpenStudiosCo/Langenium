@@ -102,15 +102,15 @@ float snoise( vec3 v ) {
 float heightMap( vec3 coord ) {
 	float n = 0.0;
 
+	n += 0.1335337 * abs( snoise( coord / 2.0 ) );
+	n += 0.2335337 * abs( snoise( coord / 4.0 ) );
 
-	n += 0.0635337 * abs( snoise( coord * 2.0 ) );
-	n += 0.0635337 * abs( snoise( coord * 15.0 ) );
+	n += 0.0435337 * abs( snoise( coord * 2.0 ) );
+	n += 0.0435337 * abs( snoise( coord * 24.0 ) );
 
+	n += 0.0635337 * abs( snoise( coord * 75.0 ) );
 
-	n += 0.1335337 * abs( snoise( coord / 4.0 ) );
-	n += 0.0335337 * abs( snoise( coord * 75.0 ) );
-
-	n += 0.0635337 * abs( snoise( coord * 100.0 ) );
+	n += 0.0335337 * abs( snoise( coord * 100.0 ) );
 	n += 0.0335337 * abs( snoise( coord * 500.0 ) );
 
 	return n;
@@ -132,7 +132,7 @@ void main(void) {
 	float n = heightMap( vTexCoord3D );
 
 	// color
-	gl_FragColor = vec4( vec3( 0.0125 - n, .5 - n, .95 - n ), 1.0 ) * .75 + color;
+	gl_FragColor = vec4( vec3( 0.0125 - n, .5 - n, .95 - n ), 1.0 ) * .85 + color;
 
 	// normal
 	 n = heightMap( vTexCoord3D );

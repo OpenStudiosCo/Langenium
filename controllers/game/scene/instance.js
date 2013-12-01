@@ -56,7 +56,7 @@ module.exports= function(modules) {
 							username: ship.username,
 							obj_class: 'ships',
 							details: {
-								d: instance_obj.delta / 1000,
+								d: instance_obj.delta / 10000,
 								pZ: 0,
 								pY: 0,
 								rY: 0,
@@ -64,7 +64,7 @@ module.exports= function(modules) {
 							}
 						});
 					modules.controllers.game.objects.ships.move_ship(
-						instance_obj.delta,
+						instance_obj.delta / 10000,
 						update,
 						_complete
 					);

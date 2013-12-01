@@ -62,6 +62,9 @@ scenes.prototype.load = function(instance) {
 		sky.name = "sky";
 		engine.scene.add(sky);
 
+/*
+
+	Commented out for now:
 		engine.scene.add(effects.clouds.make({
 			x: 4220,
 			y: 6280,
@@ -77,6 +80,7 @@ scenes.prototype.load = function(instance) {
 			y: 6280,
 			z: -20000
 		}));
+*/
 
 		effects.water.ocean = effects.water.makeWater(M);
 

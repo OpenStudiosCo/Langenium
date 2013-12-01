@@ -1,9 +1,11 @@
+uniform float time;	
+uniform float scale;
 
-	varying vec2 vUv;
+varying vec2 vUv;
 
-	void main() {
+void main() {
 
-		// colour is RGBA: u, v, 0, 1
-		gl_FragColor = vec4( vec3( vUv, 0.5 ), 1. );
+	// colour is RGBA: u, v, 0, 1
+	gl_FragColor = vec4( vec3( vUv, 0.25 ), 1.0 );
 
-	}
+}

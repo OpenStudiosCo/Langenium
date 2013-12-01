@@ -68,6 +68,7 @@ engine.prototype.animate = function () {
 	TWEEN.update();
 	effects.water.mirror.render();
 	effects.water.animate(delta);
+	effects.clouds.animate(delta);
 	effects.particles.handleParticles(delta);
 	effects.particles.animateThrusters(delta);
 	effects.particles.animateShipThrusters(delta);

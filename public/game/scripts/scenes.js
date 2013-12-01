@@ -62,6 +62,12 @@ scenes.prototype.load = function(instance) {
 		sky.name = "sky";
 		engine.scene.add(sky);
 
+		engine.scene.add(effects.clouds.make({
+			x: 6220,
+			y: 6280,
+			z: -22000
+		}));
+
 		engine.scene.add(new effects.water.makeWater(M))
 	}	
 	if (instance.environment == 'indoor') {

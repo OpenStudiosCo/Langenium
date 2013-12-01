@@ -163,5 +163,5 @@ void main(void) {
 
 	vLightWeighting += vec3( 0.0, 0.001125, 0.00125 ) * dirSpecularWeight * n * 1.0;
 	
-	gl_FragColor *= vec4( vLightWeighting, 1.0 ) * .85 - color * .0125; //
+	gl_FragColor *= vec4( vLightWeighting, 1.0 ) * .85 - color * .0125 * n; //
 }

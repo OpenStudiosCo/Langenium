@@ -102,8 +102,8 @@ float snoise( vec3 v ) {
 float heightMap( vec3 coord ) {
 	float n = 0.0;
 
-	n += 0.1335337 * abs( snoise( coord / 2.0 ) );
-	n += 0.2335337 * abs( snoise( coord / 4.0 ) );
+	n += 0.0735337 * abs( snoise( coord / 2.0 ) );
+	n += 0.0935337 * abs( snoise( coord / 4.0 ) );
 
 	n += 0.0435337 * abs( snoise( coord * 2.0 ) );
 	n += 0.0435337 * abs( snoise( coord * 24.0 ) );
@@ -136,7 +136,7 @@ void main(void) {
 
 	// normal
 	 n = heightMap( vTexCoord3D );
-	const float e = 111.001;
+	const float e = 123.00123123;
 
 	float nx = heightMap( vTexCoord3D + vec3( e, 0.0, 0.0 ) );
 	float ny = heightMap( vTexCoord3D + vec3( 0.0, e, 0.0 ) );

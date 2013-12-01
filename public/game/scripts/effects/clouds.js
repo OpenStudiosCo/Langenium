@@ -35,8 +35,9 @@ clouds.prototype.make = function (position) {
 
 	} );
 	var cloud = new THREE.Mesh(new THREE.SphereGeometry(150, 30, 30), material);
+	//cloud.scale.set(2050, 2050, 2050);
 	cloud.scale.set(5, 5, 5);
-	cloud.material.side = THREE.DoubleSide;
+	cloud.material.side = THREE.BackSide ;
 	cloud.material.opacity = 0.15;
 	cloud.material.transparent = true;
 	cloud.position.x = position.x;

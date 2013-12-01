@@ -6,16 +6,22 @@ void main() {
     // compose the colour using the UV coordinate
     // and modulate it with the noise like ambient occlusion
     vec4 color = vec4( 
-    	( 1. - 2. * noise ), 
-    	( 1. - 2. * noise ), 
-    	( 1. - 2. * noise ),
+    	( 1. - 3. * noise ), 
+    	( 1. - 3. * noise ), 
+    	( 1. - 3. * noise ),
     	1.0
     );
 
-    if (color.r < 1.0) {
-    	color.a = 0.5337 * color.r;
+    if (color.r < 3.0) {
+    	color.a = .1337 * color.r;
+    }
+    if (color.r < 6.0) {
+    	color.a = .3337 * color.r;
+    }
+    if (color.r > 1.0) {
+    	color.a = .9337 * color.r;
     }
 
-    gl_FragColor = vec4( color.rgb, 1.0 );
+    gl_FragColor = color;
  
 }   

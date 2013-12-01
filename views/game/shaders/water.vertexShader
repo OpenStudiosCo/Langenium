@@ -9,7 +9,7 @@
 	uniform float scale;
 	uniform float alpha;
 
-	//uniform sampler2D noiseTexture;
+	uniform sampler2D noiseTexture;
 
 	varying vec2 vUv;
 
@@ -18,20 +18,22 @@
 	    vUv = uv;
 
 	    // Vertex displacement
-	    //vec2 uvTimeShift = vUv + vec2( 1.123, 1.975 ) * time * .005; // bumpSpeed;
-		//vec4 bumpData = texture2D( noiseTexture, uvTimeShift * 0.01 );
+	    vec2 uvTimeShift = vUv + vec2( 1.123, 1.975 ) * time; // bumpSpeed;
+		vec4 bumpData = texture2D( noiseTexture, uvTimeShift * 0.01 );
 		
-		//float displacement = bumpData.g * 5000.0; // bumpScale
+		float displacement = bumpData.g * 5000.0; // bumpScale
 		//vec3 bumpedPosition = position + normal * displacement;
 
+		vec3 newPosition = vec3( position.x, position.y + displacement, position.z);
+
 		// mirror stuff
-		vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
-		vec4 worldPosition = modelMatrix * vec4( position, 1.0 );
+		vec4 mvPosition = modelViewMatrix * vec4( newPosition, 1.0 );
+		vec4 worldPosition = modelMatrix * vec4( newPosition, 1.0 );
 		mirrorCoord = textureMatrix * worldPosition;
 
 		vNormal = normalize( normalMatrix * normal );
 		vViewPosition = cameraPosition - mvPosition.xyz;
-		vTexCoord3D = scale * ( position.xyz + vec3( 0.0, 0.0, -time * 75.5337 ) );
+		vTexCoord3D = scale * ( newPosition.xyz + vec3( 0.0, 0.0, -time * 75.5337 ) );
 		
-		gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+		gl_Position = projectionMatrix * modelViewMatrix * vec4( newPosition, 1.0 );
 	}

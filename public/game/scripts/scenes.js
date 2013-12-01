@@ -68,7 +68,9 @@ scenes.prototype.load = function(instance) {
 			z: -22000
 		}));
 
-		engine.scene.add(new effects.water.makeWater(M))
+		effects.water.ocean = effects.water.makeWater(M);
+
+		engine.scene.add(effects.water.ocean )
 	}	
 	if (instance.environment == 'indoor') {
 		controls.character.enabled = true;

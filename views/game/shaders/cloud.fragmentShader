@@ -1,11 +1,21 @@
-uniform float time;	
-uniform float scale;
-
 varying vec2 vUv;
-
+varying float noise;
+ 
 void main() {
+ 
+    // compose the colour using the UV coordinate
+    // and modulate it with the noise like ambient occlusion
+    vec4 color = vec4( 
+    	( 1. - 2. * noise ), 
+    	( 1. - 2. * noise ), 
+    	( 1. - 2. * noise ),
+    	1.0
+    );
 
-	// colour is RGBA: u, v, 0, 1
-	gl_FragColor = vec4( vec3( vUv, 0.25 ), 1.0 );
+    if (color.r < 1.0) {
+    	color.a = 0.5337 * color.r;
+    }
 
-}
+    gl_FragColor = vec4( color.rgb, 1.0 );
+ 
+}   

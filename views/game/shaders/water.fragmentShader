@@ -102,15 +102,15 @@ float snoise( vec3 v ) {
 float heightMap( vec3 coord ) {
 	float n = 0.0;
 
-	n += 0.0735337 * abs( snoise( coord / 2.0 ) );
-	n += 0.0935337 * abs( snoise( coord / 4.0 ) );
+	n += 0.0735337 * abs( snoise( coord / 4.0 ) );
+	n += 0.0635337 * abs( snoise( coord / 2.0 ) );
 
-	n += 0.0435337 * abs( snoise( coord * 2.0 ) );
-	n += 0.0435337 * abs( snoise( coord * 24.0 ) );
+	n += 0.0635337 * abs( snoise( coord * 2.0 ) );
+	n += 0.0535337 * abs( snoise( coord * 24.0 ) );
 
-	n += 0.0635337 * abs( snoise( coord * 75.0 ) );
+	n += 0.0535337 * abs( snoise( coord * 75.0 ) );
 
-	n += 0.0335337 * abs( snoise( coord * 100.0 ) );
+	n += 0.0435337 * abs( snoise( coord * 100.0 ) );
 	n += 0.0335337 * abs( snoise( coord * 500.0 ) );
 
 	return n;

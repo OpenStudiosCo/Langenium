@@ -15,7 +15,6 @@
 var water = function() {
 
 	this.uniforms = {		
-		alpha: 			{ type: "f", value: 0.45 },
 		time: 			{ type: "f", value: 0.0 },
 		scale: 			{ type: "f", value: .00015337 },	
 		mirrorColor: 	{ type: "c", value: new THREE.Color(0x7F7F7F) },

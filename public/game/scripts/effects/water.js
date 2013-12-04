@@ -44,7 +44,6 @@ water.prototype.makeWater = function(M, pos) {
 
 	plane.name = "ocean";
 	plane.material.side = THREE.DoubleSide;
-	plane.material.opacity = 0.15;
 	plane.material.transparent = true;
 	plane.frustrumCulled = false;	
 	plane.rotateX( - Math.PI / 2 );

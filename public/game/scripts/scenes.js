@@ -75,12 +75,13 @@ scenes.prototype.load = function(instance) {
 			y: 6280,
 			z: -22000
 		}));
-		engine.scene.add(effects.clouds.make({
-			x: 6220,
-			y: 6280,
-			z: -20000
-		}));
 */
+		engine.scene.add(effects.clouds.make({
+			x: 0,
+			y: 0,
+			z: 0
+		}));
+
 
 		effects.water.ocean = effects.water.makeWater(M);
 

@@ -223,7 +223,7 @@ flight.prototype.move = function (velocity, playerPosition, data) {
 	
 	// set sky scale
 	if (sky_scale > 1) {
-		sky.position.y =  15500 * (1 + (player.position.y / 20000));
+		sky.position.y =  24000 * (1 + (player.position.y / 20000));
 		sky.scale.set(sky_scale,sky_scale,sky_scale);
 	}
 	

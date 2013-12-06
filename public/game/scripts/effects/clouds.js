@@ -15,13 +15,9 @@
 var clouds = function() {
 	this.collection = [];
 
-	var noiseTexture = THREE.ImageUtils.loadTexture( "/game/assets/textures/noise2.png" );
-	noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping; 
-
 	this.uniforms = {
-		time: 			{ type: "f", value: 0.0 },
-		noiseTexture:   { type: "t", value: noiseTexture },
-		scale: 			{ type: "f", value: .00015337 }
+		scale: 			{ type: "f", value: 0.000001 },
+		time: 			{ type: "f", value: 0.0 }
 	};
 	
 	return this;
@@ -34,9 +30,9 @@ clouds.prototype.make = function (position) {
 		fragmentShader: document.getElementById( 'cloud_fragmentShader' ).textContent
 
 	} );
-	var cloud = new THREE.Mesh(new THREE.SphereGeometry(150, 30, 30), material);
-	//cloud.scale.set(2050, 2050, 2050);
-	cloud.scale.set(2500, 2500, 2500);
+	var cloud = new THREE.Mesh(new THREE.SphereGeometry(150, 10, 30), material);
+	cloud.scale.set(2000, 2000, 2000);
+	//cloud.scale.set(2450, 2450, 2450);
 	cloud.material.side = THREE.BackSide ;
 	cloud.material.opacity = 0.15;
 	cloud.material.transparent = true;

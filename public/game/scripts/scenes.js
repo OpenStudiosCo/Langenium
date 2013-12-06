@@ -38,19 +38,21 @@ scenes.prototype.load = function(instance) {
 		controls.flight.enabled = true;
 		client.camera = controls.flight.camera;	
 		
-		var skyGeo = new THREE.CylinderGeometry(M / 2, M / 2, M, 64	, 64, false);
+		var skyGeo = new THREE.SphereGeometry(M / 2, 32, 64);
 
-		var sky_materials = [ new THREE.MeshBasicMaterial({ 
-				color: 0x66CCFF,
-				shading: THREE.SmoothShading, 
-				side: THREE.DoubleSide
-			}),
+		var sky_materials = [ new THREE.ShaderMaterial( {
+			side: THREE.DoubleSide,
+			uniforms: effects.clouds.uniforms,
+			vertexShader:   document.getElementById( 'cloud_vertexShader'   ).textContent,
+			fragmentShader: document.getElementById( 'cloud_fragmentShader' ).textContent
+
+		} ),
 			 new THREE.MeshBasicMaterial( { color: 0x002244, side: THREE.DoubleSide,  } )
 			 ];
 			 
 		for ( var i = 0; i < skyGeo.faces.length; i++ ) 
 		{
-			if  (skyGeo.faces[ i ].centroid.y >  -16000) {
+			if  (skyGeo.faces[ i ].centroid.y >  -21000) {
 				skyGeo.faces[ i ].materialIndex = 0;
 			}
 			else {
@@ -75,13 +77,13 @@ scenes.prototype.load = function(instance) {
 			y: 6280,
 			z: -22000
 		}));
-*/
+
 		engine.scene.add(effects.clouds.make({
 			x: 0,
 			y: 0,
 			z: 0
 		}));
-
+*/
 
 		effects.water.ocean = effects.water.makeWater(M);
 

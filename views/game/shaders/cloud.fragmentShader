@@ -96,10 +96,12 @@ float snoise( vec3 v ) {
 float heightMap( vec3 coord ) {
     float n = 0.0;
 
-    n =  abs(snoise(coord * 10.0 - time / 100.0));
-    n += 0.1125 * abs(snoise(coord * 60.0 - time / 10000.0));
-    n += 0.1125 * abs(snoise(coord * 130.0 - time / 10000.0));
-    n += 0.0125 *  abs(snoise(coord * 400.0 - time / 140000.0));
+    n =  abs(snoise(coord * 5.0 - time / 500.0));
+    n -= 0.5 * abs(snoise(coord * 15.0 - time / 1000.0));
+    n += 0.1125 * abs(snoise(coord * 30.0 - (vNormal + vec3(0.0, 0.0, -time / 5000.0))));
+    n += 0.1125 * abs(snoise(coord * 60.0 - (vNormal + vec3(0.0, 0.0, -time / 10000.0))));
+    n += 0.0125 *  abs(snoise(coord * 90.0 - (vNormal + vec3(0.0, 0.0, -time / 10000.0))));
+    n += 0.0125 *  abs(snoise(coord * 120.0 - (vNormal + vec3(0.0, 0.0, -time / 10000.0))));
 
     return n;
 }
@@ -116,18 +118,24 @@ float limitColor( float min, float max, float channel) {
 
 vec4 colorFilter (float n, vec3 coord) {
 
-    vec4 color = vec4( vec3( 1.1 *n, 1.1 * n, 2.2 * n )  , 1.0 );
-    //vec4 color = vec4( vec3( 0.0, 0.0, .2 * n )  , 1.0 );
+    vec4 color = vec4( vec3( 1.75 *n, 1.75 * n, 1.75 * n )  , 1.0 );
 
-    if ( n > 0.25 ) {
-        color.r = limitColor(0.5, 1.0, color.r);
-        color.g = limitColor(0.5, 1.0, color.g);
-        color.b = limitColor (0.5, 1.0, color.b);
+    if ( n > 0.3 ) {
+        color.r = limitColor(0.55, 1.0, color.r);
+        color.g = limitColor(0.55, 1.0, color.g);
+        color.b = limitColor (0.55, 1.0, color.b);
     }
     else {
         color.r = 0.0;
         color.g = 0.5 - coord.y * 1.2;
         color.b = 1.0 - coord.y * 1.2;
+    }
+
+    // targetting the grey parts of the clouds
+    if (n < 1.0 && n > 0.3) {
+        color.r = blendOverlay(color.r, 0.0);
+        color.g = blendOverlay(color.g, 0.5 - coord.y * 1.2);
+        color.b = blendOverlay(color.b, 1.0 - coord.y * 1.2);
     }
     return color;
 }
@@ -143,4 +151,38 @@ void main(void) {
     // color
     gl_FragColor = texColor;
 
+    // normal
+
+     if ( n > 0.45  ) {
+
+        const float e = 0.01;
+
+        float nx = heightMap( vTexCoord3D + vec3( e, 0.0, 0.0 ) );
+        float ny = heightMap( vTexCoord3D + vec3( 0.0, e, 0.0 ) );
+        float nz = heightMap( vTexCoord3D + vec3( 0.0, 0.0, e ) );
+
+        vec3 normal = normalize( vNormal + 0.05 * vec3( n - nx, n - ny, n - nz ) / e );
+
+        // diffuse light
+
+        vec3 vLightWeighting = vec3( 0.1 );
+
+        vec4 lDirection = viewMatrix * vec4( normalize( vec3( 1.0, 0.0, 0.5 ) ), 0.0 );
+        float directionalLightWeighting = dot( normal, normalize( lDirection.xyz ) ) * 0.25 + 0.75;
+        vLightWeighting += vec3( 1.0 ) * directionalLightWeighting;
+
+        // specular light
+
+        vec3 dirHalfVector = normalize( lDirection.xyz + normalize( vViewPosition ) );
+
+        float dirDotNormalHalf = dot( normal, dirHalfVector );
+
+        float dirSpecularWeight = 0.0;
+        if ( dirDotNormalHalf >= 0.0 )
+            dirSpecularWeight = ( 1.0 - n ) * pow( dirDotNormalHalf, 5.0 );
+
+        vLightWeighting += vec3( 1.0, 0.5, 0.0 ) * dirSpecularWeight * n * 2.0;
+
+        gl_FragColor *= vec4( vLightWeighting, 1.0 ); //
+    }
 }

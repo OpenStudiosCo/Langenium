@@ -100,7 +100,9 @@ objects.prototype.renderObject = function (mesh, obj_class, instruction) {
 
 	if (obj_class == "environment") { 
 		
-		
+		if (mesh.obj_details.type == 'terrain') {
+			//mesh.material = 
+		}
 		
 		if (mesh.obj_details.type =='infrastructure' &&
 			mesh.obj_details.sub_type =='platforms' &&

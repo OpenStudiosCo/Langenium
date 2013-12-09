@@ -138,9 +138,9 @@ vec4 colorFilter (float n) {
 
 vec4 reflectionFilter( float n , vec4 reflection ) {
 
-	reflection.r = limitColor(0.0, 0.055 / n, reflection.r);
-	reflection.g = limitColor(0.01 / n, 0.15 / n, reflection.g);
-	reflection.b = limitColor(0.05 / n, 0.25 / n, reflection.b);
+	reflection.r = limitColor(0.01, 0.055 / n, reflection.r);
+	reflection.g = limitColor(0.025 / n, 0.15 / n, reflection.g);
+	reflection.b = limitColor(0.075 / n, 0.25 / n, reflection.b);
 
 	return reflection;
 }

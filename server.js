@@ -8,98 +8,50 @@
 
 
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-	Globals
+	Modules
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
-var 	// Variables
-		instances = {},
-		client_sessions = [];
 
-var 	// 3rd Party Libs
-		connect = require('connect'),
-		express = require('express.io'),
-		app = express(),
-		passport  = require('passport'),
-		fbsdk = require('facebook-sdk'),
-		// Fire up libs
-		server = require('http').createServer(app),
-		io = require('socket.io').listen(8080),
-		fb = new fbsdk.Facebook({ appId: process.env['APP_ID'], secret: process.env['APP_SECRET'] }),
-		THREE = require('./three.js'),
-		// Langenium Modules
-		db = require("./db.js"),
-		events = require('./events.js'),
-		instance = require('./instance.js'),
-		//Routes
-		routes = require('./routes.js');
-	
+var 	modules = require('./modules')();
+
+// Initialize models
+//console.log("Initializing models");
+modules.import_classes(modules, modules.models, './models');
+//console.log(modules.models)
+
+// Initialize controllers
+//console.log("Initializing controllers");
+modules.import_classes(modules, modules.controllers, './controllers');
+//console.log(modules.controllers)
+
+// Initialize routes
+//console.log("Initializing routes");
+modules.import_classes(modules, modules.routes, './routes');
+//console.log(modules.app.routes)
 
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-	Startup
+	Startup (move these into a class later and import via modules?). Maybe create a new class called director ? 
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
-
-makeUniverse();
-app.configure(function () {
-	app.use(connect.cookieParser());
-	app.use(connect.bodyParser());
-	app.use(connect.compress());
-	app.use(connect.session({ secret: 'keyboard cat' }));
-	app.use(passport.initialize());
-  	app.use(passport.session());
-	app.set('views', __dirname + '/views');
-	app.set('view engine', 'jade');
-	app.locals.pretty = true;
-	app.use(connect.favicon("public/favicon.ico"));
-	app.use(app.router);
-	app.use(connect.logger('dev'));
-	app.use(connect.static(__dirname + '/public'));
- 	app.use(express.methodOverride());
-  	
-
-	app.use(fb);
-
+// Get the auto startup instances running and load in their objects
+modules.models.game.scene.model.find({}, function(err, scenes) {
+	scenes.forEach(function(scene,index) {
+		if (scene.startup == 'auto') {
+			modules.controllers.game.scene.instance.create(scene, function(index) {
+				modules.add_clock(
+					modules.controllers.game.scene.instance.collection[index], 
+					modules.controllers.game.scene.instance.update
+				);
+			});
+		}
+	});
 });
 
-routes.setProviders(app, db, fb, instances, io, passport);
-routes.bind();
-
-
-
-
-
 // Start server
-server.listen(process.env['HTTP_PORT']); // dev
+modules.app.listen(process.env['HTTP_PORT']); // dev
 
-events.bind_events(io, db, instances, client_sessions);
-
-/*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-	Function Definitions
-\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
-
-function makeUniverse() {
-/*
-	Sets up the main map
-*/
-	
-	var instances_callback = function(results) {
-		results.forEach(function(instance_result){
-			
-			instances[instance_result.instance_id] = instance.make(io, instance_result.type, THREE, db);
-			
-
-			var objects = function(obj_result) { 
-				obj_result.forEach(function(object){
-					instances[instance_result.instance_id].addObject(object, instances[instance_result.instance_id], THREE, db);
-				}); 
-			};
-			db.queryClientDB("instance_objects", { instance_id: instance_result.instance_id }, objects);
-			
-		
-		});
-
-	}
-
-	db.queryClientDB("instances", { }, instances_callback );
-
+// FOR DEBUGGING ONLY
+if (process.env['HOST_URL'].indexOf('dev') >= 0) {
+	global.modules = modules;
 }
+

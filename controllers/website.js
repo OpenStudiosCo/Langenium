@@ -16,7 +16,7 @@ module.exports = function(modules) {
 	var website = {};
 	
 	website.index = function(req, res) {
-		modules.render(req, res, 'index', { title: "Home - Langenium", editor: false });
+		modules.render(req, res, 'index', { page_template: "website/home", title: "Home - Langenium", editor: false });
 	};
 
 	website.blog = require('./website/blog.js')(modules);

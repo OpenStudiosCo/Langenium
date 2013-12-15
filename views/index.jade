@@ -3,7 +3,10 @@ html
 	head
 		include header
 	body
-		case page_template
-			when "website/home"
-				include website/home
-		include footer
+		#wrapper
+			case page_template
+				when "website/home"
+					include website/home
+			include footer
+		#bg
+			img(src='/shared/images/test_bg.png',class='stretch',alt='')

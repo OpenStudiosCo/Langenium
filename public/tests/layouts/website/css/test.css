@@ -9,97 +9,6 @@ body *zoom:1:after {
 body *zoom:1:after {
   clear: both;
 }
-html,
-body,
-div,
-span,
-applet,
-object,
-iframe,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p,
-blockquote,
-pre,
-a,
-abbr,
-acronym,
-address,
-big,
-cite,
-code,
-del,
-dfn,
-em,
-img,
-ins,
-kbd,
-q,
-s,
-samp,
-small,
-strike,
-strong,
-sub,
-sup,
-tt,
-var,
-dl,
-dt,
-dd,
-ol,
-ul,
-li,
-fieldset,
-form,
-label,
-legend,
-table,
-caption,
-tbody,
-tfoot,
-thead,
-tr,
-th,
-td {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  outline: 0;
-  font-weight: inherit;
-  font-style: inherit;
-  font-family: inherit;
-  font-size: 100%;
-  vertical-align: baseline;
-}
-body {
-  line-height: 1;
-  color: #000;
-  background: #fff;
-}
-ol,
-ul {
-  list-style: none;
-}
-table {
-  border-collapse: separate;
-  border-spacing: 0;
-  vertical-align: middle;
-}
-caption,
-th,
-td {
-  text-align: left;
-  font-weight: normal;
-  vertical-align: middle;
-}
-a img {
-  border: none;
-}
 html {
   font-family: arial "Arial" sans;
 }
@@ -120,92 +29,41 @@ html {
   overflow: visible;
   border-style: solid;
   border-width: 55px;
-  -webkit-border-image: url("../../shared/images/border-01.png") 81 round;
-  -moz-border-image: url("../../shared/images/border-01.png") 81 round;
-  -o-border-image: url("../../shared/images/border-01.png") 81 round;
   border-image: url("../../shared/images/border-01.png") 81 fill round;
-  -webkit-transition-delay: 0s;
-  -moz-transition-delay: 0s;
-  -o-transition-delay: 0s;
-  -ms-transition-delay: 0s;
   transition-delay: 0s;
-  -webkit-transition-duration: 0.5s;
-  -moz-transition-duration: 0.5s;
-  -o-transition-duration: 0.5s;
-  -ms-transition-duration: 0.5s;
   transition-duration: 0.5s;
-  -webkit-transition-property: all;
-  -moz-transition-property: all;
-  -o-transition-property: all;
-  -ms-transition-property: all;
   transition-property: all;
-  -webkit-transition-timing-function: ease;
-  -moz-transition-timing-function: ease;
-  -o-transition-timing-function: ease;
-  -ms-transition-timing-function: ease;
   transition-timing-function: ease;
 }
 .panel2 {
   border-style: solid;
   border-width: 36px;
-  -webkit-border-image: url("../../shared/images/border-02.png") 42 41 42 42 round;
-  -moz-border-image: url("../../shared/images/border-02.png") 42 41 42 42 round;
-  -o-border-image: url("../../shared/images/border-02.png") 42 41 42 42 round;
   border-image: url("../../shared/images/border-02.png") 42 41 42 42 fill round;
 }
 .panel3 {
   border-style: solid;
   border-width: 36px;
-  -webkit-border-image: url("../../shared/images/border-03.png") 80 77 round;
-  -moz-border-image: url("../../shared/images/border-03.png") 80 77 round;
-  -o-border-image: url("../../shared/images/border-03.png") 80 77 round;
   border-image: url("../../shared/images/border-03.png") 80 77 fill round;
 }
 .panel4 {
   border-style: solid;
   border-width: 36px;
-  -webkit-border-image: url("../../shared/images/border-04.png") 80 77 stretch;
-  -moz-border-image: url("../../shared/images/border-04.png") 80 77 stretch;
-  -o-border-image: url("../../shared/images/border-04.png") 80 77 stretch;
   border-image: url("../../shared/images/border-04.png") 80 77 fill stretch;
 }
 .panel5 {
   border-style: solid;
   border-width: 35px;
-  -webkit-border-image: url("../../shared/images/border-05.png") 80 77 stretch;
-  -moz-border-image: url("../../shared/images/border-05.png") 80 77 stretch;
-  -o-border-image: url("../../shared/images/border-05.png") 80 77 stretch;
   border-image: url("../../shared/images/border-05.png") 80 77 fill stretch;
 }
 .panel5 {
   border-style: solid;
   border-width: 35px;
-  -webkit-border-image: url("../../shared/images/border-05.png") 80 77 stretch;
-  -moz-border-image: url("../../shared/images/border-05.png") 80 77 stretch;
-  -o-border-image: url("../../shared/images/border-05.png") 80 77 stretch;
   border-image: url("../../shared/images/border-05.png") 80 77 fill stretch;
 }
 .panel6 {
   border-style: solid;
   border-width: 58px 133px 65px 153px;
-  -webkit-border-image: url("../../shared/images/border-09.png") 58 133 65 153 stretch;
-  -moz-border-image: url("../../shared/images/border-09.png") 58 133 65 153 stretch;
-  -o-border-image: url("../../shared/images/border-09.png") 58 133 65 153 stretch;
   border-image: url("../../shared/images/border-09.png") 58 133 65 153 fill stretch;
-}
-.panel1,
-.panel2,
-.panel3,
-.panel4,
-.panel5,
-.panel6 {
-  display: inline;
-  float: left;
-  overflow: hidden;
-  width: 22.916666666666664%;
-  margin: 0 1.0416666666666665%;
-  *width: 22.916666666666664% -correction;
-  *margin: 0 1.0416666666666665% -correction;
 }
 .contents {
   color: #999;
@@ -215,9 +73,6 @@ html {
 a.textbox {
   border-style: solid;
   border-width: 20px;
-  -webkit-border-image: url("../../shared/images/border-04.png") 71 69 69 72 stretch;
-  -moz-border-image: url("../../shared/images/border-04.png") 71 69 69 72 stretch;
-  -o-border-image: url("../../shared/images/border-04.png") 71 69 69 72 stretch;
   border-image: url("../../shared/images/border-04.png") 71 69 69 72 fill stretch;
   color: #666;
   text-decoration: none;
@@ -229,18 +84,11 @@ a.textbox:hover {
   -moz-border-image: url("../../shared/images/border-08.png") 71 69 69 72 stretch;
   -webkit-border-image: url("../../shared/images/border-08.png") 71 69 69 72 stretch;
   -o-border-image: url("../../shared/images/border-08.png") 71 69 69 72 stretch;
-  -webkit-border-image: url("../../shared/images/border-08.png") 71 69 69 72 stretch;
-  -moz-border-image: url("../../shared/images/border-08.png") 71 69 69 72 stretch;
-  -o-border-image: url("../../shared/images/border-08.png") 71 69 69 72 stretch;
   border-image: url("../../shared/images/border-08.png") 71 69 69 72 fill stretch;
   -webkit-transition: all 0.25s ease;
   -moz-transition: all 0.25s ease;
   -ms-transition: all 0.25s ease;
   -o-transition: all 0.25s ease;
-  -webkit-transition: all 0.25s ease;
-  -moz-transition: all 0.25s ease;
-  -o-transition: all 0.25s ease;
-  -ms-transition: all 0.25s ease;
   transition: all 0.25s ease;
 }
 a.textbox:active {
@@ -251,9 +99,6 @@ a.button {
   border-width: 20px;
   -moz-border-image: url("../../shared/images/border-05.png") 71 69 69 72 stretch;
   -webkit-border-image: url("../../shared/images/border-05.png") 71 69 69 72 stretch;
-  -o-border-image: url("../../shared/images/border-05.png") 71 69 69 72 stretch;
-  -webkit-border-image: url("../../shared/images/border-05.png") 71 69 69 72 stretch;
-  -moz-border-image: url("../../shared/images/border-05.png") 71 69 69 72 stretch;
   -o-border-image: url("../../shared/images/border-05.png") 71 69 69 72 stretch;
   border-image: url("../../shared/images/border-05.png") 71 69 69 72 fill stretch;
   color: #333;
@@ -267,18 +112,11 @@ a.button:hover {
   -moz-border-image: url("../../shared/images/border-07.png") 71 69 69 72 stretch;
   -webkit-border-image: url("../../shared/images/border-07.png") 71 69 69 72 stretch;
   -o-border-image: url("../../shared/images/border-07.png") 71 69 69 72 stretch;
-  -webkit-border-image: url("../../shared/images/border-07.png") 71 69 69 72 stretch;
-  -moz-border-image: url("../../shared/images/border-07.png") 71 69 69 72 stretch;
-  -o-border-image: url("../../shared/images/border-07.png") 71 69 69 72 stretch;
   border-image: url("../../shared/images/border-07.png") 71 69 69 72 fill stretch;
   -webkit-transition: all 0.25s ease;
   -moz-transition: all 0.25s ease;
   -ms-transition: all 0.25s ease;
   -o-transition: all 0.25s ease;
-  -webkit-transition: all 0.25s ease;
-  -moz-transition: all 0.25s ease;
-  -o-transition: all 0.25s ease;
-  -ms-transition: all 0.25s ease;
   transition: all 0.25s ease;
 }
 a.button:active {

@@ -1,19 +1,88 @@
-nav
-	ul
-		li 
-			a(href='#') About
-		li
-			a(href='#') Gallery
-		li 
-			a(href='#') Game Guide
-		li
-			a(href='#') Community
-		li
-			a(href='#') Facebook
-		li
-			a(href='#') Hide all + Show backgrounds
-		li
-			a(href='#') Play
-article
+header#page_header
+	menu
+		ul.horiz_nav
+			li
+				a(href='#') Like
+			li
+				input(type='text',val='Username')
+				input(type='text',val='Password')
+				input(type='checkbox',id='chk_remember')
+				label(for='chk_remember') Remember me 
+				a(href='#') Login
+				a(href='#') Register
+section#page_section
+	nav#page_nav
+		ul.vert_nav
+			li 
+				a(href='#') About
+			li
+				a(href='#') Gallery
+			li 
+				a(href='#') Game Guide
+			li
+				a(href='#') Community
+			li
+				a(href='#') Facebook
+			li
+				a(href='#') Hide all + Show backgrounds
+			li
+				a(href='#') Play
 
-aside
+	article#page_content
+		header
+			h2 Some header text
+			p Bacon ipsum dolor sit amet tenderloin swine kevin drumstick fatback frankfurter prosciutto pork loin spare ribs. Andouille ribeye chuck, tenderloin fatback pork belly filet mignon shank jowl ball tip jerky beef ribs. 
+			img(src='',width='520',height='275')
+		section
+			ul.horiz_nav
+				li
+					a 
+						img(src='',width='62',height='50')
+				li
+					a 
+						img(src='',width='62',height='50')
+				li
+					a 
+						img(src='',width='62',height='50')
+				li
+					a 
+						img(src='',width='62',height='50')
+				li
+					a 
+						img(src='',width='62',height='50')
+		footer
+			ul.thumb_nav
+				li 
+					a(href='#') Story
+				li 
+					a(href='#') Ships
+				li 
+					a(href='#') Images
+				li 
+					a(href='#') How to Play
+				li 
+					a(href='#') Economy
+	aside#page_sidebar
+		section
+			article
+				img(src='',width='138',height='95')
+				h3 A News Headling of Some Sort
+				p Pig jerky pastrami ribeye fatback rump. Pork loin short loin turkey sausage drumstick pork belly strip steak pancetta. Pork belly ribeye bresaola short loin beef ribs salami t-bone tongue cow meatloaf capicola sausage leberkas.
+			article
+				img(src='',width='138',height='95')
+				h3 Another News Headline
+				p Prosciutto chicken leberkas pastrami short loin turkey venison tongue. Andouille meatball sausage, shank turkey ball tip jerky cow short loin bacon. Strip steak pork chop capicola shankle chuck, chicken rump.
+			article
+				img(src='',width='138',height='95')
+				h3 A News Headling of Some Sort
+				p Turkey beef kielbasa chicken bacon bresaola filet mignon leberkas jowl hamburger. Sirloin chuck capicola, bresaola t-bone chicken pancetta boudin shank ball tip hamburger meatball tail meatloaf beef ribs. T-bone biltong beef ribs shoulder meatball tenderloin short loin, fatback kevin jerky doner.
+			article
+				img(src='',width='138',height='95')
+				h3 A News Headling of Some Sort
+				p Turducken frankfurter venison corned beef meatloaf, chicken drumstick sirloin strip steak. Filet mignon shank meatball brisket. Spare ribs tenderloin pork belly capicola, chicken ribeye venison. Jerky corned beef swine, meatloaf t-bone pastrami chuck fatback.
+			article
+				img(src='',width='138',height='95')
+				h3 A News Headling of Some Sort
+				p PSpare ribs tenderloin pork belly capicola, chicken ribeye venison. Jerky corned beef swine, meatloaf t-bone pastrami chuck fatback.  Boudin leberkas tail hamburger pig tenderloin ribeye salami.
+		footer
+			a(href='#') + Load more

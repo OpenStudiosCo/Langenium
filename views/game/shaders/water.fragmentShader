@@ -101,17 +101,14 @@ float snoise( vec3 v ) {
 
 float heightMap( vec3 coord ) {
 	float n = 0.0;
-	float t1 = -time / 7.0;
-	float t2 = -time / 3.0;
-	float t3 = -time * 3.0;
 
-	n = 0.02125 * abs(snoise(coord * 256.0 - (vNormal + vec3(0.0, 0.0, t3)))); 
-	n += 0.0625 * abs(snoise(coord * 128.0 - (vNormal + vec3(0.0, 0.0, t3)))); 
-	n += 0.25 * abs(snoise(coord * 64. - (vNormal + vec3(0.0, 0.0, t2))));
-	n += 0.125 * abs(snoise(coord * 32.0 - (vNormal + vec3(0.0, 0.0, t2)))); 
-	n += 0.25 * abs(snoise(coord * 16.0 - (vNormal + vec3(0.0, 0.0, t2)))); 
-	n += 0.5 * abs(snoise(coord * 8.0 - (vNormal + vec3(0.0, 0.0, t1)))); 
-	n += abs(snoise(coord * 4.0 - (vNormal + vec3(0.0, 0.0, t1))));
+	n =  abs(snoise(coord * 4.0 - (vNormal + vec3(0.0, 0.0, -time / 14.0))));
+	n += 0.5 * abs(snoise(coord * 8.0 - (vNormal + vec3(0.0, 0.0, -time / 14.0)))); 
+	n += 0.25 * abs(snoise(coord * 12.0 - (vNormal + vec3(0.0, 0.0, -time / 10.0)))); 
+	n += 0.125 * abs(snoise(coord * 24.0 - (vNormal + vec3(0.0, 0.0, -time / 10.0)))); 
+	n += 0.25 * abs(snoise(coord * 48. - (vNormal + vec3(0.0, 0.0, -time / 10.0)))); 
+	n += 0.0625 * abs(snoise(coord * 96.0 - (vNormal + vec3(0.0, 0.0, -time )))); 
+	n += 0.03125 * abs(snoise(coord * 128.0 - (vNormal + vec3(0.0, 0.0, -time )))); 
 	n *= 0.7;
 
 	return n;
@@ -144,6 +141,7 @@ vec4 reflectionFilter( float n , vec4 reflection ) {
 	reflection.r = limitColor(0.01, 0.055 / n, reflection.r);
 	reflection.g = limitColor(0.025 / n, 0.15 / n, reflection.g);
 	reflection.b = limitColor(0.075 / n, 0.25 / n, reflection.b);
+	reflection.a = 1.0 - n;
 
 	return reflection;
 }
@@ -164,6 +162,8 @@ void main(void) {
 
 	// color
 	gl_FragColor = texColor;
+	gl_FragColor += reflectionFilter( n , reflection );
+
 
 	// normal
 
@@ -177,10 +177,10 @@ void main(void) {
 
 	// diffuse light
 
-	vec3 vLightWeighting = vec3( 0.1 );
+	vec3 vLightWeighting = vec3( -0.1 );
 
 	vec4 lDirection = viewMatrix * vec4( normalize( vec3( 1.0, 0.0, 0.5 ) ), 0.0 );
-	float directionalLightWeighting = dot( normal, normalize( lDirection.xyz ) ) * 0.25 + 0.75;
+	float directionalLightWeighting = dot( normal, normalize( lDirection.xyz ) ) * 0.15 + 0.85;
 	vLightWeighting += vec3( 1.0 ) * directionalLightWeighting;
 
 	// specular light
@@ -195,13 +195,8 @@ void main(void) {
 
 	vLightWeighting += vec3( 1.0, 0.5, 0.0 ) * dirSpecularWeight * n * 2.0;
 
-	vec4 filteredReflection = reflectionFilter( n , reflection );
-
-	gl_FragColor += filteredReflection;
-
 	gl_FragColor *= vec4( vLightWeighting, 1.0 ); //
 
 	
-
 
 }

@@ -24,7 +24,8 @@ module.exports = function() {
 		os: require('os'),
 		THREE: require('./three.js'),
 		stylus: require('stylus'),
-		nib: require('nib'),
+		fluidity: require('fluidity'),
+		//nib: require('nib'),
 		// Class object containers
 		routes: {},
 		models: {},
@@ -83,11 +84,10 @@ module.exports = function() {
 
 	function compile (str, path) {
 	  			return modules.stylus(str)
-	  			.use(modules.nib())
 	  			.set('filename', path)
+	  			.use(modules.fluidity())
+	  			
 	  			//.set('compress', true)
-	  			
-	  			
 	  			;
 	};
 	// Configure express app

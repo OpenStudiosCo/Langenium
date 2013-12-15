@@ -1,0 +1,120 @@
+/*
+	Import dependencies
+*/
+
+@import "fluidity"
+
+
+/*
+	Shared stuff that will end up in mixins
+*/
+
+// Defaults
+defaults()
+	font-size 75%
+	overflow-y auto
+
+// Menus
+
+horiz_nav()
+	list-style none
+	li 
+		float left	
+
+vert_nav()
+	list-style none
+	li 
+		float left	
+		clear both
+
+thumb_nav()
+	list-style none
+	li 
+		float left	
+
+
+/*
+	Page styles
+*/
+
+body
+	defaults()
+
+#bg 
+	width 100%
+	height 100%
+	position fixed
+	left 0px
+	top 0px
+	z-index -1 /* Ensure div tag stays behind content; -999 might work, too. */
+
+.stretch 
+	width 100%
+	height 100%
+
+
+// Layouts
+#wrapper 
+	grid(80%, 1280px)
+
+#page_header 
+	grid-space(100%)
+
+#page_section #page_nav 
+	grid-space(20%)
+
+#page_section #page_content 
+	grid-space(45%)
+
+#page_section #page_sidebar 
+	grid-space(35%)
+
+
+// Styling individual elements by combining mixins and overriding
+ul.horiz_nav 
+	horiz_nav()
+
+
+ul.vert_nav 
+	vert_nav()
+
+
+ul.thumb_nav 
+	thumb_nav()
+
+
+ 
+/*
+	Layout Responsiveness
+*/
+
+@media screen and (max-width: 800px)
+	#wrapper {
+		grid(90%,475px)
+	}
+	#page_section #page_nav {
+		grid-space(35%)
+	}
+	#page_section #page_content {
+		grid-space(65%)
+	}
+	#page_section #page_sidebar {
+		grid-space(100%)
+	}
+
+
+@media screen and (max-width: 500px)
+	#wrapper {
+		grid(90%,320px)
+	}
+	#page_section #page_nav {
+		grid-space(100%)
+	}
+	#page_section #page_content {
+		grid-space(100%)
+	}
+	#page_section #page_sidebar {
+		grid-space(100%)
+	}
+
+

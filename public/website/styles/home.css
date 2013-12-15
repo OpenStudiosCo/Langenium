@@ -999,8 +999,12 @@ html.flui-preload body * {
 	Page styles
 */
 body {
-  font-size: 75%;
+  font-size: 85%;
   overflow-y: auto;
+}
+body h1 {
+  margin: 0;
+  float: left;
 }
 #bg {
   width: 100%;
@@ -1009,7 +1013,7 @@ body {
   left: 0px;
   top: 0px;
   z-index: -1;
-/* Ensure div tag stays behind content; -999 might work, too. */
+/* Ensure div tag stays behind content -999 might work, too. */
 }
 .stretch {
   width: 100%;
@@ -1046,6 +1050,67 @@ body {
   box-sizing: border-box;
   width: 100%;
 }
+#page_header .horiz_nav input[type='text'] {
+  background: transparent none;
+  border-style: solid;
+  border-width: 20px;
+  -moz-border-image: url("/shared/images/border-04.png") 71 69 69 72 fill stretch;
+  -webkit-border-image: url("/shared/images/border-04.png") 71 69 69 72 fill stretch;
+  -o-border-image: url("/shared/images/border-04.png") 71 69 69 72 fill stretch;
+  -ms-border-image: url("/shared/images/border-04.png") 71 69 69 72 fill stretch;
+  border-image: url("/shared/images/border-04.png") 71 69 69 72 fill stretch;
+  color: #666;
+  text-decoration: none;
+  margin: 0.75em 0 0 0;
+  float: left;
+}
+#page_header .horiz_nav input[type='text']:hover {
+  color: #999;
+  -moz-border-image: url("/shared/images/border-08.png") 71 69 69 72 stretch;
+  -webkit-border-image: url("/shared/images/border-08.png") 71 69 69 72 stretch;
+  -o-border-image: url("/shared/images/border-08.png") 71 69 69 72 stretch;
+  -moz-border-image: url("/shared/images/border-08.png") 71 69 69 72 fill stretch;
+  -webkit-border-image: url("/shared/images/border-08.png") 71 69 69 72 fill stretch;
+  -o-border-image: url("/shared/images/border-08.png") 71 69 69 72 fill stretch;
+  -ms-border-image: url("/shared/images/border-08.png") 71 69 69 72 fill stretch;
+  border-image: url("/shared/images/border-08.png") 71 69 69 72 fill stretch;
+  -webkit-transition: all 0.25s ease;
+  -moz-transition: all 0.25s ease;
+  -ms-transition: all 0.25s ease;
+  -o-transition: all 0.25s ease;
+  -moz-transition: all 0.25s ease;
+  -webkit-transition: all 0.25s ease;
+  -o-transition: all 0.25s ease;
+  -ms-transition: all 0.25s ease;
+  transition: all 0.25s ease;
+}
+#page_header .horiz_nav a {
+  border-style: solid;
+  border-width: 20px;
+  -moz-border-image: url("/shared/images/border-05.png") 71 69 69 72 fill stretch;
+  -webkit-border-image: url("/shared/images/border-05.png") 71 69 69 72 fill stretch;
+  -o-border-image: url("/shared/images/border-05.png") 71 69 69 72 fill stretch;
+  -ms-border-image: url("/shared/images/border-05.png") 71 69 69 72 fill stretch;
+  border-image: url("/shared/images/border-05.png") 71 69 69 72 fill stretch;
+  color: #333;
+  text-decoration: none;
+  margin: 0.75em 0 0 0;
+  float: left;
+}
+#page_header .horiz_nav a:hover {
+  color: #999;
+  border-width: 20px;
+  -moz-border-image: url("/shared/images/border-07.png") 71 69 69 72 fill stretch;
+  -webkit-border-image: url("/shared/images/border-07.png") 71 69 69 72 fill stretch;
+  -o-border-image: url("/shared/images/border-07.png") 71 69 69 72 fill stretch;
+  -ms-border-image: url("/shared/images/border-07.png") 71 69 69 72 fill stretch;
+  border-image: url("/shared/images/border-07.png") 71 69 69 72 fill stretch;
+  -moz-transition: all 0.25s ease;
+  -webkit-transition: all 0.25s ease;
+  -o-transition: all 0.25s ease;
+  -ms-transition: all 0.25s ease;
+  transition: all 0.25s ease;
+}
 #page_section #page_nav {
   display: block;
   position: relative;
@@ -1059,6 +1124,47 @@ body {
   -ms-box-sizing: border-box;
   box-sizing: border-box;
   width: 20%;
+}
+#page_section #page_nav ul.vert_nav {
+  overflow: visible;
+  border-style: solid;
+  border-width: 55px;
+  -moz-border-image: url("/shared/images/border-01.png") 81 fill round;
+  -webkit-border-image: url("/shared/images/border-01.png") 81 fill round;
+  -o-border-image: url("/shared/images/border-01.png") 81 fill round;
+  -ms-border-image: url("/shared/images/border-01.png") 81 fill round;
+  border-image: url("/shared/images/border-01.png") 81 fill round;
+  transition-delay: 0s;
+  transition-duration: 0.5s;
+  transition-property: all;
+  transition-timing-function: ease;
+}
+#page_section #page_nav ul.vert_nav li a {
+  border-style: solid;
+  border-width: 20px;
+  -moz-border-image: url("/shared/images/border-05.png") 71 69 69 72 fill stretch;
+  -webkit-border-image: url("/shared/images/border-05.png") 71 69 69 72 fill stretch;
+  -o-border-image: url("/shared/images/border-05.png") 71 69 69 72 fill stretch;
+  -ms-border-image: url("/shared/images/border-05.png") 71 69 69 72 fill stretch;
+  border-image: url("/shared/images/border-05.png") 71 69 69 72 fill stretch;
+  color: #333;
+  text-decoration: none;
+  margin: 0.75em 0 0 0;
+  float: left;
+}
+#page_section #page_nav ul.vert_nav li a:hover {
+  color: #999;
+  border-width: 20px;
+  -moz-border-image: url("/shared/images/border-07.png") 71 69 69 72 fill stretch;
+  -webkit-border-image: url("/shared/images/border-07.png") 71 69 69 72 fill stretch;
+  -o-border-image: url("/shared/images/border-07.png") 71 69 69 72 fill stretch;
+  -ms-border-image: url("/shared/images/border-07.png") 71 69 69 72 fill stretch;
+  border-image: url("/shared/images/border-07.png") 71 69 69 72 fill stretch;
+  -moz-transition: all 0.25s ease;
+  -webkit-transition: all 0.25s ease;
+  -o-transition: all 0.25s ease;
+  -ms-transition: all 0.25s ease;
+  transition: all 0.25s ease;
 }
 #page_section #page_content {
   display: block;
@@ -1074,6 +1180,24 @@ body {
   box-sizing: border-box;
   width: 45%;
 }
+#page_section #page_content header {
+  border-style: solid;
+  border-width: 36px;
+  -moz-border-image: url("/shared/images/border-03.png") 80 77 fill round;
+  -webkit-border-image: url("/shared/images/border-03.png") 80 77 fill round;
+  -o-border-image: url("/shared/images/border-03.png") 80 77 fill round;
+  -ms-border-image: url("/shared/images/border-03.png") 80 77 fill round;
+  border-image: url("/shared/images/border-03.png") 80 77 fill round;
+}
+#page_section #page_content section {
+  border-style: solid;
+  border-width: 36px;
+  -moz-border-image: url("/shared/images/border-02.png") 80 77 fill round;
+  -webkit-border-image: url("/shared/images/border-02.png") 80 77 fill round;
+  -o-border-image: url("/shared/images/border-02.png") 80 77 fill round;
+  -ms-border-image: url("/shared/images/border-02.png") 80 77 fill round;
+  border-image: url("/shared/images/border-02.png") 80 77 fill round;
+}
 #page_section #page_sidebar {
   display: block;
   position: relative;
@@ -1088,6 +1212,18 @@ body {
   box-sizing: border-box;
   width: 35%;
 }
+#page_section #page_sidebar article {
+  border-style: solid;
+  border-width: 35px;
+  -moz-border-image: url("/shared/images/border-05.png") 80 77 fill round;
+  -webkit-border-image: url("/shared/images/border-05.png") 80 77 fill round;
+  -o-border-image: url("/shared/images/border-05.png") 80 77 fill round;
+  -ms-border-image: url("/shared/images/border-05.png") 80 77 fill round;
+  border-image: url("/shared/images/border-05.png") 80 77 fill round;
+}
+#page_section #page_sidebar article img {
+  float: left;
+}
 ul.horiz_nav {
   list-style: none;
 }
@@ -1095,6 +1231,8 @@ ul.horiz_nav li {
   float: left;
 }
 ul.vert_nav {
+  float: left;
+  height: 100%;
   list-style: none;
 }
 ul.vert_nav li {
@@ -1110,7 +1248,7 @@ ul.thumb_nav li {
 /*
 	Layout Responsiveness
 */
-@media screen and (max-width: 800px) {
+@media screen and (max-width 800px) {
   #wrapper {
     position: relative;
     width: 90%;
@@ -1171,7 +1309,7 @@ ul.thumb_nav li {
     width: 100%;
   }
 }
-@media screen and (max-width: 500px) {
+@media screen and (max-width 500px) {
   #wrapper {
     position: relative;
     width: 90%;

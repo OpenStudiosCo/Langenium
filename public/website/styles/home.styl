@@ -11,10 +11,69 @@
 
 // Defaults
 defaults()
-	font-size 75%
+	font-size 85%
 	overflow-y auto
+	h1 
+		margin 0
+		float left
 
-// Menus
+// Control Styles
+
+button()
+	border-style solid
+	border-width 20px
+	border-image url("/shared/images/border-05.png") 71 69 69 72 fill stretch
+	color #333
+	text-decoration none
+	margin 0.75em 0 0 0
+	float left
+
+button_hover()
+	color #999
+	border-width 20px
+	border-image url("/shared/images/border-07.png") 71 69 69 72 fill stretch
+	transition all 0.25s ease
+
+textbox()
+	background transparent none
+	border-style solid
+	border-width 20px
+	border-image url("/shared/images/border-04.png") 71 69 69 72 fill stretch
+	color #666
+	text-decoration none
+	margin 0.75em 0 0 0
+	float left
+
+textbox_hover()
+	color #999
+	-moz-border-image url("/shared/images/border-08.png") 71 69 69 72 stretch
+	-webkit-border-image url("/shared/images/border-08.png") 71 69 69 72 stretch
+	-o-border-image url("/shared/images/border-08.png") 71 69 69 72 stretch
+	border-image url("/shared/images/border-08.png") 71 69 69 72 fill stretch
+	-webkit-transition all 0.25s ease
+	-moz-transition all 0.25s ease
+	-ms-transition all 0.25s ease
+	-o-transition all 0.25s ease
+	transition all 0.25s ease
+
+// Content Styles
+
+featured_content_panel()
+	border-style solid
+	border-width 36px
+	border-image url("/shared/images/border-03.png") 80 77 fill round
+
+featured_content_scroller_panel()
+	border-style solid
+	border-width 36px
+	border-image url("/shared/images/border-02.png") 80 77 fill round
+
+news_content_panel()
+	border-style solid
+	border-width 35px
+	border-image url("/shared/images/border-05.png") 80 77 fill round
+
+// Menu Layouts
 
 horiz_nav()
 	list-style none
@@ -22,6 +81,8 @@ horiz_nav()
 		float left	
 
 vert_nav()
+	float left
+	height 100%
 	list-style none
 	li 
 		float left	
@@ -30,7 +91,20 @@ vert_nav()
 thumb_nav()
 	list-style none
 	li 
-		float left	
+		float left
+
+// Menu Styles
+
+main_menu()
+	overflow visible
+	border-style solid
+	border-width 55px
+	border-image url("/shared/images/border-01.png") 81 fill round
+	transition-delay 0s
+	transition-duration 0.5s
+	transition-property all
+	transition-timing-function ease
+
 
 
 /*
@@ -46,7 +120,7 @@ body
 	position fixed
 	left 0px
 	top 0px
-	z-index -1 /* Ensure div tag stays behind content; -999 might work, too. */
+	z-index -1 /* Ensure div tag stays behind content -999 might work, too. */
 
 .stretch 
 	width 100%
@@ -59,21 +133,51 @@ body
 
 #page_header 
 	grid-space(100%)
+	.horiz_nav
+		input[type='text']
+			textbox()
+		input[type='text']:hover
+			textbox_hover()
+		a
+			button()
+		a:hover
+			button_hover()
 
 #page_section #page_nav 
 	grid-space(20%)
+	ul.vert_nav
+		overflow visible
+		border-style solid
+		border-width 55px
+		border-image url("/shared/images/border-01.png") 81 fill round
+		transition-delay 0s
+		transition-duration 0.5s
+		transition-property all
+		transition-timing-function ease
+		li a
+			button()
+		li a:hover
+			button_hover()
+
 
 #page_section #page_content 
 	grid-space(45%)
+	header
+		featured_content_panel()
+	section
+		featured_content_scroller_panel()
+
 
 #page_section #page_sidebar 
 	grid-space(35%)
-
+	article
+		news_content_panel()
+		img
+			float left
 
 // Styling individual elements by combining mixins and overriding
 ul.horiz_nav 
 	horiz_nav()
-
 
 ul.vert_nav 
 	vert_nav()
@@ -88,7 +192,7 @@ ul.thumb_nav
 	Layout Responsiveness
 */
 
-@media screen and (max-width: 800px)
+@media screen and (max-width 800px)
 	#wrapper {
 		grid(90%,475px)
 	}
@@ -103,7 +207,7 @@ ul.thumb_nav
 	}
 
 
-@media screen and (max-width: 500px)
+@media screen and (max-width 500px)
 	#wrapper {
 		grid(90%,320px)
 	}

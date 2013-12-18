@@ -1,0 +1,121 @@
+meta(charset='utf-8')
+meta(http-equiv='X-UA-Compatible', content='IE=edge,chrome=1')
+title= title
+link(rel='stylesheet', href='/shared/styles/reset.css')
+link(rel='stylesheet', href='/shared/styles/bootstrap.min.css')
+link(rel="stylesheet",href="/shared/font-awesome/css/font-awesome.min.css")
+link(rel='stylesheet', href='/game/styles/game.css')
+- if (editor==true)
+	link(rel='stylesheet', href='/game/styles/editor.css')
+	link(rel='stylesheet', href='/game/styles/editor/object_library.css')
+	link(rel='stylesheet', href='/game/styles/editor/object_properties.css')
+	link(rel='stylesheet', href='/game/styles/editor/window.css')
+link(rel='stylesheet', href='/game/styles/ui.css')
+script(src='/shared/scripts/jquery.min.js')
+script(src='/shared/scripts/jQueryRotateCompressed.2.2.js')
+script(src='/shared/scripts/socket.io.min.js')
+script(src='/shared/scripts/three.js')
+script(src='/shared/scripts/Mirror.js')
+script(src='/shared/scripts/tween.min.js')
+script(src='/shared/scripts/THREEx.KeyboardState.js')
+script(src='/shared/scripts/stats.min.js')
+script(src='/shared/scripts/smoothie.js')
+script(src='/shared/scripts/SimplexNoise.js')
+script(src='/game/scripts/client.js')
+script(src='/game/scripts/controls.js')
+script(src='/game/scripts/controls/character.js')
+script(src='/game/scripts/controls/editor_controls.js')
+script(src='/game/scripts/controls/flight.js')
+script(src='/game/scripts/effects.js')
+script(src='/game/scripts/effects/bullets.js')
+script(src='/game/scripts/effects/clouds.js')
+script(src='/game/scripts/effects/particles.js')
+script(src='/game/scripts/effects/water.js')
+script(src='/game/scripts/engine.js')
+script(src='/game/scripts/events.js')
+script(src='/game/scripts/objects.js')
+script(src='/game/scripts/objects/characters.js')
+script(src='/game/scripts/objects/environment.js')
+script(src='/game/scripts/objects/projectiles.js')
+script(src='/game/scripts/objects/ships.js')
+script(src='/game/scripts/scenes.js')
+script(src='/game/scripts/scenes/grid.js')
+script(src='/game/scripts/scenes/rooms.js')
+script(src='/game/scripts/textures.js')
+script(src='/game/scripts/textures/sprites.js')
+script(src='/game/scripts/ui.js')
+- if (editor==true)
+	include editor/scripts
+script(type='x-shader/x-vertex', id='cloud_vertexShader')
+	include shaders/cloud.vertexShader
+script(type='x-shader/x-fragment', id='cloud_fragmentShader')
+	include shaders/cloud.fragmentShader
+script(type='x-shader/x-vertex', id='water_vertexShader')
+	include shaders/water.vertexShader
+script(type='x-shader/x-fragment', id='water_fragmentShader')
+	include shaders/water.fragmentShader
+script(type='text/javascript').
+	/*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+		Globals
+	\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
+
+	// Global variables for the THREE JS client
+	var sky, M = 500000;
+	var keyboard = new THREEx.KeyboardState(), clock = new THREE.Clock();
+	var player, bots = [];
+
+
+	// Initialize internal libraries
+	client = new client();
+	client.updateWinSizeVariables();
+
+	engine = new engine();
+	controls = new controls();
+	objects = new objects();
+	textures = new textures();
+	effects = new effects();
+	events = new events();
+	scenes = new scenes();
+
+
+	ui = new user_interface();
+	ui.makeDialog("playerPosition", ui.playerPosition);
+
+	var stats = new Stats();
+	stats.setMode(0); // 0: fps, 1: ms
+
+	// Align top-left
+	stats.domElement.style.position = 'absolute';
+	stats.domElement.style.right = '10px';
+	stats.domElement.style.top = '10px'
+	
+
+	setInterval( function () {
+
+		stats.begin();
+
+		// your code goes here
+
+		stats.end();
+
+	}, 1000 / 66 );
+	
+	if (client.is_editor == true) {
+		var editor = new editor();
+
+		var ray = new THREE.Raycaster();
+		var projector = new THREE.Projector();
+	}
+
+	/*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+		Start the game engine
+	\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
+
+	$(document).ready(function(){
+
+		client.initialize();
+
+		$('#ui').append(stats.domElement);
+		events.chart.addTimeSeries(events.latency, { strokeStyle: 'rgba(0, 255, 0, 1)', fillStyle: 'rgba(0, 255, 0, 0.2)', lineWidth: 1 });
+		events.chart.streamTo(document.getElementById("latencyBox"), 500);
+	});

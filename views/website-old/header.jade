@@ -1,0 +1,30 @@
+meta(charset='utf-8')
+meta(http-equiv='X-UA-Compatible', content='IE=edge,chrome=1')
+title= title 
+link(rel='shortcut icon', href='/favicon.ico')
+link(rel='stylesheet', href='/shared/styles/reset.css')
+link(rel='stylesheet', href='/website/styles/screen.css')
+link(rel='stylesheet', href='/website/styles/styles.css')
+link(rel='stylesheet', href='/website/styles/menu.css')
+link(rel='stylesheet', href='/shared/styles/jquery-ui-1.10.2.custom.css')
+link(rel='stylesheet', href='http://fonts.googleapis.com/css?family=Aldrich')
+
+case page
+	when 'pages/home'
+		link(rel='stylesheet', href='/website/styles/pages/home.css')
+	when 'pages/about/'
+		link(rel='stylesheet', href='/website/styles/pages/about.css')
+	when 'pages/gallery_list'
+		link(rel='stylesheet', href='/website/styles/pages/gallery.css')
+	when 'pages/gallery_view'
+		link(rel='stylesheet', href='/website/styles/pages/gallery.css')
+	when 'pages/guide'
+		link(rel='stylesheet', href='/website/styles/pages/guide.css')
+	when 'pages/guide_index'
+		link(rel='stylesheet', href='/website/styles/pages/guide.css')
+	when 'pages/guide_new'
+		link(rel='stylesheet', href='/website/styles/pages/guide.css')
+	when 'pages/guide_edit'
+		link(rel='stylesheet', href='/website/styles/pages/guide.css')
+	when 'pages/community/'
+		link(rel='stylesheet', href='/website/styles/pages/community.css')

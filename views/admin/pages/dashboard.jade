@@ -1,0 +1,53 @@
+.navbar.navbar-default.navbar-fixed-top
+	.container
+		.navbar-header
+			a.navbar-brand(href='#') Dashboard
+			button.navbar-toggle(data-toggle='collapse',data-target='.navbar-collapse')
+				span.icon-bar
+				span.icon-bar
+				span.icon-bar
+		#navbar-main.collapse.navbar-collapse
+			ul.nav.navbar-nav
+				li
+					a(href='/') Website
+				li
+					a(href='/play') Play
+			ul.nav.navbar-nav.navbar-right
+				li
+					a(href='#') Login
+.container
+	.row
+		.col-md-4
+			canvas#cpu_chart
+		.col-md-4
+			canvas#memory_chart
+		.col-md-4
+			| Players
+	.row
+		.col-md-12
+			h3 Game management
+			ul.nav.nav-pills
+				li
+					a(href='/admin/mechanics') Mechanics
+				li
+					a(href='/admin/object_editor') Object editor
+				li
+					a(href='/admin/scene_director') Scene director
+				li
+					a(href='/admin/texture_painter') Texture painter
+			h3 System management
+			.col-md-2
+				.btn-group-vertical
+					h4 User management
+					a.btn.btn-default(href='#') Users
+					a.btn.btn-default(href='#') Permissions
+					a.btn.btn-default(href='#') Groups
+			.col-md-2
+				.btn-group-vertical
+					h4 Website Editor
+					a.btn.btn-default(href='#') Pages
+					a.btn.btn-default(href='#') Devblog
+	.row
+		.col-md-12
+			h3 Server log
+		textarea.well.well-sm.col-md-12(rows="15",style='color:#888888')

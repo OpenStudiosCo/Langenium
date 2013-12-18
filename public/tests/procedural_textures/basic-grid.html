@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Initial drawing texture experiments</title>
+</head>
+<body>
+
+<canvas id='texture_image' width='1000' height='1000'>
+	<p>Something went wrong :[</p>
+</canvas>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="./perlin-noise-simplex.js"></script>
+<script type='text/javascript'>
+
+	var texture_image = document.getElementById('texture_image');
+	var height = texture_image.height;
+	var width = texture_image.width;
+	var simplex = new SimplexNoise();
+	if (texture_image.getContext) {
+		var context = texture_image.getContext('2d');
+		// Create the yellow face
+		var twopi = Math.PI * 2;
+		// instantiate golden ratio constant
+        var PHI = (1+ Math.sqrt(5))/2;
+		var imageData = context.createImageData(height, width);
+
+		var red = 0, green= 0, blue= 0, n;
+		for (var x = 0; x < width; x++) {
+		
+			red = 255;
+			green = 255;
+			blue = 255;
+			for (var y = 0; y < height; y++) {
+
+				
+			red = 255;
+			green = 255;
+			blue = 255;
+		
+
+				if ((y%50 <= 10  || x%35 <= 10) ) {
+					n = 100 * simplex.noise(x, y);
+					red =   22  + 11 * Math.sin( n * twopi);
+
+					green =  22  + 11  * Math.sin( n * twopi);
+		
+					blue =  22 + 11 * Math.sin( n * twopi);
+				
+					
+				}
+				red = Math.floor(red );
+				green = Math.floor(green);
+				blue = Math.floor(blue);
+				setPixel(imageData, x, y, red, green, blue, 255);
+
+				
+			}
+		}
+		context.putImageData(imageData, 0,0);
+	}
+
+	function setPixel(imageData, x, y, r, g, b, a) {
+	    var index = (x + y * imageData.width) * 4;
+	    imageData.data[index+0] = r;
+	    imageData.data[index+1] = g;
+	    imageData.data[index+2] = b;
+	    imageData.data[index+3] = a;
+	}
+</script>
+</body>
+</html>

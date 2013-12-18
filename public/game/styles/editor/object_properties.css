@@ -1,0 +1,162 @@
+/**************************************************************
+	Langenium Editor Object Properties Styles
+	Author: Paul Brzeski
+**************************************************************/
+
+.object_properties menu {
+	padding: 1em;
+	width: 580px;
+}
+.window.object_properties .object_list {
+	width: 580px;
+}
+.object_properties .object_list {
+	width: 540px;
+}
+.object_properties .details h3,
+.object_properties .transform h3 {
+	font-weight: normal;
+	font-size: 1.2em;
+}
+.object_properties .details {
+	margin-bottom: solid 1px #CCCCCC;
+}
+.object_properties .details,
+.object_properties .transform {
+	float: left;
+	clear: both;
+}
+
+.object_properties .details .instance_name,
+.object_properties .details .type {
+	float: left;
+	clear: left;
+	width: 300px;
+}
+.object_properties .details .save_status,
+.object_properties .details .library_name {
+	width: 250px;
+	float: left;
+	clear: right;
+}
+
+.object_properties .details .instance_name strong,
+.object_properties .details .save_status strong,
+.object_properties .details .type strong,
+.object_properties .details .library_name strong {
+	float: left;
+	font-weight: normal;
+	font-size: 1.1em;
+}
+.object_properties .details .instance_name p,
+.object_properties .details .save_status p,
+.object_properties .details .type p,
+.object_properties .details .library_name p {
+	color: #FFFFFF;
+	float: right;
+	padding-right: 1em;
+}
+
+.object_properties .details .save_status a {
+	padding: .5em!important;
+	margin: .5em!important;
+	display: block!important;
+	float: left;
+	position: absolute!important;
+	top: 90px;
+	width: auto!important;
+}
+.object_properties .sub_menu .details .save_status a {
+	top: 70px;	
+}
+.object_properties .details .instance_name,
+.object_properties .details .save_status,
+.object_properties .details .type,
+.object_properties .details .library_name {
+	
+}
+
+.object_properties .transform .position,
+.object_properties .transform .rotation {
+	position: relative;
+	float: left;
+	clear: left;
+	padding-left: 70px;
+}
+.object_properties .transform .position strong,
+.object_properties .transform .rotation strong {
+	position: absolute;
+	margin-left: -60px;
+}
+.object_properties .transform .scale,
+.object_properties .transform .increments {
+	position: relative;
+	width: 146px;
+	float: left;
+	clear: right;
+}
+
+.object_properties .transform .position label,
+.object_properties .transform .rotation label,
+.object_properties .transform .scale label,
+.object_properties .transform .increments label  {
+	float: left;
+	padding: .45em;
+	height: 20px;
+}
+.object_properties .transform .position .x,
+.object_properties .transform .position .y,
+.object_properties .transform .position .z,
+.object_properties .transform .rotation .x,
+.object_properties .transform .rotation .y,
+.object_properties .transform .rotation .z {
+	float: left;
+	position: relative;
+}
+
+.object_properties .transform .position .add,
+.object_properties .transform .scale .add,
+.object_properties .transform .rotation .add {
+	display: inline-block;
+	margin-top: -4px;
+	margin-left: -17px;
+	color: #666666;
+	position: absolute;
+	width: auto!important;
+	padding: 0!important;
+}
+.object_properties .transform .position .minus,
+.object_properties .transform .scale .minus,
+.object_properties .transform .rotation .minus {
+	display: inline-block;
+	margin-top: 14px;
+	margin-left: -17px;
+	color: #666666;
+	position: absolute;
+	width: auto!important;
+	padding: 0!important;
+}
+.object_properties .transform .scale .add,
+.object_properties .transform .scale .minus {
+	display: inline-block;
+	margin-left: 101px;
+}
+
+.object_properties .transform .position a:hover,
+.object_properties .transform .scale a:hover,
+.object_properties .transform .rotation a:hover {
+	color: #FFFFFF;
+}
+.object_properties .transform .position input,
+.object_properties .transform .rotation input {
+	margin-right: 20px;
+	float: left;
+	width: 60px;
+	height: 20px;
+}
+.object_properties .transform .scale input,
+.object_properties .transform .increments input {
+	float: right;
+	width: 35px;
+	height: 20px;
+}

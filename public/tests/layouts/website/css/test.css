@@ -1,0 +1,137 @@
+body {
+  width: 100%;
+}
+body *zoom:1:before,
+body *zoom:1:after {
+  content: "";
+  display: table;
+}
+body *zoom:1:after {
+  clear: both;
+}
+html {
+  font-family: arial "Arial" sans;
+}
+#bg {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  left: 0px;
+  top: 0px;
+  z-index: -1;
+/* Ensure div tag stays behind content; -999 might work, too. */
+}
+.stretch {
+  width: 100%;
+  height: 100%;
+}
+.panel1 {
+  overflow: visible;
+  border-style: solid;
+  border-width: 55px;
+  border-image: url("../../shared/images/border-01.png") 81 fill round;
+  transition-delay: 0s;
+  transition-duration: 0.5s;
+  transition-property: all;
+  transition-timing-function: ease;
+}
+.panel2 {
+  border-style: solid;
+  border-width: 36px;
+  border-image: url("../../shared/images/border-02.png") 42 41 42 42 fill round;
+}
+.panel3 {
+  border-style: solid;
+  border-width: 36px;
+  border-image: url("../../shared/images/border-03.png") 80 77 fill round;
+}
+.panel4 {
+  border-style: solid;
+  border-width: 36px;
+  border-image: url("../../shared/images/border-04.png") 80 77 fill stretch;
+}
+.panel5 {
+  border-style: solid;
+  border-width: 35px;
+  border-image: url("../../shared/images/border-05.png") 80 77 fill stretch;
+}
+.panel5 {
+  border-style: solid;
+  border-width: 35px;
+  border-image: url("../../shared/images/border-05.png") 80 77 fill stretch;
+}
+.panel6 {
+  border-style: solid;
+  border-width: 58px 133px 65px 153px;
+  border-image: url("../../shared/images/border-09.png") 58 133 65 153 fill stretch;
+}
+.contents {
+  color: #999;
+  padding: 5px;
+  margin: 0px;
+}
+a.textbox {
+  border-style: solid;
+  border-width: 20px;
+  border-image: url("../../shared/images/border-04.png") 71 69 69 72 fill stretch;
+  color: #666;
+  text-decoration: none;
+  margin: 0.75em 0 0 0;
+  float: left;
+}
+a.textbox:hover {
+  color: #999;
+  -moz-border-image: url("../../shared/images/border-08.png") 71 69 69 72 stretch;
+  -webkit-border-image: url("../../shared/images/border-08.png") 71 69 69 72 stretch;
+  -o-border-image: url("../../shared/images/border-08.png") 71 69 69 72 stretch;
+  border-image: url("../../shared/images/border-08.png") 71 69 69 72 fill stretch;
+  -webkit-transition: all 0.25s ease;
+  -moz-transition: all 0.25s ease;
+  -ms-transition: all 0.25s ease;
+  -o-transition: all 0.25s ease;
+  transition: all 0.25s ease;
+}
+a.textbox:active {
+  color: #fff;
+}
+a.button {
+  border-style: solid;
+  border-width: 20px;
+  -moz-border-image: url("../../shared/images/border-05.png") 71 69 69 72 stretch;
+  -webkit-border-image: url("../../shared/images/border-05.png") 71 69 69 72 stretch;
+  -o-border-image: url("../../shared/images/border-05.png") 71 69 69 72 stretch;
+  border-image: url("../../shared/images/border-05.png") 71 69 69 72 fill stretch;
+  color: #333;
+  text-decoration: none;
+  margin: 0.75em 0 0 0;
+  float: left;
+}
+a.button:hover {
+  color: #999;
+  border-width: 20px;
+  -moz-border-image: url("../../shared/images/border-07.png") 71 69 69 72 stretch;
+  -webkit-border-image: url("../../shared/images/border-07.png") 71 69 69 72 stretch;
+  -o-border-image: url("../../shared/images/border-07.png") 71 69 69 72 stretch;
+  border-image: url("../../shared/images/border-07.png") 71 69 69 72 fill stretch;
+  -webkit-transition: all 0.25s ease;
+  -moz-transition: all 0.25s ease;
+  -ms-transition: all 0.25s ease;
+  -o-transition: all 0.25s ease;
+  transition: all 0.25s ease;
+}
+a.button:active {
+  color: #fff;
+}
+ul {
+  padding: 0;
+}
+li {
+  list-style: none inside;
+  float: left;
+  clear: both;
+  margin: -10px 0 0 0;
+}
+#logo {
+  float: left;
+  clear: both;
+}

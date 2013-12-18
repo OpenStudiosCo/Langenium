@@ -1,0 +1,202 @@
+header.navbar.navbar-inverse.navbar-fixed-top
+	.navbar-inner.nav-collapse.collapse
+		.nav
+			.btn-group
+				a.btn.dropdown-toggle.btn-inverse(title='User', data-toggle="dropdown", href='#')
+					if (logged_in == true)
+						img(src=user.profile_img)
+						=  user.username
+					else
+						i.icon-user.icon-large
+					|  User
+					i.caret
+				ul.dropdown-menu
+					if (logged_in == true)
+						li
+							a.logout(href='/logout',target='_new') 
+								i.icon-power-off
+								menu|  Logout
+					else
+						li
+							a.login(href='/auth/facebook',target='_new')
+								i.icon-key
+								|  Login
+			li.texture_editor
+				a.btn.btn-inverse(title='Texture editor',href='#') 
+					i.icon-edit.icon-large
+					|  Texture editor
+				menu.sub_menu
+					a.make_window(href='#',title='Make window')
+						i.icon-external-link
+					select
+							option Create new
+					input(type='text')
+					a.btn.btn-inverse(href='#') Save
+					table
+						thead
+							tr
+								td
+									Layers
+								td
+									Preview
+						tbody
+							tr
+								td 
+									ul.unstyled
+										li
+											h3
+												a(href='#') Patterns
+										li
+											h3
+												a(href='#') Fills
+										li
+											h3
+												a(href='#') Interpolation
+								td
+									ul.unstyled
+										li
+											Layer preview
+										li
+											Texture preview
+					ul.unstyled
+						li
+							
+						li
+							table
+								thead	
+									tr
+										td Pattern generator
+										td Texture preview
+								tbody
+									tr
+										td
+											textarea(cols='80', rows='10')
+										td
+											| (texture preview)
+			li.object_presets
+				a.btn.btn-inverse(title='Object presets',href='#')
+					i.icon-tasks.icon-large
+					|  Object presets
+				menu.sub_menu
+					a.make_window(href='#',title='Make window')
+						i.icon-external-link
+			li.object_groups
+				a.btn.btn-inverse(title='Object groups',href='#') 
+					i.icon-group.icon-large
+					|  Object groups
+			li.object_properties
+				a.btn.btn-inverse(title='Object properties',href='#') 
+					i.icon-gear.icon-large
+					|  Object properties
+				menu.sub_menu
+					a.make_window(href='#',title='Make window')
+						i.icon-external-link
+					ul.unstyled
+						li
+							select.object_list
+								option
+						li.details
+							h3 Information
+							ul
+								li.instance_name
+									strong Instance Name
+									p
+								li.save_status
+									strong Save Status
+									p
+								li.type
+									strong 	Type | Sub Type
+									p
+								li.library_name
+									strong Library Name
+									p
+						li.transform
+							h3 Transform
+							ul
+								li.position
+									strong Position
+									.x
+										label(for='position_x') X
+										input.x(type='text',name='position_x',placeholder='X')
+										a.add(href='#')
+											i.icon-plus-sign-alt
+										a.minus(href='#')
+											i.icon-minus-sign-alt
+									.y
+										label(for='position_y') Y
+										input.y(type='text',name='position_y',placeholder='Y')
+										a.add(href='#')
+											i.icon-plus-sign-alt
+										a.minus(href='#')
+											i.icon-minus-sign-alt
+									.z
+										label(for='position_z') Z
+										input.z(type='text',name='position_z',placeholder='Z')
+										a.add(href='#')
+											i.icon-plus-sign-alt
+										a.minus(href='#')
+											i.icon-minus-sign-alt
+								li.increments
+									label(for='increments') Increments
+									input(type='text',name='increments')
+								li.rotation
+									strong Rotation
+									.x
+										label(for='rotation_x') X
+										input.x(type='text',name='rotation_x',placeholder='X')
+										a.add(href='#')
+											i.icon-plus-sign-alt
+										a.minus(href='#')
+											i.icon-minus-sign-alt
+									.y
+										label(for='rotation_y') Y
+										input.y(type='text',name='rotation_y',placeholder='Y')
+										a.add(href='#')
+											i.icon-plus-sign-alt
+										a.minus(href='#')
+											i.icon-minus-sign-alt
+									.z
+										label(for='rotation_z') Z
+										input.z(type='text',name='rotation_z',placeholder='Z')
+										a.add(href='#')
+											i.icon-plus-sign-alt
+										a.minus(href='#')
+											i.icon-minus-sign-alt
+								li.scale
+									label(for='scale') Scale
+									input(type='text',name='scale')
+									a.add(href='#')
+										i.icon-plus-sign-alt
+									a.minus(href='#')
+										i.icon-minus-sign-alt
+
+			li.object_library
+				a.btn.btn-inverse(title='Object library',href='#') 
+					i.icon-reorder.icon-large
+					|  Object library
+				menu.sub_menu
+					a.make_window(href='#',title='Make window')
+						i.icon-external-link
+					select(multiple="multiple", size="25").unstyled
+						include library.jade
+					#object_preview
+					table
+						tr.name
+							td.title
+								strong Name
+							td.value
+						tr.type
+							td.title
+								strong Type
+							td.value
+						tr.type
+							td.title
+								strong Sub-type
+							td.value
+					a.btn.btn-inverse.add(href='#')
+						i.icon-plus-sign-alt
+						|  Add
+			li.editor_settings
+				a.btn.btn-inverse(title='Editor settings',href='#') 
+					i.icon-gears.icon-large
+					|  Editor settings

@@ -19,8 +19,5 @@ module.exports = function(modules) {
 		modules.render(req, res, 'index', { page_template: "website/about", title: "About - Langenium", editor: false });
 	};
 
-	page.community = function(req, res) {};
-	page.guide = require('./page/guide.js')(modules);
-
 	return page;
 }

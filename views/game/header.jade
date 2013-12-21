@@ -35,7 +35,6 @@ script(src='/scripts/game/scenes/grid.js')
 script(src='/scripts/game/scenes/rooms.js')
 script(src='/scripts/game/textures.js')
 script(src='/scripts/game/textures/sprites.js')
-script(src='/scripts/game/ui.js')
 script(type='x-shader/x-vertex', id='cloud_vertexShader')
 	include shaders/cloud.vertexShader
 script(type='x-shader/x-fragment', id='cloud_fragmentShader')
@@ -66,10 +65,6 @@ script(type='text/javascript').
 	effects = new effects();
 	events = new events();
 	scenes = new scenes();
-
-
-	ui = new user_interface();
-	ui.makeDialog("playerPosition", ui.playerPosition);
 
 	var stats = new Stats();
 	stats.setMode(0); // 0: fps, 1: ms

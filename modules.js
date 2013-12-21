@@ -22,7 +22,6 @@ module.exports = function() {
 		path: require('path'),
 		fs: require('fs'),
 		os: require('os'),
-		THREE: require('./three.js'),
 		stylus: require('stylus'),
 		fluidity: require('fluidity'),
 		//nib: require('nib'),

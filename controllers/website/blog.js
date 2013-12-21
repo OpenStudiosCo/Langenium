@@ -15,7 +15,9 @@
 module.exports = function(modules) {
 	var blog = {};
 
-	blog.index = function(req, res) {};
+	blog.index = function(req, res) {
+		modules.render(req, res, 'index', { page_template: "website/blog", title: "Blog - Langenium", editor: false });
+	};
 
 	return blog;
 }

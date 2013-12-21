@@ -19,8 +19,8 @@ module.exports = function(modules) {
 	modules.app.get('/',modules.controllers.website.index);
 	modules.app.get('/about',modules.controllers.website.page.about);
 	modules.app.get('/blog',modules.controllers.website.blog.index);
-	modules.app.get('/forum/',modules.controllers.website.gallery.list);
-	modules.app.get('/forum/*',modules.controllers.website.gallery.index);
+	modules.app.get('/forum/',modules.controllers.website.forum.list);
+	modules.app.get('/forum/*',modules.controllers.website.forum.index);
 	modules.app.get('/gallery/',modules.controllers.website.gallery.list);
 	modules.app.get('/gallery/*',modules.controllers.website.gallery.index);
 	modules.app.get('/guide/*',modules.controllers.website.page.guide.index);

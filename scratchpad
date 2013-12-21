@@ -1,3 +1,0 @@
-nmap -A 54.252.102.111/32 -p 8080
-
-scp client/scripts/client.js zeski@paulbrzeski.com:/home/content/08/10109808/html/langenium/dev/scripts/

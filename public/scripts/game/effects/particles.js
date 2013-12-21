@@ -28,7 +28,7 @@ particles.prototype.explosionEffect = function (position){
 				particles = new THREE.Geometry(),
 				pMaterial =
 				  new THREE.ParticleBasicMaterial({
-					map: THREE.ImageUtils.loadTexture("/game/assets/textures/particles/particle.png?nocache"),
+					map: THREE.ImageUtils.loadTexture("/assets/game/textures/particles/particle.png?nocache"),
 					size: .125,
 					blending: THREE.AdditiveBlending,
 					transparent: true
@@ -62,7 +62,7 @@ particles.prototype.teleportEffect = function (position){
 				particles = new THREE.Geometry(),
 				pMaterial =
 				  new THREE.ParticleBasicMaterial({
-					map: THREE.ImageUtils.loadTexture("/game/assets/textures/particles/particle.png?nocache"),
+					map: THREE.ImageUtils.loadTexture("/assets/game/textures/particles/particle.png?nocache"),
 					size: .5,
 					blending: THREE.AdditiveBlending,
 					transparent: true
@@ -98,7 +98,7 @@ particles.prototype.cloudEffect = function (position){
 				pMaterial =
 				  new THREE.ParticleBasicMaterial({
 				  transparent: true,
-					map: THREE.ImageUtils.loadTexture("/game/assets/textures/particles/cloud10.png?nocache"),
+					map: THREE.ImageUtils.loadTexture("/assets/game/textures/particles/cloud10.png?nocache"),
 					size: 512, alphaTest: 0.5
 					
 						
@@ -169,7 +169,7 @@ particles.prototype.handleParticles = function (delta){
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
 particles.prototype.createThruster = function (scale, position){
-	var plasmaTexture = new THREE.ImageUtils.loadTexture('/game/assets/textures/particles/plasma.png?nocache');
+	var plasmaTexture = new THREE.ImageUtils.loadTexture('/assets/game/textures/particles/plasma.png?nocache');
 	
 	// use "this." to create global object
 	var uniforms = 
@@ -181,7 +181,7 @@ particles.prototype.createThruster = function (scale, position){
 		particles = new THREE.Geometry(),
 
 		pMaterial = new THREE.ParticleBasicMaterial({
-			map: THREE.ImageUtils.loadTexture("/game/assets/textures/particles/plasma.png?nocache"),
+			map: THREE.ImageUtils.loadTexture("/assets/game/textures/particles/plasma.png?nocache"),
 			size: 7.5 * scale,
 			blending: THREE.AdditiveBlending,
 			opacity: 0.9,
@@ -241,7 +241,7 @@ particles.prototype.createShipThruster = function (mesh, scale, position) {
 		particles = new THREE.Geometry(),
 		pMaterial =
 		  new THREE.ParticleBasicMaterial({
-			map: THREE.ImageUtils.loadTexture("/game/assets/textures/particles/ember.png?nocache"),
+			map: THREE.ImageUtils.loadTexture("/assets/game/textures/particles/ember.png?nocache"),
 			size: .65 * scale,
 			blending: THREE.AdditiveBlending,
 			opacity: 0.9,

@@ -22,7 +22,7 @@ bullets.prototype.bulletEffect = function (position){
 				particles = new THREE.Geometry(),
 				pMaterial =
 				  new THREE.ParticleBasicMaterial({
-					map: THREE.ImageUtils.loadTexture("assets/textures/particle.png?nocache"),
+					map: THREE.ImageUtils.loadTexture("assets/game/textures/particle.png?nocache"),
 					size: .25,
 					blending: THREE.AdditiveBlending,
 					transparent: true

@@ -23,8 +23,7 @@ module.exports = function() {
 		fs: require('fs'),
 		os: require('os'),
 		stylus: require('stylus'),
-		fluidity: require('fluidity'),
-		//nib: require('nib'),
+		jeet: require('jeet'),
 		// Class object containers
 		routes: {},
 		models: {},
@@ -84,7 +83,7 @@ module.exports = function() {
 	function compile (str, path) {
 	  			return modules.stylus(str)
 	  			.set('filename', path)
-	  			.use(modules.fluidity())
+	  			.use(modules.jeet())
 	  			
 	  			//.set('compress', true)
 	  			;

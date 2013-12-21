@@ -993,16 +993,13 @@ html.flui-preload body * {
   content: "Ok";
 }
 /*
-	Shared stuff that will end up in mixins
-*/
-/*
 	Page styles
 */
 body {
   font-size: 85%;
   overflow-y: auto;
 }
-body h1 {
+h1 {
   margin: 0;
   float: left;
 }
@@ -1058,11 +1055,11 @@ body h1 {
   margin-right: 0;
   border-style: solid;
   border-width: 28px;
-  -moz-border-image: url("/shared/images/border-02.png") 42 41 42 42 fill round;
-  -webkit-border-image: url("/shared/images/border-02.png") 42 41 42 42 fill round;
-  -o-border-image: url("/shared/images/border-02.png") 42 41 42 42 fill round;
-  -ms-border-image: url("/shared/images/border-02.png") 42 41 42 42 fill round;
-  border-image: url("/shared/images/border-02.png") 42 41 42 42 fill round;
+  -moz-border-image: url("/images/shared/border-02.png") 42 41 42 42 fill round;
+  -webkit-border-image: url("/images/shared/border-02.png") 42 41 42 42 fill round;
+  -o-border-image: url("/images/shared/border-02.png") 42 41 42 42 fill round;
+  -ms-border-image: url("/images/shared/border-02.png") 42 41 42 42 fill round;
+  border-image: url("/images/shared/border-02.png") 42 41 42 42 fill round;
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
   -o-box-sizing: border-box;
@@ -1079,11 +1076,11 @@ body h1 {
   background: transparent none;
   border-style: solid;
   border-width: 10px;
-  -moz-border-image: url("/shared/images/border-04.png") 71 69 69 72 fill stretch;
-  -webkit-border-image: url("/shared/images/border-04.png") 71 69 69 72 fill stretch;
-  -o-border-image: url("/shared/images/border-04.png") 71 69 69 72 fill stretch;
-  -ms-border-image: url("/shared/images/border-04.png") 71 69 69 72 fill stretch;
-  border-image: url("/shared/images/border-04.png") 71 69 69 72 fill stretch;
+  -moz-border-image: url("/images/shared/border-04.png") 71 69 69 72 fill stretch;
+  -webkit-border-image: url("/images/shared/border-04.png") 71 69 69 72 fill stretch;
+  -o-border-image: url("/images/shared/border-04.png") 71 69 69 72 fill stretch;
+  -ms-border-image: url("/images/shared/border-04.png") 71 69 69 72 fill stretch;
+  border-image: url("/images/shared/border-04.png") 71 69 69 72 fill stretch;
   color: #666;
   text-decoration: none;
   margin: 0.75em 0 0 0;
@@ -1091,11 +1088,11 @@ body h1 {
 }
 #page_header .login input[type='text']:hover {
   color: #999;
-  -moz-border-image: url("/shared/images/border-08.png") 71 69 69 72 fill stretch;
-  -webkit-border-image: url("/shared/images/border-08.png") 71 69 69 72 fill stretch;
-  -o-border-image: url("/shared/images/border-08.png") 71 69 69 72 fill stretch;
-  -ms-border-image: url("/shared/images/border-08.png") 71 69 69 72 fill stretch;
-  border-image: url("/shared/images/border-08.png") 71 69 69 72 fill stretch;
+  -moz-border-image: url("/images/shared/border-08.png") 71 69 69 72 fill stretch;
+  -webkit-border-image: url("/images/shared/border-08.png") 71 69 69 72 fill stretch;
+  -o-border-image: url("/images/shared/border-08.png") 71 69 69 72 fill stretch;
+  -ms-border-image: url("/images/shared/border-08.png") 71 69 69 72 fill stretch;
+  border-image: url("/images/shared/border-08.png") 71 69 69 72 fill stretch;
   -moz-transition: all 0.25s ease;
   -webkit-transition: all 0.25s ease;
   -o-transition: all 0.25s ease;
@@ -1121,11 +1118,11 @@ body h1 {
 #page_header .login a {
   border-style: solid;
   border-width: 15px;
-  -moz-border-image: url("/shared/images/border-05.png") 71 69 69 72 fill stretch;
-  -webkit-border-image: url("/shared/images/border-05.png") 71 69 69 72 fill stretch;
-  -o-border-image: url("/shared/images/border-05.png") 71 69 69 72 fill stretch;
-  -ms-border-image: url("/shared/images/border-05.png") 71 69 69 72 fill stretch;
-  border-image: url("/shared/images/border-05.png") 71 69 69 72 fill stretch;
+  -moz-border-image: url("/images/shared/border-05.png") 71 69 69 72 fill stretch;
+  -webkit-border-image: url("/images/shared/border-05.png") 71 69 69 72 fill stretch;
+  -o-border-image: url("/images/shared/border-05.png") 71 69 69 72 fill stretch;
+  -ms-border-image: url("/images/shared/border-05.png") 71 69 69 72 fill stretch;
+  border-image: url("/images/shared/border-05.png") 71 69 69 72 fill stretch;
   color: #333;
   text-decoration: none;
   margin: 0.75em 0 0 0;
@@ -1134,11 +1131,11 @@ body h1 {
 #page_header .login a:hover {
   color: #999;
   border-width: 15px;
-  -moz-border-image: url("/shared/images/border-07.png") 71 69 69 72 fill stretch;
-  -webkit-border-image: url("/shared/images/border-07.png") 71 69 69 72 fill stretch;
-  -o-border-image: url("/shared/images/border-07.png") 71 69 69 72 fill stretch;
-  -ms-border-image: url("/shared/images/border-07.png") 71 69 69 72 fill stretch;
-  border-image: url("/shared/images/border-07.png") 71 69 69 72 fill stretch;
+  -moz-border-image: url("/images/shared/border-07.png") 71 69 69 72 fill stretch;
+  -webkit-border-image: url("/images/shared/border-07.png") 71 69 69 72 fill stretch;
+  -o-border-image: url("/images/shared/border-07.png") 71 69 69 72 fill stretch;
+  -ms-border-image: url("/images/shared/border-07.png") 71 69 69 72 fill stretch;
+  border-image: url("/images/shared/border-07.png") 71 69 69 72 fill stretch;
   -moz-transition: all 0.25s ease;
   -webkit-transition: all 0.25s ease;
   -o-transition: all 0.25s ease;
@@ -1166,11 +1163,11 @@ body h1 {
   overflow: visible;
   border-style: solid;
   border-width: 45px;
-  -moz-border-image: url("/shared/images/border-01.png") 81 fill round;
-  -webkit-border-image: url("/shared/images/border-01.png") 81 fill round;
-  -o-border-image: url("/shared/images/border-01.png") 81 fill round;
-  -ms-border-image: url("/shared/images/border-01.png") 81 fill round;
-  border-image: url("/shared/images/border-01.png") 81 fill round;
+  -moz-border-image: url("/images/shared/border-01.png") 81 fill round;
+  -webkit-border-image: url("/images/shared/border-01.png") 81 fill round;
+  -o-border-image: url("/images/shared/border-01.png") 81 fill round;
+  -ms-border-image: url("/images/shared/border-01.png") 81 fill round;
+  border-image: url("/images/shared/border-01.png") 81 fill round;
   transition-delay: 0s;
   transition-duration: 0.5s;
   transition-property: all;
@@ -1194,11 +1191,11 @@ body h1 {
 #page_section #page_nav ul.vert_nav li a {
   border-style: solid;
   border-width: 15px;
-  -moz-border-image: url("/shared/images/border-05.png") 71 69 69 72 fill stretch;
-  -webkit-border-image: url("/shared/images/border-05.png") 71 69 69 72 fill stretch;
-  -o-border-image: url("/shared/images/border-05.png") 71 69 69 72 fill stretch;
-  -ms-border-image: url("/shared/images/border-05.png") 71 69 69 72 fill stretch;
-  border-image: url("/shared/images/border-05.png") 71 69 69 72 fill stretch;
+  -moz-border-image: url("/images/shared/border-05.png") 71 69 69 72 fill stretch;
+  -webkit-border-image: url("/images/shared/border-05.png") 71 69 69 72 fill stretch;
+  -o-border-image: url("/images/shared/border-05.png") 71 69 69 72 fill stretch;
+  -ms-border-image: url("/images/shared/border-05.png") 71 69 69 72 fill stretch;
+  border-image: url("/images/shared/border-05.png") 71 69 69 72 fill stretch;
   color: #333;
   text-decoration: none;
   margin: 0.75em 0 0 0;
@@ -1211,11 +1208,11 @@ body h1 {
 #page_section #page_nav ul.vert_nav li a:hover {
   color: #999;
   border-width: 15px;
-  -moz-border-image: url("/shared/images/border-07.png") 71 69 69 72 fill stretch;
-  -webkit-border-image: url("/shared/images/border-07.png") 71 69 69 72 fill stretch;
-  -o-border-image: url("/shared/images/border-07.png") 71 69 69 72 fill stretch;
-  -ms-border-image: url("/shared/images/border-07.png") 71 69 69 72 fill stretch;
-  border-image: url("/shared/images/border-07.png") 71 69 69 72 fill stretch;
+  -moz-border-image: url("/images/shared/border-07.png") 71 69 69 72 fill stretch;
+  -webkit-border-image: url("/images/shared/border-07.png") 71 69 69 72 fill stretch;
+  -o-border-image: url("/images/shared/border-07.png") 71 69 69 72 fill stretch;
+  -ms-border-image: url("/images/shared/border-07.png") 71 69 69 72 fill stretch;
+  border-image: url("/images/shared/border-07.png") 71 69 69 72 fill stretch;
   -moz-transition: all 0.25s ease;
   -webkit-transition: all 0.25s ease;
   -o-transition: all 0.25s ease;
@@ -1238,11 +1235,11 @@ body h1 {
 }
 #page_section #page_content header {
   border-width: 28px;
-  -moz-border-image: url("/shared/images/border-03.png") 80 77 fill round;
-  -webkit-border-image: url("/shared/images/border-03.png") 80 77 fill round;
-  -o-border-image: url("/shared/images/border-03.png") 80 77 fill round;
-  -ms-border-image: url("/shared/images/border-03.png") 80 77 fill round;
-  border-image: url("/shared/images/border-03.png") 80 77 fill round;
+  -moz-border-image: url("/images/shared/border-03.png") 80 77 fill round;
+  -webkit-border-image: url("/images/shared/border-03.png") 80 77 fill round;
+  -o-border-image: url("/images/shared/border-03.png") 80 77 fill round;
+  -ms-border-image: url("/images/shared/border-03.png") 80 77 fill round;
+  border-image: url("/images/shared/border-03.png") 80 77 fill round;
   color: #999;
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
@@ -1264,11 +1261,11 @@ body h1 {
 #page_section #page_content section {
   border-style: solid;
   border-width: 28px;
-  -moz-border-image: url("/shared/images/border-02.png") 42 41 42 42 fill round;
-  -webkit-border-image: url("/shared/images/border-02.png") 42 41 42 42 fill round;
-  -o-border-image: url("/shared/images/border-02.png") 42 41 42 42 fill round;
-  -ms-border-image: url("/shared/images/border-02.png") 42 41 42 42 fill round;
-  border-image: url("/shared/images/border-02.png") 42 41 42 42 fill round;
+  -moz-border-image: url("/images/shared/border-02.png") 42 41 42 42 fill round;
+  -webkit-border-image: url("/images/shared/border-02.png") 42 41 42 42 fill round;
+  -o-border-image: url("/images/shared/border-02.png") 42 41 42 42 fill round;
+  -ms-border-image: url("/images/shared/border-02.png") 42 41 42 42 fill round;
+  border-image: url("/images/shared/border-02.png") 42 41 42 42 fill round;
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
   -o-box-sizing: border-box;
@@ -1307,11 +1304,11 @@ body h1 {
   float: left;
   border-style: solid;
   border-width: 24px;
-  -moz-border-image: url("/shared/images/border-08.png") 76 73 78 75 fill round;
-  -webkit-border-image: url("/shared/images/border-08.png") 76 73 78 75 fill round;
-  -o-border-image: url("/shared/images/border-08.png") 76 73 78 75 fill round;
-  -ms-border-image: url("/shared/images/border-08.png") 76 73 78 75 fill round;
-  border-image: url("/shared/images/border-08.png") 76 73 78 75 fill round;
+  -moz-border-image: url("/images/shared/border-08.png") 76 73 78 75 fill round;
+  -webkit-border-image: url("/images/shared/border-08.png") 76 73 78 75 fill round;
+  -o-border-image: url("/images/shared/border-08.png") 76 73 78 75 fill round;
+  -ms-border-image: url("/images/shared/border-08.png") 76 73 78 75 fill round;
+  border-image: url("/images/shared/border-08.png") 76 73 78 75 fill round;
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
   -o-box-sizing: border-box;
@@ -1339,11 +1336,11 @@ body h1 {
 #page_section #page_sidebar article {
   border-style: solid;
   border-width: 22px;
-  -moz-border-image: url("/shared/images/border-08.png") 80 77 fill round;
-  -webkit-border-image: url("/shared/images/border-08.png") 80 77 fill round;
-  -o-border-image: url("/shared/images/border-08.png") 80 77 fill round;
-  -ms-border-image: url("/shared/images/border-08.png") 80 77 fill round;
-  border-image: url("/shared/images/border-08.png") 80 77 fill round;
+  -moz-border-image: url("/images/shared/border-08.png") 80 77 fill round;
+  -webkit-border-image: url("/images/shared/border-08.png") 80 77 fill round;
+  -o-border-image: url("/images/shared/border-08.png") 80 77 fill round;
+  -ms-border-image: url("/images/shared/border-08.png") 80 77 fill round;
+  border-image: url("/images/shared/border-08.png") 80 77 fill round;
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
   -o-box-sizing: border-box;

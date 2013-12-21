@@ -1,0 +1,35 @@
+// Form layout and control styles
+
+button()
+	border-style solid
+	border-width 15px
+	border-image url("/shared/images/border-05.png") 71 69 69 72 fill stretch
+	color #333
+	text-decoration none
+	margin 0.75em 0 0 0
+	float left
+	&:hover
+		button_hover()
+
+button_hover()
+	color #999999
+	border-width 15px
+	border-image url("/shared/images/border-07.png") 71 69 69 72 fill stretch
+	transition all 0.25s ease
+
+textbox()
+	background transparent none
+	border-style solid
+	border-width 10px
+	border-image url("/shared/images/border-04.png") 71 69 69 72 fill stretch
+	color #666666
+	text-decoration none
+	margin 0.75em 0 0 0
+	&:hover
+		textbox_hover()
+
+textbox_hover()
+	color #999999
+	border-image url("/shared/images/border-08.png") 71 69 69 72 fill stretch
+	transition all 0.25s ease
+	box-sizing border-box

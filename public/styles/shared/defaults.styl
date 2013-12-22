@@ -1,16 +1,36 @@
 // Defaults
-defaults()
-	h1 
-		margin 0
-		float left
-	#bg 
-		width 100%
-		height 100%
-		position fixed
-		left 0px
-		top 0px
-		z-index -1 /* Ensure div tag stays behind content -999 might work, too. */
 
-	.stretch 
-		width 100%
-		height 100%
+mTablet = 'screen and (max-width: 1140px)'
+mPhone = 'screen and (max-width: 768px)'
+
+@font-face
+	font-family 'Franchise'
+	font-style normal
+	font-weight normal
+	
+	src url('/assets/shared/font/francise.eot')
+	src url('franchise-bold-hinted-webfont.eot?#iefix') format('embedded-opentype'),
+     url('franchise-bold-hinted-webfont.woff') format('woff'),
+     url('franchise-bold-hinted-webfont.ttf') format('truetype'),
+     url('franchise-bold-hinted-webfont.svg#franchiseregular') format('svg');
+h1 
+	margin 0
+	float left
+h1, h2
+	letter-spacing .025em
+h3, h4, h5, h6
+	letter-spacing .01em
+h1, h2, h3, h4, h5, h6
+	font-family 'Franchise'
+
+#bg 
+	width 100%
+	height 100%
+	position fixed
+	left 0px
+	top 0px
+	z-index -1 /* Ensure div tag stays behind content -999 might work, too. */
+
+.stretch 
+	width 100%
+	height 100%

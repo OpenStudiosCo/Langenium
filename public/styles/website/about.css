@@ -453,6 +453,48 @@ header h6 ~ p {
 /*
 	Import dependencies
 */
+@font-face {
+  font-family: 'Franchise';
+  font-style: normal;
+  font-weight: normal;
+  src: url("/assets/shared/font/francise.eot");
+  src: url("franchise-bold-hinted-webfont.eot?#iefix") format('embedded-opentype'), url("franchise-bold-hinted-webfont.woff") format('woff'), url("franchise-bold-hinted-webfont.ttf") format('truetype'), url("franchise-bold-hinted-webfont.svg#franchiseregular") format('svg');
+}
+h1 {
+  margin: 0;
+  float: left;
+}
+h1,
+h2 {
+  letter-spacing: 0.025em;
+}
+h3,
+h4,
+h5,
+h6 {
+  letter-spacing: 0.01em;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Franchise';
+}
+#bg {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  left: 0px;
+  top: 0px;
+  z-index: -1;
+/* Ensure div tag stays behind content -999 might work, too. */
+}
+.stretch {
+  width: 100%;
+  height: 100%;
+}
 body {
   font-size: 75%;
 }
@@ -640,24 +682,10 @@ body {
 /*
 	Page styles
 */
-h1 {
-  margin: 0;
-  float: left;
-}
-#bg {
-  width: 100%;
-  height: 100%;
-  position: fixed;
-  left: 0px;
-  top: 0px;
-  z-index: -1;
-/* Ensure div tag stays behind content -999 might work, too. */
-}
-.stretch {
-  width: 100%;
-  height: 100%;
-}
 #page_header .login {
+  margin: 0;
+  padding: 0;
+  height: 100%;
   list-style: none;
   float: right;
   color: #999;
@@ -667,7 +695,7 @@ h1 {
   box-sizing: border-box;
 }
 #page_header .login li {
-  float: left;
+  display: inline-block;
 }
 #page_header .login li {
   margin: -10px auto;
@@ -677,9 +705,9 @@ h1 {
   border-style: solid;
   border-width: 10px;
   border-image: url("/assets/shared/border-04.png") 71 69 69 72 fill stretch;
+  box-sizing: border-box;
   color: #666;
   text-decoration: none;
-  margin: 0.75em 0 0 0;
   float: right;
 }
 #page_header .login input[type='text']:hover {
@@ -703,9 +731,9 @@ h1 {
   border-style: solid;
   border-width: 15px;
   border-image: url("/assets/shared/border-05.png") 71 69 69 72 fill stretch;
+  box-sizing: border-box;
   color: #333;
   text-decoration: none;
-  margin: 0.75em 0 0 0;
   float: left;
 }
 #page_header .login a:hover {
@@ -715,6 +743,7 @@ h1 {
   transition: all 0.25s ease;
 }
 #page_section #page_nav ul.vert_nav {
+  padding: 0;
   float: left;
   height: 100%;
   list-style: none;
@@ -722,10 +751,6 @@ h1 {
   border-style: solid;
   border-width: 45px;
   border-image: url("/assets/shared/border-01.png") 81 fill round;
-  transition-delay: 0s;
-  transition-duration: 0.5s;
-  transition-property: all;
-  transition-timing-function: ease;
   box-sizing: border-box;
   overflow: visible;
 }
@@ -741,9 +766,9 @@ h1 {
   border-style: solid;
   border-width: 15px;
   border-image: url("/assets/shared/border-05.png") 71 69 69 72 fill stretch;
+  box-sizing: border-box;
   color: #333;
   text-decoration: none;
-  margin: 0.75em 0 0 0;
   float: left;
   width: 100%;
   font-weight: bold;
@@ -776,12 +801,16 @@ h1 {
   margin-right: 15px;
 }
 #page_section #page_content section ul.horiz_nav {
+  margin: 0;
+  padding: 0;
+  height: 100%;
   list-style: none;
 }
 #page_section #page_content section ul.horiz_nav li {
-  float: left;
+  display: inline-block;
 }
 #page_section #page_content footer ul.thumb_nav {
+  padding: 0;
   margin: 10px 20px;
   float: left;
   list-style: none;
@@ -809,9 +838,6 @@ h1 {
   border-width: 22px;
   border-image: url("/assets/shared/border-08.png") 80 77 fill round;
   box-sizing: border-box;
-}
-#page_section #page_sidebar article h3 {
-  margin: 0 0 0.825em 0;
 }
 #page_section #page_sidebar article h3 a {
   text-decoration: none;

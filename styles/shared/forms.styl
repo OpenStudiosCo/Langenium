@@ -1,0 +1,38 @@
+// Form layout and control styles
+
+button()
+	font-family 'Franchise'
+	font-size 1.25em
+	border-style solid
+	border-width 10px
+	border-image url("/assets/shared/border-05.png") 71 69 69 72 fill stretch
+	box-sizing border-box
+	color #333
+	text-decoration none
+	float left
+	&:hover
+		button_hover()
+
+button_hover()
+	color #999999
+	border-width 10px
+	border-image url("/assets/shared/border-07.png") 71 69 69 72 fill stretch
+	transition all 0.25s ease
+
+textbox()
+	margin 5px 0
+	background transparent none
+	border-style solid
+	border-width 10px
+	border-image url("/assets/shared/border-04.png") 71 69 69 72 fill stretch
+	box-sizing border-box
+	color #666666
+	text-decoration none
+	&:hover
+		textbox_hover()
+
+textbox_hover()
+	color #999999
+	border-image url("/assets/shared/border-08.png") 71 69 69 72 fill stretch
+	transition all 0.25s ease
+	box-sizing border-box

@@ -102,7 +102,7 @@ module.exports = function() {
 	  	modules.app.use(modules.passport.session());
 	  	modules.app.use(modules.stylus.middleware({
 	  		debug: true,
-	  		src: __dirname + '/views/',
+	  		src: __dirname + '/',
 	  		dest: __dirname + '/public/',
 	  		compile: compile
 	  	}));

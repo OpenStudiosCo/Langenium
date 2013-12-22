@@ -766,19 +766,11 @@ h1 {
   color: #fff;
   text-transform: uppercase;
 }
-#page_section #page_content header > * {
-  margin-left: 0;
-  margin-right: 0;
-}
 #page_section #page_content section {
   border-style: solid;
   border-width: 28px;
   border-image: url("/assets/shared/border-02.png") 42 41 42 42 fill round;
   box-sizing: border-box;
-}
-#page_section #page_content section > * {
-  margin-left: 0;
-  margin-right: 0;
 }
 #page_section #page_content section img {
   margin-right: 15px;

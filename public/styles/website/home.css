@@ -476,9 +476,13 @@ body {
   width: 100%;
   margin-left: 0%;
   margin-right: 3%;
+  padding: 0 1.5%;
 }
 #page_header:last-child {
   margin-right: 0%;
+}
+#page_section {
+  padding: 0 1.5%;
 }
 #page_section #page_nav {
   float: left;
@@ -734,7 +738,7 @@ h1 {
   clear: both;
 }
 #page_section #page_nav ul.vert_nav li {
-  margin: 0 0 0 -15px;
+  margin: 0 0 0 -10px;
   width: 100%;
 }
 #page_section #page_nav ul.vert_nav li a {

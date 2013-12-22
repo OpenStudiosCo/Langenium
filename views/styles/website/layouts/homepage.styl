@@ -1,3 +1,5 @@
+@import "./defaults.styl"
+
 body
 	font-size 75%
 
@@ -6,6 +8,10 @@ body
 
 #page_header 
 	col(1)
+	padding 1.5% 1.5%
+
+#page_section
+	padding 0 1.5%
 
 #page_section #page_nav 
 	col(3/12)
@@ -16,7 +22,7 @@ body
 #page_section #page_sidebar 
 	col(4/12)
 
-@media mTablet
+@media screen and (max-width: 1140px)
 	body
 		font-size 85%
 	#wrapper {
@@ -33,7 +39,7 @@ body
 		col(1)
 	}
 
-@media mPhone
+@media screen and (max-width: 768px)
 	body
 		font-size 95%
 	#wrapper {

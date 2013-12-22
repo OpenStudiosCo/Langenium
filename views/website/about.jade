@@ -1,22 +1,6 @@
-header#page_header
-	menu
-		h1
-			a(href='/')
-				img(src='/assets/shared/logo.png')
-		ul.login
-			li
-				input(type='text',val='Username')
-			li
-				input(type='text',val='Password')
-			li
-				input(type='checkbox',id='chk_remember')
-				label(for='chk_remember') Remember me 
-			li
-				a(href='#') Login
-			li
-				a(href='#') Register
+include layouts/page_header
 section#page_section
-	include main_menu
+	include layouts/main_menu
 	article#page_content
 		header
 			h2 About

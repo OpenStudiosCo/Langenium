@@ -83,10 +83,7 @@ module.exports = function() {
 	function compile (str, path) {
 	  			return modules.stylus(str)
 	  			.set('filename', path)
-	  			.use(modules.jeet())
-	  			
-	  			//.set('compress', true)
-	  			;
+	  			.use(modules.jeet());
 	};
 	// Configure express app
 	modules.app.configure(function () {
@@ -104,10 +101,12 @@ module.exports = function() {
 		modules.app.use(modules.passport.initialize());
 	  	modules.app.use(modules.passport.session());
 	  	modules.app.use(modules.stylus.middleware({
-	  		src: __dirname + '/public',
+	  		debug: true,
+	  		src: __dirname + '/views/',
+	  		dest: __dirname + '/public/',
 	  		compile: compile
 	  	}));
-	  	modules.app.use(modules.connect.static(__dirname + '/public')); // This has to be after stylus so that the CSS files get regenerated on change
+	  	modules.app.use(modules.express.static(__dirname + '/public')); // This has to be after stylus so that the CSS files get regenerated on change
 	  	
 		modules.app.set('views', __dirname + '/views');
 		modules.app.set('view engine', 'jade');

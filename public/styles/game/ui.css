@@ -432,7 +432,7 @@ header h6 ~ p {
 }
 /**************************************************************
 	Langenium UI Styles
-	Author: Paul Brzeski
+	Author Paul Brzeski
 **************************************************************/
 .dialog {
   color: #fff;
@@ -440,7 +440,7 @@ header h6 ~ p {
   opacity: 0.8;
   z-index: 10;
   position: absolute;
-  height: auto;
+heightauto
   padding: 1em;
   margin: 0.5em;
   font: 10px Verdana;

@@ -14,7 +14,7 @@
 
 var water = function() {
 
-	var noiseTexture = THREE.ImageUtils.loadTexture( "/assets/shared/textures/noise.jpg" );
+	var noiseTexture = THREE.ImageUtils.loadTexture( "/assets/shared/textures/noise2.jpg" );
 	noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
 
 	this.uniforms = {		

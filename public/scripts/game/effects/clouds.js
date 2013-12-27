@@ -11,11 +11,14 @@
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     Globals
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
+var noiseTexture = THREE.ImageUtils.loadTexture( "/assets/shared/textures/noise2.jpg" );
+noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
 
 var clouds = function() {
 	this.collection = [];
 
 	this.uniforms = {
+		noiseTexture:	{ type: "t", value: noiseTexture },
 		scale: 			{ type: "f", value: 0.000001 },
 		time: 			{ type: "f", value: 0.0 }
 	};

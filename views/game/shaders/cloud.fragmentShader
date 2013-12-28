@@ -14,7 +14,7 @@ float blendOverlay(float base, float blend) {
 float snoise ( vec3 coord, float scale, float time_factor ) {
     vec3 scaledCoord = coord * scale - (time / time_factor);
 
-    vec2 uvTimeShift = vec2((scaledCoord.x + scaledCoord.z) / 2.0, scaledCoord.y) + vec2( -0.7, 1.5 ) * time * 0.015;
+    vec2 uvTimeShift = vec2((scaledCoord.x + scaledCoord.z) / 2.0, scaledCoord.y) + vec2( -0.7, 1.5 ) * time / time_factor * 0.015;
     vec4 noiseGeneratorTimeShift = texture2D( noiseTexture, uvTimeShift );
     vec2 uvNoiseTimeShift = vec2(scaledCoord.x, scaledCoord.y) + 0.5 * vec2( noiseGeneratorTimeShift.r, noiseGeneratorTimeShift.b );
     vec4 baseColor = texture2D( noiseTexture, uvNoiseTimeShift * vec2(4.0, 4.0) );
@@ -23,14 +23,10 @@ float snoise ( vec3 coord, float scale, float time_factor ) {
 }
 
 float heightMap( vec3 coord ) {
-    float n = 0.0;
+    float n = abs(snoise(coord , 1.0 , 5000.0));
+    n -= 0.5 * abs(snoise(coord , 4.0 , 5000.0));
+    n += 0.25 * abs(snoise(coord , 14.0 , 5000.0));
 
-    n =  abs(snoise(coord , 1.0 , 500.0));
-    n += 0.5 * abs(snoise(coord , 30.0 , 750.0));
-    n -= 0.25 * abs(snoise(coord , 60.0 , 1500.0));
-    n -= 0.125 * abs(snoise(coord , 160.0, 3000.0));
-    n -= 0.075 * abs(snoise(coord , 320.0 , 6000.0));
-    n -= 0.0125 * abs(snoise(coord , 320.0 , 9000.0));
     n *= 0.7;
 
     return n;
@@ -57,8 +53,8 @@ vec4 colorFilter (float n, vec3 coord) {
 
     }
     else {
-        if ( n > 0.275 ) {
-            color.r = color.r * n / 1.5 + 0.0;
+        if ( n > 0.2 ) {
+            color.r = dot(color.r, n) / 1.5 + 0.0;
             color.g = color.g * n / 1.5 + 0.5 - coord.y * 1.12;
             color.b = color.b * n / 1.5 + .95 - coord.y * 1.12;
         }

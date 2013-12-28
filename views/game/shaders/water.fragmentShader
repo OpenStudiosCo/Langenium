@@ -18,9 +18,10 @@ float blendOverlay(float base, float blend) {
 }
 
 float snoise ( vec3 coord, float scale, float time_factor ) {
-	vec3 scaledCoord = coord * scale - (time / time_factor);
+	//coord * 4.0 - (vNormal + vec3(0.0, 0.0, -time / 14.0));
+	vec3 scaledCoord = coord * scale - (vNormal / time_factor + vec3(0.0, -time / time_factor, 0.0));
 
-	vec2 uvTimeShift = vec2(scaledCoord.x, scaledCoord.y) + vec2( -0.7, 1.5 ) * time * 0.015 / time_factor;
+	vec2 uvTimeShift = vec2((scaledCoord.x + scaledCoord.z) / 2.0, scaledCoord.y)  + vec2( -0.75, 1.5 ) * (time / time_factor);
 	vec4 noiseGeneratorTimeShift = texture2D( noiseTexture, uvTimeShift );
 	vec2 uvNoiseTimeShift = vec2(scaledCoord.x, scaledCoord.y) + 0.5 * vec2( noiseGeneratorTimeShift.r, noiseGeneratorTimeShift.b );
 	vec4 baseColor = texture2D( noiseTexture, uvNoiseTimeShift * vec2(4.0, 4.0) );
@@ -31,11 +32,8 @@ float snoise ( vec3 coord, float scale, float time_factor ) {
 float heightMap( vec3 coord ) {
 	float n = 0.0;
 
-	n =  abs(snoise(coord, 0.125, 160.0 ));
-	n -= 0.06125 * abs(snoise(coord, 2.0, 30. ));
-	n += 0.75 * abs(snoise(coord, 1.0, 60. ));
-	
-	n *= 0.7;
+	n = abs(snoise(coord, 0.25, 250. ));
+	n += 0.85 * abs(snoise(coord, 0.5, 220. ));
 
 	return n;
 }
@@ -67,7 +65,7 @@ vec4 reflectionFilter( float n , vec4 reflection ) {
 	reflection.r = limitColor(0.01, 0.055 / n, reflection.r);
 	reflection.g = limitColor(0.025 / n, 0.15 / n, reflection.g);
 	reflection.b = limitColor(0.075 / n, 0.25 / n, reflection.b);
-	reflection.a = 1.0 - n;
+	reflection.a = 1.0 - n / 2.;
 
 	return reflection;
 }
@@ -102,7 +100,7 @@ void main(void) {
 
 	// diffuse light
 
-	vec3 vLightWeighting = vec3( -0.1 );
+	vec3 vLightWeighting = vec3( 0.05 );
 
 	vec4 lDirection = viewMatrix * vec4( normalize( vec3( 1.0, 0.0, 0.5 ) ), 0.0 );
 	float directionalLightWeighting = dot( normal, normalize( lDirection.xyz ) ) * 0.15 + 0.85;

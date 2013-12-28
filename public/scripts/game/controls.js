@@ -94,7 +94,7 @@ $(document).bind("mousemove", function(event) {
 	Function definitions
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
-controls.prototype.rotateCamera = function (delta) {
+controls.prototype.rotateCamera_old = function (delta) {
 	
 	
 		var diffX = Math.sin(controls.mouse.x - controls.mouse.lastX);
@@ -126,6 +126,38 @@ controls.prototype.rotateCamera = function (delta) {
 		client.camera.updateMatrix();
 		//console.log('diffX: ' + diffX + ', diffY: ' + diffY);
 }
+
+controls.prototype.rotateCamera = function (delta) {
+	
+	
+		var diffX = controls.mouse.x - controls.mouse.lastX;
+		var diffY =  controls.mouse.y - controls.mouse.lastY;
+
+		if (diffX == 0) {
+			controls.mouse.changeX = false;
+		}
+		else {
+			controls.mouse.changeX = true;
+		}
+		if (diffY == 0) {
+			controls.mouse.changeY = false;
+		}
+		else {
+			controls.mouse.changeY = true;
+		}
+		console.log('diffX: ' + diffX + ', diffY: ' + diffY);
+
+		if (client.camera.rotation.y < 1.75 && client.camera.rotation.y > -1.75) {
+			client.camera.rotation.y -= diffX;
+		}
+		if (client.camera.rotation.x < 3 && client.camera.rotation.x > -3) {
+			client.camera.rotation.x -= diffY;
+		}
+
+		client.camera.updateMatrix();
+		
+}
+
 controls.prototype.zoom = function (e) {
 
 	e.preventDefault();

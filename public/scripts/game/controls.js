@@ -94,44 +94,11 @@ $(document).bind("mousemove", function(event) {
 	Function definitions
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
-controls.prototype.rotateCamera_old = function (delta) {
-	
-	
-		var diffX = Math.sin(controls.mouse.x - controls.mouse.lastX);
-		var diffY = Math.tan(controls.mouse.y - controls.mouse.lastY);
-
-		if (diffX == 0) {
-			controls.mouse.changeX = false;
-		}
-		else {
-			controls.mouse.changeX = true;
-		}
-		if (diffY == 0) {
-			controls.mouse.changeY = false;
-		}
-		else {
-			controls.mouse.changeY = true;
-		}
-
-		if (client.camera.rotation.y < 1.75 && client.camera.rotation.y > -1.75) {
-			client.camera.rotation.y -= diffX;
-		}
-		if (client.camera.rotation.x < 3 && client.camera.rotation.x > -3) {
-			client.camera.rotation.x -= diffY;
-		}
-
-		if (controls.character.enabled == true) {
-			client.camera.position.y -= diffX;
-		}
-		client.camera.updateMatrix();
-		//console.log('diffX: ' + diffX + ', diffY: ' + diffY);
-}
-
 controls.prototype.rotateCamera = function (delta) {
 	
 	
 		var diffX = controls.mouse.x - controls.mouse.lastX;
-		var diffY =  controls.mouse.y - controls.mouse.lastY;
+		var diffY = controls.mouse.y - controls.mouse.lastY;
 
 		if (diffX == 0) {
 			controls.mouse.changeX = false;
@@ -145,14 +112,25 @@ controls.prototype.rotateCamera = function (delta) {
 		else {
 			controls.mouse.changeY = true;
 		}
+
+		diffX *= 2;
+		diffY *= 12;
+
 		console.log('diffX: ' + diffX + ', diffY: ' + diffY);
 
-		if (client.camera.rotation.y < 1.75 && client.camera.rotation.y > -1.75) {
-			client.camera.rotation.y -= diffX;
-		}
-		if (client.camera.rotation.x < 3 && client.camera.rotation.x > -3) {
-			client.camera.rotation.x -= diffY;
-		}
+		var x = 35 * Math.cos(diffX * Math.PI / 180);
+		client.camera.position.x += x * diffX;
+
+		var z = 35 * Math.sin(diffX * Math.PI / 180);
+		client.camera.position.z += z * diffX;
+
+		z = 3 * Math.sin(diffY * Math.PI / 180);
+		client.camera.position.z += z * diffY;
+
+		var y = 3 * Math.cos(diffY * Math.PI / 180);
+		client.camera.position.y += y * diffY;
+		
+		client.camera.lookAt(new THREE.Vector3(0,0,0));
 
 		client.camera.updateMatrix();
 		

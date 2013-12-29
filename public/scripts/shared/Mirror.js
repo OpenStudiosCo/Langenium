@@ -135,7 +135,6 @@ THREE.Mirror = function ( renderer, camera, options ) {
 	} );
 
 	this.material.uniforms.mirrorSampler.value = this.texture;
-	this.material.uniforms.mirrorColor.value = mirrorColor;
 	this.material.uniforms.textureMatrix.value = this.textureMatrix;
 
 	if ( !isPowerOfTwo(width) || !isPowerOfTwo( height ) ) {

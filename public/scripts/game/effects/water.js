@@ -14,14 +14,13 @@
 
 var water = function() {
 
-	var noiseTexture = THREE.ImageUtils.loadTexture( "/assets/shared/textures/noise2.jpg" );
+	var noiseTexture = THREE.ImageUtils.loadTexture( "/assets/shared/textures/noise3.jpg" );
 	noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
 
 	this.uniforms = {		
 		noiseTexture:	{ type: "t", value: noiseTexture },
 		time: 			{ type: "f", value: 0.0 },
 		scale: 			{ type: "f", value: .00015337 },	
-		mirrorColor: 	{ type: "c", value: new THREE.Color(0x7F7F7F) },
 		mirrorSampler: 	{ type: "t", value: null },
 		textureMatrix: 	{ type: "m4", value: new THREE.Matrix4() }
 	}

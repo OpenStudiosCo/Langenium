@@ -18,8 +18,8 @@ var controls = function() {
 	this.flight = new flight();
 	this.character = new character();
 	this.editor = new editor_controls();
-	this.mouse3D;
     this.mouse = {
+    	camera_distance: 35,
     	theta: 45, 
     	phi: 60, 
     	onClickTheta: 45, 
@@ -99,6 +99,15 @@ $(document).bind("mousedown", function(event) {
 				controls.mouse.onClickX = controls.mouse.x;
 				controls.mouse.onClickY = controls.mouse.y;
 				controls.camera_state.rotating = true;
+
+				controls.mouse.reset_timer = setTimeout(function(){
+					if (controls.camera_state.rotating == true) {
+						// Disable camera reset if the camera is rotating again, otherwise the camera will snap back on mouseUp
+						controls.camera_state.reset_check = false;
+					}
+					delete controls.mouse.reset_time;
+				}, 100);
+
 				break;
 		}
 	}
@@ -122,7 +131,7 @@ $(document).bind("mouseup", function(event) {
 				if (controls.camera_state.reset_check == true) {
 					controls.reset_property(client.camera.position.x, 0, controls.camera_state.reset_position._x);
 					controls.reset_property(client.camera.position.y, 3, controls.camera_state.reset_position._y);
-					controls.reset_property(client.camera.position.z, 35, controls.camera_state.reset_position._z);
+					controls.reset_property(client.camera.position.z, controls.mouse.camera_distance, controls.camera_state.reset_position._z);
 
 					controls.reset_property(client.camera.rotation.x, 0, controls.camera_state.reset_rotation._x);
 					controls.reset_property(client.camera.rotation.y, 0, controls.camera_state.reset_rotation._y);
@@ -130,9 +139,18 @@ $(document).bind("mouseup", function(event) {
 					controls.camera_state.reset_check = false;
 				}
 				else {
-					controls.camera_state.reset_check = true;
+					if (client.camera.position.x != 0 ||
+						client.camera.position.y != 0 ||
+						client.camera.position.z != 0 ||
+						client.camera.rotation.x != 0 ||
+						client.camera.rotation.y != 0 ||
+						client.camera.rotation.z != 0) {
+						controls.camera_state.reset_check = true;
+					}
 				}
 				controls.camera_state.rotating = false;
+				controls.mouse.onClickTheta = 0;
+				controls.mouse.onClickPhi = 0;
 				
 				break;
 		}
@@ -154,6 +172,7 @@ $(document).bind("mousemove", function(event) {
 		if (controls.camera_state.rotating == true) {
 			controls.mouse.theta = - ( ( controls.mouse.x - controls.mouse.onClickX ) * 0.5 ) + controls.mouse.onClickTheta;
 			controls.mouse.phi = ( ( controls.mouse.y - controls.mouse.onClickY ) * 0.5 ) + controls.mouse.onClickPhi;
+			controls.mouse.phi = Math.min( 180, Math.max( -180, controls.mouse.phi ) );
 		}
 	}
 });
@@ -178,9 +197,9 @@ controls.prototype.camera_tween = function(property, target, update, complete) {
 
 
 controls.prototype.rotateCamera = function(delta) {
-	client.camera.position.x = 35 * Math.sin( controls.mouse.theta * Math.PI / 360 ) * Math.cos( controls.mouse.phi * Math.PI / 360 );
-	client.camera.position.y = 35 * Math.sin( controls.mouse.phi * Math.PI / 360 ) ;
-	client.camera.position.z = 35 * Math.cos( controls.mouse.theta * Math.PI / 360 ) * Math.cos( controls.mouse.phi * Math.PI / 360 );
+	client.camera.position.x = controls.mouse.camera_distance * Math.sin( controls.mouse.theta * Math.PI / 360 ) * Math.cos( controls.mouse.phi * Math.PI / 360 );
+	client.camera.position.y = controls.mouse.camera_distance * Math.sin( controls.mouse.phi * Math.PI / 360 ) ;
+	client.camera.position.z = controls.mouse.camera_distance * Math.cos( controls.mouse.theta * Math.PI / 360 ) * Math.cos( controls.mouse.phi * Math.PI / 360 );
 	client.camera.lookAt(new THREE.Vector3(0,0,0))
 	client.camera.updateMatrix();
 }

@@ -124,6 +124,7 @@ flight.prototype.input = function (delta){
 	// ship is turning
 	if (keyboardInput.rY != 0) {
 		controls.camera_state.turning = true;
+		client.camera.rotation.z += (keyboardInput.rY * delta) / 5;
 		if (client.camera.position.x < 35 && 
 			client.camera.position.x > -35) {
 			var x = keyboardInput.rY * Math.cos(delta * Math.PI / 180);

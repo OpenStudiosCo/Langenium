@@ -33,7 +33,42 @@ var controls = function() {
 		rotating: false,
 		turning: false,
 		tilt_horizontal: 0,
-		tilt_vertical: 0
+		tilt_vertical: 0,
+		reset_check: false,
+		reset_position: {
+			_x: function() {
+				var update = function() { client.camera.position.x = this.x; };
+				var complete = function() { delete controls.camera_state.reset_position.x; };
+				controls.camera_state.reset_position.x = controls.camera_tween(client.camera.position.x, 0, update, complete);
+			},
+			_y: function() {
+				var update = function() { client.camera.position.y = this.x; };
+				var complete = function() { delete controls.camera_state.reset_position.y; };
+				controls.camera_state.reset_position.y = controls.camera_tween(client.camera.position.y, 3, update, complete);
+			},
+			_z: function() {
+				var update = function() { client.camera.position.z = this.x; };
+				var complete = function() { delete controls.camera_state.reset_position.z; };
+				controls.camera_state.reset_position.z = controls.camera_tween(client.camera.position.z, 35, update, complete);
+			}
+		},
+		reset_rotation: {
+			_x: function() {
+				var update = function() { client.camera.rotation.x = this.x; };
+				var complete = function() { delete controls.camera_state.reset_rotation.x; };
+				controls.camera_state.reset_rotation.x = controls.camera_tween(client.camera.rotation.x, 0, update, complete);
+			},
+			_y: function() {
+				var update = function() { client.camera.rotation.y = this.x; };
+				var complete = function() { delete controls.camera_state.reset_rotation.y; };
+				controls.camera_state.reset_rotation.y = controls.camera_tween(client.camera.rotation.y, 0, update, complete);
+			},
+			_z: function() {
+				var update = function() { client.camera.rotation.z = this.x; };
+				var complete = function() { delete controls.camera_state.reset_rotation.z; };
+				controls.camera_state.reset_rotation.z = controls.camera_tween(client.camera.rotation.z, 0, update, complete);
+			}
+		}
 	};
     return this;
 }
@@ -73,12 +108,21 @@ $(document).bind("mouseup", function(event) {
 				// zoom IGNORE
 				break;
 			case 3:
-				if (!controls.camera_state.reset_x &&
-					!controls.camera_state.reset_y &&
-					!controls.camera_state.reset_z) {
-					controls.resetCamera();
+				if (controls.camera_state.reset_check == true) {
+					controls.reset_property(client.camera.position.x, 0, controls.camera_state.reset_position._x);
+					controls.reset_property(client.camera.position.y, 3, controls.camera_state.reset_position._y);
+					controls.reset_property(client.camera.position.z, 35, controls.camera_state.reset_position._z);
+
+					controls.reset_property(client.camera.rotation.x, 0, controls.camera_state.reset_rotation._x);
+					controls.reset_property(client.camera.rotation.y, 0, controls.camera_state.reset_rotation._y);
+					controls.reset_property(client.camera.rotation.z, 0, controls.camera_state.reset_rotation._z);
+					controls.camera_state.reset_check = false;
+				}
+				else {
+					controls.camera_state.reset_check = true;
 				}
 				controls.camera_state.rotating = false;
+				
 				break;
 		}
 	}
@@ -103,119 +147,53 @@ $(document).bind("mousemove", function(event) {
 	Function definitions
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
-controls.prototype.resetCamera = function() {
-
-	if (controls.camera_state.rotating == false || controls.mouse.changeX == false) {
-		if ((client.camera.rotation.x != 0 ||
-			client.camera.position.x != 0 )) {
-			controls.camera_state.reset_x = new TWEEN.Tween( {x: client.camera.rotation.x, y: client.camera.position.x })
-				.to({x: 0, y: 0}, 500)
-				.onUpdate(function(){
-					if (controls.camera_state.rotating == false) {
-						client.camera.position.x = this.y;
-						
-							client.camera.rotation.x = this.x;
-						
-					}
-					else {
-						delete controls.camera_state.reset_x;
-					}
-
-				})
-				.onComplete(function(){
-					delete controls.camera_state.reset_x;
-				})
-				.start();
-		}
-	}	
-	
-
-	if (controls.camera_state.rotating == false || controls.mouse.changeY == false) {
-		if ((client.camera.position.y != 3 || 
-			 client.camera.rotation.y != 0)) {
-			controls.camera_state.reset_y = new TWEEN.Tween( {x: client.camera.position.y, y: client.camera.rotation.y })
-				.to({x: 3, y: 0}, 500)
-				.onUpdate(function(){
-					if (controls.camera_state.rotating == false) {
-						client.camera.position.y = this.x;
-						
-						client.camera.rotation.y = this.y;	
-						
-					}
-					else {
-						delete controls.camera_state.reset_y;
-					}
-					client.camera.updateMatrix();
-				})
-				.onComplete(function(){
-					delete controls.camera_state.reset_y;
-				})
-				.start();
-		}
-				
+controls.prototype.reset_property = function(value, target, callback) {
+	if (value != target) {
+		callback();
 	}
+}
 
-	if (controls.camera_state.rotating == false || 
-		(controls.mouse.changeX == false && controls.mouse.changeY == false)) {
-		if ((client.camera.position.z != 35 || 
-			 client.camera.rotation.z != 0)) {
-			controls.camera_state.reset_z = new TWEEN.Tween( {x: client.camera.position.y, y: client.camera.rotation.y })
-				.to({x: 3, y: 0}, 500)
-				.onUpdate(function(){
-					if (controls.camera_state.rotating == false) {
-						client.camera.position.y = this.x;
-						//if (client.camera.position.x == 0) {
-						client.camera.rotation.y = this.y;	
-						
-					}
-					else {
-						delete controls.camera_state.reset_z;
-					}
-					client.camera.updateMatrix();
-
-				})
-				.onComplete(function(){
-					delete controls.camera_state.reset_z;
-				})
-				.start();
-		}
-				
-	}
-
-
+controls.prototype.camera_tween = function(property, target, update, complete) {
+	return new TWEEN.Tween( {x: property, y: 0 })
+		.to({x: target, y: 0}, 500)
+		.onUpdate(update)
+		.onComplete(complete)
+		.start();
 }
 
 controls.prototype.rotateCamera = function (delta) {
-		
+		var rotateAngle = 0.01744444444444444444444444444444 * 2;
 	
-		var diffX = (controls.mouse.x - controls.mouse.lastX) ;
-		var diffY = (controls.mouse.y - controls.mouse.lastY) ;
+		var diffX = 2 * Math.PI * (controls.mouse.x - controls.mouse.lastX) ;
+		var diffY = 20 * Math.PI * (controls.mouse.y - controls.mouse.lastY) ;
 
 		if (diffX == 0) {
 			controls.mouse.changeX = false;
 		}
 		else {
 			controls.mouse.changeX = true;
+			controls.camera_state.reset_check = false;
 		}
 		if (diffY == 0) {
 			controls.mouse.changeY = false;
 		}
 		else {
 			controls.mouse.changeY = true;
+			controls.camera_state.reset_check = false;
 		}
 
 		//console.log('diffX: ' + diffX + ', diffY: ' + diffY);
 
-		var x = diffX * 350 * Math.cos(delta * Math.PI / 180);
+		var x = diffX * 35 * Math.cos(delta * rotateAngle);
 		client.camera.position.x += x;
 
-		var z = diffX * 350 * Math.sin(delta * Math.PI / 180);
+		var z = diffX * 35 * Math.sin(delta * rotateAngle);
 		client.camera.position.z += z;
 
-		z = diffY * 30 * Math.sin(delta * Math.PI / 180);
+		z = diffY * 3 * Math.sin(delta * rotateAngle);
 		client.camera.position.z += z;
 
-		var y = diffY * 30 * Math.cos(delta * Math.PI / 180);
+		var y = diffY * 3 * Math.cos(delta * rotateAngle);
 		client.camera.position.y += y;
 		
 		client.camera.lookAt(new THREE.Vector3(0,0,0));

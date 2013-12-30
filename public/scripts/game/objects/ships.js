@@ -48,21 +48,21 @@ ships.prototype.make = function (obj_class, instruction, mesh) {
 		var rotate_factor = parseFloat(rotate / 5);
 
 		if (rotate > 0){
-			if (ship.rotation.z < .5) {
+			if (ship.rotation.z < 2.5) {
 				ship.rotation.z += rotate_factor;
 			}
 			else {
-				rotate_factor = rotate / 6;
+				rotate_factor = rotate / 3;
 				ship.rotation.z += rotate_factor;
 			}
 			ship.rotation.y = instruction.details.rY;
 		}
 		if (rotate < 0) {
-			if (ship.rotation.z > -.5) {
+			if (ship.rotation.z > -2.5) {
 				ship.rotation.z += rotate_factor;
 			}
 			else {
-				rotate_factor = rotate / 6;
+				rotate_factor = rotate / 3;
 				ship.rotation.z += rotate_factor;
 			}
 			ship.rotation.y = instruction.details.rY;

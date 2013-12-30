@@ -74,7 +74,8 @@ $(document).bind("mouseup", function(event) {
 				break;
 			case 3:
 				if (!controls.camera_state.reset_x &&
-					!controls.camera_state.reset_y) {
+					!controls.camera_state.reset_y &&
+					!controls.camera_state.reset_z) {
 					controls.resetCamera();
 				}
 				controls.camera_state.rotating = false;
@@ -104,16 +105,17 @@ $(document).bind("mousemove", function(event) {
 
 controls.prototype.resetCamera = function() {
 
-	if (controls.camera_state.rotating == false || controls.mouse.changeY == false) {
-		if (!controls.camera_state.reset_x && 
-			(client.camera.rotation.x != 0 ||
+	if (controls.camera_state.rotating == false || controls.mouse.changeX == false) {
+		if ((client.camera.rotation.x != 0 ||
 			client.camera.position.x != 0 )) {
 			controls.camera_state.reset_x = new TWEEN.Tween( {x: client.camera.rotation.x, y: client.camera.position.x })
-				.to({x: 0, y: 0}, 250)
+				.to({x: 0, y: 0}, 500)
 				.onUpdate(function(){
 					if (controls.camera_state.rotating == false) {
-						client.camera.rotation.x = this.x;
 						client.camera.position.x = this.y;
+						
+							client.camera.rotation.x = this.x;
+						
 					}
 					else {
 						delete controls.camera_state.reset_x;
@@ -129,20 +131,21 @@ controls.prototype.resetCamera = function() {
 	
 
 	if (controls.camera_state.rotating == false || controls.mouse.changeY == false) {
-		if (!controls.camera_state.reset_y && 
-			(client.camera.position.y != 3 || 
+		if ((client.camera.position.y != 3 || 
 			 client.camera.rotation.y != 0)) {
 			controls.camera_state.reset_y = new TWEEN.Tween( {x: client.camera.position.y, y: client.camera.rotation.y })
-				.to({x: 3, y: 0}, 250)
+				.to({x: 3, y: 0}, 500)
 				.onUpdate(function(){
 					if (controls.camera_state.rotating == false) {
 						client.camera.position.y = this.x;
-						client.camera.rotation.y = this.y;
+						
+						client.camera.rotation.y = this.y;	
+						
 					}
 					else {
 						delete controls.camera_state.reset_y;
 					}
-
+					client.camera.updateMatrix();
 				})
 				.onComplete(function(){
 					delete controls.camera_state.reset_y;
@@ -151,13 +154,42 @@ controls.prototype.resetCamera = function() {
 		}
 				
 	}
+
+	if (controls.camera_state.rotating == false || 
+		(controls.mouse.changeX == false && controls.mouse.changeY == false)) {
+		if ((client.camera.position.z != 35 || 
+			 client.camera.rotation.z != 0)) {
+			controls.camera_state.reset_z = new TWEEN.Tween( {x: client.camera.position.y, y: client.camera.rotation.y })
+				.to({x: 3, y: 0}, 500)
+				.onUpdate(function(){
+					if (controls.camera_state.rotating == false) {
+						client.camera.position.y = this.x;
+						//if (client.camera.position.x == 0) {
+						client.camera.rotation.y = this.y;	
+						
+					}
+					else {
+						delete controls.camera_state.reset_z;
+					}
+					client.camera.updateMatrix();
+
+				})
+				.onComplete(function(){
+					delete controls.camera_state.reset_z;
+				})
+				.start();
+		}
+				
+	}
+
+
 }
 
 controls.prototype.rotateCamera = function (delta) {
 		
 	
-		var diffX = Math.sin(controls.mouse.x - controls.mouse.lastX) / 2;
-		var diffY = Math.sin(controls.mouse.y - controls.mouse.lastY) / 2;
+		var diffX = (controls.mouse.x - controls.mouse.lastX) ;
+		var diffY = (controls.mouse.y - controls.mouse.lastY) ;
 
 		if (diffX == 0) {
 			controls.mouse.changeX = false;
@@ -172,22 +204,19 @@ controls.prototype.rotateCamera = function (delta) {
 			controls.mouse.changeY = true;
 		}
 
-		diffX *= 8;
-		diffY *= 20;
-
 		//console.log('diffX: ' + diffX + ', diffY: ' + diffY);
 
-		var x = 35 * Math.cos(diffX * Math.PI / 180);
-		client.camera.position.x += x * diffX;
+		var x = diffX * 350 * Math.cos(delta * Math.PI / 180);
+		client.camera.position.x += x;
 
-		var z = 35 * Math.sin(diffX * Math.PI / 180);
-		client.camera.position.z += z * diffX;
+		var z = diffX * 350 * Math.sin(delta * Math.PI / 180);
+		client.camera.position.z += z;
 
-		z = 3 * Math.sin(diffY * Math.PI / 180);
-		client.camera.position.z += z * diffY;
+		z = diffY * 30 * Math.sin(delta * Math.PI / 180);
+		client.camera.position.z += z;
 
-		var y = 3 * Math.cos(diffY * Math.PI / 180);
-		client.camera.position.y += y * diffY;
+		var y = diffY * 30 * Math.cos(delta * Math.PI / 180);
+		client.camera.position.y += y;
 		
 		client.camera.lookAt(new THREE.Vector3(0,0,0));
 

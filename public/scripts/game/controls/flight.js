@@ -120,34 +120,57 @@ flight.prototype.input = function (delta){
 	if (client.isFiring == true) {
 		move = true;
 	}
+
+	// ship is turning
+	if (keyboardInput.rY != 0) {
+		controls.camera_state.turning = true;
+		if (client.camera.position.x < 35 && 
+			client.camera.position.x > -35) {
+			var x = keyboardInput.rY * Math.cos(delta * Math.PI / 180);
+			client.camera.position.x -= x;
+			
+			//client.camera.rotation.y += keyboardInput.rY * delta / 1000000;
+		
+		}
+		if (client.camera.position.z < 35 && 
+			client.camera.position.z > -35) {
+			var z = keyboardInput.rY * Math.sin(delta * Math.PI / 180);
+			client.camera.position.z -= z / 2;
+			client.camera.lookAt(new THREE.Vector3(0,0,0))
+			//client.camera.rotation.y += keyboardInput.rY * delta / 1000000;
 	
+		}
+		client.camera.lookAt(new THREE.Vector3(0,0,0))
+	}
+	else {
+		if (controls.camera_state.turning == true) {
+			
+			controls.flight.reset_xy = new TWEEN.Tween( {x: client.camera.position.x, y: client.camera.rotation.y })
+				.to({x: 0, y: 0}, 500)
+				.onUpdate(function(){
+					if (controls.camera_state.turning == false &&
+						controls.camera_state.rotating == false) {
+						client.camera.position.x = this.x;
+						client.camera.rotation.y = this.y;	
+					}
+					else {
+						delete controls.flight.reset_xy;
+					}
+
+				})
+				.onComplete(function(){
+					delete controls.flight.reset_xy;
+				})
+				.start();
+		
+			controls.camera_state.turning = false;
+		}
+	}
 	if (move == true) {
-		// ship is turning
-		if (keyboardInput.rY != 0) {
-			controls.camera_state.turning = true;
-			if (client.camera.position.x < 40 && 
-				client.camera.position.x > -40) {
-				var x = 0.25 * Math.cos(keyboardInput.rY * Math.PI / 180);
-				client.camera.position.x += x * keyboardInput.rY / 5;
-			}
-
-			if (client.camera.position.z < 40 && 
-				client.camera.position.z > -40) {
-				var z = 0.25 * Math.sin(keyboardInput.rY * Math.PI / 180);
-				client.camera.position.z += z * keyboardInput.rY / 5;
-			}
-
-			controls.flight.camera.lookAt(new THREE.Vector3(0,0,0));
-		}
-		else {
-			if (controls.camera_state.turning == true) {
-				controls.resetCamera();
-				controls.camera_state.turning = false;
-			}
-		}
+		
 		events.socket.emit('game:scene:instance:input', keyboardInput);
 	}
-	
+	client.camera.updateMatrix();
 
 	
 	

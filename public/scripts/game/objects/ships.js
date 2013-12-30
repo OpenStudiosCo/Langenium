@@ -45,25 +45,37 @@ ships.prototype.make = function (obj_class, instruction, mesh) {
 		}
 		
 		var rotate = parseFloat(instruction.details.rY - ship.rotation.y);
-		var rotate_factor = parseFloat(rotate / 5);
+		var rotate_factor = parseFloat(rotate / 2.5);
 
 		if (rotate > 0){
 			if (ship.rotation.z < 2.5) {
 				ship.rotation.z += rotate_factor;
+				if (isPlayer == true && controls.camera_rotating == false ) { 
+					controls.flight.camera.rotation.z += rotate_factor; 
+				}
 			}
 			else {
-				rotate_factor = rotate / 3;
+				rotate_factor = rotate / 6;
 				ship.rotation.z += rotate_factor;
+				if (isPlayer == true && controls.camera_rotating == false) { 
+					controls.flight.camera.rotation.z += rotate_factor; 
+				}
 			}
 			ship.rotation.y = instruction.details.rY;
 		}
 		if (rotate < 0) {
 			if (ship.rotation.z > -2.5) {
 				ship.rotation.z += rotate_factor;
+				if (isPlayer == true && controls.camera_rotating == false) { 
+					controls.flight.camera.rotation.z += rotate_factor; 
+				}
 			}
 			else {
-				rotate_factor = rotate / 3;
+				rotate_factor = rotate / 6;
 				ship.rotation.z += rotate_factor;
+				if (isPlayer == true && controls.camera_rotating == false ) { 
+					controls.flight.camera.rotation.z += rotate_factor; 
+				}
 			}
 			ship.rotation.y = instruction.details.rY;
 		}
@@ -126,7 +138,9 @@ ships.prototype.make = function (obj_class, instruction, mesh) {
 
 ships.prototype.animate = function (animTime, keyframe, ship, delta) {
 	
-	if (ship.rotation.z != 0) { ship.rotation.z *= .96; }
+	if (ship.rotation.z != 0) { 
+		ship.rotation.z *= .96; 
+	}
 	if (ship.morphTargetInfluences && ship.morphTargetInfluences.length > 0) {
 
 		if ( keyframe != ship.ship_attributes.currentKeyframe ) {

@@ -20,18 +20,16 @@ var controls = function() {
 	this.editor = new editor_controls();
     this.mouse = {
     	camera_distance: 35,
-    	theta: 45, 
-    	phi: 60, 
-    	onClickTheta: 45, 
-    	onClickPhi: 60,
+    	theta: 0, 
+    	phi: 3, 
+    	onClickTheta: 0, 
+    	onClickPhi: 0,
     	onClickX: 0,
     	onClickY: 0,
     	x: 0,
     	y: 0,
     	lastX: 0,
-    	lastY: 0,
-    	changeX: false,
-    	changeY: false
+    	lastY: 0
     };
 	this.radius = ( client.winW + client.winH ) / 4;
 	this.camera_state = {
@@ -105,7 +103,7 @@ $(document).bind("mousedown", function(event) {
 						// Disable camera reset if the camera is rotating again, otherwise the camera will snap back on mouseUp
 						controls.camera_state.reset_check = false;
 					}
-					delete controls.mouse.reset_time;
+					delete controls.mouse.reset_timer;
 				}, 100);
 
 				break;
@@ -126,8 +124,8 @@ $(document).bind("mouseup", function(event) {
 				// zoom IGNORE
 				break;
 			case 3:
-				controls.mouse.onClickX = controls.mouse.x - controls.mouse.onClickX;
-				controls.mouse.onClickY = controls.mouse.y - controls.mouse.onClickY;
+				controls.mouse.onClickX = event.clientX - controls.mouse.onClickX;
+				controls.mouse.onClickY = event.clientX - controls.mouse.onClickY;
 				if (controls.camera_state.reset_check == true) {
 					controls.reset_property(client.camera.position.x, 0, controls.camera_state.reset_position._x);
 					controls.reset_property(client.camera.position.y, 3, controls.camera_state.reset_position._y);
@@ -136,6 +134,19 @@ $(document).bind("mouseup", function(event) {
 					controls.reset_property(client.camera.rotation.x, 0, controls.camera_state.reset_rotation._x);
 					controls.reset_property(client.camera.rotation.y, 0, controls.camera_state.reset_rotation._y);
 					controls.reset_property(client.camera.rotation.z, 0, controls.camera_state.reset_rotation._z);
+
+					// Set everything back to default
+					controls.mouse.camera_distance = 35;
+					controls.mouse.theta = 0;
+					controls.mouse.phi = 3;
+					controls.mouse.onClickTheta = 0;
+					controls.mouse.onClickPhi = 0;
+					controls.mouse.x = 0;
+					controls.mouse.y = 0;
+					controls.mouse.lastX = 0;
+					controls.mouse.lastY = 0;
+					controls.mouse.onClickX = 0;
+					controls.mouse.onClickY = 0;
 					controls.camera_state.reset_check = false;
 				}
 				else {
@@ -149,8 +160,7 @@ $(document).bind("mouseup", function(event) {
 					}
 				}
 				controls.camera_state.rotating = false;
-				controls.mouse.onClickTheta = 0;
-				controls.mouse.onClickPhi = 0;
+		
 				
 				break;
 		}
@@ -205,38 +215,20 @@ controls.prototype.rotateCamera = function(delta) {
 }
 
 
-controls.prototype.zoom = function (e) {
+controls.prototype.zoom = function (event) {
+	event.preventDefault();
 
-	e.preventDefault();
-	e.stopPropagation();
+	var wheel_delta = controls.extractWheelDelta(event) * clock.getDelta() * 4;
 
-	var delta = controls.extractWheelDelta(e);
+	if (controls.mouse.camera_distance - wheel_delta > 1) {
+		controls.mouse.camera_distance -= wheel_delta;
 
-	var new_fov;
-	
-	if (controls.character.enabled == true) {
-		new_fov = client.camera.position.z - delta / 333.321312;
-		if ((new_fov > 8 && new_fov < 12)||
-			(new_fov > 4 && new_fov < 100) &&
-			client.is_editor == true) {
-			client.camera.position.y = new_fov / 2;
-			client.camera.position.z = new_fov;
-
-		}
+		client.camera.position.x = controls.mouse.camera_distance * Math.sin( controls.mouse.theta * Math.PI / 360 ) * Math.cos( controls.mouse.phi * Math.PI / 360 );
+		client.camera.position.y = controls.mouse.camera_distance * Math.sin( controls.mouse.phi * Math.PI / 360 ) ;
+		client.camera.position.z = controls.mouse.camera_distance * Math.cos( controls.mouse.theta * Math.PI / 360 ) * Math.cos( controls.mouse.phi * Math.PI / 360 );
+		client.camera.lookAt(new THREE.Vector3(0,0,0))
+		client.camera.updateMatrix();
 	}
-	if (controls.camera_state.enabled == true) {
-		new_fov = client.camera.position.z - delta / 33.321312;
-		if (new_fov > 15 && new_fov < 100) {
-			client.camera.position.z = new_fov;
-		}
-	}
-	if (controls.editor.enabled == true) {
-		new_fov = client.camera.position.z - delta / 333.321312;
-		if (new_fov > 35 && new_fov < 500) {
-			client.camera.position.z = new_fov;
-		}
-	}
-  	client.camera.updateProjectionMatrix();
 }
 
 controls.prototype.extractWheelDelta = function (e)
@@ -245,43 +237,4 @@ controls.prototype.extractWheelDelta = function (e)
     if (e.detail)       return e.detail * -40;
     if (e.originalEvent && e.originalEvent.wheelDelta)
                     return e.originalEvent.wheelDelta;
-}
-controls.prototype.rotateCamera_old = function (delta) {
-		var rotateAngle = 0.01744444444444444444444444444444 * 2;
-	
-		var diffX = 2 * Math.PI * (controls.mouse.x - controls.mouse.lastX) ;
-		var diffY = 20 * Math.PI * (controls.mouse.y - controls.mouse.lastY) ;
-
-		if (diffX == 0) {
-			controls.mouse.changeX = false;
-		}
-		else {
-			controls.mouse.changeX = true;
-			controls.camera_state.reset_check = false;
-		}
-		if (diffY == 0) {
-			controls.mouse.changeY = false;
-		}
-		else {
-			controls.mouse.changeY = true;
-			controls.camera_state.reset_check = false;
-		}
-
-		//console.log('diffX: ' + diffX + ', diffY: ' + diffY);
-
-		var x = diffX * 35 * Math.cos(delta * rotateAngle);
-		client.camera.position.x += x;
-
-		var z = diffX * 35 * Math.sin(delta * rotateAngle);
-		client.camera.position.z += z;
-
-		z = diffY * 3 * Math.sin(delta * rotateAngle);
-		client.camera.position.z += z;
-
-		var y = diffY * 3 * Math.cos(delta * rotateAngle);
-		client.camera.position.y += y;
-		
-		client.camera.lookAt(new THREE.Vector3(0,0,0));
-
-		client.camera.updateMatrix();
 }

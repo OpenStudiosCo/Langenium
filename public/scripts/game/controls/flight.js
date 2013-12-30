@@ -124,51 +124,51 @@ flight.prototype.input = function (delta){
 	// ship is turning
 	if (keyboardInput.rY != 0) {
 		controls.camera_state.turning = true;
-		client.camera.rotation.z += (keyboardInput.rY * delta) / 5;
-		if (client.camera.position.x < 35 && 
-			client.camera.position.x > -35) {
+
+		if (client.camera.position.x < controls.mouse.camera_distance && 
+			client.camera.position.x > -controls.mouse.camera_distance) {
 			var x = keyboardInput.rY * Math.cos(delta * Math.PI / 180);
 			client.camera.position.x -= x;
-			
-			//client.camera.rotation.y += keyboardInput.rY * delta / 1000000;
-		
+			client.camera.rotation.y -= x / 4;
 		}
-		if (client.camera.position.z < 35 && 
-			client.camera.position.z > -35) {
+		if (client.camera.position.z < controls.mouse.camera_distance && 
+			client.camera.position.z > -controls.mouse.camera_distance) {
 			var z = keyboardInput.rY * Math.sin(delta * Math.PI / 180);
-			client.camera.position.z -= z / 2;
-			client.camera.lookAt(new THREE.Vector3(0,0,0))
-			//client.camera.rotation.y += keyboardInput.rY * delta / 1000000;
+			client.camera.position.z -= z;
 	
 		}
-		client.camera.lookAt(new THREE.Vector3(0,0,0))
+	
 	}
 	else {
 		if (controls.camera_state.turning == true) {
+			var x = 0;
+			var z = controls.mouse.camera_distance ;
 			
-			controls.flight.reset_xy = new TWEEN.Tween( {x: client.camera.position.x, y: client.camera.rotation.y })
-				.to({x: 0, y: 0}, 500)
+			controls.flight.reset_xy = new TWEEN.Tween( {x: client.camera.position.x, y: client.camera.position.z })
+				.to({x: x, y: z}, 350)
 				.onUpdate(function(){
 					if (controls.camera_state.turning == false &&
 						controls.camera_state.rotating == false) {
 						client.camera.position.x = this.x;
-						client.camera.rotation.y = this.y;	
+						client.camera.position.z = this.y;	
+						
 					}
 					else {
 						delete controls.flight.reset_xy;
 					}
-
+					client.camera.lookAt(new THREE.Vector3(0,0,0))
+						client.camera.updateMatrix();
 				})
 				.onComplete(function(){
 					delete controls.flight.reset_xy;
 				})
 				.start();
-		
+			
 			controls.camera_state.turning = false;
 		}
 	}
 	if (move == true) {
-		
+		client.camera.lookAt(new THREE.Vector3(0,0,0))
 		events.socket.emit('game:scene:instance:input', keyboardInput);
 	}
 	client.camera.updateMatrix();

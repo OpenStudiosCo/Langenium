@@ -29,8 +29,12 @@ var controls = function() {
     	changeY: false
     };
 	this.radius = ( client.winW + client.winH ) / 4;
-	this.camera_rotating = false;
-
+	this.camera_state = {
+		rotating: false,
+		turning: false,
+		tilt_horizontal: 0,
+		tilt_vertical: 0
+	};
     return this;
 }
 
@@ -39,7 +43,7 @@ var controls = function() {
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
 $(document).bind("mousedown", function(event) {
-	if (controls.flight && 
+	if (controls.camera_state && 
 		controls.enabled == true)
 	{
 		switch (event.which) {
@@ -50,7 +54,7 @@ $(document).bind("mousedown", function(event) {
 				// zoom IGNORE
 				break;
 			case 3:
-				controls.camera_rotating = true;
+				controls.camera_state.rotating = true;
 				break;
 		}
 	}
@@ -58,7 +62,7 @@ $(document).bind("mousedown", function(event) {
 });
 
 $(document).bind("mouseup", function(event) {
-	if (controls.flight && 
+	if (controls.camera_state && 
 		controls.enabled == true)
 	{
 		switch (event.which) {
@@ -69,7 +73,11 @@ $(document).bind("mouseup", function(event) {
 				// zoom IGNORE
 				break;
 			case 3:
-				controls.camera_rotating = false;
+				if (!controls.camera_state.reset_x &&
+					!controls.camera_state.reset_y) {
+					controls.resetCamera();
+				}
+				controls.camera_state.rotating = false;
 				break;
 		}
 	}
@@ -94,11 +102,62 @@ $(document).bind("mousemove", function(event) {
 	Function definitions
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
+controls.prototype.resetCamera = function() {
+
+	if (controls.camera_state.rotating == false || controls.mouse.changeY == false) {
+		if (!controls.camera_state.reset_x && 
+			(client.camera.rotation.x != 0 ||
+			client.camera.position.x != 0 )) {
+			controls.camera_state.reset_x = new TWEEN.Tween( {x: client.camera.rotation.x, y: client.camera.position.x })
+				.to({x: 0, y: 0}, 250)
+				.onUpdate(function(){
+					if (controls.camera_state.rotating == false) {
+						client.camera.rotation.x = this.x;
+						client.camera.position.x = this.y;
+					}
+					else {
+						delete controls.camera_state.reset_x;
+					}
+
+				})
+				.onComplete(function(){
+					delete controls.camera_state.reset_x;
+				})
+				.start();
+		}
+	}	
+	
+
+	if (controls.camera_state.rotating == false || controls.mouse.changeY == false) {
+		if (!controls.camera_state.reset_y && 
+			(client.camera.position.y != 3 || 
+			 client.camera.rotation.y != 0)) {
+			controls.camera_state.reset_y = new TWEEN.Tween( {x: client.camera.position.y, y: client.camera.rotation.y })
+				.to({x: 3, y: 0}, 250)
+				.onUpdate(function(){
+					if (controls.camera_state.rotating == false) {
+						client.camera.position.y = this.x;
+						client.camera.rotation.y = this.y;
+					}
+					else {
+						delete controls.camera_state.reset_y;
+					}
+
+				})
+				.onComplete(function(){
+					delete controls.camera_state.reset_y;
+				})
+				.start();
+		}
+				
+	}
+}
+
 controls.prototype.rotateCamera = function (delta) {
+		
 	
-	
-		var diffX = controls.mouse.x - controls.mouse.lastX;
-		var diffY = controls.mouse.y - controls.mouse.lastY;
+		var diffX = Math.sin(controls.mouse.x - controls.mouse.lastX) / 2;
+		var diffY = Math.sin(controls.mouse.y - controls.mouse.lastY) / 2;
 
 		if (diffX == 0) {
 			controls.mouse.changeX = false;
@@ -113,10 +172,10 @@ controls.prototype.rotateCamera = function (delta) {
 			controls.mouse.changeY = true;
 		}
 
-		diffX *= 2;
-		diffY *= 12;
+		diffX *= 8;
+		diffY *= 20;
 
-		console.log('diffX: ' + diffX + ', diffY: ' + diffY);
+		//console.log('diffX: ' + diffX + ', diffY: ' + diffY);
 
 		var x = 35 * Math.cos(diffX * Math.PI / 180);
 		client.camera.position.x += x * diffX;
@@ -155,7 +214,7 @@ controls.prototype.zoom = function (e) {
 
 		}
 	}
-	if (controls.flight.enabled == true) {
+	if (controls.camera_state.enabled == true) {
 		new_fov = client.camera.position.z - delta / 33.321312;
 		if (new_fov > 15 && new_fov < 100) {
 			client.camera.position.z = new_fov;

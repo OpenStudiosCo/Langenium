@@ -18,7 +18,8 @@ var flight = function() {
     this.camera = new THREE.PerspectiveCamera( 45, (client.winW / client.winH), 1, M * 2 );
     this.camera.position.y = 3;
 	this.camera.position.z = 35;
-	this.camera.fov = 90;
+	this.camera.fov = 70;
+
     this.enabled = false;
 
     return this;
@@ -121,67 +122,35 @@ flight.prototype.input = function (delta){
 	}
 	
 	if (move == true) {
+		// ship is turning
+		if (keyboardInput.rY != 0) {
+			controls.camera_state.turning = true;
+			if (client.camera.position.x < 40 && 
+				client.camera.position.x > -40) {
+				var x = 0.25 * Math.cos(keyboardInput.rY * Math.PI / 180);
+				client.camera.position.x += x * keyboardInput.rY / 5;
+			}
+
+			if (client.camera.position.z < 40 && 
+				client.camera.position.z > -40) {
+				var z = 0.25 * Math.sin(keyboardInput.rY * Math.PI / 180);
+				client.camera.position.z += z * keyboardInput.rY / 5;
+			}
+
+			controls.flight.camera.lookAt(new THREE.Vector3(0,0,0));
+		}
+		else {
+			if (controls.camera_state.turning == true) {
+				controls.resetCamera();
+				controls.camera_state.turning = false;
+			}
+		}
 		events.socket.emit('game:scene:instance:input', keyboardInput);
 	}
 	
-	if (keyboardInput.rY == 0 &&
-		!controls.flight.reset_camera_rotation_yz && 
-		(controls.flight.camera.rotation.y != 0 || controls.flight.camera.rotation.z != 0)) {
-		controls.flight.reset_camera_rotation_yz = new TWEEN.Tween( {x : controls.flight.camera.rotation.y, y: controls.flight.camera.rotation.z })
-			.to({x: 0, y: 0}, 500)
-			.onUpdate(function(){
-				if (controls.camera_rotating == false) {
-					//controls.flight.camera.rotation.y = this.x;
-					//controls.flight.camera.rotation.z = this.y;
-				}
-			})
-			.onComplete(function(){
-				client.camera.lookAt(new THREE.Vector3(0,0,0));
-				delete controls.flight.reset_camera_rotation_yz;
-			})
-			.start();
-	}
 
-	/*
-	if (controls.camera_rotating == false || controls.mouse.changeX == false) {
-		if (!controls.flight.reset_camera_x && 
-			(controls.flight.camera.rotation.x != 0 ||
-			controls.flight.camera.position.x != 0 )) {
-			controls.flight.reset_camera_x = new TWEEN.Tween( {x : controls.flight.camera.rotation.x, y: controls.flight.camera.position.x })
-				.to({x: 0, y: 0}, 500)
-				.onUpdate(function(){
-					if (controls.camera_rotating == false) {
-						controls.flight.camera.rotation.x = this.x;
-						controls.flight.camera.position.x = this.y;
-					}
-
-				})
-				.onComplete(function(){
-					delete controls.flight.reset_camera_x;
-				})
-				.start();
-		}
-				
-	}
-
-	if (controls.camera_rotating == false || controls.mouse.changeY == false) {
-		if (!controls.flight.reset_camera_position_y && controls.flight.camera.position.y != 3) {
-			controls.flight.reset_camera_position_y = new TWEEN.Tween( {x : controls.flight.camera.position.y, y: 0 })
-				.to({x: 3, y: 0}, 500)
-				.onUpdate(function(){
-					if (controls.camera_rotating == false) {
-						controls.flight.camera.position.y = this.x;
-					}
-
-				})
-				.onComplete(function(){
-					delete controls.flight.reset_camera_position_y;
-				})
-				.start();
-		}
-				
-	}
-	*/
+	
+	
 	return keyboardInput;
 }
 

@@ -50,36 +50,20 @@ ships.prototype.make = function (obj_class, instruction, mesh) {
 		if (rotate > 0){
 			if (ship.rotation.z < .5) {
 				ship.rotation.z += rotate_factor;
-				if (isPlayer == true && controls.camera_rotating == false && controls.flight.camera.rotation.y < .25) { 
-					controls.flight.camera.rotation.y += rotate_factor;	
-					controls.flight.camera.rotation.z -= rotate_factor; 
-				}
 			}
 			else {
 				rotate_factor = rotate / 6;
 				ship.rotation.z += rotate_factor;
-				if (isPlayer == true && controls.camera_rotating == false && controls.flight.camera.rotation.y < .35) { 
-					controls.flight.camera.rotation.y += rotate_factor;	
-					controls.flight.camera.rotation.z -= rotate_factor; 
-				}
 			}
 			ship.rotation.y = instruction.details.rY;
 		}
 		if (rotate < 0) {
 			if (ship.rotation.z > -.5) {
 				ship.rotation.z += rotate_factor;
-				if (isPlayer == true && controls.camera_rotating == false && controls.flight.camera.rotation.y > -.25) { 
-					controls.flight.camera.rotation.y += rotate_factor; 
-					controls.flight.camera.rotation.z -= rotate_factor; 
-				}
 			}
 			else {
 				rotate_factor = rotate / 6;
 				ship.rotation.z += rotate_factor;
-				if (isPlayer == true && controls.camera_rotating == false && controls.flight.camera.rotation.y > -.35) { 
-					controls.flight.camera.rotation.y += rotate_factor; 
-					controls.flight.camera.rotation.z -= rotate_factor; 
-				}
 			}
 			ship.rotation.y = instruction.details.rY;
 		}

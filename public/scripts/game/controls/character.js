@@ -81,12 +81,12 @@ character.prototype.input = function (delta) {
 		});
 		
 		if (!controls.character.reset_camera_x &&
-			controls.character.camera.rotation.x != -.5 && (controls.camera_rotating == false || controls.mouse.changeX == false)) {
+			controls.character.camera.rotation.x != -.5 && (controls.camera_state.rotating == false || controls.mouse.changeX == false)) {
 			controls.character.reset_camera_x = new TWEEN.Tween( {x : controls.character.camera.rotation.x, y: 0 })
 												.to({x: -0.5, y: 0}, 500)
 												.delay(500)
 												.onUpdate(function(){
-													if (controls.camera_rotating == false) {
+													if (controls.camera_state.rotating == false) {
 														controls.character.camera.rotation.x = this.x;
 													}
 											
@@ -97,12 +97,12 @@ character.prototype.input = function (delta) {
 												.start();
 		}
 		if (!controls.character.reset_camera_y &&
-			controls.character.camera.rotation.y != 0 && (controls.camera_rotating == false || controls.mouse.changeY == false)) {
+			controls.character.camera.rotation.y != 0 && (controls.camera_state.rotating == false || controls.mouse.changeY == false)) {
 			controls.character.reset_camera_y = new TWEEN.Tween( {x : controls.character.camera.rotation.y, y: 0 })
 												.to({x: 0, y: 0}, 500)
 												.delay(500)
 												.onUpdate(function(){
-													if (controls.camera_rotating == false) {
+													if (controls.camera_state.rotating == false) {
 														controls.character.camera.rotation.y = this.x;
 													}
 												
@@ -113,7 +113,7 @@ character.prototype.input = function (delta) {
 												.start();
 		}
 	
-		if (controls.character.camera.rotation.z != 0 && (controls.camera_rotating == false || controls.mouse.changeX == false)) {
+		if (controls.character.camera.rotation.z != 0 && (controls.camera_state.rotating == false || controls.mouse.changeX == false)) {
 			controls.character.camera.rotation.z *= .89;
 		}
 	}

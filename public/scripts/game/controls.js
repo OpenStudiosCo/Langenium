@@ -18,11 +18,16 @@ var controls = function() {
 	this.flight = new flight();
 	this.character = new character();
 	this.editor = new editor_controls();
+	this.mouse3D;
     this.mouse = {
+    	theta: 45, 
+    	phi: 60, 
+    	onClickTheta: 45, 
+    	onClickPhi: 60,
+    	onClickX: 0,
+    	onClickY: 0,
     	x: 0,
     	y: 0,
-    	x_buffer: 0,
-    	y_buffer: 0,
     	lastX: 0,
     	lastY: 0,
     	changeX: false,
@@ -89,6 +94,10 @@ $(document).bind("mousedown", function(event) {
 				// zoom IGNORE
 				break;
 			case 3:
+				controls.mouse.onClickTheta = controls.mouse.theta;
+				controls.mouse.onClickPhi = controls.mouse.phi;
+				controls.mouse.onClickX = controls.mouse.x;
+				controls.mouse.onClickY = controls.mouse.y;
 				controls.camera_state.rotating = true;
 				break;
 		}
@@ -108,6 +117,8 @@ $(document).bind("mouseup", function(event) {
 				// zoom IGNORE
 				break;
 			case 3:
+				controls.mouse.onClickX = controls.mouse.x - controls.mouse.onClickX;
+				controls.mouse.onClickY = controls.mouse.y - controls.mouse.onClickY;
 				if (controls.camera_state.reset_check == true) {
 					controls.reset_property(client.camera.position.x, 0, controls.camera_state.reset_position._x);
 					controls.reset_property(client.camera.position.y, 3, controls.camera_state.reset_position._y);
@@ -135,11 +146,15 @@ $(document).bind('mousewheel DOMMouseScroll', function (e) {
 $(document).bind("mousemove", function(event) {
 	if (controls.enabled == true) {
 		controls.mouse.lastX = controls.mouse.x;
-		controls.mouse.x = event.clientX / client.winW;
+		controls.mouse.x = event.clientX;
 	
 		controls.mouse.lastY = controls.mouse.y;	
-		controls.mouse.y = event.clientY / client.winH;	
-		
+		controls.mouse.y = event.clientY;	
+
+		if (controls.camera_state.rotating == true) {
+			controls.mouse.theta = - ( ( controls.mouse.x - controls.mouse.onClickX ) * 0.5 ) + controls.mouse.onClickTheta;
+			controls.mouse.phi = ( ( controls.mouse.y - controls.mouse.onClickY ) * 0.5 ) + controls.mouse.onClickPhi;
+		}
 	}
 });
 
@@ -161,46 +176,15 @@ controls.prototype.camera_tween = function(property, target, update, complete) {
 		.start();
 }
 
-controls.prototype.rotateCamera = function (delta) {
-		var rotateAngle = 0.01744444444444444444444444444444 * 2;
-	
-		var diffX = 2 * Math.PI * (controls.mouse.x - controls.mouse.lastX) ;
-		var diffY = 20 * Math.PI * (controls.mouse.y - controls.mouse.lastY) ;
 
-		if (diffX == 0) {
-			controls.mouse.changeX = false;
-		}
-		else {
-			controls.mouse.changeX = true;
-			controls.camera_state.reset_check = false;
-		}
-		if (diffY == 0) {
-			controls.mouse.changeY = false;
-		}
-		else {
-			controls.mouse.changeY = true;
-			controls.camera_state.reset_check = false;
-		}
-
-		//console.log('diffX: ' + diffX + ', diffY: ' + diffY);
-
-		var x = diffX * 35 * Math.cos(delta * rotateAngle);
-		client.camera.position.x += x;
-
-		var z = diffX * 35 * Math.sin(delta * rotateAngle);
-		client.camera.position.z += z;
-
-		z = diffY * 3 * Math.sin(delta * rotateAngle);
-		client.camera.position.z += z;
-
-		var y = diffY * 3 * Math.cos(delta * rotateAngle);
-		client.camera.position.y += y;
-		
-		client.camera.lookAt(new THREE.Vector3(0,0,0));
-
-		client.camera.updateMatrix();
-		
+controls.prototype.rotateCamera = function(delta) {
+	client.camera.position.x = 35 * Math.sin( controls.mouse.theta * Math.PI / 360 ) * Math.cos( controls.mouse.phi * Math.PI / 360 );
+	client.camera.position.y = 35 * Math.sin( controls.mouse.phi * Math.PI / 360 ) ;
+	client.camera.position.z = 35 * Math.cos( controls.mouse.theta * Math.PI / 360 ) * Math.cos( controls.mouse.phi * Math.PI / 360 );
+	client.camera.lookAt(new THREE.Vector3(0,0,0))
+	client.camera.updateMatrix();
 }
+
 
 controls.prototype.zoom = function (e) {
 
@@ -242,4 +226,43 @@ controls.prototype.extractWheelDelta = function (e)
     if (e.detail)       return e.detail * -40;
     if (e.originalEvent && e.originalEvent.wheelDelta)
                     return e.originalEvent.wheelDelta;
+}
+controls.prototype.rotateCamera_old = function (delta) {
+		var rotateAngle = 0.01744444444444444444444444444444 * 2;
+	
+		var diffX = 2 * Math.PI * (controls.mouse.x - controls.mouse.lastX) ;
+		var diffY = 20 * Math.PI * (controls.mouse.y - controls.mouse.lastY) ;
+
+		if (diffX == 0) {
+			controls.mouse.changeX = false;
+		}
+		else {
+			controls.mouse.changeX = true;
+			controls.camera_state.reset_check = false;
+		}
+		if (diffY == 0) {
+			controls.mouse.changeY = false;
+		}
+		else {
+			controls.mouse.changeY = true;
+			controls.camera_state.reset_check = false;
+		}
+
+		//console.log('diffX: ' + diffX + ', diffY: ' + diffY);
+
+		var x = diffX * 35 * Math.cos(delta * rotateAngle);
+		client.camera.position.x += x;
+
+		var z = diffX * 35 * Math.sin(delta * rotateAngle);
+		client.camera.position.z += z;
+
+		z = diffY * 3 * Math.sin(delta * rotateAngle);
+		client.camera.position.z += z;
+
+		var y = diffY * 3 * Math.cos(delta * rotateAngle);
+		client.camera.position.y += y;
+		
+		client.camera.lookAt(new THREE.Vector3(0,0,0));
+
+		client.camera.updateMatrix();
 }

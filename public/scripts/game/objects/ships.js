@@ -43,11 +43,13 @@ ships.prototype.make = function (obj_class, instruction, mesh) {
 		if (instruction.details.pZ != 0) {
 			ship.position.z = instruction.details.pZ;
 		}
-		
-		var rotate = parseFloat(instruction.details.rY - ship.rotation.y);
-		var rotate_factor = parseFloat(rotate / 2.5);
 
-		if (rotate > 0){
+		var pitch_delta = parseFloat(instruction.details.pY - ship.position.y)
+		
+		var rotate_delta = parseFloat(instruction.details.rY - ship.rotation.y);
+		var rotate_factor = parseFloat(rotate_delta / 2.5);
+
+		if (rotate_delta > 0){
 			if (ship.rotation.z < 2.5) {
 				ship.rotation.z += rotate_factor;
 				if (isPlayer == true && controls.camera_rotating == false ) { 
@@ -55,7 +57,7 @@ ships.prototype.make = function (obj_class, instruction, mesh) {
 				}
 			}
 			else {
-				rotate_factor = rotate / 6;
+				rotate_factor = rotate_delta / 6;
 				ship.rotation.z += rotate_factor;
 				if (isPlayer == true && controls.camera_rotating == false) { 
 					controls.flight.camera.rotation.z += rotate_factor; 
@@ -63,7 +65,7 @@ ships.prototype.make = function (obj_class, instruction, mesh) {
 			}
 			ship.rotation.y = instruction.details.rY;
 		}
-		if (rotate < 0) {
+		if (rotate_delta < 0) {
 			if (ship.rotation.z > -2.5) {
 				ship.rotation.z += rotate_factor;
 				if (isPlayer == true && controls.camera_rotating == false) { 
@@ -71,7 +73,7 @@ ships.prototype.make = function (obj_class, instruction, mesh) {
 				}
 			}
 			else {
-				rotate_factor = rotate / 6;
+				rotate_factor = rotate_delta / 6;
 				ship.rotation.z += rotate_factor;
 				if (isPlayer == true && controls.camera_rotating == false ) { 
 					controls.flight.camera.rotation.z += rotate_factor; 

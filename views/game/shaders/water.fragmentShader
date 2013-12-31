@@ -30,11 +30,11 @@ float snoise ( vec3 coord, float scale, float time_factor ) {
 float heightMap( vec3 coord ) {
 	float n = 0.0;
 
-	n = 0.5 * abs(snoise(coord, 0.0625, 500. ));
+	n = 0.65 * abs(snoise(coord, 0.0625, 500. ));
 	n += 0.5 * abs(snoise(coord, 0.125, -500. ));
 	n += 0.125 * abs(snoise(coord, 5., -50. ));
 	n += 0.125 * abs(snoise(coord, 100., 15. ));
-	n *= .65;
+	n *= .75;
 
 	return n;
 }
@@ -66,7 +66,6 @@ vec4 reflectionFilter( float n , vec4 reflection ) {
    	reflection.r = limitColor(0.005 / n, 0.025 / n, reflection.r);
 	reflection.g = limitColor(0.025 / n, 0.15 / n, reflection.g);
 	reflection.b = limitColor(0.075 / n, 0.25 / n, reflection.b);
-	reflection.a = 1.0 - n;
 
 	return reflection;
 }
@@ -76,12 +75,13 @@ void main(void) {
 	// mirror
 
 	vec4 reflection = texture2DProj(mirrorSampler, mirrorCoord);
+	reflection.a = 0.45;
 
 	// height and color
 	float n = heightMap( vTexCoord3D );
 
 	vec4 texColor = colorFilter( n );
-	texColor.a = 0.85;
+	texColor.a = 0.35;
 
 	// color
 	gl_FragColor = texColor;

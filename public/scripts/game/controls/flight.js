@@ -160,6 +160,11 @@ flight.prototype.input = function (delta){
 						client.camera.updateMatrix();
 				})
 				.onComplete(function(){
+					controls.mouse.theta = 0;
+					controls.mouse.onClickTheta = 0;
+					controls.mouse.x = 0;
+					controls.mouse.lastX = 0;
+					controls.mouse.onClickX = 0;
 					delete controls.flight.reset_xy;
 				})
 				.start();
@@ -244,12 +249,12 @@ flight.prototype.move = function (velocity, playerPosition, data) {
 	sky.position.x = data.pX;
 	sky.position.z = data.pZ;
 	
-	var 	sky_scale = 1 + (player.position.y / 20000);
+	var 	sky_scale = 1 + (player.position.y / 24575);
 	
 	
 	// set sky scale
 	if (sky_scale > 1) {
-		sky.position.y =  24000 * (1 + (player.position.y / 20000));
+		sky.position.y =  24575 * (1 + (player.position.y / 24575));
 		sky.scale.set(sky_scale,sky_scale,sky_scale);
 	}
 	

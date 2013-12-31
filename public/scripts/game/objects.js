@@ -125,6 +125,28 @@ objects.prototype.renderObject = function (mesh, obj_class, instruction) {
 
 			var thruster_3 = effects.particles.createThruster(15, { x: pos_x, y: instruction.position.y - 900, z: pos_z });
 			engine.scene.add(thruster_3);
+
+			var building_texture = textures.procedural.building();
+			// reset UV mappings? :P
+			mesh.geometry.faceVertexUvs[0] = [];
+			mesh.geometry.faces.forEach(function(face, index){
+				mesh.geometry.faceVertexUvs[0].push([
+					new THREE.Vector2(0,0),
+					new THREE.Vector2(1,0),
+					new THREE.Vector2(0,1)
+				]);
+			});
+			mesh.geometry.computeVertexNormals();
+            mesh.geometry.computeFaceNormals();
+
+//			console.log(building_texture)
+			mesh.material.materials.forEach(function(material, index){
+				if (material.name == 'Dark-Glass') {
+					mesh.material.materials[index] = textures.procedural.createMaterial('union_platform_building_a', textures.procedural.building);
+					mesh.material.materials[index].overdraw = true;
+					mesh.material.materials[index].needsUpdate = true;
+				}
+			});
 		}
 		this.world_map.push(mesh);
 		engine.scene.add(this.world_map[this.world_map.length-1]);

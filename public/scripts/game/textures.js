@@ -58,6 +58,7 @@ var textures = function() {
 				new THREE.Color( 0x112233 )]	}
 	];
 	
+	this.procedural = new procedural();
 	this.sprites = new sprites();
 
     return this;
@@ -88,10 +89,16 @@ textures.prototype.prepare = function(geometry, materials, useVertexOverrides) {
 			textures.materials.forEach(function(material_details){
 				console.log()
 				if (materials[face.materialIndex].name == material_details.name && material_details.colours) {
-					face.vertexColors[0] = material_details.colours[0];
-					face.vertexColors[1] = material_details.colours[1];
-					face.vertexColors[2] = material_details.colours[2];
-				//	face.vertexColors[3] = material_details.colours[3]; // for some reason in r60 the union platforms changed into triangle surfaces??
+						if (index % 2 == 0) {
+							face.vertexColors[0] = material_details.colours[0];
+							face.vertexColors[1] = material_details.colours[1];
+							face.vertexColors[2] = material_details.colours[2];
+						}
+						else {
+							face.vertexColors[0] = material_details.colours[1];
+							face.vertexColors[1] = material_details.colours[2];
+							face.vertexColors[2] = material_details.colours[0];
+						}
 				}
 			});
 		});

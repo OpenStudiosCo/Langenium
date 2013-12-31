@@ -24,8 +24,8 @@ float snoise ( vec3 coord, float scale, float time_factor ) {
 
 float heightMap( vec3 coord ) {
     float n = abs(snoise(coord , 1.0 , 1800.0));
-    n -= 0.5 * abs(snoise(coord , 4.0 , 2500.0));
-    n += 0.25 * abs(snoise(coord , 14.0 , 3500.0));
+    n -= 0.75 * abs(snoise(coord , 4.0 , 2500.0));
+    n += 0.125 * abs(snoise(coord , 14.0 , 3500.0));
 
     n *= 0.7;
 

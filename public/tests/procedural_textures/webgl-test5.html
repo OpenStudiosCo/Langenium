@@ -15,25 +15,69 @@
 		var camera, scene, renderer, texture, controls, canvas;
 			var mesh;
 
+			// Ripped from textures class of client
+			var texture_materials = [
+				// Metals
+				{	
+					name: "Light-Metal",
+					vertex: true,
+					colours: [
+						new THREE.Color( 0x666666 ),
+						new THREE.Color( 0x444444 ),
+						new THREE.Color( 0x666666 ),
+						new THREE.Color( 0x666666 )]	},
+				{	
+					name: "Steel",
+					vertex: true	},
+				{	
+					name: "Metal",
+					vertex: true,
+					colours: [
+						new THREE.Color( 0x333333 ),
+						new THREE.Color( 0x222222 ),
+						new THREE.Color( 0x333333),
+						new THREE.Color( 0x333333 )]	},
+				{	
+					name: "Red-Metal",
+					vertex: true,
+					colours: [
+						new THREE.Color( 0x440000 ),
+						new THREE.Color( 0x440000 ),
+						new THREE.Color( 0x550000 ),
+						new THREE.Color( 0x440000 )]	},
+				// Glass
+				{
+					name: "Glass",
+					vertex: true,
+					opacity: 0.8	},
+				{
+					name: "Dark-Glass",
+					vertex: true,
+					opacity: 0.1,
+					colours: [
+						new THREE.Color( 0x001122 ),
+						new THREE.Color( 0x112233 ),
+						new THREE.Color( 0x112244 ),
+						new THREE.Color( 0x112233 )]	}
+			];
+
 			init();
 			animate();
 
 			function init() {
 
 				renderer = new THREE.WebGLRenderer();
-				renderer.setSize( 800, 800 );
+				renderer.setSize( window.innerWidth, window.innerHeight );
 				document.body.appendChild( renderer.domElement );
 
-				camera = new THREE.PerspectiveCamera( 70, 1, 1, 1000 );
-				camera.position.z = 60;
-				camera.position.y = 85;
-
+				camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 1000 );
+				camera.position.z = 400;
 
 				scene = new THREE.Scene();
 
 				canvas = draw_texture();
 
-				texture = new THREE.Texture( canvas, THREE.UVMapping, THREE.RepeatWrapping, THREE.RepeatWrapping, THREE.NearestFilter, THREE.NearestFilter );
+				var texture = new THREE.Texture( canvas, THREE.UVMapping, THREE.RepeatWrapping, THREE.RepeatWrapping, THREE.NearestFilter, THREE.NearestFilter );
 				texture.anisotropy  = renderer.getMaxAnisotropy();
 				texture.needsUpdate = true;
 			
@@ -42,28 +86,67 @@
 				var jsonLoader = new THREE.JSONLoader();
 
 				var addModelToScene = function (geometry, materials) {
-					
-					
-			
+				
+					geometry.faceVertexUvs[0] = [];
+				    geometry.faces.forEach(function(face, index){
+				    	if (index % 2 == 0) {
+							geometry.faceVertexUvs[0].push([
+								new THREE.Vector2(1,0),
+								new THREE.Vector2(0,0),
+								new THREE.Vector2(0,1)
+							]);
+						}
+						else {
+							geometry.faceVertexUvs[0].push([
+								new THREE.Vector2(0,0),
+								new THREE.Vector2(0,1),
+								new THREE.Vector2(1,1)
+							]);
+						}
+					});
+		
+
+			    geometry.uvsNeedUpdate = true;
+
+							
 					materials.forEach(function(material, index){
-						
-					
-							materials[index].map = texture;
-						
-						
-						materials[index].overdraw = true;
-						materials[index].side = THREE.DoubleSide;
+						if (material.name == 'Dark-Glass') {
+							materials[index] = new THREE.MeshLambertMaterial( { map: texture } );
+							materials[index].overdraw = true;
+							materials[index].side = THREE.DoubleSide;
+						}
+						else {
+							materials[index].vertexColors = THREE.VertexColors;
+							materials[index].side = THREE.DoubleSide;
+							// Use vertex colours
+							geometry.faces.forEach(function(face,index) {
+								texture_materials.forEach(function(material_details){
+									if (materials[face.materialIndex].name == material_details.name && material_details.colours) {
+										if (index % 2 == 0) {
+											face.vertexColors[0] = material_details.colours[0];
+											face.vertexColors[1] = material_details.colours[1];
+											face.vertexColors[2] = material_details.colours[2];
+										}
+										else {
+											face.vertexColors[0] = material_details.colours[1];
+											face.vertexColors[1] = material_details.colours[2];
+											face.vertexColors[2] = material_details.colours[0];
+										}
+
+										
+									//	face.vertexColors[3] = material_details.colours[3]; // for some reason in r60 the union platforms changed into triangle surfaces??
+									}
+								});
+							});
+						}
 					});
 					
 					mesh = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
-					mesh.scale.set(10,10,10);
+					mesh.scale.set(50,50,50);
 					scene.add(mesh);
-					draw_uvmap(geometry.faces);
 				};
 
-				jsonLoader.load( "/game/assets/objects/ships/mercenary/valiant2.js", addModelToScene );
-
-
+				jsonLoader.load( "/assets/game/objects/infrastructure/platforms/union2.js", addModelToScene );
 
 				window.addEventListener( 'resize', onWindowResize, false );
 				var ambientLight = new THREE.AmbientLight(0xFFFFFF);
@@ -71,30 +154,6 @@
 
 			    controls = new THREE.OrbitControls( camera, renderer.domElement );
 
-			}
-
-			function draw_uvmap(faces) {
-				
-				var texture_image = document.createElement("canvas");
-				var height = 1024;
-				var width = 1024;
-				texture_image.height = height;
-				texture_image.width = width;
-
-				var context = texture_image.getContext('2d');
-				faces.forEach(function(face,index){
-					var a = mesh.geometry.vertices[mesh.geometry.faces[index].a];
-					var b = mesh.geometry.vertices[mesh.geometry.faces[index].b];
-					var c = mesh.geometry.vertices[mesh.geometry.faces[index].c];
-
-					context.moveTo(0,0);
-					context.lineTo(b.x * 10, b.y * 10);
-					context.stroke;	
-					context.lineTo(c.x * 10, c.y * 10);
-					context.stroke;	
-					console.log(a);
-				});
-				$('body').append(texture_image);
 			}
 
 			function onWindowResize() {
@@ -120,8 +179,8 @@
 
 			function draw_texture () {
 				var texture_image = document.createElement("canvas");
-				var height = 512;
-				var width = 512;
+				var height = 1024;
+				var width = 1024;
 
 				texture_image.height = height;
 				texture_image.width = width;

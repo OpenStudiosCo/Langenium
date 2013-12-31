@@ -12,7 +12,7 @@
 		<script src="./perlin-noise-simplex.js"></script>
 		<script type='text/javascript'>
 
-		var camera, scene, renderer, texture, controls, canvas;
+		var camera, scene, renderer, controls;
 			var mesh;
 
 			// Ripped from textures class of client
@@ -75,25 +75,53 @@
 
 				scene = new THREE.Scene();
 
-				canvas = draw_texture();
+				var window_canvas = draw_texture();
 
-				var texture = new THREE.Texture( canvas, THREE.UVMapping, THREE.RepeatWrapping, THREE.RepeatWrapping, THREE.NearestFilter, THREE.NearestFilter );
-				texture.anisotropy  = renderer.getMaxAnisotropy();
-				texture.needsUpdate = true;
+				var window_texture = new THREE.Texture( window_canvas, THREE.UVMapping, THREE.RepeatWrapping, THREE.RepeatWrapping, THREE.NearestFilter, THREE.NearestFilter );
+				window_texture.anisotropy  = renderer.getMaxAnisotropy();
+				window_texture.needsUpdate = true;
+				window_texture.repeat.set(1/3, 1)
+
+				var window_material = new THREE.MeshLambertMaterial( { map: window_texture } );
+				window_material.overdraw = true;
+				window_material.side = THREE.DoubleSide;
+
+				var roof_canvas = draw_roof_texture();
 			
+				var roof_texture = new THREE.Texture( roof_canvas, THREE.UVMapping, THREE.RepeatWrapping, THREE.RepeatWrapping, THREE.NearestFilter, THREE.NearestFilter );
+				roof_texture.anisotropy  = renderer.getMaxAnisotropy();
+				roof_texture.needsUpdate = true;
+
+				var roof_material = new THREE.MeshLambertMaterial( { map: roof_texture } );
+				roof_material.overdraw = true;
+				roof_material.side = THREE.DoubleSide;
 				
 
 				var jsonLoader = new THREE.JSONLoader();
 
 				var addModelToScene = function (geometry, materials) {
-				
+					
+					materials.push(window_material);
+					var window_index = materials.length - 1;
+
+					materials.push(roof_material);
+					var roof_index = materials.length - 1;
+
 					geometry.faceVertexUvs[0] = [];
 				    geometry.faces.forEach(function(face, index){
+				    	if (materials[face.materialIndex].name == 'Dark-Glass') {
+				    		face.materialIndex = window_index;
+				    		if (geometry.vertices[face.a].y == geometry.vertices[face.b].y &&
+						        geometry.vertices[face.a].y == geometry.vertices[face.c].y) {
+						    	face.materialIndex = roof_index;
+						    } 
+				    	}
+
 				    	if (index % 2 == 0) {
 							geometry.faceVertexUvs[0].push([
 								new THREE.Vector2(1,0),
 								new THREE.Vector2(0,0),
-								new THREE.Vector2(0,1)
+								new THREE.Vector2(1,1)
 							]);
 						}
 						else {
@@ -103,19 +131,13 @@
 								new THREE.Vector2(1,1)
 							]);
 						}
+						
 					});
-		
 
-			    geometry.uvsNeedUpdate = true;
+			    	geometry.uvsNeedUpdate = true;
 
-							
 					materials.forEach(function(material, index){
-						if (material.name == 'Dark-Glass') {
-							materials[index] = new THREE.MeshLambertMaterial( { map: texture } );
-							materials[index].overdraw = true;
-							materials[index].side = THREE.DoubleSide;
-						}
-						else {
+						if (material.name != 'Dark-Glass') {
 							materials[index].vertexColors = THREE.VertexColors;
 							materials[index].side = THREE.DoubleSide;
 							// Use vertex colours
@@ -146,7 +168,7 @@
 					scene.add(mesh);
 				};
 
-				jsonLoader.load( "/assets/game/objects/infrastructure/platforms/union2.js", addModelToScene );
+				jsonLoader.load( "/assets/game/objects/infrastructure/platforms/union.js", addModelToScene );
 
 				window.addEventListener( 'resize', onWindowResize, false );
 				var ambientLight = new THREE.AmbientLight(0xFFFFFF);
@@ -223,10 +245,10 @@
 						else {
 							n += Math.tan(x ^ 2 * y ^ 2);
 							n += Math.sin(x ^ 2 * y ^ 2);
-							newval = 125 - n;
+							newval = 65 - n;
 							red = newval;
-							green =  75 + newval;
-							blue = 125 + newval;
+							green =  35 + newval;
+							blue = 65 + newval;
 						}
 						red = Math.floor(red);
 						green = Math.floor(green);
@@ -244,7 +266,62 @@
 				return texture_image;
 			}
 
+			function draw_roof_texture () {
+				var texture_image = document.createElement("canvas");
+				var height = 512;
+				var width = 512;
+
+				texture_image.height = height;
+				texture_image.width = width;
+
+				var simplex = new SimplexNoise();
 			
+				var context = texture_image.getContext('2d');
+				// Create the yellow face
+				var twopi = Math.PI * 2;
+				// instantiate golden ratio constant
+		        var PHI = (1+ Math.sqrt(5))/2;
+				var imageData = context.createImageData(height, width);
+
+				var 	red = 0, 
+						green= 0, 
+						blue= 0, 
+						newval, 
+						n,
+						grid_width = 20,
+						grid_height = 35,
+						grid_border = 5;
+				for (var x = 0; x < width; x++) {
+					
+					newval = 255;
+					red = newval;
+					green =  newval;
+					blue = newval;
+					for (var y = 0; y < height; y++) {
+
+						
+						n = simplex.noise(x, y);
+						newval =  99 * PHI * n + 5 * Math.sin( n * twopi);
+						
+						red = newval;
+						green =  newval;
+						blue = newval;
+						
+						red = Math.floor(red);
+						green = Math.floor(green);
+						blue = Math.floor(blue );
+						setPixel(imageData, x, y, red, green, blue, 255);
+
+						
+					}
+				}
+				context.putImageData(imageData, 0,0);
+
+
+
+			
+				return texture_image;
+			}
 
 
 

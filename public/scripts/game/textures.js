@@ -83,11 +83,10 @@ textures.prototype.prepare = function(geometry, materials, useVertexOverrides) {
 			}
 		});
 	});
-
+	
 	if (useVertexOverrides == true) {
 		geometry.faces.forEach(function(face,index) {
 			textures.materials.forEach(function(material_details){
-				console.log()
 				if (materials[face.materialIndex].name == material_details.name && material_details.colours) {
 						if (index % 2 == 0) {
 							face.vertexColors[0] = material_details.colours[0];

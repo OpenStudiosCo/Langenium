@@ -126,26 +126,41 @@ objects.prototype.renderObject = function (mesh, obj_class, instruction) {
 			var thruster_3 = effects.particles.createThruster(15, { x: pos_x, y: instruction.position.y - 900, z: pos_z });
 			engine.scene.add(thruster_3);
 
-			var building_texture = textures.procedural.building();
+			var window_material = textures.procedural.createMaterial('union_platform_building_windows', textures.procedural.building_windows);
+			var roof_material = textures.procedural.createMaterial('union_platform_building_roof', textures.procedural.building_roof);
 			// reset UV mappings? :P
-			mesh.geometry.faceVertexUvs[0] = [];
-			mesh.geometry.faces.forEach(function(face, index){
-				mesh.geometry.faceVertexUvs[0].push([
-					new THREE.Vector2(0,0),
-					new THREE.Vector2(1,0),
-					new THREE.Vector2(0,1)
-				]);
-			});
-			mesh.geometry.computeVertexNormals();
-            mesh.geometry.computeFaceNormals();
 
-//			console.log(building_texture)
-			mesh.material.materials.forEach(function(material, index){
-				if (material.name == 'Dark-Glass') {
-					mesh.material.materials[index] = textures.procedural.createMaterial('union_platform_building_a', textures.procedural.building);
-					mesh.material.materials[index].overdraw = true;
-					mesh.material.materials[index].needsUpdate = true;
+			mesh.material.materials.push(window_material);
+			var window_index = mesh.material.materials.length - 1;
+
+			mesh.material.materials.push(roof_material);
+			var roof_index = mesh.material.materials.length - 1;
+
+			mesh.geometry.faceVertexUvs[0] = [];
+		    mesh.geometry.faces.forEach(function(face, index){
+		    	if (mesh.material.materials[face.materialIndex].name == 'Dark-Glass') {
+		    		face.materialIndex = window_index;
+		    		if (mesh.geometry.vertices[face.a].y == mesh.geometry.vertices[face.b].y &&
+				        mesh.geometry.vertices[face.a].y == mesh.geometry.vertices[face.c].y) {
+				    	face.materialIndex = roof_index;
+				    } 
+		    	}
+
+		    	if (index % 2 == 0) {
+					mesh.geometry.faceVertexUvs[0].push([
+						new THREE.Vector2(1,0),
+						new THREE.Vector2(0,0),
+						new THREE.Vector2(1,1)
+					]);
 				}
+				else {
+					mesh.geometry.faceVertexUvs[0].push([
+						new THREE.Vector2(0,0),
+						new THREE.Vector2(0,1),
+						new THREE.Vector2(1,1)
+					]);
+				}
+				
 			});
 		}
 		this.world_map.push(mesh);

@@ -30,7 +30,7 @@ procedural.prototype.createMaterial = function(cache_name, texture_callback) {
 	else {
 		var canvas = texture_callback();
 
-		var texture = new THREE.Texture( canvas, THREE.UVMapping, THREE.RepeatWrapping, THREE.RepeatWrapping, THREE.NearestFilter, THREE.NearestFilter );
+		var texture = new THREE.Texture(  canvas, THREE.UVMapping, THREE.RepeatWrapping, THREE.RepeatWrapping, THREE.NearestFilter, THREE.NearestFilter  );
 		texture.anisotropy  = engine.renderer.getMaxAnisotropy();
 		texture.needsUpdate = true;
 		
@@ -49,7 +49,72 @@ procedural.prototype.setPixel = function(imageData, x, y, r, g, b, a) {
 }
 
 
-procedural.prototype.building = function() {
+procedural.prototype.building_windows = function() {
+	var texture_image = document.createElement("canvas");
+	var height = 1024;
+	var width = 1024;
+
+	texture_image.height = height;
+	texture_image.width = width;
+
+	var simplex = new SimplexNoise();
+
+	var context = texture_image.getContext('2d');
+	// Create the yellow face
+	var twopi = Math.PI * 2;
+	// instantiate golden ratio constant
+    var PHI = (1+ Math.sqrt(5))/2;
+	var imageData = context.createImageData(height, width);
+
+	var 	red = 0, 
+			green= 0, 
+			blue= 0, 
+			newval, 
+			n,
+			grid_width = 90,
+			grid_height = 25,
+			grid_border = 2;
+	for (var x = 0; x < width; x++) {
+		
+		newval = 255;
+		red = newval;
+		green =  newval;
+		blue = newval;
+		for (var y = 0; y < height; y++) {
+			n = simplex.noise(x, y);
+			if (x == 0 || (y%grid_height <= grid_border * 4|| x%grid_width <= grid_border) ) {
+				newval = 20 - n;
+				newval += Math.cos(x ^ 2 / y ^ 2) * 5;
+				newval += Math.sin(x ^ 2 * y ^ 2) * 10;
+				red = newval;
+				green =   newval;
+				blue =  newval;
+				
+			}
+			else {
+				n += Math.cos(x ^ 2 / y ^ 2) * 2;
+				n += Math.sin(x ^ 2 * y ^ 2) * 10;
+				newval = 25 - n;
+				red = newval;
+				green =  15 + newval;
+				blue = 25 + newval;
+			}
+			red = Math.floor(red);
+			green = Math.floor(green);
+			blue = Math.floor(blue );
+
+			textures.procedural.setPixel(imageData, x, y, red, green, blue, 255);
+
+			
+		}
+	}
+	context.putImageData(imageData, 0,0);
+
+	return texture_image;
+
+}
+
+procedural.prototype.building_roof = function() {
 	var texture_image = document.createElement("canvas");
 	var height = 1024;
 	var width = 1024;
@@ -82,38 +147,22 @@ procedural.prototype.building = function() {
 		blue = newval;
 		for (var y = 0; y < height; y++) {
 
-			if ((y%grid_height <= grid_border * 4|| x%grid_width <= grid_border) ) {
+			n = simplex.noise(x, y);
+			newval = 20 - n;
+			newval += Math.cos(x ^ 2 / y ^ 2) * 5;
+			newval += Math.sin(x ^ 2 * y ^ 2) * 10;
+			red = newval;
+			green =   newval;
+			blue =  newval;
 				
-				n = simplex.noise(x, y);
-				newval =  99 * PHI * n + 11 * Math.sin( n * twopi);
-				
-				red = newval;
-				green =  newval;
-				blue = newval;
-				
-			}
-			else {
-				n += Math.tan(x ^ 2 * y ^ 2);
-				n += Math.sin(x ^ 2 * y ^ 2);
-				newval = 95 - n;
-				red = newval;
-				green =  55 + newval;
-				blue = 95 + newval;
-			}
 			red = Math.floor(red);
 			green = Math.floor(green);
 			blue = Math.floor(blue );
 			textures.procedural.setPixel(imageData, x, y, red, green, blue, 255);
-
 			
 		}
 	}
 	context.putImageData(imageData, 0,0);
 
-
-
-
 	return texture_image;
-
-
 }

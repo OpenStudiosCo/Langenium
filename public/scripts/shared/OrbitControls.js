@@ -40,7 +40,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 	// This option actually enables dollying in and out; left as "zoom" for
 	// backwards compatibility
 	this.noZoom = false;
-	this.zoomSpeed = 100.0;
+	this.zoomSpeed = 1.0;
 	// Limits to how far you can dolly in and out
 	this.minDistance = 0;
 	this.maxDistance = Infinity;
@@ -209,17 +209,8 @@ THREE.OrbitControls = function ( object, domElement ) {
 	};
 
 	this.update = function () {
-		var position;
 
-		if (this.object.parent instanceof THREE.Mesh) {
-			position = new THREE.Vector3();
-			position.getPositionFromMatrix(this.object.matrixWorld);
-
-		}
-		else {
-			position = this.object.position;
-		}
-		
+		var position = this.object.position;
 		var offset = position.clone().sub( this.target );
 
 		// angle from z-axis around y-axis

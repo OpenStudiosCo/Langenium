@@ -80,6 +80,9 @@ procedural.prototype.building_windows = function() {
 		red = newval;
 		green =  newval;
 		blue = newval;
+		if (x == 0 ||  x%grid_width == grid_border) {
+			random_seed = Math.random();	
+		}
 		for (var y = 0; y < height; y++) {
 			n = simplex.noise(x, y);
 			if (x == 0 || (y%grid_height <= grid_border * 4|| x%grid_width <= grid_border) ) {
@@ -92,12 +95,14 @@ procedural.prototype.building_windows = function() {
 				
 			}
 			else {
-				n += Math.cos(x ^ 2 / y ^ 2) * 2;
-				n += Math.sin(x ^ 2 * y ^ 2) * 10;
-				newval = 25 - n;
-				red = newval;
-				green =  15 + newval;
-				blue = 25 + newval;
+				if (random_seed > 0.5) {
+					n += Math.cos(x ^ 2 / y ^ 2) * 2;
+					n += Math.sin(x ^ 2 * y ^ 2) * 10;
+					newval =  35 - n;
+					red = newval;
+					green =  15 + newval;
+					blue = 25 + newval;
+				}
 			}
 			red = Math.floor(red);
 			green = Math.floor(green);

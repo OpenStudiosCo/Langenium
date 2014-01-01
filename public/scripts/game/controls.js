@@ -218,7 +218,7 @@ controls.prototype.rotateCamera = function(delta) {
 controls.prototype.zoom = function (event) {
 	event.preventDefault();
 
-	var wheel_delta = controls.extractWheelDelta(event) * clock.getDelta() * 4;
+	var wheel_delta = controls.extractWheelDelta(event) * clock.getDelta() * 8;
 
 	if (controls.mouse.camera_distance - wheel_delta > 1) {
 		controls.mouse.camera_distance -= wheel_delta;

@@ -29,11 +29,16 @@ var events = function() {
 events.prototype.getUrl = function () {
 	if (window.location.href.indexOf("dev.langenium") >= 0)
 	{
-		return "http://dev.langenium.com:8080"; // own port "8080"
+		return "http://dev.langenium.com";
 		
 	}
 	else {
-		return "http://langenium.com:8080";
+		if (window.location.href.indexOf("staging.langenium") >= 0) {
+			return "http://staging.langenium.com"; 
+		}
+		else {
+			return "http://langenium.com";
+		}
 	}
 }
 events.prototype.setEventHandlers = function (socket) {

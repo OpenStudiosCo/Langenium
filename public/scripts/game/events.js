@@ -29,15 +29,15 @@ var events = function() {
 events.prototype.getUrl = function () {
 	if (window.location.href.indexOf("dev.langenium") >= 0)
 	{
-		return "http://dev.langenium.com";
+		return "http://dev.langenium.com:7417";
 		
 	}
 	else {
 		if (window.location.href.indexOf("staging.langenium") >= 0) {
-			return "http://staging.langenium.com"; 
+			return "http://staging.langenium.com:7418"; 
 		}
 		else {
-			return "http://langenium.com";
+			return "http://langenium.com:7419";
 		}
 	}
 }

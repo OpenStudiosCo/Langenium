@@ -65,7 +65,8 @@ module.exports = function() {
 	modules.fb = new modules.fbsdk.Facebook({ appId: process.env['APP_ID'], secret: process.env['APP_SECRET'] });
 	modules.app = modules.express();
 	modules.server = require('http').createServer(modules.app);
-	
+	modules.io = require('socket.io').listen(parseInt(process.env['IO_PORT']));
+	modules.io.set('log level', 2);
 
 	// This should go into some kind of utility class... it applies to both admin and game.. maybe website? 
 	var pong = function(socket, data) {
@@ -74,7 +75,10 @@ module.exports = function() {
 		socket.emit("ping", { time: new Date().getTime(), latency: latency });
 	}
 
-
+	modules.io.on('connection', function(socket) {
+		socket.emit('ping', { time: new Date().getTime(), latency: 0 });
+		socket.on('pong', function (data) { pong(socket, data) });
+	});
 
 	function compile (str, path) {
 	  			return modules.stylus(str)
@@ -110,13 +114,6 @@ module.exports = function() {
 		
 		
 
-	});
-	modules.io = require('socket.io').listen(modules.server);
-	modules.io.set('log level', 2);
-
-	modules.io.on('connection', function(socket) {
-		socket.emit('ping', { time: new Date().getTime(), latency: 0 });
-		socket.on('pong', function (data) { pong(socket, data) });
 	});
 	return modules;
 };

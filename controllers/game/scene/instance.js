@@ -37,6 +37,9 @@ module.exports= function(modules) {
 			if (update.type == 'move_ship') {
 				update.object.input_status = true;
 			}
+			else {
+				update.object.input_status = false;
+			}
 			modules.controllers.game.objects[update.obj_class][update.type](instance_obj.delta, update, _complete)
 
 		});
@@ -44,11 +47,11 @@ module.exports= function(modules) {
 		if (instance_obj.interval_ticks >= instance_obj.transmit_interval) {
 			instance_obj.interval_ticks = 0;
 			instance_obj.objects.ships.forEach(function(ship){
-				if (ship.input_status == false) {
+				
 					var _complete = function(processed_change) {
 						processed_changes.push(processed_change);
 					};
-					ship.velocity *= .996;
+					
 					var update = new modules.models.game.scene.instance.update.model({
 							object: ship,
 							socket_id: ship.socket_id,
@@ -63,15 +66,15 @@ module.exports= function(modules) {
 								fire: false	
 							}
 						});
+				if (ship.input_status == false) {
+					ship.velocity *= .996;
 					modules.controllers.game.objects.ships.move_ship(
 						instance_obj.delta / 10000,
 						update,
 						_complete
 					);
 				}
-				else {
-					ship.input_status = false;
-				}
+			
 			});
 		}
 		else {

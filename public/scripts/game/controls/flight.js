@@ -172,10 +172,10 @@ flight.prototype.input = function (delta){
 			controls.camera_state.turning = false;
 		}
 	}
-	if (move == true) {
-		client.camera.lookAt(new THREE.Vector3(0,0,0))
-		events.socket.emit('game:scene:instance:input', keyboardInput);
-	}
+	
+	client.camera.lookAt(new THREE.Vector3(0,0,0))
+	events.socket.emit('game:scene:instance:input', keyboardInput);
+	
 	client.camera.updateMatrix();
 
 	
@@ -188,20 +188,8 @@ flight.prototype.move = function (velocity, playerPosition, data) {
 	/*
 		This is a client side function to move the world's water, check collisons and softly a ship, however the server response overrides this
 	*/
-	var velocityYChange = 22 * data.d,
-		rotateAngle = 0.01744444444444444444444444444444 * 2;
-
-	
-	if (window.location.href.indexOf("editor") > 0) { 
-		if (editor.sky_camera_active == true) {
-			velocity *= 10 ; 
-		}
-		else {
-			velocity *= 5 ; 
-			velocityYChange *= 5;
-		}
-	}
-
+	var velocityYChange = 33.3333,
+		rotateAngle = 0.01744444444444444444444444444444 * 2;	
 
 	if (data.rY > 0) { data.rY = rotateAngle; }						// left
 	if (data.rY < 0) { data.rY = -rotateAngle; }						// right
@@ -261,7 +249,7 @@ flight.prototype.move = function (velocity, playerPosition, data) {
 	
 	sky.updateMatrixWorld();
 	
-	player.move(player, true, { details: data});
+	player.move(player, true, { details: data} );
 	
 
 }

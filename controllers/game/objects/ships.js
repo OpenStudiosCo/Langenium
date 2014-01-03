@@ -19,18 +19,38 @@ module.exports= function(modules) {
 		update.details.socket_id = update.socket_id;
 		update.details.username = update.object.username;
 
-		if (update.details.pZ > 0 && update.object.velocity > -37.5) { update.object.velocity -= 3.175 }		// forward
-		if (update.details.pZ < 0 && update.object.velocity < 23.5) { update.object.velocity += 3.175 }		// back
+		// forward
+		if (update.details.pZ > 0 && update.object.velocity > -37.5) {
+			update.object.velocity -= 3.175 
+		}		
 
-		if (update.details.rY > 0) { update.details.rY = rotateAngle; }										// left
-		if (update.details.rY < 0) { update.details.rY = -rotateAngle; }									// right
+		// back
+		if (update.details.pZ < 0 && update.object.velocity < 23.5) {
+			update.object.velocity += 3.175 
+		}		
+		// left
+		if (update.details.rY > 0) {
+			update.details.rY = rotateAngle; 
+		}
+		// right
+		if (update.details.rY < 0) { update.details.rY = -rotateAngle; }									
 		update.details.rY = (update.details.rY + update.details.rY * Math.PI / 180);
 		
-		if (update.details.pY > 0) { update.details.pY = velocityYChange; } 								// up
-		if (update.details.pY < 0) { update.details.pY = -(velocityYChange); } 								// down
+		// up
+		if (update.details.pY > 0) { 
+			update.details.pY = velocityYChange; 
+		}
+		// down
+		if (update.details.pY < 0) { 
+			update.details.pY = -(velocityYChange); 
+		}
 
-		update.details.rY += parseFloat(update.object.rotation.y);
-		update.details.pY += parseFloat(update.object.position.y);
+		
+		update.details.rY += parseFloat(update.object.rotation.y);	
+		
+		update.details.pY += parseFloat(update.object.position.y);	
+	
+		
 
 		update.object.position.x += parseFloat(update.object.velocity * Math.sin(update.object.rotation.y));
 		update.object.position.y = parseFloat(update.details.pY);

@@ -33,7 +33,8 @@ client.prototype.initialize = function () {
 	Initializes the client... :P
 */
 	engine.renderer = new THREE.WebGLRenderer({
-		antialias : true
+		antialias : true,
+		alpha: true
 	});
 	engine.renderer.autoClear = true;
 	engine.renderer.setClearColor( 0x000000, 1 );

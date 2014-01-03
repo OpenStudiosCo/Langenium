@@ -127,13 +127,13 @@ flight.prototype.input = function (delta){
 
 		if (client.camera.position.x < controls.mouse.camera_distance && 
 			client.camera.position.x > -controls.mouse.camera_distance) {
-			var x = keyboardInput.rY * Math.cos(delta * Math.PI / 180);
+			var x = keyboardInput.rY * Math.cos(delta * Math.PI ^ 2 / 360);
 			client.camera.position.x -= x;
 			client.camera.rotation.y -= x / 4;
 		}
 		if (client.camera.position.z < controls.mouse.camera_distance && 
 			client.camera.position.z > -controls.mouse.camera_distance) {
-			var z = keyboardInput.rY * Math.sin(delta * Math.PI / 180);
+			var z = keyboardInput.rY * Math.sin(delta * Math.PI  ^ 2 / 360);
 			client.camera.position.z -= z;
 	
 		}

@@ -32,9 +32,9 @@ ships.prototype.make = function (obj_class, instruction, mesh) {
 			ship.velocity = instruction.velocity;
 		}
 	
-		if (instruction.details.pY != 0){
-			ship.position.y = instruction.details.pY;
-		}
+		
+		ship.position.y = instruction.details.pY;
+		
 		
 		if (instruction.details.pX != 0){
 			ship.position.x = instruction.details.pX;
@@ -53,34 +53,37 @@ ships.prototype.make = function (obj_class, instruction, mesh) {
 			if (ship.rotation.z < 2.5) {
 				ship.rotation.z += rotate_factor;
 				if (isPlayer == true && controls.camera_rotating == false ) { 
-					controls.flight.camera.rotation.z += rotate_factor; 
+					controls.flight.camera.position.y += rotate_factor; 
+					controls.flight.camera.rotation.z -= rotate_factor; 
 				}
 			}
 			else {
 				rotate_factor = rotate_delta / 6;
 				ship.rotation.z += rotate_factor;
 				if (isPlayer == true && controls.camera_rotating == false) { 
-					controls.flight.camera.rotation.z += rotate_factor; 
+					controls.flight.camera.position.y += rotate_factor; 
+					controls.flight.camera.rotation.z -= rotate_factor; 
 				}
 			}
-			ship.rotation.y = instruction.details.rY;
 		}
 		if (rotate_delta < 0) {
 			if (ship.rotation.z > -2.5) {
 				ship.rotation.z += rotate_factor;
 				if (isPlayer == true && controls.camera_rotating == false) { 
-					controls.flight.camera.rotation.z += rotate_factor; 
+					controls.flight.camera.position.y += rotate_factor; 
+					controls.flight.camera.rotation.z -= rotate_factor; 
 				}
 			}
 			else {
 				rotate_factor = rotate_delta / 6;
 				ship.rotation.z += rotate_factor;
 				if (isPlayer == true && controls.camera_rotating == false ) { 
-					controls.flight.camera.rotation.z += rotate_factor; 
+					controls.flight.camera.position.y += rotate_factor; 
+					controls.flight.camera.rotation.z -= rotate_factor; 
 				}
 			}
-			ship.rotation.y = instruction.details.rY;
 		}
+		ship.rotation.y = instruction.details.rY;
 		if (instruction.details.fire == true) {
 			effects.bullets.addBullet(ship);
 		}

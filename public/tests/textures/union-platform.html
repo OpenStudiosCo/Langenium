@@ -85,7 +85,7 @@
 				window_texture.needsUpdate = true;
 				window_texture.repeat.set(1/3, 1)
 
-				var window_material = new THREE.MeshLambertMaterial( { map: window_texture } );
+				var window_material = new THREE.MeshLambertMaterial( { map: window_texture, vertexColors: THREE.VertexColors } );
 				window_material.overdraw = true;
 				window_material.side = THREE.DoubleSide;
 
@@ -104,23 +104,61 @@
 
 				var addModelToScene = function (geometry, materials) {
 					
+					
+					
 					materials.push(window_material);
 					var window_index = materials.length - 1;
 
 					materials.push(roof_material);
 					var roof_index = materials.length - 1;
 
+					var light = new THREE.Color( 0xffffff )
+					var shadow    = new THREE.Color( 0x303050 );
+
+					var color_ticker = 0;
+
+					var value   = 1 - Math.random() * Math.random();
+ 					var baseColor   = new THREE.Color().setRGB( value + Math.random() * 0.1, value, value + Math.random() * 0.1 );
+
+ 					var topColor    = baseColor.clone().multiply( light );
+  					var bottomColor = baseColor.clone().multiply( shadow );
+
 					geometry.faceVertexUvs[0] = [];
 				    geometry.faces.forEach(function(face, index){
-				    	if (materials[face.materialIndex].name == 'Dark-Glass') {
+				    	if (color_ticker < 1) {
+				    		value   = 1 - Math.random() * Math.random();
+							baseColor   = new THREE.Color().setRGB( value + Math.random() * 0.1, value, value + Math.random() * 0.1 );
+
+							topColor    = baseColor.clone().multiply( light );
+							bottomColor = baseColor.clone().multiply( shadow );
+				    		color_ticker++;
+				    	}
+				    	else {
+				    		
+				    		color_ticker = 0;
+				    	}
+				    	if (materials[face.materialIndex].name == 'Dark-Glass') {				    		
 				    		face.materialIndex = window_index;
 				    		if (geometry.vertices[face.a].y == geometry.vertices[face.b].y &&
 						        geometry.vertices[face.a].y == geometry.vertices[face.c].y) {
 						    	face.materialIndex = roof_index;
 						    } 
-				    	}
-
-				    	if (index % 2 == 0) {
+				    		materials[face.materialIndex].vertexColors = THREE.VertexColors;
+							materials[face.materialIndex].side = THREE.DoubleSide;
+							// Use vertex colours
+						}
+						
+						if ( index === 2 ) {
+					        // set face.vertexColors on root face
+					        face.vertexColors = [ baseColor, baseColor, baseColor ];
+					    } else {
+					        // set face.vertexColors on sides faces
+					        face.vertexColors = [ topColor, topColor, bottomColor ];
+					    }
+						
+			    		
+			    	
+			    		if (index % 2 == 0) {
 							geometry.faceVertexUvs[0].push([
 								new THREE.Vector2(1,0),
 								new THREE.Vector2(0,0),
@@ -135,36 +173,12 @@
 							]);
 						}
 						
+				    		
+			
 					});
 
 			    	geometry.uvsNeedUpdate = true;
-
-					materials.forEach(function(material, index){
-						if (material.name != 'Dark-Glass') {
-							materials[index].vertexColors = THREE.VertexColors;
-							materials[index].side = THREE.DoubleSide;
-							// Use vertex colours
-							geometry.faces.forEach(function(face,index) {
-								texture_materials.forEach(function(material_details){
-									if (materials[face.materialIndex].name == material_details.name && material_details.colours) {
-										if (index % 2 == 0) {
-											face.vertexColors[0] = material_details.colours[0];
-											face.vertexColors[1] = material_details.colours[1];
-											face.vertexColors[2] = material_details.colours[2];
-										}
-										else {
-											face.vertexColors[0] = material_details.colours[1];
-											face.vertexColors[1] = material_details.colours[2];
-											face.vertexColors[2] = material_details.colours[0];
-										}
-
-										
-									//	face.vertexColors[3] = material_details.colours[3]; // for some reason in r60 the union platforms changed into triangle surfaces??
-									}
-								});
-							});
-						}
-					});
+			    
 					
 					mesh = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
 					mesh.scale.set(50,50,50);
@@ -210,11 +224,11 @@
 				  canvas.height    = 64;
 				  var context = canvas.getContext( '2d' );
 				  // plain it in white
-				  context.fillStyle    = '#ffffff';
+				  context.fillStyle    = '#DEDEDE';
 				  context.fillRect( 0, 0, 64, 128 );
 				  // draw the window rows - with a small noise to simulate light variations in each room
-				  for( var y = 2; y < 128; y += 2 ){
-				      for( var x = 0; x < 128; x += 2 ){
+				  for( var y = 2; y < 64; y += 2 ){
+				      for( var x = 0; x < 64; x += 2 ){
 				          var value   = Math.floor( Math.random() * 64 );
 				          context.fillStyle = 'rgb(' + [value, value, value].join( ',' )  + ')';
 				          context.fillRect( x, y, 2, 1 );
@@ -239,8 +253,8 @@
 
 			function draw_roof_texture () {
 				var texture_image = document.createElement("canvas");
-				var height = 512;
-				var width = 512;
+				var height = 128;
+				var width = 128;
 
 				texture_image.height = height;
 				texture_image.width = width;

@@ -136,15 +136,46 @@ objects.prototype.renderObject = function (mesh, obj_class, instruction) {
 			mesh.material.materials.push(roof_material);
 			var roof_index = mesh.material.materials.length - 1;
 
+			var light = new THREE.Color( 0xffffff )
+			var shadow    = new THREE.Color( 0x303050 );
+			var color_ticker = 0;
+			var value   = 1 - Math.random() * Math.random();
+			var baseColor   = new THREE.Color().setRGB( value + Math.random() * 0.1, value, value + Math.random() * 0.1 );
+
+			var topColor    = baseColor.clone().multiply( light );
+			var bottomColor = baseColor.clone().multiply( shadow );
+
 			mesh.geometry.faceVertexUvs[0] = [];
 		    mesh.geometry.faces.forEach(function(face, index){
-		    	if (mesh.material.materials[face.materialIndex].name == 'Dark-Glass') {
+		    	if (color_ticker < 2) {
+		    		value   = 1 - Math.random() * Math.random();
+					baseColor   = new THREE.Color().setRGB( value + Math.random() * 0.1, value, value + Math.random() * 0.1 );
+
+					topColor    = baseColor.clone().multiply( light );
+					bottomColor = baseColor.clone().multiply( shadow );
+		    		color_ticker++;
+		    	}
+		    	else {
+		    		color_ticker = 0;
+		    	}
+
+		    	if (mesh.material.materials[face.materialIndex].name == 'Dark-Glass') {				    		
 		    		face.materialIndex = window_index;
 		    		if (mesh.geometry.vertices[face.a].y == mesh.geometry.vertices[face.b].y &&
 				        mesh.geometry.vertices[face.a].y == mesh.geometry.vertices[face.c].y) {
 				    	face.materialIndex = roof_index;
 				    } 
-		    	}
+		    		mesh.material.materials[face.materialIndex].vertexColors = THREE.VertexColors;
+					mesh.material.materials[face.materialIndex].side = THREE.DoubleSide;
+					// Use vertex colours
+					if ( index === 2 ) {
+				        // set face.vertexColors on root face
+				        face.vertexColors = [ baseColor, baseColor, baseColor ];
+				    } else {
+				        // set face.vertexColors on sides faces
+				        face.vertexColors = [ topColor, topColor, bottomColor ];
+				    }
+				}
 
 		    	if (index % 2 == 0) {
 					mesh.geometry.faceVertexUvs[0].push([

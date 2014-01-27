@@ -1,40 +1,24 @@
 body,
 .cf,
 .browsehappy p,
-#wrapper,
-#page_header,
-#page_section #page_nav,
-#page_section #page_content,
-#page_section #page_sidebar {
+#wrapper {
   *zoom: 1;
 }
 body:before,
 .cf:before,
 .browsehappy p:before,
 #wrapper:before,
-#page_header:before,
-#page_section #page_nav:before,
-#page_section #page_content:before,
-#page_section #page_sidebar:before,
 body:after,
 .cf:after,
 .browsehappy p:after,
-#wrapper:after,
-#page_header:after,
-#page_section #page_nav:after,
-#page_section #page_content:after,
-#page_section #page_sidebar:after {
+#wrapper:after {
   content: '';
   display: table;
 }
 body:after,
 .cf:after,
 .browsehappy p:after,
-#wrapper:after,
-#page_header:after,
-#page_section #page_nav:after,
-#page_section #page_content:after,
-#page_section #page_sidebar:after {
+#wrapper:after {
   clear: both;
 }
 article,
@@ -617,64 +601,10 @@ body {
   padding-right: 0;
 }
 #page_header {
-  float: left;
-  display: inline;
-  clear: none;
-  text-align: inherit;
-  padding-left: 0;
-  padding-right: 0;
-  width: 100%;
-  margin-left: 0%;
-  margin-right: 3%;
   padding: 1.5% 1.5%;
-}
-#page_header:last-child {
-  margin-right: 0%;
 }
 #page_section {
   padding: 0 1.5%;
-}
-#page_section #page_nav {
-  float: left;
-  display: inline;
-  clear: none;
-  text-align: inherit;
-  padding-left: 0;
-  padding-right: 0;
-  width: 22.75%;
-  margin-left: 0%;
-  margin-right: 3%;
-}
-#page_section #page_nav:last-child {
-  margin-right: 0%;
-}
-#page_section #page_content {
-  float: left;
-  display: inline;
-  clear: none;
-  text-align: inherit;
-  padding-left: 0;
-  padding-right: 0;
-  width: 39.91666666666667%;
-  margin-left: 0%;
-  margin-right: 3%;
-}
-#page_section #page_content:last-child {
-  margin-right: 0%;
-}
-#page_section #page_sidebar {
-  float: left;
-  display: inline;
-  clear: none;
-  text-align: inherit;
-  padding-left: 0;
-  padding-right: 0;
-  width: 31.33333333333333%;
-  margin-left: 0%;
-  margin-right: 3%;
-}
-#page_section #page_sidebar:last-child {
-  margin-right: 0%;
 }
 @media screen and (max-width: 1140px) {
   body {
@@ -690,48 +620,8 @@ body {
     padding-left: 0;
     padding-right: 0;
   }
-  #page_section #page_nav {
-    float: left;
-    display: inline;
-    clear: none;
-    text-align: inherit;
-    padding-left: 0;
-    padding-right: 0;
-    width: 31.33333333333333%;
-    margin-left: 0%;
-    margin-right: 3%;
-  }
-  #page_section #page_nav:last-child {
-    margin-right: 0%;
-  }
   #page_section #page_content {
-    float: left;
-    display: inline;
-    clear: none;
-    text-align: inherit;
-    padding-left: 0;
-    padding-right: 0;
-    width: 65.66666666666666%;
-    margin-left: 0%;
-    margin-right: 3%;
     margin-right: 0;
-  }
-  #page_section #page_content:last-child {
-    margin-right: 0%;
-  }
-  #page_section #page_sidebar {
-    float: left;
-    display: inline;
-    clear: none;
-    text-align: inherit;
-    padding-left: 0;
-    padding-right: 0;
-    width: 100%;
-    margin-left: 0%;
-    margin-right: 3%;
-  }
-  #page_section #page_sidebar:last-child {
-    margin-right: 0%;
   }
 }
 @media screen and (max-width: 768px) {
@@ -747,48 +637,6 @@ body {
     margin-left: auto;
     padding-left: 0;
     padding-right: 0;
-  }
-  #page_section #page_nav {
-    float: left;
-    display: inline;
-    clear: none;
-    text-align: inherit;
-    padding-left: 0;
-    padding-right: 0;
-    width: 100%;
-    margin-left: 0%;
-    margin-right: 3%;
-  }
-  #page_section #page_nav:last-child {
-    margin-right: 0%;
-  }
-  #page_section #page_content {
-    float: left;
-    display: inline;
-    clear: none;
-    text-align: inherit;
-    padding-left: 0;
-    padding-right: 0;
-    width: 100%;
-    margin-left: 0%;
-    margin-right: 3%;
-  }
-  #page_section #page_content:last-child {
-    margin-right: 0%;
-  }
-  #page_section #page_sidebar {
-    float: left;
-    display: inline;
-    clear: none;
-    text-align: inherit;
-    padding-left: 0;
-    padding-right: 0;
-    width: 100%;
-    margin-left: 0%;
-    margin-right: 3%;
-  }
-  #page_section #page_sidebar:last-child {
-    margin-right: 0%;
   }
 }
 #page_section #page_content header {

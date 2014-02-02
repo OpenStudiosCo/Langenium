@@ -7,20 +7,20 @@ body
 	center(1440px)
 
 #page_header 
-	col(1)
+	column(1)
 	padding 1.5% 1.5%
+
+#page_header .main_menu
+	main_menu()
 
 #page_section
 	padding 0 1.5%
 
-#page_section #page_nav 
-	col(3/12)
-
 #page_section #page_content 
-	col(5/12)
+	column(1/2)
 
 #page_section #page_sidebar 
-	col(4/12)
+	column(1/2)
 
 @media screen and (max-width: 1140px)
 	body
@@ -28,15 +28,11 @@ body
 	#wrapper {
 		center(960px)
 	}
-	#page_section #page_nav {
-		col(4/12)
-	}
 	#page_section #page_content {
-		col(8/12)
-		margin-right 0
+		column(2/3)
 	}
 	#page_section #page_sidebar {
-		col(1)
+		column(1/3)
 	}
 
 @media screen and (max-width: 768px)
@@ -45,12 +41,9 @@ body
 	#wrapper {
 		center(600px)
 	}
-	#page_section #page_nav {
-		col(1)
-	}
 	#page_section #page_content {
-		col(1)
+		column(1)
 	}
 	#page_section #page_sidebar {
-		col(1)
+		column(1)
 	}

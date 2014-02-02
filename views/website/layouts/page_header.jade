@@ -1,17 +1,26 @@
 header#page_header
+	h1
+		a(href='/')
+			img(src='/assets/shared/logo.png')
 	menu
-		h1
-			a(href='/')
-				img(src='/assets/shared/logo.png')
+		ul.main_menu
+			li
+				a(href='/games') Games
+			li 
+				a(href='/about') About
+			li 
+				a(href='/blog') Blog
+			li
+				a(href='/gallery') Media
+			li 
+				a(href='/guide') Guide
 		ul.login
 			li
 				input(type='text',val='Username')
 			li
 				input(type='text',val='Password')
 			li
+				a(href='#') Login
+				a(href='#') Register
 				input(type='checkbox',id='chk_remember')
 				label(for='chk_remember') Remember me 
-			li
-				a(href='#') Login
-			li
-				a(href='#') Register

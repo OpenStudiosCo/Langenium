@@ -1,0 +1,17 @@
+"routes": [
+	{
+		title: "Games",
+		description: "Interactive previews of the upcoming Langenium games",
+		url: "/games",
+		
+	},
+	{
+		title: "About",
+		description: "How this started and where it's going"
+		url: "about"
+	},
+	{
+		title
+	}
+]
+

@@ -1,15 +1,9 @@
 /*
 
 	LANGENIUM
-	Main Application
+	Server Application
 
 */
-
-
-/*
-	Modules
-*/
-
 
 var 	modules = require('./modules')();
 

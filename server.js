@@ -1,25 +1,22 @@
 /*
 
-	LANGENIUM
-	Server Application
+	Server Startup Script
 
 */
 
-var 	modules = require('./modules')();
+var 	app = require('./app')();
 
 // Initialize models
-modules.import_classes(modules, modules.models, './models');
+app.util.import_classes(app.models, './models');
 
 // Initialize controllers
-modules.import_classes(modules, modules.controllers, './controllers');
+app.util.import_classes(app.controllers, './controllers');
 
 // Initialize routes
-modules.import_classes(modules, modules.routes, './routes');
+app.util.import_classes(app.routes, './routes');
 
 // Start server
-modules.server.listen(process.env['HTTP_PORT']); // dev
+app.http.listen(process.env['HTTP_PORT']); // dev
 
-// FOR DEBUGGING ONLY
-if (process.env['HOST_URL'].indexOf('dev') >= 0) {
-	global.modules = modules;
-}
+console.log(app);
+console.log("\nServer started successfully\n");

@@ -14,7 +14,7 @@ app.util.import_classes(app.controllers, './controllers');
 
 // Configure the main route
 app.express.get('/', function(req, res){
-	
+	app.util.render(req, res, 'index', { page_template: "website/home", title: "Home - Langenium" });
 });
 
 // Start server

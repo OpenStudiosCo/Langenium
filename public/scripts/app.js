@@ -1,11 +1,14 @@
-App = Ember.Application.create();
 
-App.Router.map(function() {
-  // put your routes here
-});
+define(
+	[
+/*	Ember pre-requires for this app view go here
+		"views/ApplicationView",
+		"controllers/ApplicationController",
+		"app/router"	
+*/
+	],	function(){
+		var App = {};
+		return App;
+	}
+);
 
-App.IndexRoute = Ember.Route.extend({
-  model: function() {
-    return ['red', 'yellow', 'blue'];
-  }
-});

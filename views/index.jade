@@ -1,0 +1,16 @@
+doctype
+html
+	head
+		title= title
+	body
+	script(type="text/x-handlebars")
+		h2 Welcome to Ember.js
+		| {{outlet}}
+
+	script(type="text/x-handlebars", id="index")
+		ul
+			{{#each item in model}}
+			li {{item}}
+			{{/each}}
+
+	script(data-main="scripts/client", src="scripts/vendor/require.js")

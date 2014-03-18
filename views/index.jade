@@ -4,7 +4,10 @@ html
 		title= title
 	body
 	script(type="text/x-handlebars")
-		h2 Welcome to Ember.js
+		h1
+			{{#link-to 'index'}}Home{{/link-to}}
+		nav
+			{{#link-to 'about'}}About{{/link-to}}
 		| {{outlet}}
 
 	script(type="text/x-handlebars", id="index")
@@ -13,4 +16,11 @@ html
 			li {{item}}
 			{{/each}}
 
-	script(data-main="scripts/client", src="scripts/vendor/require.js")
+	script(type="text/x-handlebars", id="about")
+		h2 About
+		ul
+			{{#each item in model}}
+			li {{item}}
+			{{/each}}
+
+	script(data-main="scripts/client", src="scripts/libs/require.js")

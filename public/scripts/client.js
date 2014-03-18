@@ -1,18 +1,9 @@
 (function(root){
 	require(["config"], function(config){
 		requirejs.config(config);
-		require(["app", "ember"], function(App, Ember){
-			root.App = App = Ember.Application.create(App);
-
-			App.Router.map(function() {
-			  // put your routes here
-			});
-
-			App.IndexRoute = Ember.Route.extend({ 
-			  model: function() {
-			    return ['red', 'yellow', 'blue'];
-			  }
-			});
+		require(["App", "ember"], function(App, Ember){
+			var app_name = config.app_name || "App";
+			root[app_name] = App = Ember.Application.create(App);
 		});
 	});
 })(this);

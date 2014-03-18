@@ -1,13 +1,14 @@
-
 define(
 	[
-/*	Ember pre-requires for this app view go here
 		"views/ApplicationView",
 		"controllers/ApplicationController",
-		"app/router"	
-*/
-	],	function(){
-		var App = {};
+		"router"
+	],	function(ApplicationView, ApplicationController, Router){
+		var App = {
+			ApplicationView: ApplicationView,
+			ApplicationController: ApplicationController,
+			Router: Router
+		};
 		return App;
 	}
 );

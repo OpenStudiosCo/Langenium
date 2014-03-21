@@ -8,24 +8,31 @@
     "type": "git",
     "url": "https://github.com/nodejitsu/http-server.git"
   },
-  "dependencies" : {
-    "connect"   :  "*",
-    "stylus"   :  "*",
-    "jeet"   :  "*",
-    "express" :  "*",
-    "passport" :  "*",
-    "passport-facebook"    :  "*",
-    "facebook-sdk" :  "*",
-    "mongodb" :  "*",
-    "mongojs" :  "*",
-    "socket.io"   :  "*",
-    "jade"   :  "*",
-    "three" : "*",
-    "xmlhttprequest":"*",
-    "mongoose": "*"
-  }, 
+  "dependencies": {
+    "connect": "*",
+    "stylus": "*",
+    "jeet": "*",
+    "express": "*",
+    "passport": "*",
+    "passport-facebook": "*",
+    "facebook-sdk": "*",
+    "mongodb": "*",
+    "mongojs": "*",
+    "socket.io": "*",
+    "jade": "*",
+    "three": "*",
+    "xmlhttprequest": "*",
+    "mongoose": "*",
+    "ember": "*",
+    "jquery": "*"
+  },
   "license": "MIT",
   "engines": {
     "node": ">=0.8"
+  },
+  "devDependencies": {
+    "grunt": "^0.4.4",
+    "browserify": "^3.33.0",
+    "grunt-browserify": "^1.3.2"
   }
 }

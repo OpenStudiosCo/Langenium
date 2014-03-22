@@ -4,24 +4,26 @@
   "version": "0.0.1",
   "author": "Paul Brzeski <mail@paulbrzeski.com>",
   "description": "The Langenium server application",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/nodejitsu/http-server.git"
-  },
+  "repository": "https://github.com/paulbrzeski/Langenium",
   "dependencies": {
-    "connect": "*",
+    "xmlhttprequest": "*",
+    "jade": "*",
     "stylus": "*",
     "jeet": "*",
     "express": "*",
+    "compression": "*",
+    "body-parser": "*",
+    "cookie-parser": "*",
+    "express-session": "*",
+    "morgan": "*",
+    "static-favicon": "*",
+    "method-override": "*",
     "passport": "*",
     "passport-facebook": "*",
-    "facebook-sdk": "*",
     "mongodb": "*",
     "mongojs": "*",
     "socket.io": "*",
-    "jade": "*",
     "three": "*",
-    "xmlhttprequest": "*",
     "mongoose": "*",
     "ember": "*",
     "jquery": "*"
@@ -31,8 +33,8 @@
     "node": ">=0.8"
   },
   "devDependencies": {
-    "grunt": "^0.4.4",
     "browserify": "^3.33.0",
-    "grunt-browserify": "^1.3.2"
+    "gulp": "^3.5.6",
+    "gulp-browserify": "^0.5.0"
   }
 }

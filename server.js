@@ -12,7 +12,7 @@ app.util.import_classes(app.models, './models');
 // Initialize controllers
 app.util.import_classes(app.controllers, './controllers');
 
-// Configure the main route
+//* Configure the main route
 app.express.get('/', function(req, res){
 	app.util.render(req, res, 'index', { page_template: "website/home", title: "Home - Langenium" });
 });
@@ -20,5 +20,4 @@ app.express.get('/', function(req, res){
 // Start server
 app.http.listen(process.env['HTTP_PORT']); // dev
 
-console.log(app);
 console.log("\nServer started successfully\n");

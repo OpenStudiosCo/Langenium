@@ -7,8 +7,16 @@
 module.exports = function() {
 	var libs = {
 		// 3rd party libs
-		connect: require('connect'),
 		express: require('express'),
+		middleware: {
+			compression: require('compression'),
+			bodyParser: require('body-parser'),
+			cookieParser: require('cookie-parser'),
+			session: require('express-session'),
+			logger: require('morgan'),
+			favicon: require('static-favicon'),
+			methodOverride: require('method-override')
+		},
 		passport : require('passport'),
 		fbsdk: require('facebook-sdk'),
 		mongoose: require('mongoose'),
@@ -23,8 +31,6 @@ module.exports = function() {
 		user: process.env['DB_USERNAME'],
 		pass: process.env['DB_PASSWORD']
 	});
-
-	libs.fb = new libs.fbsdk.Facebook({ appId: process.env['APP_ID'], secret: process.env['APP_SECRET'] });
 
 	libs.io = require('socket.io').listen(parseInt(process.env['IO_PORT']));
 	libs.io.set('log level', 2);

@@ -21,36 +21,37 @@ module.exports = function() {
 	// Create an endpoint for the HTTP server on the main application
 	app.http = require('http').createServer(app.express);
 
+	app.router = app.libs.express.Router();
+
 	// Configure express
-	app.express.configure(function () {
-		app.express.use(app.express.router);
-		app.express.use(app.libs.connect.cookieParser());
-		app.express.use(app.libs.connect.bodyParser());
-		app.express.use(app.libs.connect.compress());
-		app.express.use(app.libs.connect.session({ secret: 'keyboard cat' }));
-		app.express.use(app.libs.connect.logger('dev'));
-		
-	 	app.express.use(app.libs.connect.favicon("public/favicon.ico"));
-	 	app.express.use(app.libs.express.methodOverride());
-		app.express.use(app.libs.fb);
-		app.express.use(app.libs.passport.initialize());
-	  	app.express.use(app.libs.passport.session());
-	  	app.express.use(app.libs.stylus.middleware({
-	  		debug: true,
-	  		src: __dirname + '/',
-	  		dest: __dirname + '/public/',
-	  		compile: function (str, path) {
-	  			return app.libs.stylus(str)
-	  			.set('filename', path)
-	  			.use(app.libs.jeet());
-			}
-	  	}));
-	  	app.express.use(app.libs.express.static(__dirname + '/public')); // This has to be after stylus so that the CSS files get regenerated on change
-	  	
-		app.express.set('views', __dirname + '/views');
-		app.express.set('view engine', 'jade');
-		app.express.locals.pretty = true;
-	});
+	app.express.use(app.libs.middleware.cookieParser());
+	app.express.use(app.libs.middleware.bodyParser());
+	app.express.use(app.libs.middleware.compression());
+	app.express.use(app.libs.middleware.session({ secret: 'keyboard cat' }));
+	app.express.use(app.libs.middleware.logger('dev'));
+	
+ 	app.express.use(app.libs.middleware.favicon("public/favicon.ico"));
+ 	app.express.use(app.libs.middleware.methodOverride());
+
+	//app.express.use(app.libs.fb);
+	app.express.use(app.libs.passport.initialize());
+  	app.express.use(app.libs.passport.session());
+  	app.express.use(app.libs.stylus.middleware({
+  		debug: true,
+  		src: __dirname + '/',
+  		dest: __dirname + '/public/',
+  		compile: function (str, path) {
+  			return app.libs.stylus(str)
+  			.set('filename', path)
+  			.use(app.libs.jeet());
+		}
+  	}));
+  	app.express.use(app.libs.express.static(__dirname + '/public')); // This has to be after stylus so that the CSS files get regenerated on change
+  	
+	app.express.set('views', __dirname + '/views');
+	app.express.set('view engine', 'jade');
+	app.express.locals.pretty = true;
+
 
 	// Utility functions that don't really have a place and can be called from anywhere
 	app.util = require('./util')(app);

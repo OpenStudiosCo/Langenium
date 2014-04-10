@@ -1,7 +1,7 @@
 var gulp = require('gulp'),
 	browserify = require('gulp-browserify'),
-	supervisor = require('gulp-supervisor'),
-	uglify = require('gulp-uglify');
+	uglify = require('gulp-uglify'),
+	watch = require('gulp-watch');
 
 // Basic usage
 gulp.task('scripts', function() {
@@ -20,16 +20,10 @@ gulp.task('scripts', function() {
         	}
         }))
         .pipe(uglify())
+        .pipe(watch())
         .pipe(gulp.dest('./public/js'))
-});
-
-gulp.task('supervisor', function() {
-    supervisor('server.js', {
-    	forceWatch: true
-    });
 });
 
 gulp.task('default', function() {
 	gulp.run('scripts');
-	gulp.run('supervisor');
 });

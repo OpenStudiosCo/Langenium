@@ -6,6 +6,9 @@
 
 var 	app = require('./app')();
 
+// Run Gulp tasks
+require('./gulpfile');
+
 // Initialize models
 app.util.import_classes(app.models, './models');
 

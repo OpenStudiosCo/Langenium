@@ -1,12 +1,11 @@
 var gulp = require('gulp'),
 	browserify = require('gulp-browserify'),
+	supervisor = require('gulp-supervisor'),
 	uglify = require('gulp-uglify'),
 	watch = require('gulp-watch');
 
-// Basic usage
-gulp.task('scripts', function() {
-    // Single entry point to browserify
-    gulp.src(['browserify-bundles/client-libs.js'])
+gulp.task('libs', function() {
+    gulp.src('client/libs.js')
         .pipe(browserify({
         	shim: {
         		jquery: {
@@ -20,10 +19,26 @@ gulp.task('scripts', function() {
         	}
         }))
         .pipe(uglify())
-        .pipe(watch())
         .pipe(gulp.dest('./public/js'))
 });
 
+gulp.task('client', function() {
+    gulp.src('client/client.js')
+        .pipe(browserify())
+        .pipe(uglify())
+        .pipe(gulp.dest('./public/js'))
+});
+
+gulp.task('supervisor', function() {
+	supervisor('server.js');
+	return 1;
+});
+
 gulp.task('default', function() {
-	gulp.run('scripts');
+	gulp.start('libs');
+	gulp.start('client');
+	gulp.start('supervisor');
+	watch({glob: 'client/*.js'}, function(files){
+		gulp.start('client');	
+	});
 });

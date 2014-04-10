@@ -36,6 +36,9 @@
     "browserify": "^3.33.0",
     "browserify-shim": "*",
     "gulp": "^3.5.6",
-    "gulp-browserify": "^0.5.0"
+    "gulp-browserify": "^0.5.0",
+    "gulp-supervisor": "^0.1.0",
+    "gulp-uglify": "^0.2.1",
+    "gulp-watch": "^0.5.4"
   }
 }

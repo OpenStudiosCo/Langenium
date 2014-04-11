@@ -20,12 +20,14 @@
     "method-override": "*",
     "passport": "*",
     "passport-facebook": "*",
+    "facebook-sdk": "*",
     "mongodb": "*",
     "mongojs": "*",
     "socket.io": "*",
     "three": "*",
     "mongoose": "*",
-    "ember": "*",
+    "ember": "~0.9",
+    "handlebars": "*",
     "jquery": "*"
   },
   "license": "MIT",
@@ -37,6 +39,7 @@
     "browserify-shim": "*",
     "gulp": "^3.5.6",
     "gulp-browserify": "^0.5.0",
+    "gulp-supervisor": "*",
     "gulp-uglify": "^0.2.1",
     "gulp-watch": "^0.5.4"
   }

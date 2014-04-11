@@ -1,1 +1,37 @@
-!function n(e,r,t){function o(f,u){if(!r[f]){if(!e[f]){var a="function"==typeof require&&require;if(!u&&a)return a(f,!0);if(i)return i(f,!0);throw new Error("Cannot find module '"+f+"'")}var p=r[f]={exports:{}};e[f][0].call(p.exports,function(n){var r=e[f][1][n];return o(r?r:n)},p,p.exports,n,e,r,t)}return r[f].exports}for(var i="function"==typeof require&&require,f=0;f<t.length;f++)o(t[f]);return o}({1:[function(n,e){e.exports=function(){var n={name:"Langenium Client"};return console.log("Client ready"),n}},{}],2:[function(n){(function(e){e.L=n("./app")()}).call(this,"undefined"!=typeof self?self:"undefined"!=typeof window?window:{})},{"./app":1}]},{},[2]);
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+module.exports = function() {
+	var app = {
+		name : "Langenium Client"
+	};
+	app.Ember = Ember.Application.create();
+
+	console.log("Client ready")
+	return app;
+}
+
+
+},{}],2:[function(require,module,exports){
+(function (global){
+// Initialize the Langenium client
+
+global.L = require('./app')()
+
+L.Ember.Router.map(function(){
+	this.route('about', { 
+		path: '/about'
+	});
+});
+
+L.Ember.IndexRoute = Ember.Route.extend({
+	model: function() {
+		return ['red', 'yellow', 'blue'];
+	}
+});
+
+L.Ember.AboutRoute = Ember.Route.extend({
+	model: function() {
+		return ['severe', 'green', 'purple', 'severe'];
+	}
+});
+}).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./app":1}]},{},[2])

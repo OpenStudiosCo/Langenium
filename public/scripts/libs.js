@@ -46720,8 +46720,6 @@ var __module0__ = (function(__dependency1__, __dependency2__, __dependency3__, _
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],"handlebars":[function(require,module,exports){
 module.exports=require('4/1IeM');
-},{}],"jquery":[function(require,module,exports){
-module.exports=require('or5cxk');
 },{}],"or5cxk":[function(require,module,exports){
 (function (global){
 (function browserifyShim(module, exports, define, browserify_shim__define__module__export__) {
@@ -55905,6 +55903,8 @@ return jQuery;
 }).call(global, undefined, undefined, undefined, function defineExport(ex) { module.exports = ex; });
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],"jquery":[function(require,module,exports){
+module.exports=require('or5cxk');
 },{}],"D98f3E":[function(require,module,exports){
 (function (global){
 (function browserifyShim(module, exports, define, browserify_shim__define__module__export__) {

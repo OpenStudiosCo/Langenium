@@ -1,6 +1,6 @@
 module.exports = function() {
 	var app = {
-		name : "Langenium application"
+		name : "Langenium client application"
 	};
 
 	console.log("Client application ready")

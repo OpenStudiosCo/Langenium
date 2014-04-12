@@ -1,19 +1,49 @@
 /* 
 	Langenium application stylesheet
-* /
-
-
-
-@import "../shared/defaults.styl"
-@import "../shared/forms.styl"
-@import "../shared/menu_layouts.styl"
-@import "../shared/menu_styles.styl"
-@import "../shared/panels.styl"
 */
+
+@import 'jeet'
+@import './shared/defaults.styl'
+
+body 
+	margin 0
+	overflow hidden
+	font-size 75%
+	color #FFFFFF
 
 h1 
 	float left
+	a
+		font-size 0.1px
 
-nav
-	float left
-	clear both
+#container
+	pointer-events none
+	position absolute
+	top 0
+	left 0
+	right 0
+	bottom 0
+	*
+		pointer-events auto
+	.ember-view
+		center(1440px)
+		nav
+			column(1)
+			#main_menu
+				padding-top 1em
+				padding-left 4em
+				float left
+				li 
+					float left
+					list-style none outside
+					a
+						color #FFFFFF			
+						margin .5em .25em
+						padding .35em .5em
+						font-family 'Franchise'
+						font-size 1.85em
+						text-transform uppercase
+						text-align center
+						text-decoration none
+					a:hover,a.active
+						text-decoration underline

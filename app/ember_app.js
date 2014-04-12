@@ -1,5 +1,7 @@
 module.exports = function() {
-	var ember_app = Ember.Application.create();
+	var ember_app = Ember.Application.create({
+		rootElement: '#container'
+	});
 
 	ember_app.Router.map(function(){
 		this.resource('games');

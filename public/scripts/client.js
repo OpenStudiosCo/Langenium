@@ -11,7 +11,9 @@ module.exports = function() {
 
 },{}],2:[function(require,module,exports){
 module.exports = function() {
-	var ember_app = Ember.Application.create();
+	var ember_app = Ember.Application.create({
+		rootElement: '#container'
+	});
 
 	ember_app.Router.map(function(){
 		this.resource('games');
@@ -141,10 +143,10 @@ module.exports = function() {
 
 	scenograph.director.onWindowResize = function() {
 
-		L.camera.aspect = window.innerWidth / window.innerHeight;
-		L.camera.updateProjectionMatrix();
+		L.scenograph.director.camera.aspect = window.innerWidth / window.innerHeight;
+		L.scenograph.director.camera.updateProjectionMatrix();
 
-		L.renderer.setSize( window.innerWidth, window.innerHeight );
+		L.scenograph.director.renderer.setSize( window.innerWidth, window.innerHeight );
 
 	}
 				

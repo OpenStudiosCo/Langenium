@@ -1,19 +1,120 @@
 /* 
 	Langenium application stylesheet
-* /
-
-
-
-@import "../shared/defaults.styl"
-@import "../shared/forms.styl"
-@import "../shared/menu_layouts.styl"
-@import "../shared/menu_styles.styl"
-@import "../shared/panels.styl"
 */
+@font-face {
+  font-family: 'Franchise';
+  font-style: normal;
+  font-weight: normal;
+  src: url("/assets/font/francise.eot");
+  src: url("/assets/font/franchise.eot?#iefix") format('embedded-opentype'), url("/assets/font/franchise.woff") format('woff'), url("/assets/font/franchise.ttf") format('truetype'), url("/assets/font/franchise.svg#franchiseregular") format('svg');
+}
+h1 {
+  margin: 0;
+  float: left;
+}
+h1,
+h2 {
+  letter-spacing: 0.025em;
+}
+h3,
+h4,
+h5,
+h6 {
+  letter-spacing: 0.01em;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Franchise';
+}
+body {
+  margin: 0;
+  overflow: hidden;
+  font-size: 75%;
+  color: #fff;
+}
 h1 {
   float: left;
 }
-nav {
-  float: left;
+h1 a {
+  font-size: 0.1px;
+}
+#container {
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+#container * {
+  pointer-events: auto;
+}
+#container .ember-view {
+  *zoom: 1;
+  width: auto;
+  max-width: 1440px;
+  float: none;
+  display: block;
+  margin-right: auto;
+  margin-left: auto;
+  padding-left: 0;
+  padding-right: 0;
+}
+#container .ember-view:before,
+#container .ember-view:after {
+  content: '';
+  display: table;
+}
+#container .ember-view:after {
   clear: both;
+}
+#container .ember-view nav {
+  *zoom: 1;
+  float: left;
+  display: inline;
+  clear: none;
+  text-align: inherit;
+  padding-left: 0;
+  padding-right: 0;
+  width: 100%;
+  margin-left: 0%;
+  margin-right: 3%;
+}
+#container .ember-view nav:before,
+#container .ember-view nav:after {
+  content: '';
+  display: table;
+}
+#container .ember-view nav:after {
+  clear: both;
+}
+#container .ember-view nav:last-child {
+  margin-right: 0%;
+}
+#container .ember-view nav #main_menu {
+  padding-top: 1em;
+  padding-left: 4em;
+  float: left;
+}
+#container .ember-view nav #main_menu li {
+  float: left;
+  list-style: none outside;
+}
+#container .ember-view nav #main_menu li a {
+  color: #fff;
+  margin: 0.5em 0.25em;
+  padding: 0.35em 0.5em;
+  font-family: 'Franchise';
+  font-size: 1.85em;
+  text-transform: uppercase;
+  text-align: center;
+  text-decoration: none;
+}
+#container .ember-view nav #main_menu li a:hover,
+#container .ember-view nav #main_menu li a.active {
+  text-decoration: underline;
 }

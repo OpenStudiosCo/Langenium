@@ -2,26 +2,11 @@ doctype
 html
 	head
 		title= title
+		link(rel="stylesheet",href="styles/styles.css")
 	body
-	script(type="text/x-handlebars")
-		h1
-			{{#link-to 'index'}}Home{{/link-to}}
-		nav
-			{{#link-to 'about'}}About{{/link-to}}
-		| {{outlet}}
+		include templates/layout
+		include templates/pages/index
+		include templates/pages/about
 
-	script(type="text/x-handlebars", id="index")
-		ul
-			{{#each item in model}}
-			li {{item}}
-			{{/each}}
-
-	script(type="text/x-handlebars", id="about")
-		h2 About
-		ul
-			{{#each item in model}}
-			li {{item}}
-			{{/each}}
-
-	script(src="js/libs.js")
-	script(src="js/client.js")
+	script(src="scripts/libs.js")
+	script(src="scripts/client.js")

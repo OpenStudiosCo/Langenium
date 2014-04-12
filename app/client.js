@@ -1,11 +1,15 @@
 // Initialize the Langenium client
 
-global.L = require('./app')()
+// Load and initialize the Ember application
+global.L = require('./L')()
+
+L.Ember = Ember.Application.create();
 
 L.Ember.Router.map(function(){
-	this.route('about', { 
-		path: '/about'
-	});
+	this.resource('games');
+	this.resource('about');
+	this.resource('blog');
+	this.resource('media');
 });
 
 L.Ember.IndexRoute = Ember.Route.extend({
@@ -19,3 +23,4 @@ L.Ember.AboutRoute = Ember.Route.extend({
 		return ['severe', 'green', 'purple', 'severe'];
 	}
 });
+

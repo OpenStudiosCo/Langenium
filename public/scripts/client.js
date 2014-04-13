@@ -119,6 +119,16 @@ L.scenograph = require('./scenograph')()
 
 L.scenograph.director.init(L);
 L.scenograph.director.animate(L);
+
+L.socket = io.connect(window.location.hostname);
+L.socket.emit('pong', { time: new Date().getTime()});
+L.socket.on('ping', function(data){
+	$('#latency .time').html(data.time);
+	$('#latency .latency').html(data.latency);
+	L.socket.emit('pong', { time: new Date().getTime()});
+});
+
+
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./L":1,"./ember_app":2,"./scenograph":4}],4:[function(require,module,exports){
 module.exports = function() {

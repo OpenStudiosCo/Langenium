@@ -10,4 +10,12 @@ script(type="text/x-handlebars")
 			li {{#link-to 'about'}}About{{/link-to}}
 			li {{#link-to 'blog'}}Blog{{/link-to}}
 			li {{#link-to 'media'}}Media{{/link-to}}
+			li#latency.push-right
+				table
+					tr
+						td Time
+						td Latency
+					tr
+						td.time
+						td.latency
 	| {{outlet}}

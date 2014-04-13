@@ -32,20 +32,6 @@ module.exports = function() {
 		pass: process.env['DB_PASSWORD']
 	});
 
-	libs.io = require('socket.io').listen(parseInt(process.env['IO_PORT']));
-	libs.io.set('log level', 2);
-
-	// This should go into some kind of utility class... it applies to both admin and game.. maybe website? 
-
-	libs.io.on('connection', function(socket) {
-		socket.emit('ping', { time: new Date().getTime(), latency: 0 });
-		socket.on('pong', function (data) { 
-			return function(socket, data) {
-				var time = new Date().getTime(); 
-				var latency = time - data.time;
-				socket.emit("ping", { time: new Date().getTime(), latency: latency });
-			}(socket, data) });
-	});
 	
 	return libs;
 };

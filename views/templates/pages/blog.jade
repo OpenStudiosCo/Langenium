@@ -1,3 +1,12 @@
 script(type="text/x-handlebars", id="blog")
-	h2 Blog
-	
+	#page
+		#sidebar
+			ul
+				| {{#each item in model}}
+				li 
+					| {{#link-to 'posts' item.post_id}}
+					| {{item.title}}
+					| {{/link-to}}
+				| {{/each}}
+		#content
+			| {{outlet}}

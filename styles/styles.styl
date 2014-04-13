@@ -8,12 +8,14 @@
 body 
 	margin 0
 	overflow hidden
+	font-family arial
 	font-size 75%
 	color #FFFFFF
 
 h1 
 	float left
 	a
+		padding .125em 0
 		font-size 0.1px
 
 #container
@@ -47,3 +49,9 @@ h1
 						text-decoration none
 					a:hover,a.active
 						text-decoration underline
+		#page
+			column(1)
+			#content
+				column(1/2)
+			#sidebar
+				column(1/2)

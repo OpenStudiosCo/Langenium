@@ -24,6 +24,15 @@ gulp.task('libs', function() {
 						jquery: '$'
 					}
 				},
+				emberdata: {
+					path: './app/vendor/ember-data.js',
+					exports: 'EmberData',
+					depends: {
+						handlebars: 'Handlebars',
+						jquery: '$',
+						ember: 'Ember'
+					}
+				},
 				three: {
 					path: './node_modules/three/three.js',
 					exports: 'THREE'

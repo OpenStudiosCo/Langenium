@@ -33,6 +33,7 @@ h6 {
 body {
   margin: 0;
   overflow: hidden;
+  font-family: arial;
   font-size: 75%;
   color: #fff;
 }
@@ -40,6 +41,7 @@ h1 {
   float: left;
 }
 h1 a {
+  padding: 0.125em 0;
   font-size: 0.1px;
 }
 #container {
@@ -117,4 +119,73 @@ h1 a {
 #container .ember-view nav #main_menu li a:hover,
 #container .ember-view nav #main_menu li a.active {
   text-decoration: underline;
+}
+#container .ember-view #page {
+  *zoom: 1;
+  float: left;
+  display: inline;
+  clear: none;
+  text-align: inherit;
+  padding-left: 0;
+  padding-right: 0;
+  width: 100%;
+  margin-left: 0%;
+  margin-right: 3%;
+}
+#container .ember-view #page:before,
+#container .ember-view #page:after {
+  content: '';
+  display: table;
+}
+#container .ember-view #page:after {
+  clear: both;
+}
+#container .ember-view #page:last-child {
+  margin-right: 0%;
+}
+#container .ember-view #page #content {
+  *zoom: 1;
+  float: left;
+  display: inline;
+  clear: none;
+  text-align: inherit;
+  padding-left: 0;
+  padding-right: 0;
+  width: 48.5%;
+  margin-left: 0%;
+  margin-right: 3%;
+}
+#container .ember-view #page #content:before,
+#container .ember-view #page #content:after {
+  content: '';
+  display: table;
+}
+#container .ember-view #page #content:after {
+  clear: both;
+}
+#container .ember-view #page #content:last-child {
+  margin-right: 0%;
+}
+#container .ember-view #page #sidebar {
+  *zoom: 1;
+  float: left;
+  display: inline;
+  clear: none;
+  text-align: inherit;
+  padding-left: 0;
+  padding-right: 0;
+  width: 48.5%;
+  margin-left: 0%;
+  margin-right: 3%;
+}
+#container .ember-view #page #sidebar:before,
+#container .ember-view #page #sidebar:after {
+  content: '';
+  display: table;
+}
+#container .ember-view #page #sidebar:after {
+  clear: both;
+}
+#container .ember-view #page #sidebar:last-child {
+  margin-right: 0%;
 }

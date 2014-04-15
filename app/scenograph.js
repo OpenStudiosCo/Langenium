@@ -8,7 +8,8 @@ module.exports = function() {
 		scene: {},
 		renderer: {},
 		texture: {},
-		controls: {}
+		controls: {},
+		time: new Date().getTime()
 	};
 	
 	scenograph.director.init = function(L) {
@@ -18,7 +19,7 @@ module.exports = function() {
 		document.body.appendChild( L.scenograph.director.renderer.domElement );
 
 		L.scenograph.director.camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 10000000 );
-		L.scenograph.director.camera.position.z = 4000;
+		L.scenograph.director.camera.position.z = 7000;
 
 		L.scenograph.director.scene = new THREE.Scene();
 
@@ -54,7 +55,7 @@ module.exports = function() {
 		L.scenograph.director.scene.add( mesh );
 
 		window.addEventListener( 'resize', L.scenograph.director.onWindowResize, false );
-		L.scenograph.director.controls = new THREE.OrbitControls( L.scenograph.director.camera, L.scenograph.director.renderer.domElement );
+		//L.scenograph.director.controls = new THREE.OrbitControls( L.scenograph.director.camera, L.scenograph.director.renderer.domElement );
 
 		 // Using AU (Astronomical Unit x 1000 + 1000 for sun's size) for distance, proportion to Earth for others
 	    // Sun
@@ -99,9 +100,16 @@ module.exports = function() {
 				
 	scenograph.director.animate = function() {
 
+		//L.scenograph.director.controls.update();
+		L.scenograph.director.time = new Date().getTime();
+
+		var newtime = L.scenograph.director.time * 0.0001;
+		L.scenograph.director.camera.position.set(9000 * Math.cos(newtime), 7000 * Math.sin(newtime), 7000 * Math.cos(0))
+		
+		L.scenograph.director.camera.lookAt(new THREE.Vector3(0,0,0))
 		requestAnimationFrame( L.scenograph.director.animate );
 
-		L.scenograph.director.controls.update();
+		
 
 		L.scenograph.director.renderer.render( L.scenograph.director.scene, L.scenograph.director.camera );
 

@@ -7,6 +7,7 @@ var gulp = require('gulp'),
 gulp.task('libs', function() {
 	return gulp.src('app/libs.js')
 		.pipe(browserify({
+			insertGlobals : true,
 			shim: {
 				jquery: {
 					path: './node_modules/jquery/dist/jquery',
@@ -52,7 +53,9 @@ gulp.task('libs', function() {
 
 gulp.task('client', function() {
 	return gulp.src('app/client.js')
-		.pipe(browserify())
+		.pipe(browserify({
+			insertGlobals : true
+		}))
 		//.pipe(uglify())
 		.pipe(gulp.dest('./public/scripts'))
 });
@@ -66,8 +69,8 @@ gulp.task('default', function() {
 	gulp.start('libs');
 	gulp.start('client');
 	gulp.start('supervisor');
-	watch({glob: 'app/*.js'}, function(files){
-		gulp.start('libs');
+	watch({glob: 'app/*.js'}, function(files){	
 		gulp.start('client');	
+		gulp.start('libs');
 	});
 });

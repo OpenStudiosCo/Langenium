@@ -1,6 +1,14 @@
 script(type="text/x-handlebars", id="about")
-	h2 About
-	ul
-		| {{#each item in model}}
-		li {{item}}
-		| {{/each}}
+	#page
+		#sidebar
+			ul
+				li Introduction to the Langenium franchise
+				li How it began
+				li Current status
+				li Future Direction
+				li Github repos - Universe and main
+		#content
+			ul
+				| {{#each item in model}}
+				li {{item}}
+				| {{/each}}

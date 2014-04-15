@@ -62,7 +62,7 @@ module.exports = function() {
 	// This should go into some kind of utility class... it applies to both admin and game.. maybe website? 
 
 	app.io.on('connection', function(socket) {
-		console.log("Client has conected!")
+		console.log("Client has connected!")
 		socket.emit('ping', { time: new Date().getTime(), latency: 0 });
 		socket.on('pong', function (data) { 
 			return function(socket, data) {

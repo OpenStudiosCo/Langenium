@@ -11,7 +11,7 @@ module.exports = function() {
 
 
 }).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/L.js","/")
-},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":8,"buffer":5}],2:[function(require,module,exports){
+},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],2:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 module.exports = function() {
 	var ember_app = Ember.Application.create({
@@ -21,7 +21,11 @@ module.exports = function() {
 	ember_app.ApplicationAdapter = DS.FixtureAdapter;
 
 	ember_app.Router.map(function(){
-		this.resource('games');
+		this.resource('games',{ path: '/games/'}, function(){
+			this.resource('epoch-exordium');
+			this.resource('mmo');
+			this.resource('prototypes', {path:'/prototypes/:id'});
+		});
 		this.resource('about');
 		this.resource('blog', {path: '/blog/'}, function(){
 			this.resource('posts', {path:'/posts/:id'})
@@ -29,11 +33,36 @@ module.exports = function() {
 		this.resource('media');
 	});
 
+	ember_app.AboutRoute = Ember.Route.extend({
+		model: function() {
+			return ['severe', 'green', 'purple', 'severe'];
+		}
+	});
+
+
+
+	return ember_app;
+}
+}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/ember_app.js","/")
+},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],3:[function(require,module,exports){
+(function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
+module.exports = function (ember_app) {
+	ember_app.BlogRoute = Ember.Route.extend({
+		model: function() {
+			return this.store.findAll('post');
+		}
+	});
+
+	ember_app.PostsRoute = Ember.Route.extend({
+		model: function(params) {
+			return this.store.find('post', params.id);
+		}
+	});
+
 	ember_app.Post = DS.Model.extend({
 		title: DS.attr('string'),
 		description: DS.attr('string')
 	});
-
 	// Chuck this in a unit test when moved to server fed data
 	ember_app.Post.FIXTURES = [
 		{
@@ -52,35 +81,65 @@ module.exports = function() {
 			description: "Pork sausage jerky corned beef pork belly pork loin venison spare ribs shoulder tail chicken ground round. Ball tip andouille ribeye short loin, pastrami short ribs boudin hamburger cow swine filet mignon pork chop. Beef meatloaf ribeye jerky."
 		}
 	];
+}
+}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/ember_app\\routes\\blog.js","/ember_app\\routes")
+},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],4:[function(require,module,exports){
+(function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
+module.exports = function (ember_app) {
+	ember_app.GamesRoute = Ember.Route.extend({
+		model: function() {
+			return this.store.findAll('prototype');
+		}		
+	});
 
+	ember_app.EpochExordiumRoute = Ember.Route.extend({
+		renderTemplate: function() {
+			console.log("Starting up Epoch Exordium engine")
+		}
+	});
+	ember_app.MmoRoute = Ember.Route.extend({
+		renderTemplate: function() {
+			console.log("Starting up MMO engine")
+		}
+	});
+	ember_app.PrototypesRoute = Ember.Route.extend({
+		model: function(params) {
+			return this.store.find('prototype', params.id)
+		},
+		renderTemplate: function() {
+			console.log("Starting up '" + this.currentModel._data.title + "' prototype")
+		}
+	});
+
+	ember_app.Prototype = DS.Model.extend({
+		title: DS.attr('string'),
+		description: DS.attr('string')
+	});
+	ember_app.Prototype.FIXTURES = [
+		{
+			id: 0,
+			title: "Epoch Exordium Level 1",
+			description: "First attempt at creating a self contained level"
+		},
+		{
+			id: 1,
+			title: "MMO Preview 1",
+			description: "Rebuilding the MMO ship preview in the Phase 4 engine"
+		}
+	];
+}
+}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/ember_app\\routes\\games.js","/ember_app\\routes")
+},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],5:[function(require,module,exports){
+(function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
+module.exports = function (ember_app) {
 	ember_app.IndexRoute = Ember.Route.extend({
 		model: function() {
 			return this.store.findAll('post');
 		}
 	});
-
-	ember_app.AboutRoute = Ember.Route.extend({
-		model: function() {
-			return ['severe', 'green', 'purple', 'severe'];
-		}
-	});
-
-	ember_app.BlogRoute = Ember.Route.extend({
-		model: function() {
-			return this.store.findAll('post');
-		}
-	});
-
-	ember_app.PostsRoute = Ember.Route.extend({
-		model: function(params) {
-			return this.store.find('post', params.id);
-		}
-	});
-
-	return ember_app;
 }
-}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/ember_app.js","/")
-},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":8,"buffer":5}],3:[function(require,module,exports){
+}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/ember_app\\routes\\index.js","/ember_app\\routes")
+},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],6:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 // Initialize the Langenium client
 
@@ -88,6 +147,9 @@ module.exports = function() {
 global.L = require('./L')()
 
 L.ember_app = require('./ember_app')()
+require('./ember_app/routes/blog')(L.ember_app);
+require('./ember_app/routes/index')(L.ember_app);
+require('./ember_app/routes/games')(L.ember_app);
 
 L.scenograph = require('./scenograph')()
 
@@ -103,8 +165,8 @@ L.socket.on('ping', function(data){
 });
 
 
-}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_b8c0ec86.js","/")
-},{"./L":1,"./ember_app":2,"./scenograph":4,"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":8,"buffer":5}],4:[function(require,module,exports){
+}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_9e7343b7.js","/")
+},{"./L":1,"./ember_app":2,"./ember_app/routes/blog":3,"./ember_app/routes/games":4,"./ember_app/routes/index":5,"./scenograph":7,"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],7:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 module.exports = function() {
 	var scenograph = {
@@ -150,13 +212,11 @@ module.exports = function() {
 		shader.uniforms[ "tCube" ].value = textureCube;
 
 		var material = new THREE.ShaderMaterial( {
-
 			fragmentShader: shader.fragmentShader,
 			vertexShader: shader.vertexShader,
 			uniforms: shader.uniforms,
 			depthWrite: false,
 			side: THREE.BackSide
-
 		} );
 
 		mesh = new THREE.Mesh( geometry, material );
@@ -227,7 +287,7 @@ module.exports = function() {
 
 };
 }).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/scenograph.js","/")
-},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":8,"buffer":5}],5:[function(require,module,exports){
+},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],8:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 /**
  * The buffer module from node.js, for the browser.
@@ -1342,7 +1402,7 @@ function assert (test, message) {
 }
 
 }).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/..\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\buffer\\index.js","/..\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\buffer")
-},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":8,"base64-js":6,"buffer":5,"ieee754":7}],6:[function(require,module,exports){
+},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"base64-js":9,"buffer":8,"ieee754":10}],9:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
@@ -1467,7 +1527,7 @@ var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 }())
 
 }).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/..\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\buffer\\node_modules\\base64-js\\lib\\b64.js","/..\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\buffer\\node_modules\\base64-js\\lib")
-},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":8,"buffer":5}],7:[function(require,module,exports){
+},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],10:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 exports.read = function(buffer, offset, isLE, mLen, nBytes) {
   var e, m,
@@ -1555,7 +1615,7 @@ exports.write = function(buffer, value, offset, isLE, mLen, nBytes) {
 };
 
 }).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/..\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\buffer\\node_modules\\ieee754\\index.js","/..\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\buffer\\node_modules\\ieee754")
-},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":8,"buffer":5}],8:[function(require,module,exports){
+},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],11:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 // shim for using process in browser
 
@@ -1619,4 +1679,4 @@ process.chdir = function (dir) {
 };
 
 }).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/..\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js","/..\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process")
-},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":8,"buffer":5}]},{},[3])
+},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}]},{},[6])

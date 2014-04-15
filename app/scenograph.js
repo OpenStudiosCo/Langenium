@@ -42,13 +42,11 @@ module.exports = function() {
 		shader.uniforms[ "tCube" ].value = textureCube;
 
 		var material = new THREE.ShaderMaterial( {
-
 			fragmentShader: shader.fragmentShader,
 			vertexShader: shader.vertexShader,
 			uniforms: shader.uniforms,
 			depthWrite: false,
 			side: THREE.BackSide
-
 		} );
 
 		mesh = new THREE.Mesh( geometry, material );

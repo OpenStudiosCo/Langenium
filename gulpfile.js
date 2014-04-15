@@ -69,7 +69,7 @@ gulp.task('default', function() {
 	gulp.start('libs');
 	gulp.start('client');
 	gulp.start('supervisor');
-	watch({glob: 'app/*.js'}, function(files){	
+	watch({glob: 'app/**/*.js'}, function(files){	
 		gulp.start('client');	
 		//gulp.start('libs');
 	});

@@ -9,7 +9,7 @@ var THREE = require('three');
 var OrbitControls = require('orbitcontrols')
 
 console.log("Libraries loaded successfully!");
-}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_5791f601.js","/")
+}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_ad8474be.js","/")
 },{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8,"ember":"8jyZbj","emberdata":"jSnhCN","handlebars":"4/1IeM","jquery":"or5cxk","orbitcontrols":"D98f3E","three":"z8HVlD"}],"8jyZbj":[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 (function browserifyShim(module, exports, define, browserify_shim__define__module__export__) {

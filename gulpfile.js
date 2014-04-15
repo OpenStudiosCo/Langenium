@@ -27,7 +27,7 @@ gulp.task('libs', function() {
 				},
 				emberdata: {
 					path: './app/vendor/ember-data.js',
-					exports: 'EmberData',
+					exports: 'DS',
 					depends: {
 						handlebars: 'Handlebars',
 						jquery: '$',
@@ -71,6 +71,6 @@ gulp.task('default', function() {
 	gulp.start('supervisor');
 	watch({glob: 'app/*.js'}, function(files){	
 		gulp.start('client');	
-		gulp.start('libs');
+		//gulp.start('libs');
 	});
 });

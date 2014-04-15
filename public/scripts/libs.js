@@ -9,10 +9,8 @@ var THREE = require('three');
 var OrbitControls = require('orbitcontrols')
 
 console.log("Libraries loaded successfully!");
-}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_4f9b60c4.js","/")
-},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8,"ember":"8jyZbj","emberdata":"jSnhCN","handlebars":"4/1IeM","jquery":"or5cxk","orbitcontrols":"D98f3E","three":"z8HVlD"}],"ember":[function(require,module,exports){
-module.exports=require('8jyZbj');
-},{}],"8jyZbj":[function(require,module,exports){
+}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_17608429.js","/")
+},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8,"ember":"8jyZbj","emberdata":"jSnhCN","handlebars":"4/1IeM","jquery":"or5cxk","orbitcontrols":"D98f3E","three":"z8HVlD"}],"8jyZbj":[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 (function browserifyShim(module, exports, define, browserify_shim__define__module__export__) {
 
@@ -44117,7 +44115,9 @@ Ember.State = generateRemovedClass("Ember.State");
 }).call(global, undefined, undefined, undefined, function defineExport(ex) { module.exports = ex; });
 
 }).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/vendor\\ember-1.5.0.js","/vendor")
-},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8,"handlebars":"4/1IeM","jquery":"or5cxk"}],"jSnhCN":[function(require,module,exports){
+},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8,"handlebars":"4/1IeM","jquery":"or5cxk"}],"ember":[function(require,module,exports){
+module.exports=require('8jyZbj');
+},{}],"jSnhCN":[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 (function browserifyShim(module, exports, define, browserify_shim__define__module__export__) {
 
@@ -55444,7 +55444,7 @@ define("ember-inflector/lib/system/string",
   });
 global.DS = requireModule('ember-data/lib/main')['default'];
 }(Ember.lookup));
-; browserify_shim__define__module__export__(typeof EmberData != "undefined" ? EmberData : window.EmberData);
+; browserify_shim__define__module__export__(typeof DS != "undefined" ? DS : window.DS);
 
 }).call(global, undefined, undefined, undefined, function defineExport(ex) { module.exports = ex; });
 
@@ -59449,7 +59449,9 @@ process.chdir = function (dir) {
 };
 
 }).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/..\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js","/..\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process")
-},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],"or5cxk":[function(require,module,exports){
+},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],"jquery":[function(require,module,exports){
+module.exports=require('or5cxk');
+},{}],"or5cxk":[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 (function browserifyShim(module, exports, define, browserify_shim__define__module__export__) {
 /*!
@@ -68632,9 +68634,7 @@ return jQuery;
 }).call(global, undefined, undefined, undefined, function defineExport(ex) { module.exports = ex; });
 
 }).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/..\\node_modules\\jquery\\dist\\jquery.js","/..\\node_modules\\jquery\\dist")
-},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],"jquery":[function(require,module,exports){
-module.exports=require('or5cxk');
-},{}],"D98f3E":[function(require,module,exports){
+},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],"D98f3E":[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 (function browserifyShim(module, exports, define, browserify_shim__define__module__export__) {
 

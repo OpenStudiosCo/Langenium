@@ -18,36 +18,45 @@ module.exports = function() {
 		rootElement: '#container'
 	});
 
+	ember_app.ApplicationAdapter = DS.FixtureAdapter;
+
 	ember_app.Router.map(function(){
 		this.resource('games');
 		this.resource('about');
 		this.resource('blog', {path: '/blog/'}, function(){
-			this.resource('posts', {path:'/posts/:post_id'})
+			this.resource('posts', {path:'/posts/:id'})
 		});
 		this.resource('media');
 	});
 
+	ember_app.Posts = DS.Model.extend({
+		title: DS.attr('string'),
+		description: DS.attr('string')
+	});
+
+	// Chuck this in a unit test when moved to server fed data
+	ember_app.Posts.FIXTURES = [
+		{
+			id: "0",
+			title: "Article title",
+			description: "Pork sausage jerky corned beef pork belly pork loin venison spare ribs shoulder tail chicken ground round. Ball tip andouille ribeye short loin, pastrami short ribs boudin hamburger cow swine filet mignon pork chop. Beef meatloaf ribeye jerky."
+		},
+		{
+			id: "1",
+			title: "Another title",
+			description: "Short loin flank. Sausage short ribs tail rump tenderloin ham."
+		},
+		{
+			id: "2",
+			title: "Pork sausage",
+			description: "Pork sausage jerky corned beef pork belly pork loin venison spare ribs shoulder tail chicken ground round. Ball tip andouille ribeye short loin, pastrami short ribs boudin hamburger cow swine filet mignon pork chop. Beef meatloaf ribeye jerky."
+		}
+	];
+
 	ember_app.IndexRoute = Ember.Route.extend({
 		model: function() {
-			return { 
-				news: [
-					{
-						title: "Article title",
-						post_id: "0",
-						description: "Pork sausage jerky corned beef pork belly pork loin venison spare ribs shoulder tail chicken ground round. Ball tip andouille ribeye short loin, pastrami short ribs boudin hamburger cow swine filet mignon pork chop. Beef meatloaf ribeye jerky."
-					},
-					{
-						title: "Another title",
-						post_id: "1",
-						description: "Short loin flank. Sausage short ribs tail rump tenderloin ham."
-					},
-					{
-						title: "Pork sausage",
-						post_id: "2",
-						description: "Pork sausage jerky corned beef pork belly pork loin venison spare ribs shoulder tail chicken ground round. Ball tip andouille ribeye short loin, pastrami short ribs boudin hamburger cow swine filet mignon pork chop. Beef meatloaf ribeye jerky."
-					}
-				]
-			};
+			console.log(this.store.findAll('posts'))
+			return this.store.findAll('posts');
 		}
 	});
 
@@ -81,28 +90,11 @@ module.exports = function() {
 
 	ember_app.PostsRoute = Ember.Route.extend({
 		model: function(params) {
-			var model = [
-				{
-					title: "Article title",
-					post_id: "0",
-					description: "Pork sausage jerky corned beef pork belly pork loin venison spare ribs shoulder tail chicken ground round. Ball tip andouille ribeye short loin, pastrami short ribs boudin hamburger cow swine filet mignon pork chop. Beef meatloaf ribeye jerky."
-				},
-				{
-					title: "Another title",
-					post_id: "1",
-					description: "Short loin flank. Sausage short ribs tail rump tenderloin ham."
-				},
-				{
-					title: "Pork sausage",
-					post_id: "2",
-					description: "Pork sausage jerky corned beef pork belly pork loin venison spare ribs shoulder tail chicken ground round. Ball tip andouille ribeye short loin, pastrami short ribs boudin hamburger cow swine filet mignon pork chop. Beef meatloaf ribeye jerky."
-				}
-			];
-			if (params.post_id) {
-				return model[params.post_id];
+			if (params.id) {
+				return this.store.find('posts', params.id);
 			}
 			else {
-				return model;
+				return this.store.findAll('posts');
 			}
 		}
 	});
@@ -133,7 +125,7 @@ L.socket.on('ping', function(data){
 });
 
 
-}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_82f754b7.js","/")
+}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_d2ac22e4.js","/")
 },{"./L":1,"./ember_app":2,"./scenograph":4,"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":8,"buffer":5}],4:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 module.exports = function() {

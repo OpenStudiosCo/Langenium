@@ -20,4 +20,4 @@ app.express.get('/', function(req, res){
 // Start server
 app.http.listen(process.env['HTTP_PORT']); // dev
 
-console.log("\nServer started successfully\n");
+console.log("\nServer started in " + process.env.NODE_ENV + " mode succesfully");

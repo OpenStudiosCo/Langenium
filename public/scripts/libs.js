@@ -9,7 +9,7 @@ var THREE = require('three');
 var OrbitControls = require('orbitcontrols')
 
 console.log("Libraries loaded successfully!");
-}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_17608429.js","/")
+}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_5791f601.js","/")
 },{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8,"ember":"8jyZbj","emberdata":"jSnhCN","handlebars":"4/1IeM","jquery":"or5cxk","orbitcontrols":"D98f3E","three":"z8HVlD"}],"8jyZbj":[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 (function browserifyShim(module, exports, define, browserify_shim__define__module__export__) {
@@ -55451,8 +55451,6 @@ global.DS = requireModule('ember-data/lib/main')['default'];
 }).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/vendor\\ember-data.js","/vendor")
 },{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8,"ember":"8jyZbj","handlebars":"4/1IeM","jquery":"or5cxk"}],"emberdata":[function(require,module,exports){
 module.exports=require('jSnhCN');
-},{}],"handlebars":[function(require,module,exports){
-module.exports=require('4/1IeM');
 },{}],"4/1IeM":[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 (function browserifyShim(module, exports, define, browserify_shim__define__module__export__) {
@@ -58057,7 +58055,9 @@ var __module0__ = (function(__dependency1__, __dependency2__, __dependency3__, _
 }).call(global, undefined, undefined, undefined, function defineExport(ex) { module.exports = ex; });
 
 }).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/vendor\\handlebars-1.1.2.js","/vendor")
-},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],8:[function(require,module,exports){
+},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],"handlebars":[function(require,module,exports){
+module.exports=require('4/1IeM');
+},{}],8:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 /**
  * The buffer module from node.js, for the browser.
@@ -59449,9 +59449,7 @@ process.chdir = function (dir) {
 };
 
 }).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/..\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js","/..\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process")
-},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],"jquery":[function(require,module,exports){
-module.exports=require('or5cxk');
-},{}],"or5cxk":[function(require,module,exports){
+},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],"or5cxk":[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 (function browserifyShim(module, exports, define, browserify_shim__define__module__export__) {
 /*!
@@ -68634,7 +68632,9 @@ return jQuery;
 }).call(global, undefined, undefined, undefined, function defineExport(ex) { module.exports = ex; });
 
 }).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/..\\node_modules\\jquery\\dist\\jquery.js","/..\\node_modules\\jquery\\dist")
-},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],"D98f3E":[function(require,module,exports){
+},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],"jquery":[function(require,module,exports){
+module.exports=require('or5cxk');
+},{}],"D98f3E":[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 (function browserifyShim(module, exports, define, browserify_shim__define__module__export__) {
 

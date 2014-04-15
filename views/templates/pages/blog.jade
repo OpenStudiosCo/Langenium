@@ -4,9 +4,10 @@ script(type="text/x-handlebars", id="blog")
 			ul
 				| {{#each item in model}}
 				li 
-					| {{#link-to 'posts' item.post_id}}
+					| {{#link-to 'posts' item.id}}
 					| {{item.title}}
 					| {{/link-to}}
 				| {{/each}}
 		#content
 			| {{outlet}}
+		

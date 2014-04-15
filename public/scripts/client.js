@@ -29,13 +29,13 @@ module.exports = function() {
 		this.resource('media');
 	});
 
-	ember_app.Posts = DS.Model.extend({
+	ember_app.Post = DS.Model.extend({
 		title: DS.attr('string'),
 		description: DS.attr('string')
 	});
 
 	// Chuck this in a unit test when moved to server fed data
-	ember_app.Posts.FIXTURES = [
+	ember_app.Post.FIXTURES = [
 		{
 			id: "0",
 			title: "Article title",
@@ -55,8 +55,7 @@ module.exports = function() {
 
 	ember_app.IndexRoute = Ember.Route.extend({
 		model: function() {
-			console.log(this.store.findAll('posts'))
-			return this.store.findAll('posts');
+			return this.store.findAll('post');
 		}
 	});
 
@@ -68,34 +67,13 @@ module.exports = function() {
 
 	ember_app.BlogRoute = Ember.Route.extend({
 		model: function() {
-			return [
-				{
-					title: "Article title",
-					post_id: "0",
-					description: "Pork sausage jerky corned beef pork belly pork loin venison spare ribs shoulder tail chicken ground round. Ball tip andouille ribeye short loin, pastrami short ribs boudin hamburger cow swine filet mignon pork chop. Beef meatloaf ribeye jerky."
-				},
-				{
-					title: "Another title",
-					post_id: "1",
-					description: "Short loin flank. Sausage short ribs tail rump tenderloin ham."
-				},
-				{
-					title: "Pork sausage",
-					post_id: "2",
-					description: "Pork sausage jerky corned beef pork belly pork loin venison spare ribs shoulder tail chicken ground round. Ball tip andouille ribeye short loin, pastrami short ribs boudin hamburger cow swine filet mignon pork chop. Beef meatloaf ribeye jerky."
-				}
-			];
+			return this.store.findAll('post');
 		}
 	});
 
 	ember_app.PostsRoute = Ember.Route.extend({
 		model: function(params) {
-			if (params.id) {
-				return this.store.find('posts', params.id);
-			}
-			else {
-				return this.store.findAll('posts');
-			}
+			return this.store.find('post', params.id);
 		}
 	});
 
@@ -125,7 +103,7 @@ L.socket.on('ping', function(data){
 });
 
 
-}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_d2ac22e4.js","/")
+}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_b8c0ec86.js","/")
 },{"./L":1,"./ember_app":2,"./scenograph":4,"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":8,"buffer":5}],4:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 module.exports = function() {

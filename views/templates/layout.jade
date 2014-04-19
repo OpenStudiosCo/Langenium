@@ -13,9 +13,31 @@ script(type="text/x-handlebars")
 			li#latency.push-right
 				table
 					tr
-						td Time
 						td Latency
 					tr
-						td.time
 						td.latency
+			li#fps.push-right
+				table
+					tr
+						td FPS
+						td Min
+						td Max
+					tr
+						td.fps
+						td.min
+						td.max
+			li#time.push-right
+				table
+					tr
+						td Now
+						td Last
+						td Delta
+						td Delta Min
+						td Delta Max
+					tr
+						td.now
+						td.last
+						td.delta
+						td.delta-min
+						td.delta-max
 	| {{outlet}}

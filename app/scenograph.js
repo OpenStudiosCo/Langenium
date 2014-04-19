@@ -14,15 +14,37 @@ module.exports = function() {
 			last: 0
 		},
 		fps: {
+			frames: 0,
 			now: 0,
 			min: Infinity,
 			max: 0,
-			last: 0
+			last: Date.now()
 		},
 		update: function() {
 			this.time.last = this.time.now;
+			$('#time .last').html(this.time.last);
 			this.time.now = Date.now();
+			$('#time .now').html(this.time.now);
 			this.time.delta = this.time.now - this.time.last;
+			$('#time .delta').html(this.time.delta);
+			this.time.deltaMin = Math.min(this.time.deltaMin, this.time.delta);
+			$('#time .delta-min').html(this.time.deltaMin);
+			this.time.deltaMax = Math.max(this.time.deltaMax, this.time.delta);
+			$('#time .delta-max').html(this.time.deltaMax);
+			
+			this.fps.frames++;
+			if ( this.time.now > this.fps.last + 1000 ) {
+				this.fps.now = Math.round( ( this.fps.frames * 1000 ) / ( this.time.now - this.fps.last ) );
+				$('#fps .fps').html(this.fps.now);	
+				this.fps.min = Math.min(this.fps.min, this.fps.now);
+				$('#fps .min').html(this.fps.min);	
+				this.fps.max = Math.max(this.fps.max, this.fps.now);
+				$('#fps .max').html(this.fps.max);	
+
+				this.fps.last = this.time.now;
+				this.fps.frames = 0;
+			}
+
 		}
 	};
 
@@ -184,10 +206,20 @@ module.exports = function() {
 	  	for (var i = 0; i < scene_setup.objects.length; i++) {
 	  		switch(scene_setup.objects[i].type) {
 	  			case 'planet': 
-	  				this.make_sphere(scene_setup.objects[i].position, scene_setup.objects[i].colour, scene_setup.objects[i].radius);
+	  				this.scene.add(
+	  					this.make_sphere(
+	  						scene_setup.objects[i].position, 
+	  						scene_setup.objects[i].colour, 
+	  						scene_setup.objects[i].radius)
+	  				);
 	  				break;
 	  			case 'sun':
-	  				this.make_sun(scene_setup.objects[i]);
+	  				this.scene.add(
+	  					this.make_sun(
+	  						scene_setup.objects[i].position, 
+	  						scene_setup.objects[i].colour, 
+	  						scene_setup.objects[i].radius)
+	  				);
 	  				break;
 	  			default:
 	  				console.log("Failed to load object:");

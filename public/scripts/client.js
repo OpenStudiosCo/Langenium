@@ -74,7 +74,7 @@ module.exports = function (ember_app) {
 		}
 	];
 }
-}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/ember_app\\routes\\blog.js","/ember_app\\routes")
+}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/ember_app\\blog.js","/ember_app")
 },{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],4:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 module.exports = function (ember_app) {
@@ -123,7 +123,7 @@ module.exports = function (ember_app) {
 		}
 	];
 }
-}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/ember_app\\routes\\games.js","/ember_app\\routes")
+}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/ember_app\\games.js","/ember_app")
 },{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],5:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 module.exports = function (ember_app) {
@@ -133,7 +133,7 @@ module.exports = function (ember_app) {
 		}
 	});
 }
-}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/ember_app\\routes\\index.js","/ember_app\\routes")
+}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/ember_app\\index.js","/ember_app")
 },{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],6:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 // Initialize the Langenium client
@@ -142,9 +142,10 @@ module.exports = function (ember_app) {
 global.L = require('./L')()
 
 L.ember_app = require('./ember_app')()
-require('./ember_app/routes/blog')(L.ember_app);
-require('./ember_app/routes/index')(L.ember_app);
-require('./ember_app/routes/games')(L.ember_app);
+// For now these entities are just flat files with Models and Controllers and Fixtures - OH MY!
+require('./ember_app/blog')(L.ember_app);
+require('./ember_app/index')(L.ember_app);
+require('./ember_app/games')(L.ember_app);
 
 L.scenograph = require('./scenograph')()
 
@@ -159,8 +160,8 @@ L.socket.on('ping', function(data){
 });
 
 
-}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_bbf38c8b.js","/")
-},{"./L":1,"./ember_app":2,"./ember_app/routes/blog":3,"./ember_app/routes/games":4,"./ember_app/routes/index":5,"./scenograph":7,"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],7:[function(require,module,exports){
+}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_df6031d8.js","/")
+},{"./L":1,"./ember_app":2,"./ember_app/blog":3,"./ember_app/games":4,"./ember_app/index":5,"./scenograph":7,"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],7:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 module.exports = function() {
 	var scenograph = {};
@@ -198,7 +199,7 @@ module.exports = function() {
 			
 			this.fps.frames++;
 			if ( this.time.now > this.fps.last + 1000 ) {
-				this.fps.now = Math.round( ( this.fps.frames * 1000 ) / ( this.time.now - this.fps.last ) );
+				Ember.set('L.scenograph.stats.fps.now', Math.round( ( this.fps.frames * 1000 ) / ( this.time.now - this.fps.last ) ));
 				$('#fps .fps').html(this.fps.now);	
 				this.fps.min = Math.min(this.fps.min, this.fps.now);
 				$('#fps .min').html(this.fps.min);	
@@ -224,7 +225,10 @@ module.exports = function() {
 	};
 	
 	scenograph.director.init = function() {
-
+		console.log(L.scenograph.stats.fps.now)
+		L.ember_app.ApplicationController = Ember.Controller.extend({
+			fpsNowBinding: 'L.scenograph.stats.fps.now'
+		});
 		this.renderer = new THREE.WebGLRenderer({alpha: true});
 		this.renderer.setSize( window.innerWidth, window.innerHeight );
 		document.body.appendChild( this.renderer.domElement );

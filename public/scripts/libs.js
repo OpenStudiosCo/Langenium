@@ -9,7 +9,7 @@ var THREE = require('three');
 var OrbitControls = require('orbitcontrols')
 
 console.log("Libraries loaded successfully!");
-}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_3e345f9a.js","/")
+}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_eb6a7283.js","/")
 },{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8,"ember":"8jyZbj","emberdata":"jSnhCN","handlebars":"4/1IeM","jquery":"or5cxk","orbitcontrols":"D98f3E","three":"z8HVlD"}],"ember":[function(require,module,exports){
 module.exports=require('8jyZbj');
 },{}],"8jyZbj":[function(require,module,exports){

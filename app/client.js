@@ -4,9 +4,10 @@
 global.L = require('./L')()
 
 L.ember_app = require('./ember_app')()
-require('./ember_app/routes/blog')(L.ember_app);
-require('./ember_app/routes/index')(L.ember_app);
-require('./ember_app/routes/games')(L.ember_app);
+// For now these entities are just flat files with Models and Controllers and Fixtures - OH MY!
+require('./ember_app/blog')(L.ember_app);
+require('./ember_app/index')(L.ember_app);
+require('./ember_app/games')(L.ember_app);
 
 L.scenograph = require('./scenograph')()
 

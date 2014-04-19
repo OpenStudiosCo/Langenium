@@ -34,7 +34,7 @@ module.exports = function() {
 			
 			this.fps.frames++;
 			if ( this.time.now > this.fps.last + 1000 ) {
-				this.fps.now = Math.round( ( this.fps.frames * 1000 ) / ( this.time.now - this.fps.last ) );
+				Ember.set('L.scenograph.stats.fps.now', Math.round( ( this.fps.frames * 1000 ) / ( this.time.now - this.fps.last ) ));
 				$('#fps .fps').html(this.fps.now);	
 				this.fps.min = Math.min(this.fps.min, this.fps.now);
 				$('#fps .min').html(this.fps.min);	
@@ -60,7 +60,10 @@ module.exports = function() {
 	};
 	
 	scenograph.director.init = function() {
-
+		console.log(L.scenograph.stats.fps.now)
+		L.ember_app.ApplicationController = Ember.Controller.extend({
+			fpsNowBinding: 'L.scenograph.stats.fps.now'
+		});
 		this.renderer = new THREE.WebGLRenderer({alpha: true});
 		this.renderer.setSize( window.innerWidth, window.innerHeight );
 		document.body.appendChild( this.renderer.domElement );

@@ -10,11 +10,13 @@ module.exports = function (ember_app) {
 			console.log("Starting up Epoch Exordium engine")
 		}
 	});
+
 	ember_app.MmoRoute = Ember.Route.extend({
 		renderTemplate: function() {
 			console.log("Starting up MMO engine")
 		}
 	});
+
 	ember_app.PrototypesRoute = Ember.Route.extend({
 		model: function(params) {
 			return this.store.find('prototype', params.id)
@@ -28,6 +30,7 @@ module.exports = function (ember_app) {
 		title: DS.attr('string'),
 		description: DS.attr('string')
 	});
+	
 	ember_app.Prototype.FIXTURES = [
 		{
 			id: 0,

@@ -16,4 +16,9 @@ html
 
 		script(src="scripts/libs.js")
 		script(src="socket.io/socket.io.js")
+		script(type='x-shader/x-vertex', id='haloVertShader')
+			include shaders/halo.vertexShader
+		script(type='x-shader/x-vertex', id='haloFragShader')
+			include shaders/halo.fragmentShader
 		script(src="scripts/client.js")
+		

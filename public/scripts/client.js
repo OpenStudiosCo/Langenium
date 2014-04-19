@@ -10,8 +10,8 @@ module.exports = function() {
 }
 
 
-}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/L.js","/")
-},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],2:[function(require,module,exports){
+}).call(this,require("C:\\git\\Langenium\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/L.js","/")
+},{"C:\\git\\Langenium\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],2:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 module.exports = function() {
 	var ember_app = Ember.Application.create({
@@ -35,8 +35,8 @@ module.exports = function() {
 
 	return ember_app;
 }
-}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/ember_app.js","/")
-},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],3:[function(require,module,exports){
+}).call(this,require("C:\\git\\Langenium\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/ember_app.js","/")
+},{"C:\\git\\Langenium\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],3:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 module.exports = function (ember_app) {
 	ember_app.BlogRoute = Ember.Route.extend({
@@ -74,8 +74,8 @@ module.exports = function (ember_app) {
 		}
 	];
 }
-}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/ember_app\\routes\\blog.js","/ember_app\\routes")
-},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],4:[function(require,module,exports){
+}).call(this,require("C:\\git\\Langenium\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/ember_app\\routes\\blog.js","/ember_app\\routes")
+},{"C:\\git\\Langenium\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],4:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 module.exports = function (ember_app) {
 	ember_app.GamesRoute = Ember.Route.extend({
@@ -123,8 +123,8 @@ module.exports = function (ember_app) {
 		}
 	];
 }
-}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/ember_app\\routes\\games.js","/ember_app\\routes")
-},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],5:[function(require,module,exports){
+}).call(this,require("C:\\git\\Langenium\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/ember_app\\routes\\games.js","/ember_app\\routes")
+},{"C:\\git\\Langenium\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],5:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 module.exports = function (ember_app) {
 	ember_app.IndexRoute = Ember.Route.extend({
@@ -133,8 +133,8 @@ module.exports = function (ember_app) {
 		}
 	});
 }
-}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/ember_app\\routes\\index.js","/ember_app\\routes")
-},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],6:[function(require,module,exports){
+}).call(this,require("C:\\git\\Langenium\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/ember_app\\routes\\index.js","/ember_app\\routes")
+},{"C:\\git\\Langenium\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],6:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 // Initialize the Langenium client
 
@@ -160,8 +160,8 @@ L.socket.on('ping', function(data){
 });
 
 
-}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_9806fe64.js","/")
-},{"./L":1,"./ember_app":2,"./ember_app/routes/blog":3,"./ember_app/routes/games":4,"./ember_app/routes/index":5,"./scenograph":7,"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],7:[function(require,module,exports){
+}).call(this,require("C:\\git\\Langenium\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_9820864a.js","/")
+},{"./L":1,"./ember_app":2,"./ember_app/routes/blog":3,"./ember_app/routes/games":4,"./ember_app/routes/index":5,"./scenograph":7,"C:\\git\\Langenium\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],7:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 module.exports = function() {
 	var scenograph = {};
@@ -213,11 +213,11 @@ module.exports = function() {
 		window.addEventListener( 'resize', this.onWindowResize, false );
 
 
-		L.scenograph.director.camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 10000000 );
-		L.scenograph.director.camera.position.z = 7000;
+		this.camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 10000000 );
+		this.camera.position.z = 7000;
 		var light = new THREE.PointLight(0xffffff, 1, 0);
 		light.position.set(0,0,0);
-		L.scenograph.director.scene.add(light);
+		this.scene.add(light);
 
 		var geometry = new THREE.CubeGeometry( 1000000, 1000000, 1000000 );
 
@@ -246,29 +246,121 @@ module.exports = function() {
 		} );
 
 		mesh = new THREE.Mesh( geometry, material );
-		L.scenograph.director.scene.add( mesh );
+		this.scene.add( mesh );
 
 		// Using AU (Astronomical Unit x 1000 + 1000 for sun's size) for distance, proportion to Earth for others
-	    // Sun
-	    L.scenograph.director.scene.add(L.scenograph.director.make_sun({x: 0, y: 0, z: 0 }, 0xFDEE00, 1000 ));	
-	    // Mercury
-	    L.scenograph.director.scene.add(L.scenograph.director.make_sphere({x: 0, y: 0, z: 1387 }, 0x3D0C02, 3.82 ));	
-	    // Venus
-	    L.scenograph.director.scene.add(L.scenograph.director.make_sphere({x: 0, y: 0, z: 1723 }, 0x915C83, 9.49 ));	
-	    // Earth
-	    L.scenograph.director.scene.add(L.scenograph.director.make_sphere({x: 0, y: 0, z: 2000 }, 0x0033FF, 10 ));	
-	    // Mars
-	    L.scenograph.director.scene.add(L.scenograph.director.make_sphere({x: 0, y: 0, z: 2524 }, 0xA52A2A, 5.32 ));	
-	    // Jupiter
-	    L.scenograph.director.scene.add(L.scenograph.director.make_sphere({x: 0, y: 0, z: 6203 }, 0xB5A642, 111.9 ));	
-	    // Saturn
-	    L.scenograph.director.scene.add(L.scenograph.director.make_sphere({x: 0, y: 0, z: 10529 }, 0xE3DAC9, 92.6 ));	
-	    // Uranus
-		L.scenograph.director.scene.add(L.scenograph.director.make_sphere({x: 0, y: 0, z: 20190 }, 0x0070FF, 40.1 ));	
+
+		var scene_setup = {
+			background: 'milkyway', // skybox
+			objects: [
+				{
+					name: 'Sun',
+					type: 'sun',
+					colour: 0xFDEE00,
+					radius: 1000, // units are AU
+					position: {
+						x: 0,	y: 0,	z: 0
+					}
+				},
+				{
+					name: 'Mercury',
+					type: 'planet',
+					colour: 0x3D0C02,
+					radius: 3.82, // units are AU
+					position: {
+						x: 0,	y: 0,	z: 1387
+					}
+				},
+				{
+					name: 'Venus',
+					type: 'planet',
+					colour: 0x915C83,
+					radius: 9.49, // units are AU
+					position: {
+						x: 0,	y: 0,	z: 1723
+					}
+				},
+				{
+					name: 'Earth',
+					type: 'planet',
+					colour: 0x0033FF,
+					radius: 10, // units are AU
+					position: {
+						x: 0,	y: 0,	z: 2000
+					}
+				},
+				{
+					name: 'Mars',
+					type: 'planet',
+					colour: 0xA52A2A,
+					radius: 5.32, // units are AU
+					position: {
+						x: 0,	y: 0,	z: 2524
+					}
+				},
+				{
+					name: 'Jupiter',
+					type: 'planet',
+					colour: 0xB5A642,
+					radius: 111.9, // units are AU
+					position: {
+						x: 0,	y: 0,	z: 6203
+					}
+				},
+				{
+					name: 'Saturn',
+					type: 'planet',
+					colour: 0xE3DAC9,
+					radius: 92.6, // units are AU
+					position: {
+						x: 0,	y: 0,	z: 10529
+					}
+				},
+				{
+					name: 'Uranus',
+					type: 'planet',
+					colour: 0x0070FF,
+					radius: 40.1, // units are AU
+					position: {
+						x: 0,	y: 0,	z: 20190
+					}
+				},
+				{
+					name: 'Neptune',
+					type: 'planet',
+					colour: 0x1974D2,
+					radius: 38.8, // units are AU
+					position: {
+						x: 0,	y: 0,	z: 31060
+					}
+				},
+				{
+					name: 'Pluto',
+					type: 'planet',
+					colour: 0x91A3B0,
+					radius: 1.8, // units are AU
+					position: {
+						x: 0,	y: 0,	z: 40530
+					}
+				},
+
+			]
+		};
+	  	for (var i = 0; i < scene_setup.objects.length; i++) {
+	  		switch(scene_setup.objects[i].type) {
+	  			case 'planet': 
+	  				console.log(this)
+	  				break;
+	  			default:
+	  				console.log("Failed to load object:")
+	  				console.log(scene_setup.objects[i])
+	  		}
+	  	}
+
 	    // Neptune
-	    L.scenograph.director.scene.add(L.scenograph.director.make_sphere({x: 0, y: 0, z: 31060 }, 0x1974D2, 38.8 ));	
+	    //L.scenograph.director.scene.add(L.scenograph.director.make_sphere({x: 0, y: 0, z:  }, , 38.8 ));	
 	    // Pluto
-	    L.scenograph.director.scene.add(L.scenograph.director.make_sphere({x: 0, y: 0, z: 40530 }, 0x91A3B0, 1.8 ));	
+	    //L.scenograph.director.scene.add(L.scenograph.director.make_sphere({x: 0, y: 0, z:  }, , 1.8 ));	
 
 	}
 
@@ -337,8 +429,8 @@ module.exports = function() {
 
 
 };
-}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/scenograph.js","/")
-},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],8:[function(require,module,exports){
+}).call(this,require("C:\\git\\Langenium\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/scenograph.js","/")
+},{"C:\\git\\Langenium\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],8:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 /**
  * The buffer module from node.js, for the browser.
@@ -1452,8 +1544,8 @@ function assert (test, message) {
   if (!test) throw new Error(message || 'Failed assertion')
 }
 
-}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/..\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\buffer\\index.js","/..\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\buffer")
-},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"base64-js":9,"buffer":8,"ieee754":10}],9:[function(require,module,exports){
+}).call(this,require("C:\\git\\Langenium\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/..\\node_modules\\browserify\\node_modules\\buffer\\index.js","/..\\node_modules\\browserify\\node_modules\\buffer")
+},{"C:\\git\\Langenium\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"base64-js":9,"buffer":8,"ieee754":10}],9:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
@@ -1577,8 +1669,8 @@ var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 	module.exports.fromByteArray = uint8ToBase64
 }())
 
-}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/..\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\buffer\\node_modules\\base64-js\\lib\\b64.js","/..\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\buffer\\node_modules\\base64-js\\lib")
-},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],10:[function(require,module,exports){
+}).call(this,require("C:\\git\\Langenium\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/..\\node_modules\\browserify\\node_modules\\buffer\\node_modules\\base64-js\\lib\\b64.js","/..\\node_modules\\browserify\\node_modules\\buffer\\node_modules\\base64-js\\lib")
+},{"C:\\git\\Langenium\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],10:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 exports.read = function(buffer, offset, isLE, mLen, nBytes) {
   var e, m,
@@ -1665,8 +1757,8 @@ exports.write = function(buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128;
 };
 
-}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/..\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\buffer\\node_modules\\ieee754\\index.js","/..\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\buffer\\node_modules\\ieee754")
-},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],11:[function(require,module,exports){
+}).call(this,require("C:\\git\\Langenium\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/..\\node_modules\\browserify\\node_modules\\buffer\\node_modules\\ieee754\\index.js","/..\\node_modules\\browserify\\node_modules\\buffer\\node_modules\\ieee754")
+},{"C:\\git\\Langenium\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],11:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 // shim for using process in browser
 
@@ -1729,5 +1821,5 @@ process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
 
-}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/..\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js","/..\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process")
-},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}]},{},[6])
+}).call(this,require("C:\\git\\Langenium\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/..\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js","/..\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process")
+},{"C:\\git\\Langenium\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}]},{},[6])

@@ -81,29 +81,125 @@ module.exports = function() {
 		} );
 
 		mesh = new THREE.Mesh( geometry, material );
-		L.scenograph.director.scene.add( mesh );
+		this.scene.add( mesh );
 
 		// Using AU (Astronomical Unit x 1000 + 1000 for sun's size) for distance, proportion to Earth for others
-	    // Sun
-	    L.scenograph.director.scene.add(L.scenograph.director.make_sun({x: 0, y: 0, z: 0 }, 0xFDEE00, 1000 ));	
-	    // Mercury
-	    L.scenograph.director.scene.add(L.scenograph.director.make_sphere({x: 0, y: 0, z: 1387 }, 0x3D0C02, 3.82 ));	
-	    // Venus
-	    L.scenograph.director.scene.add(L.scenograph.director.make_sphere({x: 0, y: 0, z: 1723 }, 0x915C83, 9.49 ));	
-	    // Earth
-	    L.scenograph.director.scene.add(L.scenograph.director.make_sphere({x: 0, y: 0, z: 2000 }, 0x0033FF, 10 ));	
-	    // Mars
-	    L.scenograph.director.scene.add(L.scenograph.director.make_sphere({x: 0, y: 0, z: 2524 }, 0xA52A2A, 5.32 ));	
-	    // Jupiter
-	    L.scenograph.director.scene.add(L.scenograph.director.make_sphere({x: 0, y: 0, z: 6203 }, 0xB5A642, 111.9 ));	
-	    // Saturn
-	    L.scenograph.director.scene.add(L.scenograph.director.make_sphere({x: 0, y: 0, z: 10529 }, 0xE3DAC9, 92.6 ));	
-	    // Uranus
-		L.scenograph.director.scene.add(L.scenograph.director.make_sphere({x: 0, y: 0, z: 20190 }, 0x0070FF, 40.1 ));	
+
+		var scene_setup = {
+			background: 'milkyway', // skybox
+			objects: [
+				{
+					name: 'Sun',
+					type: 'sun',
+					colour: 0xFDEE00,
+					radius: 1000, // units are AU
+					position: {
+						x: 0,	y: 0,	z: 0
+					}
+				},
+				{
+					name: 'Mercury',
+					type: 'planet',
+					colour: 0x3D0C02,
+					radius: 3.82, // units are AU
+					position: {
+						x: 0,	y: 0,	z: 1387
+					}
+				},
+				{
+					name: 'Venus',
+					type: 'planet',
+					colour: 0x915C83,
+					radius: 9.49, // units are AU
+					position: {
+						x: 0,	y: 0,	z: 1723
+					}
+				},
+				{
+					name: 'Earth',
+					type: 'planet',
+					colour: 0x0033FF,
+					radius: 10, // units are AU
+					position: {
+						x: 0,	y: 0,	z: 2000
+					}
+				},
+				{
+					name: 'Mars',
+					type: 'planet',
+					colour: 0xA52A2A,
+					radius: 5.32, // units are AU
+					position: {
+						x: 0,	y: 0,	z: 2524
+					}
+				},
+				{
+					name: 'Jupiter',
+					type: 'planet',
+					colour: 0xB5A642,
+					radius: 111.9, // units are AU
+					position: {
+						x: 0,	y: 0,	z: 6203
+					}
+				},
+				{
+					name: 'Saturn',
+					type: 'planet',
+					colour: 0xE3DAC9,
+					radius: 92.6, // units are AU
+					position: {
+						x: 0,	y: 0,	z: 10529
+					}
+				},
+				{
+					name: 'Uranus',
+					type: 'planet',
+					colour: 0x0070FF,
+					radius: 40.1, // units are AU
+					position: {
+						x: 0,	y: 0,	z: 20190
+					}
+				},
+				{
+					name: 'Neptune',
+					type: 'planet',
+					colour: 0x1974D2,
+					radius: 38.8, // units are AU
+					position: {
+						x: 0,	y: 0,	z: 31060
+					}
+				},
+				{
+					name: 'Pluto',
+					type: 'planet',
+					colour: 0x91A3B0,
+					radius: 1.8, // units are AU
+					position: {
+						x: 0,	y: 0,	z: 40530
+					}
+				},
+
+			]
+		};
+	  	for (var i = 0; i < scene_setup.objects.length; i++) {
+	  		switch(scene_setup.objects[i].type) {
+	  			case 'planet': 
+	  				this.make_sphere(scene_setup.objects[i].position, scene_setup.objects[i].colour, scene_setup.objects[i].radius);
+	  				break;
+	  			case 'sun':
+	  				this.make_sun(scene_setup.objects[i]);
+	  				break;
+	  			default:
+	  				console.log("Failed to load object:");
+	  				console.log(scene_setup.objects[i]);
+	  				break;
+	  		}
+	  	}
+
 	    // Neptune
-	    L.scenograph.director.scene.add(L.scenograph.director.make_sphere({x: 0, y: 0, z: 31060 }, 0x1974D2, 38.8 ));	
+	    //L.scenograph.director.scene.add(L.scenograph.director.make_sphere({x: 0, y: 0, z:  }, , 38.8 ));	
 	    // Pluto
-	    L.scenograph.director.scene.add(L.scenograph.director.make_sphere({x: 0, y: 0, z: 40530 }, 0x91A3B0, 1.8 ));	
+	    //L.scenograph.director.scene.add(L.scenograph.director.make_sphere({x: 0, y: 0, z:  }, , 1.8 ));	
 
 	}
 

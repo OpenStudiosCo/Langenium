@@ -160,7 +160,7 @@ L.socket.on('ping', function(data){
 });
 
 
-}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_df6031d8.js","/")
+}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_deec2da.js","/")
 },{"./L":1,"./ember_app":2,"./ember_app/blog":3,"./ember_app/games":4,"./ember_app/index":5,"./scenograph":7,"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],7:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 module.exports = function() {
@@ -186,27 +186,20 @@ module.exports = function() {
 			last: Date.now()
 		},
 		update: function() {
-			this.time.last = this.time.now;
-			$('#time .last').html(this.time.last);
-			this.time.now = Date.now();
-			$('#time .now').html(this.time.now);
-			this.time.delta = this.time.now - this.time.last;
-			$('#time .delta').html(this.time.delta);
-			this.time.deltaMin = Math.min(this.time.deltaMin, this.time.delta);
-			$('#time .delta-min').html(this.time.deltaMin);
-			this.time.deltaMax = Math.max(this.time.deltaMax, this.time.delta);
-			$('#time .delta-max').html(this.time.deltaMax);
+			Ember.set('L.scenograph.stats.time.last', this.time.now);
+			Ember.set('L.scenograph.stats.time.now', Date.now());
+			Ember.set('L.scenograph.stats.time.delta', this.time.now - this.time.last);
+			Ember.set('L.scenograph.stats.time.deltaMin', Math.min(this.time.deltaMin, this.time.delta));
+			Ember.set('L.scenograph.stats.time.deltaMax', Math.max(this.time.deltaMax, this.time.delta));
+			
 			
 			this.fps.frames++;
 			if ( this.time.now > this.fps.last + 1000 ) {
 				Ember.set('L.scenograph.stats.fps.now', Math.round( ( this.fps.frames * 1000 ) / ( this.time.now - this.fps.last ) ));
-				$('#fps .fps').html(this.fps.now);	
-				this.fps.min = Math.min(this.fps.min, this.fps.now);
-				$('#fps .min').html(this.fps.min);	
-				this.fps.max = Math.max(this.fps.max, this.fps.now);
-				$('#fps .max').html(this.fps.max);	
+				Ember.set('L.scenograph.stats.fps.min', Math.min(this.fps.min, this.fps.now));
+				Ember.set('L.scenograph.stats.fps.max', Math.max(this.fps.max, this.fps.now));
+				Ember.set('L.scenograph.stats.fps.last', this.time.now);
 
-				this.fps.last = this.time.now;
 				this.fps.frames = 0;
 			}
 
@@ -227,7 +220,9 @@ module.exports = function() {
 	scenograph.director.init = function() {
 		console.log(L.scenograph.stats.fps.now)
 		L.ember_app.ApplicationController = Ember.Controller.extend({
-			fpsNowBinding: 'L.scenograph.stats.fps.now'
+			fpsBinding: 'L.scenograph.stats.fps',
+			timeBinding: 'L.scenograph.stats.time',
+			optionsBinding: 'L.scenograph.options'
 		});
 		this.renderer = new THREE.WebGLRenderer({alpha: true});
 		this.renderer.setSize( window.innerWidth, window.innerHeight );

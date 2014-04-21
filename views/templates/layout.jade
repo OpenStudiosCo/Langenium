@@ -23,9 +23,9 @@ script(type="text/x-handlebars")
 						td Min
 						td Max
 					tr
-						td.fps
-						td.min
-						td.max
+						td {{fps.now}}
+						td {{fps.min}}
+						td {{fps.max}}
 			li#time.push-right
 				table
 					tr
@@ -35,10 +35,13 @@ script(type="text/x-handlebars")
 						td Delta Min
 						td Delta Max
 					tr
-						td.now
-						td.last
-						td.delta
-						td.delta-min
-						td.delta-max
-	h2 {{fpsNow}}
+						td {{time.now}}
+						td {{time.last}}
+						td {{time.delta}}
+						td {{time.deltaMin}}
+						td {{time.deltaMax}}
+			li
+				h3 Controls
+				{{input type="checkbox" checked=options.useControls}}
+	h2 
 	| {{outlet}}

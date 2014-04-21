@@ -14,7 +14,15 @@ html
 		include templates/pages/posts
 		include templates/pages/media
 
-		script(src="scripts/libs.js")
+		script(src="scripts/vendor/jquery.js")
+		script(src="scripts/vendor/jquery.cycle2.js")
+		script(src="scripts/vendor/handlebars.js")
+		script(src="scripts/vendor/ember.js")
+		script(src="scripts/vendor/ember-data.js")
+		script(src="scripts/vendor/three.js")
+		script(src="scripts/vendor/Mirror.js")
+		script(src="scripts/vendor/OrbitControls.js")
+		script(src="scripts/vendor/dat.gui.js")
 		script(src="socket.io/socket.io.js")
 		script(type='x-shader/x-vertex', id='haloVertShader')
 			include shaders/halo.vert
@@ -28,5 +36,13 @@ html
 			include shaders/water.vert
 		script(type='x-shader/x-vertex', id='waterFragShader')
 			include shaders/water.frag
+		script(src="scripts/L.js")
+		script(src="scripts/ember_app.js")
+		script(src="scripts/ember_app/blog.js")
+		script(src="scripts/ember_app/games.js")
+		script(src="scripts/ember_app/index.js")
+		script(src="scripts/scenograph.js")
+		script(src="scripts/scenograph/objects.js")
+		script(src="scripts/scenograph/stats.js")
 		script(src="scripts/client.js")
 		

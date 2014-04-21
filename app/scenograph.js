@@ -42,6 +42,12 @@ module.exports = function() {
 	};
 
 	scenograph.options = {
+		activeScene: 'EpochExordium',
+		currentScene: 'EpochExordium',
+		scenes: [
+			'EpochExordium',
+			'MMO'
+		],
 		useControls: false
 	};
 
@@ -53,7 +59,6 @@ module.exports = function() {
 	};
 	
 	scenograph.director.init = function() {
-		console.log(L.scenograph.stats.fps.now)
 		L.ember_app.ApplicationController = Ember.Controller.extend({
 			fpsBinding: 'L.scenograph.stats.fps',
 			timeBinding: 'L.scenograph.stats.time',

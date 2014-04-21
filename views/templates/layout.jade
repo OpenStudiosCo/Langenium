@@ -42,6 +42,7 @@ script(type="text/x-handlebars")
 						td {{time.deltaMax}}
 			li
 				h3 Controls
-				{{input type="checkbox" checked=options.useControls}}
+				| {{input type="checkbox" checked=options.useControls}}
+				| {{view Ember.Select content=options.scenes value=options.activeScene}}
 	h2 
 	| {{outlet}}

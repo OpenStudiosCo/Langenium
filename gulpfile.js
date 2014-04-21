@@ -38,6 +38,13 @@ gulp.task('libs', function() {
 					path: './node_modules/three/three.js',
 					exports: 'THREE'
 				},
+				mirror: {
+					path: './app/vendor/Mirror.js',
+					exports: 'Mirror',
+					depends: {
+						three: 'THREE'
+					}
+				},
 				orbitcontrols: {
 					path: './node_modules/three/examples/js/controls/OrbitControls.js',
 					exports: 'OrbitControls',

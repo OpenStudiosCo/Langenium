@@ -10,6 +10,10 @@ script(type="text/x-handlebars")
 			li {{#link-to 'about'}}About{{/link-to}}
 			li {{#link-to 'blog'}}Blog{{/link-to}}
 			li {{#link-to 'media'}}Media{{/link-to}}
+			li
+				h3 Controls
+				| {{input type="checkbox" checked=options.useControls}}
+				| {{view Ember.Select content=options.scenes value=options.activeScene}}
 			li#latency.push-right
 				table
 					tr
@@ -31,7 +35,7 @@ script(type="text/x-handlebars")
 					tr
 						td Now
 						td Last
-						td Delta
+						td Current Delta
 						td Delta Min
 						td Delta Max
 					tr
@@ -40,9 +44,5 @@ script(type="text/x-handlebars")
 						td {{time.delta}}
 						td {{time.deltaMin}}
 						td {{time.deltaMax}}
-			li
-				h3 Controls
-				| {{input type="checkbox" checked=options.useControls}}
-				| {{view Ember.Select content=options.scenes value=options.activeScene}}
 	h2 
 	| {{outlet}}

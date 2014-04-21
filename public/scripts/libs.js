@@ -6,11 +6,269 @@ var Ember = require('ember');
 var emberdata = require('emberdata');
 
 var THREE = require('three');
+var Mirror = require('mirror');
 var OrbitControls = require('orbitcontrols')
 
 console.log("Libraries loaded successfully!");
-}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_d5bafbda.js","/")
-},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8,"ember":"8jyZbj","emberdata":"jSnhCN","handlebars":"4/1IeM","jquery":"or5cxk","orbitcontrols":"D98f3E","three":"z8HVlD"}],"ember":[function(require,module,exports){
+}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_1849ad16.js","/")
+},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":13,"buffer":10,"ember":"8jyZbj","emberdata":"jSnhCN","handlebars":"4/1IeM","jquery":"or5cxk","mirror":"SV1fn2","orbitcontrols":"D98f3E","three":"z8HVlD"}],"SV1fn2":[function(require,module,exports){
+(function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
+(function browserifyShim(module, exports, define, browserify_shim__define__module__export__) {
+
+; global.THREE = require("three");
+/**
+ * @author Slayvin / http://slayvin.net
+ * Modified for Langenium by Paul Brzeski
+ */
+
+THREE.Mirror = function ( renderer, camera, options ) {
+
+	THREE.Object3D.call( this );
+
+	this.name = 'mirror_' + this.id;
+
+	function isPowerOfTwo ( value ) {
+		return ( value & ( value - 1 ) ) === 0;
+	};
+
+	options = options || {};
+
+	this.matrixNeedsUpdate = true;
+
+	var width = options.textureWidth !== undefined ? options.textureWidth : 512;
+	var height = options.textureHeight !== undefined ? options.textureHeight : 512;
+
+	this.clipBias = options.clipBias !== undefined ? options.clipBias : 0.0;
+
+	var mirrorColor = options.color !== undefined ? new THREE.Color(options.color) : new THREE.Color(0x7F7F7F);
+
+	this.renderer = renderer;
+	this.mirrorPlane = new THREE.Plane();
+	this.normal = new THREE.Vector3( 0, 0, 1 );
+	this.mirrorWorldPosition = new THREE.Vector3();
+	this.cameraWorldPosition = new THREE.Vector3();
+	this.rotationMatrix = new THREE.Matrix4();
+	this.lookAtPosition = new THREE.Vector3(0, 0, -1);
+	this.clipPlane = new THREE.Vector4();
+	
+	// For debug only, show the normal and plane of the mirror
+	var debugMode = options.debugMode !== undefined ? options.debugMode : false;
+
+	if ( debugMode ) {
+
+		var arrow = new THREE.ArrowHelper(new THREE.Vector3( 0, 0, 1 ), new THREE.Vector3( 0, 0, 0 ), 1000, 0xffff80 );
+		var planeGeometry = new THREE.Geometry();
+		planeGeometry.vertices.push( new THREE.Vector3( -1000, -1000, 0 ) );
+		planeGeometry.vertices.push( new THREE.Vector3( 1000, -1000, 0 ) );
+		planeGeometry.vertices.push( new THREE.Vector3( 1000, 1000, 0 ) );
+		planeGeometry.vertices.push( new THREE.Vector3( -1000, 1000, 0 ) );
+		planeGeometry.vertices.push( planeGeometry.vertices[0] );
+		var plane = new THREE.Line( planeGeometry, new THREE.LineBasicMaterial( { color: 0xffff80 } ) );
+
+		this.add(arrow);
+		this.add(plane);
+
+	}
+
+	if ( camera instanceof THREE.PerspectiveCamera ) {
+
+		this.camera = camera;
+
+	} else {
+
+		this.camera = new THREE.PerspectiveCamera();
+		console.log( this.name + ': camera is not a Perspective Camera!' );
+
+	}
+
+	this.textureMatrix = new THREE.Matrix4();
+
+	this.mirrorCamera = this.camera.clone();
+
+	this.texture = new THREE.WebGLRenderTarget( width, height );
+	this.tempTexture = new THREE.WebGLRenderTarget( width, height );
+
+	this.material = new THREE.ShaderMaterial( {
+
+		uniforms: L.scenograph.director.effects.water_uniforms,
+		vertexShader:   document.getElementById( 'waterVertShader'   ).textContent,
+		fragmentShader: document.getElementById( 'waterFragShader' ).textContent
+		
+	} );
+
+	this.material.uniforms.mirrorSampler.value = this.texture;
+	this.material.uniforms.textureMatrix.value = this.textureMatrix;
+
+	if ( !isPowerOfTwo(width) || !isPowerOfTwo( height ) ) {
+
+		this.texture.generateMipmaps = false;
+		this.tempTexture.generateMipmaps = false;
+
+	}
+
+	this.updateTextureMatrix();
+	this.render();
+
+};
+
+THREE.Mirror.prototype = Object.create( THREE.Object3D.prototype );
+
+THREE.Mirror.prototype.renderWithMirror = function ( otherMirror ) {
+
+	// update the mirror matrix to mirror the current view
+	this.updateTextureMatrix();
+	this.matrixNeedsUpdate = false;
+
+	// set the camera of the other mirror so the mirrored view is the reference view
+	var tempCamera = otherMirror.camera;
+	otherMirror.camera = this.mirrorCamera;
+
+	// render the other mirror in temp texture
+	otherMirror.renderTemp();
+	otherMirror.material.uniforms.mirrorSampler.value = otherMirror.tempTexture;
+
+	// render the current mirror
+	this.render();
+	this.matrixNeedsUpdate = true;
+
+	// restore material and camera of other mirror
+	otherMirror.material.uniforms.mirrorSampler.value = otherMirror.texture;
+	otherMirror.camera = tempCamera;
+
+	// restore texture matrix of other mirror
+	otherMirror.updateTextureMatrix();
+};
+
+THREE.Mirror.prototype.updateTextureMatrix = function () {
+
+	var sign = THREE.Math.sign;
+
+	this.updateMatrixWorld();
+	this.camera.updateMatrixWorld();
+
+	this.mirrorWorldPosition.setFromMatrixPosition( this.matrixWorld );
+	this.cameraWorldPosition.setFromMatrixPosition( this.camera.matrixWorld );
+
+	this.rotationMatrix.extractRotation( this.matrixWorld );
+
+	this.normal.set( 0, 0, 1 );
+	this.normal.applyMatrix4( this.rotationMatrix );
+
+	var view = this.mirrorWorldPosition.clone().sub( this.cameraWorldPosition );
+	var reflectView = view.reflect( this.normal );
+	reflectView.add( this.mirrorWorldPosition );
+
+	this.rotationMatrix.extractRotation( this.camera.matrixWorld );
+
+	this.lookAtPosition.set(0, 0, -1);
+	this.lookAtPosition.applyMatrix4( this.rotationMatrix );
+	this.lookAtPosition.add( this.cameraWorldPosition );
+
+	var target = this.mirrorWorldPosition.clone().sub( this.lookAtPosition );
+	var reflectTarget = target.reflect( this.normal );
+	reflectTarget.add( this.mirrorWorldPosition );
+
+	this.up.set( 0, -1, 0 );
+	this.up.applyMatrix4( this.rotationMatrix );
+	var reflectUp = this.up.reflect( this.normal );
+
+	this.mirrorCamera.position.copy(reflectView);
+	this.mirrorCamera.up = reflectUp;
+	this.mirrorCamera.lookAt( reflectTarget );
+
+	this.mirrorCamera.updateProjectionMatrix();
+	this.mirrorCamera.updateMatrixWorld();
+	this.mirrorCamera.matrixWorldInverse.getInverse( this.mirrorCamera.matrixWorld );
+
+	// Update the texture matrix
+	this.textureMatrix.set( 0.5, 0.0, 0.0, 0.5,
+							0.0, 0.5, 0.0, 0.5,
+							0.0, 0.0, 0.5, 0.5,
+							0.0, 0.0, 0.0, 1.0 );
+	this.textureMatrix.multiply( this.mirrorCamera.projectionMatrix );
+	this.textureMatrix.multiply( this.mirrorCamera.matrixWorldInverse );
+
+	// Now update projection matrix with new clip plane, implementing code from: http://www.terathon.com/code/oblique.html
+	// Paper explaining this technique: http://www.terathon.com/lengyel/Lengyel-Oblique.pdf
+	this.mirrorPlane.setFromNormalAndCoplanarPoint( this.normal, this.mirrorWorldPosition );
+	this.mirrorPlane.applyMatrix4( this.mirrorCamera.matrixWorldInverse );
+
+	this.clipPlane.set( this.mirrorPlane.normal.x, this.mirrorPlane.normal.y, this.mirrorPlane.normal.z, this.mirrorPlane.constant );
+
+	var q = new THREE.Vector4();
+	var projectionMatrix = this.mirrorCamera.projectionMatrix;
+
+	q.x = ( sign(this.clipPlane.x) + projectionMatrix.elements[8] ) / projectionMatrix.elements[0];
+	q.y = ( sign(this.clipPlane.y) + projectionMatrix.elements[9] ) / projectionMatrix.elements[5];
+	q.z = - 1.0;
+	q.w = ( 1.0 + projectionMatrix.elements[10] ) / projectionMatrix.elements[14];
+
+	// Calculate the scaled plane vector
+	var c = new THREE.Vector4();
+	c = this.clipPlane.multiplyScalar( 2.0 / this.clipPlane.dot(q) );
+
+	// Replacing the third row of the projection matrix
+	projectionMatrix.elements[2] = c.x;
+	projectionMatrix.elements[6] = c.y;
+	projectionMatrix.elements[10] = c.z + 1.0 - this.clipBias;
+	projectionMatrix.elements[14] = c.w;
+
+};
+
+THREE.Mirror.prototype.render = function () {
+
+	if ( this.matrixNeedsUpdate ) this.updateTextureMatrix();
+
+	this.matrixNeedsUpdate = true;
+
+	// Render the mirrored view of the current scene into the target texture
+	var scene = this;
+
+	while ( scene.parent !== undefined ) {
+
+		scene = scene.parent;
+
+	}
+
+	if ( scene !== undefined && scene instanceof THREE.Scene) {
+
+		this.renderer.render( scene, this.mirrorCamera, this.texture, true );
+
+	}
+
+};
+
+THREE.Mirror.prototype.renderTemp = function () {
+
+	if ( this.matrixNeedsUpdate ) this.updateTextureMatrix();
+
+	this.matrixNeedsUpdate = true;
+
+	// Render the mirrored view of the current scene into the target texture
+	var scene = this;
+
+	while ( scene.parent !== undefined ) {
+
+		scene = scene.parent;
+
+	}
+
+	if ( scene !== undefined && scene instanceof THREE.Scene) {
+
+		this.renderer.render( scene, this.mirrorCamera, this.tempTexture, true );
+
+	}
+
+};
+
+; browserify_shim__define__module__export__(typeof Mirror != "undefined" ? Mirror : window.Mirror);
+
+}).call(global, undefined, undefined, undefined, function defineExport(ex) { module.exports = ex; });
+
+}).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/vendor\\Mirror.js","/vendor")
+},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":13,"buffer":10,"three":"z8HVlD"}],"mirror":[function(require,module,exports){
+module.exports=require('SV1fn2');
+},{}],"ember":[function(require,module,exports){
 module.exports=require('8jyZbj');
 },{}],"8jyZbj":[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
@@ -44117,7 +44375,9 @@ Ember.State = generateRemovedClass("Ember.State");
 }).call(global, undefined, undefined, undefined, function defineExport(ex) { module.exports = ex; });
 
 }).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/vendor\\ember-1.5.0.js","/vendor")
-},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8,"handlebars":"4/1IeM","jquery":"or5cxk"}],"jSnhCN":[function(require,module,exports){
+},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":13,"buffer":10,"handlebars":"4/1IeM","jquery":"or5cxk"}],"emberdata":[function(require,module,exports){
+module.exports=require('jSnhCN');
+},{}],"jSnhCN":[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 (function browserifyShim(module, exports, define, browserify_shim__define__module__export__) {
 
@@ -55449,9 +55709,7 @@ global.DS = requireModule('ember-data/lib/main')['default'];
 }).call(global, undefined, undefined, undefined, function defineExport(ex) { module.exports = ex; });
 
 }).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/vendor\\ember-data.js","/vendor")
-},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8,"ember":"8jyZbj","handlebars":"4/1IeM","jquery":"or5cxk"}],"emberdata":[function(require,module,exports){
-module.exports=require('jSnhCN');
-},{}],"handlebars":[function(require,module,exports){
+},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":13,"buffer":10,"ember":"8jyZbj","handlebars":"4/1IeM","jquery":"or5cxk"}],"handlebars":[function(require,module,exports){
 module.exports=require('4/1IeM');
 },{}],"4/1IeM":[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
@@ -58057,7 +58315,7 @@ var __module0__ = (function(__dependency1__, __dependency2__, __dependency3__, _
 }).call(global, undefined, undefined, undefined, function defineExport(ex) { module.exports = ex; });
 
 }).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/vendor\\handlebars-1.1.2.js","/vendor")
-},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],8:[function(require,module,exports){
+},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":13,"buffer":10}],10:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 /**
  * The buffer module from node.js, for the browser.
@@ -59172,7 +59430,7 @@ function assert (test, message) {
 }
 
 }).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/..\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\buffer\\index.js","/..\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\buffer")
-},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"base64-js":9,"buffer":8,"ieee754":10}],9:[function(require,module,exports){
+},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":13,"base64-js":11,"buffer":10,"ieee754":12}],11:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
@@ -59297,7 +59555,7 @@ var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 }())
 
 }).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/..\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\buffer\\node_modules\\base64-js\\lib\\b64.js","/..\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\buffer\\node_modules\\base64-js\\lib")
-},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],10:[function(require,module,exports){
+},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":13,"buffer":10}],12:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 exports.read = function(buffer, offset, isLE, mLen, nBytes) {
   var e, m,
@@ -59385,7 +59643,7 @@ exports.write = function(buffer, value, offset, isLE, mLen, nBytes) {
 };
 
 }).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/..\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\buffer\\node_modules\\ieee754\\index.js","/..\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\buffer\\node_modules\\ieee754")
-},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],11:[function(require,module,exports){
+},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":13,"buffer":10}],13:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 // shim for using process in browser
 
@@ -59449,7 +59707,7 @@ process.chdir = function (dir) {
 };
 
 }).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/..\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js","/..\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process")
-},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],"or5cxk":[function(require,module,exports){
+},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":13,"buffer":10}],"or5cxk":[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 (function browserifyShim(module, exports, define, browserify_shim__define__module__export__) {
 /*!
@@ -68632,7 +68890,7 @@ return jQuery;
 }).call(global, undefined, undefined, undefined, function defineExport(ex) { module.exports = ex; });
 
 }).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/..\\node_modules\\jquery\\dist\\jquery.js","/..\\node_modules\\jquery\\dist")
-},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],"jquery":[function(require,module,exports){
+},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":13,"buffer":10}],"jquery":[function(require,module,exports){
 module.exports=require('or5cxk');
 },{}],"D98f3E":[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
@@ -69270,7 +69528,7 @@ THREE.OrbitControls.prototype = Object.create( THREE.EventDispatcher.prototype )
 }).call(global, undefined, undefined, undefined, function defineExport(ex) { module.exports = ex; });
 
 }).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/..\\node_modules\\three\\examples\\js\\controls\\OrbitControls.js","/..\\node_modules\\three\\examples\\js\\controls")
-},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8,"three":"z8HVlD"}],"orbitcontrols":[function(require,module,exports){
+},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":13,"buffer":10,"three":"z8HVlD"}],"orbitcontrols":[function(require,module,exports){
 module.exports=require('D98f3E');
 },{}],"z8HVlD":[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
@@ -106908,6 +107166,6 @@ if (typeof exports !== 'undefined') {
 }).call(global, undefined, undefined, undefined, function defineExport(ex) { module.exports = ex; });
 
 }).call(this,require("C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/..\\node_modules\\three\\three.js","/..\\node_modules\\three")
-},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":11,"buffer":8}],"three":[function(require,module,exports){
+},{"C:\\git\\Langenium\\node_modules\\gulp-browserify\\node_modules\\browserify\\node_modules\\insert-module-globals\\node_modules\\process\\browser.js":13,"buffer":10}],"three":[function(require,module,exports){
 module.exports=require('z8HVlD');
 },{}]},{},[1])

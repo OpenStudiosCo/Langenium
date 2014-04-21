@@ -17,8 +17,16 @@ html
 		script(src="scripts/libs.js")
 		script(src="socket.io/socket.io.js")
 		script(type='x-shader/x-vertex', id='haloVertShader')
-			include shaders/halo.vertexShader
+			include shaders/halo.vert
 		script(type='x-shader/x-vertex', id='haloFragShader')
-			include shaders/halo.fragmentShader
+			include shaders/halo.frag
+		script(type='x-shader/x-vertex', id='cloudVertShader')
+			include shaders/cloud.vert
+		script(type='x-shader/x-vertex', id='cloudFragShader')
+			include shaders/cloud.frag
+		script(type='x-shader/x-vertex', id='waterVertShader')
+			include shaders/water.vert
+		script(type='x-shader/x-vertex', id='waterFragShader')
+			include shaders/water.frag
 		script(src="scripts/client.js")
 		

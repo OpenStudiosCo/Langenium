@@ -23,7 +23,7 @@ module.exports = function() {
 		update: function() {
 			Ember.set('L.scenograph.stats.time.last', this.time.now);
 			Ember.set('L.scenograph.stats.time.now', Date.now());
-			Ember.set('L.scenograph.stats.time.delta', this.time.now - this.time.last);
+			Ember.set('L.scenograph.stats.time.delta', (this.time.now - this.time.last));
 			Ember.set('L.scenograph.stats.time.deltaMin', Math.min(this.time.deltaMin, this.time.delta));
 			Ember.set('L.scenograph.stats.time.deltaMax', Math.max(this.time.deltaMax, this.time.delta));
 			
@@ -42,13 +42,90 @@ module.exports = function() {
 	};
 
 	scenograph.options = {
-		activeScene: 'EpochExordium',
-		currentScene: 'EpochExordium',
+		activeScene: 'MMO',
+		currentScene: '',
 		scenes: [
 			'EpochExordium',
 			'MMO'
 		],
-		useControls: false
+		useControls: true
+	};
+
+	scenograph.objects = {
+		loader: new THREE.JSONLoader(),
+		loadObject: function(url, callback) {
+			this.loader.load(url, function(geometry, materials) {
+				// This a mishmash of the old object and texture classes 
+				for (var i = 0; i < materials.length; i++) {
+					for (var j = 0; j < L.scenograph.objects.materials.length; j++) {
+						if (L.scenograph.objects.materials[j].name == materials[i].name) {
+							if (L.scenograph.objects.materials[j].vertex && L.scenograph.objects.materials[j].vertex == true) {
+								materials[i].vertexColors = THREE.VertexColors;
+								materials[i].side = THREE.DoubleSide;
+							}
+							if (L.scenograph.objects.materials[j].opacity) {
+								materials[i].transparent = true;
+								materials[i].opacity = L.scenograph.objects.materials[j].opacity;
+							}
+						}
+					}
+				}
+				for (var i = 0; i < geometry.faces.length; i++) {
+					for (var j = 0; j < L.scenograph.objects.materials.length; j++) {
+						if (materials[geometry.faces[i].materialIndex].name == L.scenograph.objects.materials[j].name && L.scenograph.objects.materials[j].colours) {
+							geometry.faces[i].vertexColors[0] = L.scenograph.objects.materials[j].colours[0];
+							geometry.faces[i].vertexColors[1] = L.scenograph.objects.materials[j].colours[1];
+							geometry.faces[i].vertexColors[2] = L.scenograph.objects.materials[j].colours[2];
+						}
+					}
+				}
+				callback(geometry, materials);
+			});
+		},
+		materials: [
+			// Metals
+			{	
+				name: "Light-Metal",
+				vertex: true,
+				colours: [
+					new THREE.Color( 0x666666 ),
+					new THREE.Color( 0x444444 ),
+					new THREE.Color( 0x666666 ),
+					new THREE.Color( 0x666666 )]	},
+			{	
+				name: "Steel",
+				vertex: true	},
+			{	
+				name: "Metal",
+				vertex: true,
+				colours: [
+					new THREE.Color( 0x333333 ),
+					new THREE.Color( 0x222222 ),
+					new THREE.Color( 0x333333),
+					new THREE.Color( 0x333333 )]	},
+			{	
+				name: "Red-Metal",
+				vertex: true,
+				colours: [
+					new THREE.Color( 0x440000 ),
+					new THREE.Color( 0x440000 ),
+					new THREE.Color( 0x550000 ),
+					new THREE.Color( 0x440000 )]	},
+			// Glass
+			{
+				name: "Glass",
+				vertex: true,
+				opacity: 0.8	},
+			{
+				name: "Dark-Glass",
+				vertex: true,
+				opacity: 0.1,
+				colours: [
+					new THREE.Color( 0x001122 ),
+					new THREE.Color( 0x112233 ),
+					new THREE.Color( 0x112244 ),
+					new THREE.Color( 0x112233 )]	}
+		]
 	};
 
 	scenograph.director = {
@@ -57,6 +134,8 @@ module.exports = function() {
 		renderer: null,
 		controls: null
 	};
+
+	scenograph.director.M = 500000;
 	
 	scenograph.director.init = function() {
 		L.ember_app.ApplicationController = Ember.Controller.extend({
@@ -68,12 +147,102 @@ module.exports = function() {
 		this.renderer.setSize( window.innerWidth, window.innerHeight );
 		document.body.appendChild( this.renderer.domElement );
 		
-		this.scene = new THREE.Scene();
-
 		window.addEventListener( 'resize', this.onWindowResize, false );
 
+		this.camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, this.M * 20 );
+		this.camera.fov = 70;
 
-		this.camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 10000000 );
+		this.noiseTexture2 = THREE.ImageUtils.loadTexture( "/assets/textures/noise2.jpg" );
+		this.noiseTexture2.wrapS = this.noiseTexture2.wrapT = THREE.RepeatWrapping;
+		
+		this.noiseTexture3 = THREE.ImageUtils.loadTexture( "/assets/textures/noise3.jpg" );
+		this.noiseTexture3.wrapS = this.noiseTexture3.wrapT = THREE.RepeatWrapping;
+
+		this.effects = {
+			cloud_uniforms: {
+				noiseTexture:	{ type: "t", value: this.noiseTexture2 },
+				scale: 			{ type: "f", value: 0.000001 },
+				time: 			{ type: "f", value: 0.0 }
+			},
+			mirror: null,
+			water_uniforms: {		
+				noiseTexture:	{ type: "t", value: this.noiseTexture3 },
+				time: 			{ type: "f", value: 0.0 },
+				scale: 			{ type: "f", value: .00015337 },	
+				mirrorSampler: 	{ type: "t", value: null },
+				textureMatrix: 	{ type: "m4", value: new THREE.Matrix4() }
+			}
+		};
+		
+	};
+
+	scenograph.director.mmo = function() {
+		this.scene = new THREE.Scene();
+		this.camera.position.z = 15000;
+
+		var skyGeo = new THREE.SphereGeometry(this.M / 2, 32, 64);
+
+		var sky_materials = [ 
+			new THREE.ShaderMaterial( {
+				side: THREE.DoubleSide,
+				uniforms: this.effects.cloud_uniforms,
+				vertexShader:   document.getElementById( 'cloudVertShader'   ).textContent,
+				fragmentShader: document.getElementById( 'cloudFragShader' ).textContent
+			} ), 
+			new THREE.MeshBasicMaterial( { color: 0x002244, side: THREE.DoubleSide  } )
+		];
+			 
+		for ( var i = 0; i < skyGeo.faces.length; i++ ) 
+		{
+			if  (skyGeo.faces[ i ].centroid.y >  -21000) {
+				skyGeo.faces[ i ].materialIndex = 0;
+			}
+			else {
+				skyGeo.faces[ i ].materialIndex = 1;
+			}
+		}
+		
+		var sky = new THREE.Mesh(skyGeo, new THREE.MeshFaceMaterial(sky_materials));
+		sky.name = 'Skybox';
+		sky.position.y = 35000;
+		this.scene.add(sky);
+
+		this.effects.mirror = new THREE.Mirror( this.renderer, this.camera, { clipBias: 0.003, textureWidth: window.innerWidth, textureHeight: window.innerHeight, color: 0x777777 } );
+		var plane = new THREE.Mesh(new THREE.PlaneGeometry( this.M * 4.5, this.M * 4.5 , 1, 1 ), this.effects.mirror.material);
+		plane.position.y = 10000;
+		plane.name = 'Ocean';
+		plane.add(this.effects.mirror);
+		plane.material.side = THREE.DoubleSide;
+		plane.material.transparent = true;
+		plane.frustrumCulled = false;	
+		plane.rotateX( - Math.PI / 2 );
+		this.scene.add(plane);
+
+		var mountain_cb = function(geometry, materials) {
+			var mesh = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
+			mesh.scale.set(5000,5000,5000);
+			L.scenograph.director.scene.add(mesh);			
+		}
+		L.scenograph.objects.loadObject('/assets/models/terrain/mountain/island.js', mountain_cb);
+
+		var ship_cb = function(geometry, materials) {
+			var mesh = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
+			mesh.scale.set(10,10,10);
+			mesh.add(L.scenograph.director.camera);
+			L.scenograph.director.scene.add(mesh);	
+		}
+		L.scenograph.objects.loadObject('/assets/models/ships/mercenary/valiant.js', ship_cb);
+
+		var hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 1 );
+		hemiLight.name = "light1";
+		hemiLight.color.setRGB( 0.9, 0.95, 1 );
+		hemiLight.groundColor.setRGB( 0.6, 0.75, 1 );
+		hemiLight.position.set( 0, this.M, 0 );
+		this.scene.add(hemiLight);
+	}
+
+	scenograph.director.epochexordium = function() {
+		this.scene = new THREE.Scene();
 		this.camera.position.z = 7000;
 		var light = new THREE.PointLight(0xffffff, 1, 0);
 		light.position.set(0,0,0);
@@ -231,18 +400,13 @@ module.exports = function() {
 	  		}
 	  	}
 
-	    // Neptune
-	    //L.scenograph.director.scene.add(L.scenograph.director.make_sphere({x: 0, y: 0, z:  }, , 38.8 ));	
-	    // Pluto
-	    //L.scenograph.director.scene.add(L.scenograph.director.make_sphere({x: 0, y: 0, z:  }, , 1.8 ));	
-
 	}
 
 	scenograph.director.make_sun = function(position, colour, radius) {
 		// Sphere parameters: radius, segments along width, segments along height
 		var sphere = new THREE.Mesh( new THREE.SphereGeometry( radius, 32, 16 ), new THREE.MeshBasicMaterial( { color: colour } ) );
-
 		sphere.position.set(position.x, position.y, position.z);
+
 		var customMaterial = new THREE.ShaderMaterial( 
 		{
 		    uniforms: {  },
@@ -282,22 +446,42 @@ module.exports = function() {
 				
 	scenograph.director.animate = function() {
 		L.scenograph.stats.update();
-		if (L.scenograph.options.useControls == false) {		
-			var newtime = L.scenograph.stats.time.now * 0.00005;
-			L.scenograph.director.camera.position.set(11000 * Math.cos(newtime), 14000 * Math.sin(newtime), 14000 * Math.cos(0))
-			
-			L.scenograph.director.camera.lookAt(new THREE.Vector3(0,0,18000 * Math.sin(newtime)))
-		}
-		else {
-			if (L.scenograph.director.controls == null) {
-				L.scenograph.director.controls = new THREE.OrbitControls( L.scenograph.director.camera, L.scenograph.director.renderer.domElement );
+		if (L.scenograph.options.activeScene != L.scenograph.options.currentScene) {
+			switch(L.scenograph.options.activeScene) {
+				case 'EpochExordium':
+					L.scenograph.director.epochexordium();
+					L.scenograph.options.currentScene = 'EpochExordium';
+					break;
+				case 'MMO':
+					L.scenograph.director.mmo();
+					L.scenograph.options.currentScene = 'MMO';
+					break;
 			}
-			L.scenograph.director.controls.update();
 		}
+		if (L.scenograph.director.scene) {
+			if (L.scenograph.director.effects.mirror) {
+				L.scenograph.director.effects.mirror.render();
+			}
+			L.scenograph.director.effects.cloud_uniforms.time.value += 0.0025 * L.scenograph.stats.time.delta;
+			L.scenograph.director.effects.water_uniforms.time.value += 0.001 * L.scenograph.stats.time.delta;
 
+
+			if (L.scenograph.options.useControls == false) {		
+				var newtime = L.scenograph.stats.time.now * 0.00005;
+				L.scenograph.director.camera.position.set(11000 * Math.cos(newtime), 14000 * Math.sin(newtime), 14000 * Math.cos(0))
+				
+				L.scenograph.director.camera.lookAt(new THREE.Vector3(0,0,18000 * Math.sin(newtime)))
+			}
+			else {
+				if (L.scenograph.director.controls == null) {
+					L.scenograph.director.controls = new THREE.OrbitControls( L.scenograph.director.camera, L.scenograph.director.renderer.domElement );
+				}
+				L.scenograph.director.controls.update();
+			}
+
+			L.scenograph.director.renderer.render( L.scenograph.director.scene, L.scenograph.director.camera );
+		}
 		requestAnimationFrame( L.scenograph.director.animate );
-		L.scenograph.director.renderer.render( L.scenograph.director.scene, L.scenograph.director.camera );
-
 	}
 	return scenograph;
 

@@ -73,6 +73,7 @@ h1 a {
   margin-left: auto;
   padding-left: 0;
   padding-right: 0;
+  padding: 1.5%;
 }
 #container .ember-view:before,
 #container .ember-view:after {
@@ -129,6 +130,7 @@ h1 a {
   text-decoration: underline;
 }
 #container .ember-view #page {
+  padding: 1.5% 0;
   *zoom: 1;
   float: left;
   display: inline;
@@ -152,6 +154,10 @@ h1 a {
   margin-right: 0%;
 }
 #container .ember-view #page #content {
+  border-style: solid;
+  border-width: 32px;
+  border-image: url("/assets/border-02.png") 42 fill round;
+  box-sizing: border-box;
   *zoom: 1;
   float: left;
   display: inline;
@@ -162,6 +168,16 @@ h1 a {
   width: 65.6666666666667%;
   margin-left: 0%;
   margin-right: 3%;
+}
+#container .ember-view #page #content .slideshow .content a {
+  color: #fff;
+  font-size: 2em;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+#container .ember-view #page #content .slideshow .content a h3 {
+  margin: 0;
 }
 #container .ember-view #page #content:before,
 #container .ember-view #page #content:after {
@@ -175,6 +191,10 @@ h1 a {
   margin-right: 0%;
 }
 #container .ember-view #page #sidebar {
+  border-style: solid;
+  border-width: 32px;
+  border-image: url("/assets/border-03.png") 80 77 fill round;
+  box-sizing: border-box;
   *zoom: 1;
   float: left;
   display: inline;
@@ -196,4 +216,52 @@ h1 a {
 }
 #container .ember-view #page #sidebar:last-child {
   margin-right: 0%;
+}
+@media screen and (max-width: 1140px) {
+  body {
+    font-size: 85%;
+  }
+  .ember-view {
+    *zoom: 1;
+    width: auto;
+    max-width: 960px;
+    float: none;
+    display: block;
+    margin-right: auto;
+    margin-left: auto;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .ember-view:before,
+  .ember-view:after {
+    content: '';
+    display: table;
+  }
+  .ember-view:after {
+    clear: both;
+  }
+}
+@media screen and (max-width: 768px) {
+  body {
+    font-size: 95%;
+  }
+  .ember-view {
+    *zoom: 1;
+    width: auto;
+    max-width: 600px;
+    float: none;
+    display: block;
+    margin-right: auto;
+    margin-left: auto;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .ember-view:before,
+  .ember-view:after {
+    content: '';
+    display: table;
+  }
+  .ember-view:after {
+    clear: both;
+  }
 }

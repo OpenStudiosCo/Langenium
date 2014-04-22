@@ -36,6 +36,7 @@ h1
 		pointer-events auto
 	.ember-view
 		center(1440px)
+		padding 1.5%
 		nav
 			column(1)
 			#main_menu
@@ -57,8 +58,41 @@ h1
 					a:hover,a.active
 						text-decoration underline
 		#page
+			padding 1.5% 0
 			column(1)
 			#content
+				border-style solid
+				border-width 32px
+				border-image url("/assets/border-02.png") 42 fill round
+				box-sizing border-box
+				.slideshow 
+					.content
+						a
+							color #FFFFFF
+							font-size 2em
+							letter-spacing 0.025em
+							text-transform uppercase
+							text-decoration none
+							h3
+								margin 0
 				column(2/3)
 			#sidebar
+				border-style solid
+				border-width 32px
+				border-image url("/assets/border-03.png") 80 77 fill round
+				box-sizing border-box
 				column(1/3)
+
+@media mTablet
+	body
+		font-size 85%
+	.ember-view {
+		center(960px)
+	}
+
+@media mPhone
+	body
+		font-size 95%
+	.ember-view {
+		center(600px)
+	}

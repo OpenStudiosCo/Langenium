@@ -3,24 +3,26 @@ script(type="text/x-handlebars", id="index")
 		#content
 			div(class="slideshow",data-cycle-fx="fade", data-cycle-timeout="5000", data-cycle-slides="> div")
 				div
-					a(href='https://github.com/paulbrzeski/Langenium-Universe/blob/master/documentation/games/Langenium--Epoch-Exordium/README.md')
+					.content
+						a(href='https://github.com/paulbrzeski/Langenium-Universe/blob/master/documentation/games/Langenium--Epoch-Exordium/README.md')
+							h3 Langenium Epoch Exordium
+						p Epoch Exordium is an introductory single player game set aboard space stations that were built by an AI
+					a.img(href='https://github.com/paulbrzeski/Langenium-Universe/blob/master/documentation/games/Langenium--Epoch-Exordium/README.md')
 						img(src='/assets/content/feature1.png')
-					a(href='https://github.com/paulbrzeski/Langenium-Universe/blob/master/documentation/games/Langenium--Epoch-Exordium/README.md')
-						h3 Langenium Epoch Exordium
-					p Epoch Exordium is an introductory single player game set aboard space stations that were built by an AI
 				div
-					a(href='http://staging.langenium.com/play')
+					.content
+						a(href='http://staging.langenium.com/play')
+							h3 Introducing the Staging Server
+						p I've held off on deploying the latest code to keep the website up. The staging server gives a 2nd option
+					a.img(href='http://staging.langenium.com/play')
 						img(src='/assets/content/feature2.jpg')
-					a(href='http://staging.langenium.com/play')
-						h3 Introducing the Staging Server
-					p Bacon ipsum dolor sit amet pork chop drumstick chuck ribeye spare ribs corned beef. Cow filet mignon shankle, ground round pig sausage jerky beef ribs brisket ribeye.
 				div
-					a(href='http://thezeski.deviantart.com/art/Langenium-Character-Roster-Draft-2-425786668')
+					.content
+						a(href='http://thezeski.deviantart.com/art/Langenium-Character-Roster-Draft-2-425786668')
+							h3 Langenium Character Roster (Draft 2)
+						p More storyline characters. I've got my main cast, so I'll probably start working on proper bodies soon 
+					a.img(href='http://thezeski.deviantart.com/art/Langenium-Character-Roster-Draft-2-425786668')
 						img(src='/assets/content/feature3.png')
-					a(href='http://thezeski.deviantart.com/art/Langenium-Character-Roster-Draft-2-425786668')
-						h3 Langenium Character Roster (Draft 2)
-					p More storyline characters. I've got my main cast, so I'll probably start working on proper bodies soon 
-					p The bodies they have here are just an approximation to help define their height/stature. The tank with the giant brain is in the same scale as the characters.
 		#sidebar
 			ul
 				| {{#each item in model}}

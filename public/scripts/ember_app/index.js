@@ -6,6 +6,11 @@ L.ember_app.IndexRoute = Ember.Route.extend({
 
 L.ember_app.IndexView = Ember.View.extend({
 	didInsertElement: function(){
-		$('.slideshow').cycle();
+		$('.slideshow').cycle({
+			log: false
+		});
+	},
+	willDestroyElement: function() {
+		$('.slideshow').cycle('destroy');
 	}
 });

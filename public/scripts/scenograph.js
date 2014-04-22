@@ -29,7 +29,7 @@ L.scenograph.director.init = function() {
 	
 	window.addEventListener( 'resize', this.onWindowResize, false );
 
-	this.camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, this.M * 20 );
+	this.camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, this.M * 2 );
 	this.camera.fov = 70;
 
 	this.noiseTexture2 = THREE.ImageUtils.loadTexture( "/assets/textures/noise2.jpg" );

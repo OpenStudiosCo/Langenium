@@ -6,7 +6,6 @@
 
 module.exports = function() {
 	var libs = {
-		// 3rd party libs
 		express: require('express'),
 		middleware: {
 			compression: require('compression'),
@@ -17,8 +16,9 @@ module.exports = function() {
 			favicon: require('static-favicon'),
 			methodOverride: require('method-override')
 		},
-		passport : require('passport'),
-		fbsdk: require('facebook-sdk'),
+		passport: require('passport'),
+		FacebookStrategy: require('passport-facebook').Strategy,
+		fbsdk: require('facebook-node-sdk'),
 		mongoose: require('mongoose'),
 		path: require('path'),
 		fs: require('fs'),
@@ -26,12 +26,13 @@ module.exports = function() {
 		stylus: require('stylus'),
 		jeet: require('jeet')
 	};
-	// Activates interdependencies and start up stuff
+
+	libs.fb = new libs.fbsdk({ appId: process.env['APP_ID'], secret: process.env['APP_SECRET'] });
+
 	libs.mongoose.connect('127.0.0.1:27017/langenium', {
 		user: process.env['DB_USERNAME'],
 		pass: process.env['DB_PASSWORD']
 	});
-
 	
 	return libs;
 };

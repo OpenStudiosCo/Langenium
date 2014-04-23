@@ -20,7 +20,7 @@
     "method-override": "*",
     "passport": "*",
     "passport-facebook": "*",
-    "facebook-sdk": "*",
+    "facebook-node-sdk": "*",
     "mongodb": "*",
     "mongojs": "*",
     "socket.io": "*",

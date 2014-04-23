@@ -32,8 +32,6 @@ module.exports = function() {
 	
  	app.express.use(app.libs.middleware.favicon("public/favicon.ico"));
  	app.express.use(app.libs.middleware.methodOverride());
-
-	//app.express.use(app.libs.fb);
 	app.express.use(app.libs.passport.initialize());
   	app.express.use(app.libs.passport.session());
   	app.express.use(app.libs.stylus.middleware({
@@ -67,9 +65,18 @@ module.exports = function() {
 		socket.on('pong', function (data) { 
 			return function(socket, data) {
 				var time = new Date().getTime(); 
-			var latency = time - data.time;
+				var latency = time - data.time;
 				socket.emit("ping", { time: new Date().getTime(), latency: latency });
 			}(socket, data) 
+		});
+
+		socket.on('ember-data', function(request){
+			app.libs.fb.api(request.url, function(err, data){
+				console.log(data)
+				socket.emit('ember-data', data );
+			});
+
+			
 		});
 	});
 

@@ -1,3 +1,4 @@
 script(type="text/x-handlebars", id="posts")
-	h3 {{model.title}}
+	h3 {{model.name}}
+	<img {{bind-attr src=model.picture}} />
 	p {{model.description}}

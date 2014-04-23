@@ -11,16 +11,13 @@ L.ember_app.PostsRoute = Ember.Route.extend({
 });
 
 L.ember_app.Post = DS.Model.extend({
-	title: DS.attr('string'),
-	created: DS.attr('date'),
-	description: DS.attr('string')
+	created_time: DS.attr('date'),
+	name: DS.attr('string'),
+	description: DS.attr('string'),
+	link: DS.attr('string'),
+	picture: DS.attr('string'),
+	status_type: DS.attr('string'),
+	type: DS.attr('string')
 });
-// Manually updated via this array for now, will move to some kind of socket based Markdown grabber
-L.ember_app.Post.FIXTURES = [
-	{
-		id: "0",
-		created: "22/4/2014",
-		title: "First post!",
-		description: "This is a placeholder first post for the new website"
-	}
-];
+
+L.ember_app.Post.FIXTURES = [];

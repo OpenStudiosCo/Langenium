@@ -28,7 +28,10 @@ script(type="text/x-handlebars", id="index")
 				| {{#each item in model}}
 				li 
 					| {{#link-to "posts" item.id}}
-					h3 {{item.title}}
+					<img {{bind-attr src=item.picture}} />
+					| {{/link-to}}	
+					| {{#link-to "posts" item.id}}
+					h3 {{item.name}}
 					| {{/link-to}}
 					p {{item.description}}
 				| {{/each}}

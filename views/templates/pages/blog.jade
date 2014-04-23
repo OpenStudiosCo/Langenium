@@ -3,10 +3,13 @@ script(type="text/x-handlebars", id="blog")
 		#sidebar
 			ul
 				| {{#each item in model}}
-				li 
+				li
+					<img {{bind-attr src=item.picture}} />
+					| {{item.created_time}} 
 					| {{#link-to 'posts' item.id}}
-					| {{item.title}}
+					| {{item.name}}
 					| {{/link-to}}
+					| {{item.created_time}}
 				| {{/each}}
 		#content
 			| {{outlet}}

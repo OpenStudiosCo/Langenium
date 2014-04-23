@@ -71,12 +71,10 @@ module.exports = function() {
 		});
 
 		socket.on('ember-data', function(request){
-			app.libs.fb.api(request.url, function(err, data){
-				console.log(data)
-				socket.emit('ember-data', data );
+			app.libs.fb.api({ method: 'fql.query', query: request.query }, function(err, result){
+				socket.emit('ember-data', {request: request, result: result });
 			});
 
-			
 		});
 	});
 

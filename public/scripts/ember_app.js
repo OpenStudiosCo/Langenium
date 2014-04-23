@@ -1,5 +1,8 @@
 L.ember_app = Ember.Application.create({
-	rootElement: '#container'
+	rootElement: '#container',
+	ready: function() {
+		console.log("Ember application ready");
+	}
 });
 
 L.ember_app.ApplicationAdapter = DS.FixtureAdapter;

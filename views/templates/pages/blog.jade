@@ -2,12 +2,12 @@ script(type="text/x-handlebars", id="blog")
 	#page
 		#sidebar
 			ul
-				| {{#each item in model}}
+				| {{#each item in news}}
 				li
 					<img {{bind-attr src=item.picture}} />
 					| {{item.created_time}} 
 					| {{#link-to 'posts' item.id}}
-					| {{item.name}}
+					| {{item.cut_message}}
 					| {{/link-to}}
 					| {{item.created_time}}
 				| {{/each}}

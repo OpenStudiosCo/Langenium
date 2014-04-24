@@ -71,7 +71,18 @@ module.exports = function() {
 		});
 
 		socket.on('ember-data', function(request){
-			app.libs.fb.api({ method: 'fql.query', query: request.query }, function(err, result){
+			console.log(request)
+			console.log(app.libs.fb.api)
+			var query;
+			switch (request.type) {
+				case "news":
+					query = "select post_id, created_time, message, description, type, attachment from stream where source_id in (select page_id from page where name = 'Langenium') and type > 0 and type in (80,128,247)"
+					break;
+				case "articles":
+					query = "select title, created_time, content, content_html from note where uid in (select page_id from page where name = 'Langenium')"
+					break;
+			}
+			app.libs.fb.api({ method: 'fql.query', query: query }, function(err, result){
 				socket.emit('ember-data', {request: request, result: result });
 			});
 

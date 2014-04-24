@@ -1,37 +1,24 @@
 script(type="text/x-handlebars", id="index")
 	#page
 		#content
-			div(class="slideshow",data-cycle-fx="fade", data-cycle-timeout="5000", data-cycle-slides="> div")
-				div
-					.content
-						a(href='https://github.com/paulbrzeski/Langenium-Universe/blob/master/documentation/games/Langenium--Epoch-Exordium/README.md')
-							h3 Langenium Epoch Exordium
-						p Epoch Exordium is an introductory single player game set aboard space stations that were built by an AI
-					a.img(href='https://github.com/paulbrzeski/Langenium-Universe/blob/master/documentation/games/Langenium--Epoch-Exordium/README.md')
-						img(src='/assets/content/feature1.png')
-				div
-					.content
-						a(href='http://staging.langenium.com/play')
-							h3 Introducing the Staging Server
-						p I've held off on deploying the latest code to keep the website up. The staging server gives a 2nd option
-					a.img(href='http://staging.langenium.com/play')
-						img(src='/assets/content/feature2.jpg')
-				div
-					.content
-						a(href='http://thezeski.deviantart.com/art/Langenium-Character-Roster-Draft-2-425786668')
-							h3 Langenium Character Roster (Draft 2)
-						p More storyline characters. I've got my main cast, so I'll probably start working on proper bodies soon 
-					a.img(href='http://thezeski.deviantart.com/art/Langenium-Character-Roster-Draft-2-425786668')
-						img(src='/assets/content/feature3.png')
+			div(class="slideshow")
+				| {{#each item in articles}}
+				.slide
+					| {{#link-to "article" item.id}}
+					h3 {{item.title}}
+					| {{/link-to}}	
+					| {{#link-to "article" item.id}}
+					<img {{bind-attr src=item.picture}} />
+					| {{/link-to}}	
+
+				| {{/each}}
 		#sidebar
 			ul
-				| {{#each item in model}}
+				| {{#each item in news}}
 				li 
+					p {{item.created_time}}
 					| {{#link-to "posts" item.id}}
 					<img {{bind-attr src=item.picture}} />
 					| {{/link-to}}	
-					| {{#link-to "posts" item.id}}
-					h3 {{item.name}}
-					| {{/link-to}}
-					p {{item.description}}
+					p {{{item.cut_message}}}
 				| {{/each}}

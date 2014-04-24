@@ -16,6 +16,8 @@ L.ember_app.Router.map(function(){
 	this.resource('about');
 	this.resource('blog', {path: '/blog/'}, function(){
 		this.resource('posts', {path:'/posts/:id'})
+		this.resource('article', {path:'/article/:id'})
 	});
 	this.resource('media');
 });
+

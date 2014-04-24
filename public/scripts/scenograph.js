@@ -2,6 +2,7 @@ L.scenograph = {
 	options: {
 		activeScene: 'EpochExordium',
 		currentScene: '',
+		hideInterface: false,
 		scenes: [
 			'EpochExordium',
 			'MMO'
@@ -326,6 +327,12 @@ L.scenograph.director.onWindowResize = function() {
 				
 L.scenograph.director.animate = function() {
 	L.scenograph.stats.update();
+	if (L.scenograph.options.hideInterface == true && $('.ember-view').is(":visible") == true) {
+		$('.ember-view').slideUp();
+	}
+	if (L.scenograph.options.hideInterface == false && $('.ember-view').is(":visible") == false) {
+		$('.ember-view').slideDown();
+	}
 	if (L.scenograph.options.activeScene != L.scenograph.options.currentScene) {
 		switch(L.scenograph.options.activeScene) {
 			case 'EpochExordium':

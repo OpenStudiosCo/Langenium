@@ -20,10 +20,6 @@ L.scenograph.director = {
 };
 	
 L.scenograph.director.init = function() {
-	L.ember_app.ApplicationController = Ember.Controller.extend({
-		fpsBinding: 'L.scenograph.stats.fps',
-		timeBinding: 'L.scenograph.stats.time'
-	});
 	this.renderer = new THREE.WebGLRenderer({alpha: true});
 	this.renderer.setSize( window.innerWidth, window.innerHeight );
 	document.body.appendChild( this.renderer.domElement );
@@ -327,11 +323,11 @@ L.scenograph.director.onWindowResize = function() {
 				
 L.scenograph.director.animate = function() {
 	L.scenograph.stats.update();
-	if (L.scenograph.options.hideInterface == true && $('.ember-view').is(":visible") == true) {
-		$('.ember-view').slideUp();
+	if (L.scenograph.options.hideInterface == true && $('#container').is(":visible") == true) {
+		$('#container').slideUp();
 	}
-	if (L.scenograph.options.hideInterface == false && $('.ember-view').is(":visible") == false) {
-		$('.ember-view').slideDown();
+	if (L.scenograph.options.hideInterface == false && $('#container').is(":visible") == false) {
+		$('#container').slideDown();
 	}
 	if (L.scenograph.options.activeScene != L.scenograph.options.currentScene) {
 		switch(L.scenograph.options.activeScene) {

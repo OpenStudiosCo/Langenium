@@ -5,15 +5,13 @@ html
 		link(rel="stylesheet",href="styles/styles.css")
 	body
 		#container
-	
-		include templates/layout
-		include templates/pages/index
-		include templates/pages/games
-		include templates/pages/about
-		include templates/pages/blog
-		include templates/pages/posts
-		include templates/pages/media
-		include templates/pages/article
+			nav
+				li blah
+			include pages/home
+			include pages/games
+			include pages/about
+			include pages/blog
+			include pages/media
 
 		script(src="scripts/vendor/jquery.js")
 		script(src="scripts/vendor/jquery.cycle2.js")
@@ -39,10 +37,6 @@ html
 		script(type='x-shader/x-vertex', id='waterFragShader')
 			include shaders/water.frag
 		script(src="scripts/L.js")
-		script(src="scripts/ember_app.js")
-		script(src="scripts/ember_app/blog.js")
-		script(src="scripts/ember_app/games.js")
-		script(src="scripts/ember_app/index.js")
 		script(src="scripts/scenograph.js")
 		script(src="scripts/scenograph/objects.js")
 		script(src="scripts/scenograph/stats.js")

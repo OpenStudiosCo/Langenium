@@ -6,7 +6,6 @@
 @import './shared/defaults.styl'
 
 html, body
-	overflow hidden
 	margin 0
 	position absolute
 	left 0
@@ -19,13 +18,27 @@ body
 	font-size 75%
 	color #FFFFFF
 
+body > canvas
+	position fixed
+	z-index -1
+
 h1 
 	float left
 	a
 		padding .125em 0
 		font-size 0.1px
 
+h3
+	font-size 1.5em
+
+.push-left 
+	float left
+
+.push-right
+	float right
+
 #container
+	padding 1em
 	pointer-events none
 	position absolute
 	top 0
@@ -34,65 +47,111 @@ h1
 	bottom 0
 	*
 		pointer-events auto
-	.ember-view
+	#pages
+		display none
+	#viewport
 		center(1440px)
-		padding 1.5%
-		nav
+		nav#main-menu
 			column(1)
-			#main_menu
-				padding-top 1em
-				padding-left 4em
-				float left
-				li 
-					float left
-					list-style none outside
-					a
-						color #FFFFFF			
-						margin .5em .25em
-						padding .35em .5em
-						font-family 'Franchise'
-						font-size 1.85em
-						text-transform uppercase
-						text-align center
-						text-decoration none
-					a:hover,a.active
-						text-decoration underline
+			float left
+			a
+				float left		
+				&:first-child
+					padding 0 1em 0 0
+					margin 0 .25em 0 0
+				color #FFFFFF			
+				margin 1em .25em
+				padding .35em .5em
+				font-family 'Franchise'
+				font-size 2em
+				letter-spacing 0.05em
+				text-transform uppercase
+				text-align center
+				text-decoration none
+				&:hover,&:active
+					text-decoration underline
 		#page
 			padding 1.5% 0
 			column(1)
+			.blog-item
+				a
+					text-decoration none
+					h3
+						color #FFFFFF
+						font-size 1.5em
+						letter-spacing 0.05em
+						text-transform uppercase
+			.blog-feature
+				width 100%
+				a
+					color #FFFFFF
+					font-size 2.5em
+					letter-spacing 0.05em
+					text-transform uppercase
+					text-decoration none
+					h3
+						margin 0
+					&.img
+						img
+							width 100%
+							height 100%
+							display block
+							margin 0 auto
+			.slideshow 
+					.slide
+						width 100%
+						a
+							color #FFFFFF
+							font-size 2.5em
+							letter-spacing 0.05em
+							text-transform uppercase
+							text-decoration none
+							h3
+								margin 0
+							&.img
+								img
+									width 100%
+									height 100%
+									display block
+									margin 0 auto
 			#content
 				border-style solid
 				border-width 32px
 				border-image url("/assets/border-02.png") 42 fill round
 				box-sizing border-box
-				.slideshow 
-					.content
-						a
-							color #FFFFFF
-							font-size 2em
-							letter-spacing 0.025em
-							text-transform uppercase
-							text-decoration none
-							h3
-								margin 0
 				column(2/3)
+				&.home
+					column(5/8)
+				&.media
+					column(1)
 			#sidebar
 				border-style solid
 				border-width 32px
 				border-image url("/assets/border-03.png") 80 77 fill round
 				box-sizing border-box
 				column(1/3)
+				&.home
+					column(3/8)
 
 @media mTablet
-	body
+	body {
 		font-size 85%
-	.ember-view {
+	}
+	#viewport {
 		center(960px)
+	}
+	#container #viewport #page #content,
+	#container #viewport #page #content.home {
+		column(1)
+	}
+	#container #viewport #page #sidebar,
+	#container #viewport #page #sidebar.home {
+		column(1)
 	}
 
 @media mPhone
 	body
 		font-size 95%
-	.ember-view {
+	#viewport {
 		center(600px)
 	}

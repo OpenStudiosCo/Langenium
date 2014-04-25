@@ -120,7 +120,9 @@ L.scenograph.director.mmo = function() {
 
 L.scenograph.director.epochexordium = function() {
 	this.scene = new THREE.Scene();
-	this.camera.position.z = 7000;
+	this.camera.position.set(0,0,7000);
+	this.camera.fov = 70;
+	this.camera.lookAt(new THREE.Vector3(0,0,0));
 	var light = new THREE.PointLight(0xffffff, 1, 0);
 	light.position.set(0,0,0);
 	this.scene.add(light);

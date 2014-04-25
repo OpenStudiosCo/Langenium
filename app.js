@@ -83,6 +83,9 @@ module.exports = function() {
 					break;
 			}
 			app.libs.fb.api({ method: 'fql.query', query: query }, function(err, result){
+				if (err)
+					console.log(err)
+				console.log(result)
 				socket.emit('ember-data', {request: request, result: result });
 			});
 

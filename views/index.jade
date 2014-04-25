@@ -5,27 +5,31 @@ html
 		link(rel="stylesheet",href="styles/styles.css")
 	body
 		#container
-			nav.main-menu
-			
-		#templates
+			#viewport
+				nav#main-menu
+					a(href='#/')
+						h1
+							img(src='./assets/logo.png',width='216',height='96')
+					a(href='#/games') Games
+					a(href='#/about') About
+					a(href='#/blog') Blog
+					a(href='#/media') Media
+				#page
 			#pages
-				#home	
+				#home
 					include pages/home
 				#games
 					include pages/games
-				#about	
+				#about
 					include pages/about
-				#blog	
+				#blog
 					include pages/blog
-				#media	
+				#media
 					include pages/media
 
-		script(src="scripts/vendor/jquery.js")
-		script(src="scripts/vendor/jquery.cycle2.js")
-		script(src="scripts/vendor/handlebars.js")
-		script(src="scripts/vendor/ember.js")
-		script(src="scripts/vendor/ember-data.js")
-		script(src="scripts/vendor/three.js")
+		script(src="scripts/vendor/jquery.min.js")
+		script(src="scripts/vendor/jquery.cycle2.min.js")
+		script(src="scripts/vendor/three.min.js")
 		script(src="scripts/vendor/Mirror.js")
 		script(src="scripts/vendor/OrbitControls.js")
 		script(src="scripts/vendor/dat.gui.js")

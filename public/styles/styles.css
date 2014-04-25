@@ -13,14 +13,12 @@ h1 {
   float: left;
 }
 h1,
-h2 {
-  letter-spacing: 0.025em;
-}
+h2,
 h3,
 h4,
 h5,
 h6 {
-  letter-spacing: 0.01em;
+  letter-spacing: 0.05em;
 }
 h1,
 h2,
@@ -32,7 +30,6 @@ h6 {
 }
 html,
 body {
-  overflow: hidden;
   margin: 0;
   position: absolute;
   left: 0;
@@ -45,6 +42,10 @@ body {
   font-size: 75%;
   color: #fff;
 }
+body > canvas {
+  position: fixed;
+  z-index: -1;
+}
 h1 {
   float: left;
 }
@@ -52,7 +53,17 @@ h1 a {
   padding: 0.125em 0;
   font-size: 0.1px;
 }
+h3 {
+  font-size: 1.5em;
+}
+.push-left {
+  float: left;
+}
+.push-right {
+  float: right;
+}
 #container {
+  padding: 1em;
   pointer-events: none;
   position: absolute;
   top: 0;
@@ -63,7 +74,10 @@ h1 a {
 #container * {
   pointer-events: auto;
 }
-#container .ember-view {
+#container #pages {
+  display: none;
+}
+#container #viewport {
   *zoom: 1;
   width: auto;
   max-width: 1440px;
@@ -73,17 +87,16 @@ h1 a {
   margin-left: auto;
   padding-left: 0;
   padding-right: 0;
-  padding: 1.5%;
 }
-#container .ember-view:before,
-#container .ember-view:after {
+#container #viewport:before,
+#container #viewport:after {
   content: '';
   display: table;
 }
-#container .ember-view:after {
+#container #viewport:after {
   clear: both;
 }
-#container .ember-view nav {
+#container #viewport nav#main-menu {
   *zoom: 1;
   float: left;
   display: inline;
@@ -94,42 +107,40 @@ h1 a {
   width: 100%;
   margin-left: 0%;
   margin-right: 3%;
+  float: left;
 }
-#container .ember-view nav:before,
-#container .ember-view nav:after {
+#container #viewport nav#main-menu:before,
+#container #viewport nav#main-menu:after {
   content: '';
   display: table;
 }
-#container .ember-view nav:after {
+#container #viewport nav#main-menu:after {
   clear: both;
 }
-#container .ember-view nav:last-child {
+#container #viewport nav#main-menu:last-child {
   margin-right: 0%;
 }
-#container .ember-view nav #main_menu {
-  padding-top: 1em;
-  padding-left: 4em;
+#container #viewport nav#main-menu a {
   float: left;
-}
-#container .ember-view nav #main_menu li {
-  float: left;
-  list-style: none outside;
-}
-#container .ember-view nav #main_menu li a {
   color: #fff;
-  margin: 0.5em 0.25em;
+  margin: 1em 0.25em;
   padding: 0.35em 0.5em;
   font-family: 'Franchise';
-  font-size: 1.85em;
+  font-size: 2em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
   text-align: center;
   text-decoration: none;
 }
-#container .ember-view nav #main_menu li a:hover,
-#container .ember-view nav #main_menu li a.active {
+#container #viewport nav#main-menu a:first-child {
+  padding: 0 1em 0 0;
+  margin: 0 0.25em 0 0;
+}
+#container #viewport nav#main-menu a:hover,
+#container #viewport nav#main-menu a:active {
   text-decoration: underline;
 }
-#container .ember-view #page {
+#container #viewport #page {
   padding: 1.5% 0;
   *zoom: 1;
   float: left;
@@ -142,18 +153,65 @@ h1 a {
   margin-left: 0%;
   margin-right: 3%;
 }
-#container .ember-view #page:before,
-#container .ember-view #page:after {
+#container #viewport #page:before,
+#container #viewport #page:after {
   content: '';
   display: table;
 }
-#container .ember-view #page:after {
+#container #viewport #page:after {
   clear: both;
 }
-#container .ember-view #page:last-child {
+#container #viewport #page:last-child {
   margin-right: 0%;
 }
-#container .ember-view #page #content {
+#container #viewport #page .blog-item a {
+  text-decoration: none;
+}
+#container #viewport #page .blog-item a h3 {
+  color: #fff;
+  font-size: 1.5em;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+#container #viewport #page .blog-feature {
+  width: 100%;
+}
+#container #viewport #page .blog-feature a {
+  color: #fff;
+  font-size: 2.5em;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+#container #viewport #page .blog-feature a h3 {
+  margin: 0;
+}
+#container #viewport #page .blog-feature a.img img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  margin: 0 auto;
+}
+#container #viewport #page .slideshow .slide {
+  width: 100%;
+}
+#container #viewport #page .slideshow .slide a {
+  color: #fff;
+  font-size: 2.5em;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+#container #viewport #page .slideshow .slide a h3 {
+  margin: 0;
+}
+#container #viewport #page .slideshow .slide a.img img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  margin: 0 auto;
+}
+#container #viewport #page #content {
   border-style: solid;
   border-width: 32px;
   border-image: url("/assets/border-02.png") 42 fill round;
@@ -169,28 +227,64 @@ h1 a {
   margin-left: 0%;
   margin-right: 3%;
 }
-#container .ember-view #page #content .slideshow .content a {
-  color: #fff;
-  font-size: 2em;
-  letter-spacing: 0.025em;
-  text-transform: uppercase;
-  text-decoration: none;
-}
-#container .ember-view #page #content .slideshow .content a h3 {
-  margin: 0;
-}
-#container .ember-view #page #content:before,
-#container .ember-view #page #content:after {
+#container #viewport #page #content:before,
+#container #viewport #page #content:after {
   content: '';
   display: table;
 }
-#container .ember-view #page #content:after {
+#container #viewport #page #content:after {
   clear: both;
 }
-#container .ember-view #page #content:last-child {
+#container #viewport #page #content:last-child {
   margin-right: 0%;
 }
-#container .ember-view #page #sidebar {
+#container #viewport #page #content.home {
+  *zoom: 1;
+  float: left;
+  display: inline;
+  clear: none;
+  text-align: inherit;
+  padding-left: 0;
+  padding-right: 0;
+  width: 61.375%;
+  margin-left: 0%;
+  margin-right: 3%;
+}
+#container #viewport #page #content.home:before,
+#container #viewport #page #content.home:after {
+  content: '';
+  display: table;
+}
+#container #viewport #page #content.home:after {
+  clear: both;
+}
+#container #viewport #page #content.home:last-child {
+  margin-right: 0%;
+}
+#container #viewport #page #content.media {
+  *zoom: 1;
+  float: left;
+  display: inline;
+  clear: none;
+  text-align: inherit;
+  padding-left: 0;
+  padding-right: 0;
+  width: 100%;
+  margin-left: 0%;
+  margin-right: 3%;
+}
+#container #viewport #page #content.media:before,
+#container #viewport #page #content.media:after {
+  content: '';
+  display: table;
+}
+#container #viewport #page #content.media:after {
+  clear: both;
+}
+#container #viewport #page #content.media:last-child {
+  margin-right: 0%;
+}
+#container #viewport #page #sidebar {
   border-style: solid;
   border-width: 32px;
   border-image: url("/assets/border-03.png") 80 77 fill round;
@@ -206,22 +300,45 @@ h1 a {
   margin-left: 0%;
   margin-right: 3%;
 }
-#container .ember-view #page #sidebar:before,
-#container .ember-view #page #sidebar:after {
+#container #viewport #page #sidebar:before,
+#container #viewport #page #sidebar:after {
   content: '';
   display: table;
 }
-#container .ember-view #page #sidebar:after {
+#container #viewport #page #sidebar:after {
   clear: both;
 }
-#container .ember-view #page #sidebar:last-child {
+#container #viewport #page #sidebar:last-child {
+  margin-right: 0%;
+}
+#container #viewport #page #sidebar.home {
+  *zoom: 1;
+  float: left;
+  display: inline;
+  clear: none;
+  text-align: inherit;
+  padding-left: 0;
+  padding-right: 0;
+  width: 35.625%;
+  margin-left: 0%;
+  margin-right: 3%;
+}
+#container #viewport #page #sidebar.home:before,
+#container #viewport #page #sidebar.home:after {
+  content: '';
+  display: table;
+}
+#container #viewport #page #sidebar.home:after {
+  clear: both;
+}
+#container #viewport #page #sidebar.home:last-child {
   margin-right: 0%;
 }
 @media screen and (max-width: 1140px) {
   body {
     font-size: 85%;
   }
-  .ember-view {
+  #viewport {
     *zoom: 1;
     width: auto;
     max-width: 960px;
@@ -232,20 +349,76 @@ h1 a {
     padding-left: 0;
     padding-right: 0;
   }
-  .ember-view:before,
-  .ember-view:after {
+  #viewport:before,
+  #viewport:after {
     content: '';
     display: table;
   }
-  .ember-view:after {
+  #viewport:after {
     clear: both;
+  }
+  #container #viewport #page #content,
+  #container #viewport #page #content.home {
+    *zoom: 1;
+    float: left;
+    display: inline;
+    clear: none;
+    text-align: inherit;
+    padding-left: 0;
+    padding-right: 0;
+    width: 100%;
+    margin-left: 0%;
+    margin-right: 3%;
+  }
+  #container #viewport #page #content:before,
+  #container #viewport #page #content.home:before,
+  #container #viewport #page #content:after,
+  #container #viewport #page #content.home:after {
+    content: '';
+    display: table;
+  }
+  #container #viewport #page #content:after,
+  #container #viewport #page #content.home:after {
+    clear: both;
+  }
+  #container #viewport #page #content:last-child,
+  #container #viewport #page #content.home:last-child {
+    margin-right: 0%;
+  }
+  #container #viewport #page #sidebar,
+  #container #viewport #page #sidebar.home {
+    *zoom: 1;
+    float: left;
+    display: inline;
+    clear: none;
+    text-align: inherit;
+    padding-left: 0;
+    padding-right: 0;
+    width: 100%;
+    margin-left: 0%;
+    margin-right: 3%;
+  }
+  #container #viewport #page #sidebar:before,
+  #container #viewport #page #sidebar.home:before,
+  #container #viewport #page #sidebar:after,
+  #container #viewport #page #sidebar.home:after {
+    content: '';
+    display: table;
+  }
+  #container #viewport #page #sidebar:after,
+  #container #viewport #page #sidebar.home:after {
+    clear: both;
+  }
+  #container #viewport #page #sidebar:last-child,
+  #container #viewport #page #sidebar.home:last-child {
+    margin-right: 0%;
   }
 }
 @media screen and (max-width: 768px) {
   body {
     font-size: 95%;
   }
-  .ember-view {
+  #viewport {
     *zoom: 1;
     width: auto;
     max-width: 600px;
@@ -256,12 +429,12 @@ h1 a {
     padding-left: 0;
     padding-right: 0;
   }
-  .ember-view:before,
-  .ember-view:after {
+  #viewport:before,
+  #viewport:after {
     content: '';
     display: table;
   }
-  .ember-view:after {
+  #viewport:after {
     clear: both;
   }
 }

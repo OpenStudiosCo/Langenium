@@ -5,13 +5,20 @@ html
 		link(rel="stylesheet",href="styles/styles.css")
 	body
 		#container
-			nav
-				li blah
-			include pages/home
-			include pages/games
-			include pages/about
-			include pages/blog
-			include pages/media
+			nav.main-menu
+			
+		#templates
+			#pages
+				#home	
+					include pages/home
+				#games
+					include pages/games
+				#about	
+					include pages/about
+				#blog	
+					include pages/blog
+				#media	
+					include pages/media
 
 		script(src="scripts/vendor/jquery.js")
 		script(src="scripts/vendor/jquery.cycle2.js")

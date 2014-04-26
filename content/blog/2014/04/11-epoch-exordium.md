@@ -1,4 +1,6 @@
-# Langenium: Epoch Exordium (E.E.)
+### Langenium: Epoch Exordium (E.E.)
+
+![Epoch Exordium Poster](./assets/content/feature1.png)
 
 An adventure RPG with resource management elements from RTS.
 
@@ -13,9 +15,9 @@ Exordium is an element developed by humans, under WERP's instruction. It's named
 
 The game's story is the Epoch of Exordium and the prologue for how WERP took control of the human race and brought them to Ibidan "an Epoch Exordium", introduction to the main story :)
 
-## Storyline
+#### Storyline
 
-### Prologue
+##### Prologue
 
 In the early 21st century, the human race was in a crisis. The oil had run dry and food was scarce due to dangerous and unpredictable weather patterns. 
 
@@ -33,19 +35,19 @@ For 31 years, WERP sat in silence. As time had passed, astronomers had observed 
 
 2076. On an ordinary day, inboxes all around the world were flooded with one message - "It's ready. Come forth.". There was a lot of confusion, but some brave souls decided to head for the stars to find see if the answer could be found - somewhere out there in space.
 
-### Epoch Exordium Story
+##### Epoch Exordium Story
 
 Project Humanity (PH) is founded by the UN in 2077. The organization was given the same mandate as WERP - create clean energy and protect the human race. PH was told that they would assemble teams from all around the world who would go out into space and find out what WERP had built and why.
 
 Engineers, scientists, passionate sci-fi nerds and entrepreneurs were brought up to the delapitated International Space Station for a debriefing and deployment. It turns out that WERP had developed a form of public transportation - a network of ballistic capsule cannons and nets that would allow cargo and people to move safely between structures.
 
-### SPOILERIFIC EPIC CONCLUSION OF STORY NOTES
+##### SPOILERIFIC EPIC CONCLUSION OF STORY NOTES
 
 WERP is using the network as part of his long term plan to destroy the Earth in 23 years and relocate the humans to Ibidan.
 
 The stations could be used to both determine the trajectory of the wormhole and a way to create the ideal conditions for it.
 
-#### Ideas
+##### Ideas
 - Detonating the stations in a certain order could create some kind of gravitational disturbance that rips the Earth->Ibidan wormhole open.
 	- Twin wormholes open - one between Earth and the surface of the sun and one between Earth and Ibidan
 	- Wormhole is 'shifting' and in the process of stabilizing it's simply superheated plasma/exotic particles entering the Earth's atmosphere that causes the explosion
@@ -55,9 +57,9 @@ The stations could be used to both determine the trajectory of the wormhole and 
 Due to the player's having their brains harvested at the end of Epoch Exordium - there could be moments in Langenium MMO where this past character contacts the same players Langenium character via cryptic clues and messages. This could be in their own past and resonance with recent events or direct things like receiving a random reward from that character as an inheritance. Maybe completing different optional objectives in Epoch Exordium could create greater rewards and longer term missions that appear - maybe even discovering more about what WERP did overall, as part of your own story in both games?
 
 
-## Gameplay
+##### Gameplay
 
-### Objective Ideas
+###### Objective Ideas
 - Build a new station
 	- Every station created spawns a new unique component, which then becomes required for every new station built
 	- later down in the game, players will be able to 

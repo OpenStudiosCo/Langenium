@@ -55,6 +55,8 @@ body > canvas {
 }
 h1 {
   float: left;
+  clear: both;
+  display: block;
 }
 h1 a {
   padding: 0.125em 0;

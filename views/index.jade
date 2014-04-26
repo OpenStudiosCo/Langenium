@@ -2,7 +2,9 @@ doctype
 html
 	head
 		title= title
-		link(rel="stylesheet",href="styles/styles.css")
+		// https://github.com/daneden/animate.css
+		link(rel="stylesheet",href="./scripts/vendor/animate.css")
+		link(rel="stylesheet",href="./styles/styles.css")
 	body
 		#container
 			#viewport
@@ -14,7 +16,7 @@ html
 					a(href='#/about') About
 					a(href='#/blog') Blog
 					a(href='#/media') Media
-				#page
+				#page.animated
 			#pages
 				#home
 					include pages/home
@@ -26,15 +28,27 @@ html
 					include pages/blog
 				#media
 					include pages/media
-
+		// http://learn.jquery.com/
 		script(src="scripts/vendor/jquery.min.js")
+		// https://github.com/davatron5000/Lettering.js
+		script(src="scripts/vendor/jquery.lettering.js")
+		// https://github.com/jschr/textillate
+		script(src="scripts/vendor/jquery.textillate.js")
+		// http://jquery.malsup.com/cycle2/api/
 		script(src="scripts/vendor/jquery.cycle2.min.js")
+		// https://github.com/mrdoob/three.js
 		script(src="scripts/vendor/three.min.js")
 		script(src="scripts/vendor/Mirror.js")
 		script(src="scripts/vendor/OrbitControls.js")
+		// https://code.google.com/p/dat-gui/
 		script(src="scripts/vendor/dat.gui.js")
+		// http://smoothiecharts.org/examples/example1.html
+		script(src="scripts/vendor/smoothie.js")
+		// http://momentjs.com/
 		script(src="scripts/vendor/moment.min.js")
+		// http://socket.io/
 		script(src="socket.io/socket.io.js")
+		// Shaders
 		script(type='x-shader/x-vertex', id='haloVertShader')
 			include shaders/halo.vert
 		script(type='x-shader/x-vertex', id='haloFragShader')
@@ -47,6 +61,7 @@ html
 			include shaders/water.vert
 		script(type='x-shader/x-vertex', id='waterFragShader')
 			include shaders/water.frag
+		// Client code
 		script(src="scripts/L.js")
 		script(src="scripts/scenograph.js")
 		script(src="scripts/scenograph/objects.js")

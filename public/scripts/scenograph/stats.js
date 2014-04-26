@@ -1,4 +1,5 @@
 L.scenograph.stats = {
+	latency: new TimeSeries(),
 	time: {
 		now: Date.now(),
 		delta: 0,
@@ -6,7 +7,7 @@ L.scenograph.stats = {
 	},
 	fps: {
 		frames: 0,
-		now: 0,
+		now: new TimeSeries(),
 		min: Infinity,
 		max: 0,
 		last: Date.now()
@@ -20,11 +21,8 @@ L.scenograph.stats = {
 		
 		this.fps.frames++;
 		if ( this.time.now > this.fps.last + 1000 ) {
-			L.scenograph.stats.fps.now = Math.round( ( this.fps.frames * 1000 ) / ( this.time.now - this.fps.last ) );
-			L.scenograph.stats.fps.min = Math.min(this.fps.min, this.fps.now);
-			L.scenograph.stats.fps.max = Math.max(this.fps.max, this.fps.now);
+			L.scenograph.stats.fps.now.append(this.time.now, Math.round( ( this.fps.frames * 1000 ) / ( this.time.now - this.fps.last ) ));
 			L.scenograph.stats.fps.last = this.time.now;
-
 			this.fps.frames = 0;
 		}
 

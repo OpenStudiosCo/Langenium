@@ -70,6 +70,16 @@ module.exports = function() {
 			}(socket, data) 
 		});
 
+		socket.on('content', function(request){
+			app.libs.fs.readFile('./content/' + request.join('/') + '.md', "utf-8", function(err, data){
+				if (err) throw err;
+				socket.emit('content', {
+					request: request,
+					response: app.libs.markdown.toHTML(data)
+				})
+			});
+		});
+
 		socket.on('ember-data', function(request){
 			console.log(request)
 			console.log(app.libs.fb.api)

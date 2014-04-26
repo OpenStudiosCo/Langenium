@@ -28,7 +28,8 @@
     "mongoose": "*",
     "ember": "~0.9",
     "handlebars": "*",
-    "jquery": "*"
+    "jquery": "*",
+    "markdown": "*"
   },
   "license": "MIT",
   "engines": {

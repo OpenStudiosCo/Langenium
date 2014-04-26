@@ -16,6 +16,7 @@ module.exports = function() {
 			favicon: require('static-favicon'),
 			methodOverride: require('method-override')
 		},
+		markdown: require('markdown').markdown,
 		passport: require('passport'),
 		FacebookStrategy: require('passport-facebook').Strategy,
 		fbsdk: require('facebook-node-sdk'),

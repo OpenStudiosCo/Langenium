@@ -72,6 +72,7 @@ L.scenograph.director.init = function() {
 		},
 		mirror: null,
 		water_uniforms: {		
+			mirrorColor: { type: "c", value: new THREE.Color(0x7F7F7F) },
 			noiseTexture:	{ type: "t", value: this.noiseTexture3 },
 			time: 			{ type: "f", value: 0.0 },
 			scale: 			{ type: "f", value: .00015337 },	
@@ -148,12 +149,15 @@ L.scenograph.director.mmo = function() {
 		 
 	for ( var i = 0; i < skyGeo.faces.length; i++ ) 
 	{
-		if  (skyGeo.faces[ i ].centroid.y >  -21000) {
+
+		
+		if  (skyGeo.vertices[skyGeo.faces[ i ].a].y >  -21000) {
 			skyGeo.faces[ i ].materialIndex = 0;
 		}
 		else {
 			skyGeo.faces[ i ].materialIndex = 1;
 		}
+
 	}
 	
 	var sky = new THREE.Mesh(skyGeo, new THREE.MeshFaceMaterial(sky_materials));
@@ -183,9 +187,9 @@ L.scenograph.director.mmo = function() {
 		mesh.scale.set(10,10,10);
 		mesh.position.set(-5000, 15000, -5000)
 		L.scenograph.director.scene.add(mesh);	
-		L.scenograph.director.camera.position.set(0, 0, 35);
-		L.scenograph.director.camera.lookAt(0,0,0)
-		mesh.add(L.scenograph.director.camera)
+		L.scenograph.director.camera.position.set(-5000, 15000, -5035);
+		L.scenograph.director.camera.lookAt(-5000, 15000, -5000)
+		
 	}
 	L.scenograph.objects.loadObject('/assets/models/ships/mercenary/valiant2.js', ship_cb);
 

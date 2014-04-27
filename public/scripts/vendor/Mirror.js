@@ -57,10 +57,6 @@ THREE.Mirror = function ( renderer, camera, options ) {
 
 	this.name = 'mirror_' + this.id;
 
-	function isPowerOfTwo ( value ) {
-		return ( value & ( value - 1 ) ) === 0;
-	};
-
 	options = options || {};
 
 	this.matrixNeedsUpdate = true;
@@ -86,12 +82,12 @@ THREE.Mirror = function ( renderer, camera, options ) {
 
 	if ( debugMode ) {
 
-		var arrow = new THREE.ArrowHelper(new THREE.Vector3( 0, 0, 1 ), new THREE.Vector3( 0, 0, 0 ), 1000, 0xffff80 );
+		var arrow = new THREE.ArrowHelper(new THREE.Vector3( 0, 0, 1 ), new THREE.Vector3( 0, 0, 0 ), 10, 0xffff80 );
 		var planeGeometry = new THREE.Geometry();
-		planeGeometry.vertices.push( new THREE.Vector3( -1000, -1000, 0 ) );
-		planeGeometry.vertices.push( new THREE.Vector3( 1000, -1000, 0 ) );
-		planeGeometry.vertices.push( new THREE.Vector3( 1000, 1000, 0 ) );
-		planeGeometry.vertices.push( new THREE.Vector3( -1000, 1000, 0 ) );
+		planeGeometry.vertices.push( new THREE.Vector3( -10, -10, 0 ) );
+		planeGeometry.vertices.push( new THREE.Vector3( 10, -10, 0 ) );
+		planeGeometry.vertices.push( new THREE.Vector3( 10, 10, 0 ) );
+		planeGeometry.vertices.push( new THREE.Vector3( -10, 10, 0 ) );
 		planeGeometry.vertices.push( planeGeometry.vertices[0] );
 		var plane = new THREE.Line( planeGeometry, new THREE.LineBasicMaterial( { color: 0xffff80 } ) );
 
@@ -122,22 +118,18 @@ THREE.Mirror = function ( renderer, camera, options ) {
 	var mirrorUniforms = THREE.UniformsUtils.clone( mirrorShader.uniforms );
 
 	this.material = new THREE.ShaderMaterial( {
-		/*
-		fragmentShader: mirrorShader.fragmentShader,
-		vertexShader: mirrorShader.vertexShader,
-		uniforms: mirrorUniforms
-		*/
 
-		uniforms: L.scenograph.director.effects.water_uniforms,
-		vertexShader:   document.getElementById( 'waterVertShader'   ).textContent,
-		fragmentShader: document.getElementById( 'waterFragShader' ).textContent
-		
+		fragmentShader: document.getElementById( 'waterFragShader' ).textContent,
+		vertexShader: document.getElementById( 'waterVertShader' ).textContent,
+		uniforms: L.scenograph.director.effects.water_uniforms
+
 	} );
 
 	this.material.uniforms.mirrorSampler.value = this.texture;
+	this.material.uniforms.mirrorColor.value = mirrorColor;
 	this.material.uniforms.textureMatrix.value = this.textureMatrix;
 
-	if ( !isPowerOfTwo(width) || !isPowerOfTwo( height ) ) {
+	if ( !THREE.Math.isPowerOfTwo(width) || !THREE.Math.isPowerOfTwo( height ) ) {
 
 		this.texture.generateMipmaps = false;
 		this.tempTexture.generateMipmaps = false;
@@ -193,8 +185,8 @@ THREE.Mirror.prototype.updateTextureMatrix = function () {
 	this.normal.applyMatrix4( this.rotationMatrix );
 
 	var view = this.mirrorWorldPosition.clone().sub( this.cameraWorldPosition );
-	var reflectView = view.reflect( this.normal );
-	reflectView.add( this.mirrorWorldPosition );
+	view.reflect( this.normal ).negate();
+	view.add( this.mirrorWorldPosition );
 
 	this.rotationMatrix.extractRotation( this.camera.matrixWorld );
 
@@ -203,16 +195,16 @@ THREE.Mirror.prototype.updateTextureMatrix = function () {
 	this.lookAtPosition.add( this.cameraWorldPosition );
 
 	var target = this.mirrorWorldPosition.clone().sub( this.lookAtPosition );
-	var reflectTarget = target.reflect( this.normal );
-	reflectTarget.add( this.mirrorWorldPosition );
+	target.reflect( this.normal ).negate();
+	target.add( this.mirrorWorldPosition );
 
 	this.up.set( 0, -1, 0 );
 	this.up.applyMatrix4( this.rotationMatrix );
-	var reflectUp = this.up.reflect( this.normal );
+	this.up.reflect( this.normal ).negate();
 
-	this.mirrorCamera.position.copy(reflectView);
-	this.mirrorCamera.up = reflectUp;
-	this.mirrorCamera.lookAt( reflectTarget );
+	this.mirrorCamera.position.copy( view );
+	this.mirrorCamera.up = this.up;
+	this.mirrorCamera.lookAt( target );
 
 	this.mirrorCamera.updateProjectionMatrix();
 	this.mirrorCamera.updateMatrixWorld();

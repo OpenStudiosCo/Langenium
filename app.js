@@ -54,7 +54,7 @@ module.exports = function() {
 	// Utility functions that don't really have a place and can be called from anywhere
 	app.util = require('./util')(app);
 
-	app.io = require('socket.io').listen(app.http);
+	app.io = require('socket.io').listen(443);
 	app.io.set('log level', 2);
 
 	// This should go into some kind of utility class... it applies to both admin and game.. maybe website? 

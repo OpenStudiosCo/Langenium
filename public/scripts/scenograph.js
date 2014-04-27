@@ -2,15 +2,15 @@ L.scenograph = {
 	winW: 1024,
 	winH: 768,
 	options: {
-		activeScene: 'MMO',
+		activeScene: 'EpochExordium',
 		currentScene: '',
-		hideInterface: true,
+		hideInterface: false,
 		scenes: [
 			'EpochExordium',
 			'MMO',
 			'MMO-Title'
 		],
-		useControls: true
+		useControls: false
 	},
 	updateWindowVariables: function(){
 		if (document.body && document.body.offsetWidth) {
@@ -132,7 +132,7 @@ L.scenograph.director.mmo_title = function() {
 }
 
 L.scenograph.director.mmo = function() {
-	this.camera_state.zoom = 35;
+	this.camera_state.zoom = 3500;
 	this.scene = new THREE.Scene();
 
 	var skyGeo = new THREE.SphereGeometry(this.M / 2, 32, 64);
@@ -171,13 +171,15 @@ L.scenograph.director.mmo = function() {
 	plane.add(this.effects.mirror);
 	plane.material.side = THREE.DoubleSide;
 	plane.material.transparent = true;
-	plane.frustrumCulled = false;	
+	
 	plane.rotateX( - Math.PI / 2 );
 	this.scene.add(plane);
 
+	/*
 	var mountain_cb = function(geometry, materials) {
 		var mesh = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
-		mesh.scale.set(2000,2000,2000);
+		mesh.scale.set(500,500,500);
+		mesh.frustrumCulled = false;	
 		L.scenograph.director.scene.add(mesh);			
 	}
 	L.scenograph.objects.loadObject('/assets/models/terrain/mountain/island.js', mountain_cb);
@@ -192,7 +194,7 @@ L.scenograph.director.mmo = function() {
 		
 	}
 	L.scenograph.objects.loadObject('/assets/models/ships/mercenary/valiant2.js', ship_cb);
-
+	*/
 	var hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 1 );
 	hemiLight.name = "light1";
 	hemiLight.color.setRGB( 0.9, 0.95, 1 );
@@ -440,7 +442,7 @@ L.scenograph.director.animate = function() {
 			var newtime = L.scenograph.stats.time.now * 0.00005;
 			L.scenograph.director.camera.position.set(
 				L.scenograph.director.camera_state.zoom * Math.cos(newtime), 
-				0, 
+				L.scenograph.director.camera_state.zoom,
 				L.scenograph.director.camera_state.zoom * Math.sin(newtime))			
 			L.scenograph.director.camera.lookAt(new THREE.Vector3(0,0,0))
 		}

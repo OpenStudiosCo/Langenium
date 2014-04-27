@@ -210,7 +210,7 @@ L.scenograph.director.epochexordium = function() {
 	light.position.set(0,0,0);
 	this.scene.add(light);
 
-	var geometry = new THREE.CubeGeometry( 1000000, 1000000, 1000000 );
+	var geometry = new THREE.BoxGeometry( 1000000, 1000000, 1000000 );
 
 	var texture_prefix = '/assets/textures/epoch-exordium_'
 	var textures = [

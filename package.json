@@ -26,9 +26,6 @@
     "socket.io": "*",
     "three": "*",
     "mongoose": "*",
-    "ember": "~0.9",
-    "handlebars": "*",
-    "jquery": "*",
     "markdown": "*"
   },
   "license": "MIT",

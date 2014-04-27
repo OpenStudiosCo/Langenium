@@ -1,37 +1,62 @@
 L.scenograph = {
+	winW: 1024,
+	winH: 768,
 	options: {
-		activeScene: 'MMO-Title',
+		activeScene: 'MMO',
 		currentScene: '',
-		defaultDistance: 0,
 		hideInterface: true,
 		scenes: [
 			'EpochExordium',
 			'MMO',
 			'MMO-Title'
 		],
-		useControls: false
+		useControls: true
+	},
+	updateWindowVariables: function(){
+		if (document.body && document.body.offsetWidth) {
+			this.winW = document.body.offsetWidth;
+			this.winH = document.body.offsetHeight;
+		}
+		if (document.compatMode=='CSS1Compat' &&
+			document.documentElement &&
+			document.documentElement.offsetWidth ) {
+			this.winW = document.documentElement.offsetWidth;
+			this.winH = document.documentElement.offsetHeight;
+		} 
+		if (window.innerWidth && window.innerHeight) {
+			this.winW = window.innerWidth;
+			this.winH = window.innerHeight;
+		}
 	}
 };
 
 L.scenograph.director = {
 	camera: null,
+	camera_state: {
+		rotating: false,
+		zoom: 35,
+	},
 	scene: null,
 	renderer: null,
 	controls: null,
-	M: 500000
+	M: 500000,
+	duration: 150,
+	keyframes: 5,
+	interpolation: this.duration / this.keyframes
 };
 	
 L.scenograph.director.init = function() {
+	L.scenograph.updateWindowVariables();
 	this.renderer = new THREE.WebGLRenderer({
 		antialias : true,
 		alpha: true
 	});
-	this.renderer.setSize( window.innerWidth, window.innerHeight );
+	this.renderer.setSize( L.scenograph.winW, L.scenograph.winH );
 	document.body.appendChild( this.renderer.domElement );
 	
 	window.addEventListener( 'resize', this.onWindowResize, false );
 
-	this.camera = new THREE.PerspectiveCamera( 90, window.innerWidth / window.innerHeight, 1, this.M * 2 );
+	this.camera = new THREE.PerspectiveCamera( 70, L.scenograph.winW / L.scenograph.winH, 1, this.M * 2 );
 
 	this.noiseTexture2 = THREE.ImageUtils.loadTexture( "/assets/textures/noise2.jpg" );
 	this.noiseTexture2.wrapS = this.noiseTexture2.wrapT = THREE.RepeatWrapping;
@@ -66,7 +91,7 @@ L.scenograph.director.init = function() {
 };
 
 L.scenograph.director.mmo_title = function() {
-	L.scenograph.options.defaultDistance = 3500;
+	this.camera_state.zoom = 3500;
 	this.scene = new THREE.Scene();
 
 	var logoWaterMaterial = new THREE.ShaderMaterial( 
@@ -106,7 +131,7 @@ L.scenograph.director.mmo_title = function() {
 }
 
 L.scenograph.director.mmo = function() {
-	L.scenograph.options.defaultDistance = 35000;
+	this.camera_state.zoom = 35;
 	this.scene = new THREE.Scene();
 
 	var skyGeo = new THREE.SphereGeometry(this.M / 2, 32, 64);
@@ -133,12 +158,11 @@ L.scenograph.director.mmo = function() {
 	
 	var sky = new THREE.Mesh(skyGeo, new THREE.MeshFaceMaterial(sky_materials));
 	sky.name = 'Skybox';
-	sky.position.y = 35000;
+	sky.position.y = 25000;
 	this.scene.add(sky);
 
-	this.effects.mirror = new THREE.Mirror( this.renderer, this.camera, { clipBias: 0.003, textureWidth: window.innerWidth, textureHeight: window.innerHeight, color: 0x777777 } );
+	this.effects.mirror = new THREE.Mirror( this.renderer, this.camera, { clipBias: 0.003, textureWidth: L.scenograph.winW, textureHeight: L.scenograph.winH, color: 0x777777 } );
 	var plane = new THREE.Mesh(new THREE.PlaneGeometry( this.M * 4.5, this.M * 4.5 , 1, 1 ), this.effects.mirror.material);
-	plane.position.y = 10000;
 	plane.name = 'Ocean';
 	plane.add(this.effects.mirror);
 	plane.material.side = THREE.DoubleSide;
@@ -157,9 +181,13 @@ L.scenograph.director.mmo = function() {
 	var ship_cb = function(geometry, materials) {
 		var mesh = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
 		mesh.scale.set(10,10,10);
+		mesh.position.set(-5000, 15000, -5000)
 		L.scenograph.director.scene.add(mesh);	
+		L.scenograph.director.camera.position.set(0, 0, 35);
+		L.scenograph.director.camera.lookAt(0,0,0)
+		mesh.add(L.scenograph.director.camera)
 	}
-	L.scenograph.objects.loadObject('/assets/models/ships/mercenary/valiant.js', ship_cb);
+	L.scenograph.objects.loadObject('/assets/models/ships/mercenary/valiant2.js', ship_cb);
 
 	var hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 1 );
 	hemiLight.name = "light1";
@@ -170,7 +198,7 @@ L.scenograph.director.mmo = function() {
 }
 
 L.scenograph.director.epochexordium = function() {
-	L.scenograph.options.defaultDistance = 7500;
+	this.camera_state.zoom = 7500;
 	this.scene = new THREE.Scene();
 	var light = new THREE.PointLight(0xffffff, 1, 0);
 	light.position.set(0,0,0);
@@ -365,10 +393,12 @@ L.scenograph.director.make_sphere = function(position, colour, radius) {
 
 L.scenograph.director.onWindowResize = function() {
 
-	L.scenograph.director.camera.aspect = window.innerWidth / window.innerHeight;
+	L.scenograph.updateWindowVariables();
+
+	L.scenograph.director.camera.aspect = L.scenograph.winW / L.scenograph.winH;
 	L.scenograph.director.camera.updateProjectionMatrix();
 
-	L.scenograph.director.renderer.setSize( window.innerWidth, window.innerHeight );
+	L.scenograph.director.renderer.setSize( L.scenograph.winW, L.scenograph.winH );
 
 }
 				
@@ -397,9 +427,6 @@ L.scenograph.director.animate = function() {
 		}
 	}
 	if (L.scenograph.director.scene) {
-		if (L.scenograph.director.effects.mirror) {
-			L.scenograph.director.effects.mirror.render();
-		}
 		L.scenograph.director.effects.cloud_uniforms.time.value += 0.0025 * L.scenograph.stats.time.delta;
 		L.scenograph.director.effects.water_uniforms.time.value += 0.001 * L.scenograph.stats.time.delta;
 		L.scenograph.director.effects.logo_water_uniforms.time.value += 0.00001 * L.scenograph.stats.time.delta;
@@ -408,9 +435,9 @@ L.scenograph.director.animate = function() {
 		if (L.scenograph.options.useControls == false) {		
 			var newtime = L.scenograph.stats.time.now * 0.00005;
 			L.scenograph.director.camera.position.set(
-				L.scenograph.options.defaultDistance * Math.cos(newtime), 
+				L.scenograph.director.camera_state.zoom * Math.cos(newtime), 
 				0, 
-				L.scenograph.options.defaultDistance * Math.sin(newtime))			
+				L.scenograph.director.camera_state.zoom * Math.sin(newtime))			
 			L.scenograph.director.camera.lookAt(new THREE.Vector3(0,0,0))
 		}
 		else {
@@ -419,7 +446,9 @@ L.scenograph.director.animate = function() {
 			}
 			L.scenograph.director.controls.update();
 		}
-
+		if (L.scenograph.director.effects.mirror) {
+			L.scenograph.director.effects.mirror.render();
+		}
 		L.scenograph.director.renderer.render( L.scenograph.director.scene, L.scenograph.director.camera );
 	}
 	requestAnimationFrame( L.scenograph.director.animate );

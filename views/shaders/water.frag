@@ -85,7 +85,7 @@ void main(void) {
 
 	// color
 	gl_FragColor = texColor;
-	gl_FragColor += reflectionFilter( n , reflection );
+	gl_FragColor += reflection; //reflectionFilter( n , reflection );
 	
 
 	// normal

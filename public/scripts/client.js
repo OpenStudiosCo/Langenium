@@ -23,10 +23,8 @@ $(document).ready(function(){
 		}
 	});
 	
-	//L.gui.add(L.scenograph.director.camera,'fov');
 	L.gui.add(L.scenograph.options,'hideInterface');
 	L.gui.add(L.scenograph.options,'useControls');
-	//L.gui.add(L.scenograph.options,'defaultDistance');
 	L.gui.add(L.scenograph.options,'activeScene', L.scenograph.options.scenes);
 
 	$('.dg.main ul').append('<li class="folder"><canvas id="latency" width="245" height="100"></canvas></li>');

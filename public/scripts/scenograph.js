@@ -1,11 +1,13 @@
 L.scenograph = {
 	options: {
-		activeScene: 'EpochExordium',
+		activeScene: 'MMO-Title',
 		currentScene: '',
-		hideInterface: false,
+		defaultDistance: 0,
+		hideInterface: true,
 		scenes: [
 			'EpochExordium',
-			'MMO'
+			'MMO',
+			'MMO-Title'
 		],
 		useControls: false
 	}
@@ -20,14 +22,16 @@ L.scenograph.director = {
 };
 	
 L.scenograph.director.init = function() {
-	this.renderer = new THREE.WebGLRenderer({alpha: true});
+	this.renderer = new THREE.WebGLRenderer({
+		antialias : true,
+		alpha: true
+	});
 	this.renderer.setSize( window.innerWidth, window.innerHeight );
 	document.body.appendChild( this.renderer.domElement );
 	
 	window.addEventListener( 'resize', this.onWindowResize, false );
 
-	this.camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, this.M * 2 );
-	this.camera.fov = 70;
+	this.camera = new THREE.PerspectiveCamera( 90, window.innerWidth / window.innerHeight, 1, this.M * 2 );
 
 	this.noiseTexture2 = THREE.ImageUtils.loadTexture( "/assets/textures/noise2.jpg" );
 	this.noiseTexture2.wrapS = this.noiseTexture2.wrapT = THREE.RepeatWrapping;
@@ -48,14 +52,62 @@ L.scenograph.director.init = function() {
 			scale: 			{ type: "f", value: .00015337 },	
 			mirrorSampler: 	{ type: "t", value: null },
 			textureMatrix: 	{ type: "m4", value: new THREE.Matrix4() }
+		},
+		logo_water_uniforms: {
+			noiseTexture:	{ type: "t", value: this.noiseTexture3 },
+			time: 			{ type: "f", value: 0.0 }
+		},
+		logo_metal_uniforms: {
+			noiseTexture:	{ type: "t", value: this.noiseTexture3 },
+			time: 			{ type: "f", value: 0.0 }
 		}
 	};
 	this.animate();
 };
 
-L.scenograph.director.mmo = function() {
+L.scenograph.director.mmo_title = function() {
+	L.scenograph.options.defaultDistance = 3500;
 	this.scene = new THREE.Scene();
-	this.camera.position.z = 15000;
+
+	var logoWaterMaterial = new THREE.ShaderMaterial( 
+	{
+	    uniforms: L.scenograph.director.effects.logo_water_uniforms,
+		vertexShader:   document.getElementById( 'logoWaterVertShader'   ).textContent,
+		fragmentShader: document.getElementById( 'logoWaterFragShader' ).textContent,
+		side: THREE.DoubleSide
+	}   );
+
+	var logoMetalMaterial = new THREE.ShaderMaterial( 
+	{
+	    uniforms: L.scenograph.director.effects.logo_metal_uniforms,
+		vertexShader:   document.getElementById( 'logoMetalVertShader'   ).textContent,
+		fragmentShader: document.getElementById( 'logoMetalFragShader' ).textContent,
+		side: THREE.DoubleSide
+	}   );
+
+	var logo_cb = function(geometry, materials) {
+		
+		for (var i = 0; i < materials.length; i++) {
+			if(materials[i].name == 'Water') {
+				materials[i] = logoWaterMaterial;
+			}
+			if (materials[i].name == 'Metal') {
+				materials[i] = logoMetalMaterial;
+			}
+		}
+		geometry.buffersNeedUpdate = true;
+		geometry.uvsNeedUpdate = true;
+		var mesh = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
+		mesh.scale.set(2000,2000,2000);
+		mesh.rotateX( Math.PI / 2 );
+		L.scenograph.director.scene.add(mesh);			
+	}
+	L.scenograph.objects.loadObject('/assets/models/langenium-logo.js', logo_cb);
+}
+
+L.scenograph.director.mmo = function() {
+	L.scenograph.options.defaultDistance = 35000;
+	this.scene = new THREE.Scene();
 
 	var skyGeo = new THREE.SphereGeometry(this.M / 2, 32, 64);
 
@@ -105,7 +157,6 @@ L.scenograph.director.mmo = function() {
 	var ship_cb = function(geometry, materials) {
 		var mesh = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
 		mesh.scale.set(10,10,10);
-		mesh.add(L.scenograph.director.camera);
 		L.scenograph.director.scene.add(mesh);	
 	}
 	L.scenograph.objects.loadObject('/assets/models/ships/mercenary/valiant.js', ship_cb);
@@ -119,10 +170,8 @@ L.scenograph.director.mmo = function() {
 }
 
 L.scenograph.director.epochexordium = function() {
+	L.scenograph.options.defaultDistance = 7500;
 	this.scene = new THREE.Scene();
-	this.camera.position.set(0,0,7000);
-	this.camera.fov = 70;
-	this.camera.lookAt(new THREE.Vector3(0,0,0));
 	var light = new THREE.PointLight(0xffffff, 1, 0);
 	light.position.set(0,0,0);
 	this.scene.add(light);
@@ -341,6 +390,10 @@ L.scenograph.director.animate = function() {
 				L.scenograph.director.mmo();
 				L.scenograph.options.currentScene = 'MMO';
 				break;
+			case 'MMO-Title':
+				L.scenograph.director.mmo_title();
+				L.scenograph.options.currentScene = 'MMO-Title';
+				break;
 		}
 	}
 	if (L.scenograph.director.scene) {
@@ -349,13 +402,16 @@ L.scenograph.director.animate = function() {
 		}
 		L.scenograph.director.effects.cloud_uniforms.time.value += 0.0025 * L.scenograph.stats.time.delta;
 		L.scenograph.director.effects.water_uniforms.time.value += 0.001 * L.scenograph.stats.time.delta;
+		L.scenograph.director.effects.logo_water_uniforms.time.value += 0.00001 * L.scenograph.stats.time.delta;
 
 
 		if (L.scenograph.options.useControls == false) {		
 			var newtime = L.scenograph.stats.time.now * 0.00005;
-			L.scenograph.director.camera.position.set(11000 * Math.cos(newtime), 14000 * Math.sin(newtime), 14000 * Math.cos(0))
-			
-			L.scenograph.director.camera.lookAt(new THREE.Vector3(0,0,18000 * Math.sin(newtime)))
+			L.scenograph.director.camera.position.set(
+				L.scenograph.options.defaultDistance * Math.cos(newtime), 
+				0, 
+				L.scenograph.options.defaultDistance * Math.sin(newtime))			
+			L.scenograph.director.camera.lookAt(new THREE.Vector3(0,0,0))
 		}
 		else {
 			if (L.scenograph.director.controls == null) {

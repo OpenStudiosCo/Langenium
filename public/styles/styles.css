@@ -28,6 +28,9 @@ h5,
 h6 {
   font-family: 'Franchise';
 }
+html {
+  background-color: #000;
+}
 html,
 body {
   margin: 0;

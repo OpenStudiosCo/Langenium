@@ -56,7 +56,7 @@ L.scenograph.director.init = function() {
 	
 	window.addEventListener( 'resize', this.onWindowResize, false );
 
-	this.camera = new THREE.PerspectiveCamera( 70, L.scenograph.winW / L.scenograph.winH, 1, this.M * 2 );
+	this.camera = new THREE.PerspectiveCamera( 45, L.scenograph.winW / L.scenograph.winH, 1, this.M * 2 );
 
 	this.noiseTexture2 = THREE.ImageUtils.loadTexture( "/assets/textures/noise2.jpg" );
 	this.noiseTexture2.wrapS = this.noiseTexture2.wrapT = THREE.RepeatWrapping;

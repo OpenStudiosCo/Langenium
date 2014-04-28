@@ -11,7 +11,7 @@ void main()
     vec4 mvPosition = modelMatrix * vec4( position, 1.0 );
     vViewPosition = cameraPosition - mvPosition.xyz;
 
-    vTexCoord3D = 11.0 * ( position.xyz + vec3( -time, -time, -time ) );
+    vTexCoord3D = 15.5 * ( position.xyz + vec3( time, time , time ) );
 
     gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 }

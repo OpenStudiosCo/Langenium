@@ -2,7 +2,7 @@ L.scenograph = {
 	winW: 1024,
 	winH: 768,
 	options: {
-		activeScene: 'EpochExordium',
+		activeScene: 'MMO-Title',
 		currentScene: '',
 		hideInterface: false,
 		scenes: [
@@ -128,6 +128,7 @@ L.scenograph.director.mmo_title = function() {
 		mesh.rotateX( Math.PI / 2 );
 		L.scenograph.director.scene.add(mesh);			
 	}
+	L.scenograph.director.camera.position.set(0,100,2500);
 	L.scenograph.objects.loadObject('/assets/models/langenium-logo.js', logo_cb);
 }
 
@@ -437,7 +438,6 @@ L.scenograph.director.animate = function() {
 		L.scenograph.director.effects.water_uniforms.time.value += 0.001 * L.scenograph.stats.time.delta;
 		L.scenograph.director.effects.logo_water_uniforms.time.value += 0.00001 * L.scenograph.stats.time.delta;
 
-
 		if (L.scenograph.options.useControls == false) {		
 			var newtime = L.scenograph.stats.time.now * 0.00005;
 			L.scenograph.director.camera.position.set(
@@ -452,9 +452,11 @@ L.scenograph.director.animate = function() {
 			}
 			L.scenograph.director.controls.update();
 		}
+
 		if (L.scenograph.director.effects.mirror) {
 			L.scenograph.director.effects.mirror.render();
 		}
+		
 		L.scenograph.director.renderer.render( L.scenograph.director.scene, L.scenograph.director.camera );
 	}
 	requestAnimationFrame( L.scenograph.director.animate );

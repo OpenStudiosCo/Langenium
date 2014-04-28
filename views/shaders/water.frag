@@ -102,8 +102,8 @@ void main(void) {
 
 	vec3 vLightWeighting = vec3( -0.001 );
 
-	vec4 lDirection = viewMatrix * vec4( normalize( vec3( 1.0, 0.0, 0.5 ) ), 0.0 );
-	float directionalLightWeighting = dot( normal, normalize( lDirection.xyz ) ) * 0.25 + 0.75;
+	vec4 lDirection = viewMatrix * vec4( normalize( vec3( 0.0, 1.0, 0.0 ) ), 0.0 );
+	float directionalLightWeighting = dot( normal, normalize( lDirection.xyz ) ) * 0.35 + 0.65;
 	vLightWeighting += vec3( 1.0 ) * directionalLightWeighting;
 
 	// specular light
@@ -116,7 +116,7 @@ void main(void) {
 	if ( dirDotNormalHalf >= 0.0 )
 		dirSpecularWeight = ( 1.0 - n ) * pow( dirDotNormalHalf, 5.0 );
 
-	vLightWeighting += vec3( 1.0, 0.5, 0.0 ) * dirSpecularWeight * n * 2.0;
+	vLightWeighting += vec3( 1.0, 1.0, 1.0 ) * dirSpecularWeight * n * 2.0;
 
 	gl_FragColor *= vec4( vLightWeighting, 1.0 ); //
 

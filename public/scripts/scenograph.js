@@ -2,15 +2,15 @@ L.scenograph = {
 	winW: 1024,
 	winH: 768,
 	options: {
-		activeScene: 'MMO-Title',
+		activeScene: 'EpochExordium',
 		currentScene: '',
-		hideInterface: false,
+		hideInterface: true,
 		scenes: [
 			'EpochExordium',
 			'MMO',
 			'MMO-Title'
 		],
-		useControls: false
+		useControls: true
 	},
 	updateWindowVariables: function(){
 		if (document.body && document.body.offsetWidth) {
@@ -83,6 +83,10 @@ L.scenograph.director.init = function() {
 			noiseTexture:	{ type: "t", value: this.noiseTexture3 },
 			time: 			{ type: "f", value: 0.0 }
 		},
+		sun_uniforms: {
+			noiseTexture:	{ type: "t", value: this.noiseTexture2 },
+			time: 			{ type: "f", value: 0.0 }
+		},
 		logo_metal_uniforms: {
 			noiseTexture:	{ type: "t", value: this.noiseTexture3 },
 			time: 			{ type: "f", value: 0.0 }
@@ -93,6 +97,11 @@ L.scenograph.director.init = function() {
 
 L.scenograph.director.mmo_title = function() {
 	this.camera_state.zoom = 3500;
+	L.scenograph.director.camera.position.set(
+		L.scenograph.director.camera_state.zoom * Math.cos(0), 
+		L.scenograph.director.camera_state.zoom,
+		L.scenograph.director.camera_state.zoom * Math.sin(0))			
+	L.scenograph.director.camera.lookAt(new THREE.Vector3(0,0,0))
 	this.scene = new THREE.Scene();
 
 	var logoWaterMaterial = new THREE.ShaderMaterial( 
@@ -206,6 +215,11 @@ L.scenograph.director.mmo = function() {
 
 L.scenograph.director.epochexordium = function() {
 	this.camera_state.zoom = 7500;
+	L.scenograph.director.camera.position.set(
+		L.scenograph.director.camera_state.zoom * Math.cos(0), 
+		L.scenograph.director.camera_state.zoom,
+		L.scenograph.director.camera_state.zoom * Math.sin(0))			
+	L.scenograph.director.camera.lookAt(new THREE.Vector3(0,0,0))
 	this.scene = new THREE.Scene();
 	var light = new THREE.PointLight(0xffffff, 1, 0);
 	light.position.set(0,0,0);
@@ -362,15 +376,23 @@ L.scenograph.director.epochexordium = function() {
   				break;
   		}
   	}
-
 }
 
 L.scenograph.director.make_sun = function(position, colour, radius) {
+	var customMaterial = new THREE.ShaderMaterial( 
+	{
+	    uniforms: L.scenograph.director.effects.sun_uniforms,
+		vertexShader:   document.getElementById( 'sunVertShader'   ).textContent,
+		fragmentShader: document.getElementById( 'sunFragShader' ).textContent,
+		side: THREE.DoubleSide,
+		blending: THREE.AdditiveBlending
+	}   );
 	// Sphere parameters: radius, segments along width, segments along height
-	var sphere = new THREE.Mesh( new THREE.SphereGeometry( radius, 32, 16 ), new THREE.MeshBasicMaterial( { color: colour } ) );
+	
+	var sphere = new THREE.Mesh( new THREE.SphereGeometry( radius, 32, 16 ), customMaterial );
 	sphere.position.set(position.x, position.y, position.z);
 
-	var customMaterial = new THREE.ShaderMaterial( 
+	customMaterial = new THREE.ShaderMaterial( 
 	{
 	    uniforms: {  },
 		vertexShader:   document.getElementById( 'haloVertShader'   ).textContent,
@@ -383,6 +405,7 @@ L.scenograph.director.make_sun = function(position, colour, radius) {
 	var ballGeometry = new THREE.SphereGeometry( radius * 1.1, 32, 16 );
 	var ball = new THREE.Mesh( ballGeometry, customMaterial );
 	L.scenograph.director.scene.add( ball );
+
 	return sphere;
 }
 L.scenograph.director.make_sphere = function(position, colour, radius) {
@@ -431,12 +454,20 @@ L.scenograph.director.animate = function() {
 				L.scenograph.director.mmo_title();
 				L.scenograph.options.currentScene = 'MMO-Title';
 				break;
+			case 'Character-Test':
+				L.scenograph.director.character_test();
+				L.scenograph.options.currentScene = 'Character-Test';
+				break;
 		}
+	}
+	if (L.scenograph.animation) {
+		L.scenograph.animation.update(.01);
 	}
 	if (L.scenograph.director.scene) {
 		L.scenograph.director.effects.cloud_uniforms.time.value += 0.0025 * L.scenograph.stats.time.delta;
 		L.scenograph.director.effects.water_uniforms.time.value += 0.001 * L.scenograph.stats.time.delta;
 		L.scenograph.director.effects.logo_water_uniforms.time.value += 0.00001 * L.scenograph.stats.time.delta;
+		L.scenograph.director.effects.sun_uniforms.time.value += 0.005 * L.scenograph.stats.time.delta;
 
 		if (L.scenograph.options.useControls == false) {		
 			var newtime = L.scenograph.stats.time.now * 0.00005;

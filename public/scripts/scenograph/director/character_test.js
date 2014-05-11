@@ -2,34 +2,44 @@ L.scenograph.director.character_test = function() {
 	// scene shit here
 	console.log('Character test started')
 
+	L.scenograph.director.camera_state.zoom = 500;
+	L.scenograph.director.camera.position.set(
+		0, 
+		0,
+		L.scenograph.director.camera_state.zoom
+	);	
 	var character = L.scenograph.director.make_character();
 	this.scene.add(character);
-	this.animation_queue.push(character)
+	this.animation_queue.push(character.animation)
 
 	// direction (normalized), origin, length, color(hex)
-	var origin = new THREE.Vector3(0,-15,0);
-	var terminus  = new THREE.Vector3(0,-15,75);
-	var direction = new THREE.Vector3().subVectors(terminus, origin).normalize();
-	var arrow = new THREE.ArrowHelper(direction, origin, 50, 0x884400);
+	var origin = new THREE.Vector3(0,-130,0);
+	var arrow = new THREE.ArrowHelper(new THREE.Vector3(0,0,1), origin,200, 0xFFCC00);
 	this.scene.add(arrow);
+
+	var gridXZ = new THREE.GridHelper(100, 10);
+	gridXZ.setColors( new THREE.Color(0x006600), new THREE.Color(0x006600) );
+	gridXZ.position.set( 0,-150,0 );
+	this.scene.add(gridXZ);
 };
 
 L.scenograph.director.make_character = function() {
 	var texture = new THREE.ImageUtils.loadTexture( '/assets/exordium-male.png' );
 	
 	var material = new THREE.MeshBasicMaterial( { map: texture, transparent: true, side:THREE.DoubleSide, alphaTest: 0.5 } );
-	var geometry = new THREE.PlaneGeometry(1.25, 3.04, 1, 1);
+	var geometry = new THREE.PlaneGeometry(12.5, 30.4);
 
 	var new_character = new THREE.Mesh(geometry, material);
-	new_character.animation = new L.scenograph.director.make_animation( texture, 34, 1, 34, 340 ); // texture, #horiz, #vert, #total, duration.
-	new_character.face = 'front';
+	new_character.direction = new THREE.Vector3(0,0,0);
+	new_character.animation = new L.scenograph.director.make_animation( new_character, texture, 34, 1, 34, 3400 ); // texture, #horiz, #vert, #total, duration.
 	new_character.scale.set(10,10,10);
 
 	return new_character;
 }
 
-L.scenograph.director.make_animation = function(texture, tilesHoriz, tilesVert, numTiles, tileDispDuration) {
+L.scenograph.director.make_animation = function( character, texture, tilesHoriz, tilesVert, numTiles, tileDispDuration) {
 	this.face = 'front';
+	this.last_face = 'front';
 	this.moving = true;
 	// take in some variables to create a sprite object
 	this.tilesHorizontal = tilesHoriz;
@@ -51,7 +61,7 @@ L.scenograph.director.make_animation = function(texture, tilesHoriz, tilesVert, 
 	this.currentTile = 0;
 
 	this.animate = function(delta) {
-		var tile_start = 0, tile_end = 2;
+		var tile_start = 0, tile_end = 7;
 		switch(this.face) {
 			case 'front':
 				tile_start = 0;
@@ -70,8 +80,27 @@ L.scenograph.director.make_animation = function(texture, tilesHoriz, tilesVert, 
 				tile_end = 24;
 				break;
 		}
+		if (this.face != this.last_face) {
+			this.currentTile = tile_start;
+			this.last_face = this.face;
+		}
+
+		character.lookAt(L.scenograph.director.camera.position);
+		var diff = new THREE.Vector3().subVectors(character.position, L.scenograph.director.camera.position).normalize();
+		if (diff.x < 0.6 && diff.x > -0.6) {
+			this.face = 'front';
+		}
+		if (diff.x > 0.5 && diff.x < 0.8) {
+			this.face = 'right';
+		}
+		if (diff.x < -0.5 && diff.x > -0.8) {
+			this.face = 'left';
+		}
+		if (diff.z > 0.8) {
+			this.face = 'back'
+		}
 		if (this.moving == true) {
-			this.currentDisplayTime += delta * 1000;
+			this.currentDisplayTime += delta * 25;
 			while (this.currentDisplayTime > this.tileDisplayDuration)
 			{
 				this.currentDisplayTime -= this.tileDisplayDuration;
@@ -95,6 +124,7 @@ L.scenograph.director.make_animation = function(texture, tilesHoriz, tilesVert, 
 				var currentRow = Math.floor( this.currentTile / this.tilesHorizontal );
 				texture.offset.y = currentRow / this.tilesVertical;
 		}
+		
 		
 
 	}

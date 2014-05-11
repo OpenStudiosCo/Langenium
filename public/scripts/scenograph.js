@@ -153,6 +153,11 @@ L.scenograph.director.animate = function() {
 	if (L.scenograph.animation) {
 		L.scenograph.animation.update(.01);
 	}
+	if (L.scenograph.director.animation_queue.length > 0) {
+		for (var i = 0; i < L.scenograph.director.animation_queue.length; i++) {
+			L.scenograph.director.animation_queue[i].animate(L.scenograph.stats.time.delta)
+		}
+	}
 	if (L.scenograph.director.scene) {
 		L.scenograph.director.effects.cloud_uniforms.time.value += 0.0025 * L.scenograph.stats.time.delta;
 		L.scenograph.director.effects.water_uniforms.time.value += 0.0005 * L.scenograph.stats.time.delta;

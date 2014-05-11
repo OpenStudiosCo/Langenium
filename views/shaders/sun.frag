@@ -19,10 +19,8 @@ float snoise ( vec3 coord, float scale, float time_factor ) {
 float heightMap( vec3 coord ) {
 	float n = 0.0;
 
-	n =  abs(snoise(coord, 0.1, -500. ));
-	n += 0.5 * abs(snoise(coord, .01, -500. ));
-	n += 0.25 * abs(snoise(coord, .03, -500. ));
-
+	n =  abs(snoise(coord, 0.05, -500. ));
+	
 	return n;
 }
 
@@ -38,10 +36,12 @@ float limitColor( float min, float max, float channel) {
 
 vec4 colorFilter(float n) {
 
-	vec4 color = vec4( vec3( 1.5 * n, n, 0.5 * n )  , 1.0 );
+	vec4 color = vec4( vec3( 2.5 * n, n, 0.5 * n )  , 1.0 );
 
-	color.r = limitColor(.9, 2.0, color.r);
-	color.g = limitColor(0.2, 1.4, color.g);
+	color.r = limitColor(1.8, 4.0, color.r);
+	
+	color.g = limitColor(0.8, 1., color.g);
+	
 	color.b = limitColor (0.0, 0.0, color.b);
 
 	return color;
@@ -83,7 +83,7 @@ void main()
 	if ( dirDotNormalHalf >= 0.0 )
 		dirSpecularWeight = ( 1.0 - n ) * pow( dirDotNormalHalf, 5.0 );
 
-	vLightWeighting += vec3( 1.0, 1.0, 1.0 ) * dirSpecularWeight * n * 12.0;
+	vLightWeighting += vec3( 1.0, 1.0, 1.0 ) * dirSpecularWeight * n * 8.0;
 
 	gl_FragColor *= vec4( vLightWeighting, 1.0 ); //
 

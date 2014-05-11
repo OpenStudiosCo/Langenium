@@ -186,7 +186,7 @@ L.scenograph.director.make_sun = function(position, colour, radius) {
 		transparent: true
 	}   );
 		
-	var ballGeometry = new THREE.SphereGeometry( radius * 1.1, 32, 16 );
+	var ballGeometry = new THREE.SphereGeometry( radius * 1.1, 24, 16 );
 	var ball = new THREE.Mesh( ballGeometry, customMaterial );
 	L.scenograph.director.scene.add( ball );
 

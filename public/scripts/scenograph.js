@@ -1,4 +1,5 @@
 L.scenograph = {
+	keyboard: new THREEx.KeyboardState(),
 	winW: 1024,
 	winH: 768,
 	options: {

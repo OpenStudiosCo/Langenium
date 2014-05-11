@@ -17,10 +17,31 @@ L.scenograph.director.character_test = function() {
 	var arrow = new THREE.ArrowHelper(new THREE.Vector3(0,0,1), origin,200, 0xFFCC00);
 	this.scene.add(arrow);
 
-	var gridXZ = new THREE.GridHelper(100, 10);
+	var gridXZ = new THREE.GridHelper(1000, 80);
 	gridXZ.setColors( new THREE.Color(0x006600), new THREE.Color(0x006600) );
 	gridXZ.position.set( 0,-150,0 );
 	this.scene.add(gridXZ);
+	var gridXY = new THREE.GridHelper(1000, 80);
+	gridXY.setColors( new THREE.Color(0x006600), new THREE.Color(0x006600) );
+	gridXY.rotation.z = Math.PI/2;
+	gridXY.position.set( 1000,850,0 );
+	this.scene.add(gridXY);
+	var gridZY = new THREE.GridHelper(1000, 80);
+	gridZY.setColors( new THREE.Color(0x006600), new THREE.Color(0x006600) );
+	gridZY.rotation.x = Math.PI/2;
+	gridZY.position.set( 0,850,1000 );
+	this.scene.add(gridZY);
+
+	var wireframeMaterial = new THREE.MeshBasicMaterial( { color: 0x666600, wireframe: true, transparent: true } ); 
+	var box1 = new THREE.Mesh(new THREE.BoxGeometry(150, 75, 75), wireframeMaterial);
+	box1.position.set(300,-110,300);
+	this.scene.add(box1);
+	var box2 = new THREE.Mesh(new THREE.BoxGeometry(150, 75, 75), wireframeMaterial);
+	box2.position.set(300,-110,400);
+	this.scene.add(box2);
+	var box3 = new THREE.Mesh(new THREE.BoxGeometry(150, 75, 75), wireframeMaterial);
+	box3.position.set(300,-35,300);
+	this.scene.add(box3);
 };
 
 L.scenograph.director.make_character = function() {
@@ -30,7 +51,7 @@ L.scenograph.director.make_character = function() {
 	var geometry = new THREE.PlaneGeometry(12.5, 30.4);
 
 	var new_character = new THREE.Mesh(geometry, material);
-	new_character.direction = new THREE.Vector3(0,0,0);
+	new_character.direction = new THREE.Vector3(0,0,-10);
 	new_character.animation = new L.scenograph.director.make_animation( new_character, texture, 34, 1, 34, 3400 ); // texture, #horiz, #vert, #total, duration.
 	new_character.scale.set(10,10,10);
 
@@ -87,7 +108,7 @@ L.scenograph.director.make_animation = function( character, texture, tilesHoriz,
 
 		character.lookAt(L.scenograph.director.camera.position);
 		var diff = new THREE.Vector3().subVectors(character.position, L.scenograph.director.camera.position).normalize();
-		if (diff.x < 0.6 && diff.x > -0.6) {
+		if (diff.x < 0.6 && diff.x > -0.6 && diff.z <= 0.0) {
 			this.face = 'front';
 		}
 		if (diff.x > 0.5 && diff.x < 0.8) {

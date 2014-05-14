@@ -34,6 +34,7 @@ L.scenograph = {
 
 L.scenograph.director = {
 	animation_queue: [],
+	scene_variables: {},
 	camera: null,
 	camera_state: {
 		rotating: false,
@@ -58,7 +59,8 @@ L.scenograph.director.clear = function() {
 		L.scenograph.director.camera_state.zoom
 	);			
 	L.scenograph.director.camera.lookAt(new THREE.Vector3(0,0,0))
-	this.scene = new THREE.Scene();
+	L.scenograph.director.scene = new THREE.Scene();
+	L.scenograph.director.scene_variables = {};
 }
 	
 L.scenograph.director.init = function() {

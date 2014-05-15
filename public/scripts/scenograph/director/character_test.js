@@ -9,7 +9,8 @@ L.scenograph.director.character_test = function() {
 		L.scenograph.director.camera_state.zoom
 	);	
 	var character = L.scenograph.director.make_character();
-	character.position.y = -25;
+	character.position.y = 150;
+	character.add(L.scenograph.director.camera);
 	this.scene.add(character);
 	this.animation_queue.push(character.animation)
 
@@ -48,13 +49,13 @@ L.scenograph.director.character_test = function() {
 L.scenograph.director.make_character = function() {
 	var texture = new THREE.ImageUtils.loadTexture( '/assets/exordium-male.png' );
 	
-	var material = new THREE.MeshBasicMaterial( { map: texture, transparent: true, side:THREE.DoubleSide, alphaTest: 0.5 } );
-	var geometry = new THREE.PlaneGeometry(12.5, 30.4);
+	var material = new THREE.SpriteMaterial( { map: texture} );
+	
 
-	var new_character = new THREE.Mesh(geometry, material);
+	var new_character = new THREE.Sprite(material);
 	new_character.world_rotation = 0;
 	new_character.animation = new L.scenograph.director.make_animation( new_character, texture, 34, 1, 34, 3400 ); // texture, #horiz, #vert, #total, duration.
-	new_character.scale.set(10,10,10);
+	new_character.scale.set(12.8,25.6,10);
 
 	return new_character;
 }
@@ -137,13 +138,17 @@ L.scenograph.director.make_animation = function( character, texture, tilesHoriz,
 			this.last_face = this.face;
 		}
 
-		character.lookAt(L.scenograph.director.camera.position);
+
+
 		var axis = new THREE.Vector3( 0, -1, 0 );
 		var angle = character.world_rotation;
 		var matrix = new THREE.Matrix4().makeRotationAxis( axis, angle );
 		var vector = character.position.clone();
-		
-		var diff = new THREE.Vector3().subVectors(character.position, L.scenograph.director.camera.position).normalize();
+
+		var camera_vector = new THREE.Vector3();
+		camera_vector.setFromMatrixPosition( L.scenograph.director.camera.matrixWorld );
+	
+		var diff = new THREE.Vector3().subVectors(character.position, camera_vector).normalize();
 		diff.applyMatrix4(matrix);
 
 		if (diff.x < 0.6  && diff.x > -0.6 && diff.z <= 0.0) {

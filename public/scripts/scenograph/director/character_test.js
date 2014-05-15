@@ -80,6 +80,9 @@ L.scenograph.director.move_character = function(character) {
 	}
 	if (rY != 0) {
 		character.world_rotation += rY;
+		if (tZ == 0) {
+			tZ += 1.25;
+		}
 	}
 	if (tZ != 0) {
 		character.position.x += tZ * Math.sin(character.world_rotation);

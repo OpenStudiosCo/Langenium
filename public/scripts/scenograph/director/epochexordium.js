@@ -234,7 +234,7 @@ L.scenograph.director.make_sphere = function(name, position, radius) {
 	if (name == 'Saturn' || name == 'Uranus') {
 		var mesh    = THREEx.Planets['create' +name+'Ring']();
 		mesh.position.set(position.x, position.y, position.z);		
-		mesh.scale.set(radius * 1.05,radius* 1.05,radius* 1.05)
+		mesh.scale.set(radius * 1.3,radius* 1.3,radius* 1.3)
 		L.scenograph.director.scene.add(mesh)
 	}
 

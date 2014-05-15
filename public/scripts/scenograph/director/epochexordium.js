@@ -174,8 +174,12 @@ L.scenograph.director.select_planet = function() {
 			if (intersects.length > 0) {
 				if (intersects[0].object.name != 'Space Box' && 
 					intersects[0].object.name != 'Sun Halo') {
-					L.scenograph.director.controls.target = intersects[0].object.position.clone();
-					L.scenograph.director.camera_state.zoom = intersects[0].object.scale.x * 7500;
+					var vector = intersects[0].object.position.clone();
+					L.scenograph.director.controls.target.set(
+						vector.x,
+						vector.y,
+						vector.z
+					);
 				}
 			}
 		}

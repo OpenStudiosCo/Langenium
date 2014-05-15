@@ -84,12 +84,8 @@ L.scenograph.director.move_character = function(character) {
 	if (tZ != 0) {
 		character.position.x += tZ * Math.sin(character.world_rotation);
 		character.position.z += tZ * Math.cos(character.world_rotation);
-
-		//L.scenograph.director.camera.position.x += tZ * Math.sin(character.world_rotation);
-		//L.scenograph.director.camera.position.z += tZ * Math.cos(character.world_rotation);
-		L.scenograph.director.camera.lookAt(character.position);
-		
 	}
+	L.scenograph.director.camera.lookAt(character.position);
 }
 
 

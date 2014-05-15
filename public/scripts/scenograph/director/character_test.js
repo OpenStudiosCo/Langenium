@@ -9,8 +9,7 @@ L.scenograph.director.character_test = function() {
 		L.scenograph.director.camera_state.zoom
 	);	
 	var character = L.scenograph.director.make_character();
-	character.position.y = 150;
-	character.add(L.scenograph.director.camera);
+	character.position.y = -35;
 	this.scene.add(character);
 	this.animation_queue.push(character.animation)
 
@@ -55,7 +54,7 @@ L.scenograph.director.make_character = function() {
 	var new_character = new THREE.Sprite(material);
 	new_character.world_rotation = 0;
 	new_character.animation = new L.scenograph.director.make_animation( new_character, texture, 34, 1, 34, 3400 ); // texture, #horiz, #vert, #total, duration.
-	new_character.scale.set(12.8,25.6,10);
+	new_character.scale.set(128,256,10);
 
 	return new_character;
 }
@@ -85,6 +84,11 @@ L.scenograph.director.move_character = function(character) {
 	if (tZ != 0) {
 		character.position.x += tZ * Math.sin(character.world_rotation);
 		character.position.z += tZ * Math.cos(character.world_rotation);
+
+		//L.scenograph.director.camera.position.x += tZ * Math.sin(character.world_rotation);
+		//L.scenograph.director.camera.position.z += tZ * Math.cos(character.world_rotation);
+		L.scenograph.director.camera.lookAt(character.position);
+		
 	}
 }
 

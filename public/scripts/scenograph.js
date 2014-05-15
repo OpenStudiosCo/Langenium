@@ -3,7 +3,7 @@ L.scenograph = {
 	winW: 1024,
 	winH: 768,
 	options: {
-		activeScene: 'Character-Test',
+		activeScene: 'EpochExordium',
 		currentScene: '',
 		hideInterface: true,
 		scenes: [
@@ -40,12 +40,17 @@ L.scenograph.director = {
 		rotating: false,
 		zoom: 35,
 	},
+	cursor: {
+		position: {},
+		leftClick: false
+	},
 	scene: null,
 	renderer: null,
 	controls: null,
 	M: 500000,
 	duration: 150,
 	keyframes: 5,
+	projector: new THREE.Projector(),
 	interpolation: this.duration / this.keyframes
 };
 
@@ -111,6 +116,17 @@ L.scenograph.director.init = function() {
 		}
 	};
 	this.animate();
+
+	$(document).bind("mousemove", function(event) {
+		L.scenograph.director.cursor.position = new THREE.Vector3( 
+			( event.clientX / window.innerWidth ) * 2 - 1, 
+			- ( event.clientY / window.innerHeight ) * 2 + 1, 
+			1 );
+	});
+
+	$(document).bind("mouseup", function(event) {
+		L.scenograph.director.cursor.leftClick = true;
+	});
 };
 
 L.scenograph.director.onWindowResize = function() {
@@ -153,14 +169,6 @@ L.scenograph.director.animate = function() {
 				break;
 		}
 	}
-	if (L.scenograph.animation) {
-		L.scenograph.animation.update(.01);
-	}
-	if (L.scenograph.director.animation_queue.length > 0) {
-		for (var i = 0; i < L.scenograph.director.animation_queue.length; i++) {
-			L.scenograph.director.animation_queue[i].animate(L.scenograph.stats.time.delta)
-		}
-	}
 	if (L.scenograph.director.scene) {
 		L.scenograph.director.effects.cloud_uniforms.time.value += 0.0025 * L.scenograph.stats.time.delta;
 		L.scenograph.director.effects.water_uniforms.time.value += 0.0005 * L.scenograph.stats.time.delta;
@@ -185,7 +193,15 @@ L.scenograph.director.animate = function() {
 		if (L.scenograph.director.effects.mirror) {
 			L.scenograph.director.effects.mirror.render();
 		}
-		
+		if (L.scenograph.animation) {
+			L.scenograph.animation.update(.01);
+		}
+		if (L.scenograph.director.animation_queue.length > 0) {
+			for (var i = 0; i < L.scenograph.director.animation_queue.length; i++) {
+				L.scenograph.director.animation_queue[i].animate(L.scenograph.stats.time.delta)
+			}
+		}
+		L.scenograph.director.cursor.leftClick = false;
 		L.scenograph.director.renderer.render( L.scenograph.director.scene, L.scenograph.director.camera );
 	}
 	requestAnimationFrame( L.scenograph.director.animate );

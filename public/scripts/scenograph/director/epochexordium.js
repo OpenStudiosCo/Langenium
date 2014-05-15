@@ -36,6 +36,7 @@ L.scenograph.director.epochexordium = function() {
 	} );
 
 	mesh = new THREE.Mesh( geometry, material );
+	mesh.name = 'Space Box';
 	this.scene.add( mesh );
 
 	// Using AU (Astronomical Unit x 1000 + 1000 for sun's size) for distance, proportion to Earth for others
@@ -141,8 +142,8 @@ L.scenograph.director.epochexordium = function() {
   			case 'planet': 
   				this.scene.add(
   					this.make_sphere(
+  						scene_setup.objects[i].name, 
   						scene_setup.objects[i].position, 
-  						scene_setup.objects[i].colour, 
   						scene_setup.objects[i].radius)
   				);
   				break;
@@ -160,6 +161,26 @@ L.scenograph.director.epochexordium = function() {
   				break;
   		}
   	}
+  	L.scenograph.director.animation_queue.push(new L.scenograph.director.select_planet());
+}
+
+L.scenograph.director.select_planet = function() {
+	this.animate = function(delta) {
+		if (L.scenograph.director.cursor.leftClick == true) {
+			L.scenograph.director.projector.unprojectVector(L.scenograph.director.cursor.position, L.scenograph.director.camera);
+			var raycaster = new THREE.Raycaster( L.scenograph.director.camera.position, L.scenograph.director.cursor.position.sub( L.scenograph.director.camera.position ).normalize() );	
+
+			var intersects = raycaster.intersectObjects( L.scenograph.director.scene.children );
+			if (intersects.length > 0) {
+				if (intersects[0].object.name != 'Space Box' && 
+					intersects[0].object.name != 'Sun Halo') {
+					L.scenograph.director.controls.target = intersects[0].object.position.clone();
+					L.scenograph.director.camera_state.zoom = intersects[0].object.scale.x * 7500;
+				}
+			}
+		}
+	}
+	return this;
 }
 
 L.scenograph.director.make_sun = function(position, colour, radius) {
@@ -175,6 +196,7 @@ L.scenograph.director.make_sun = function(position, colour, radius) {
 	
 	var sphere = new THREE.Mesh( new THREE.SphereGeometry( radius, 32, 16 ), customMaterial );
 	sphere.position.set(position.x, position.y, position.z);
+	sphere.name = 'Sun'
 
 	customMaterial = new THREE.ShaderMaterial( 
 	{
@@ -189,18 +211,31 @@ L.scenograph.director.make_sun = function(position, colour, radius) {
 	var ballGeometry = new THREE.SphereGeometry( radius * 1.1, 24, 16 );
 	var ball = new THREE.Mesh( ballGeometry, customMaterial );
 	L.scenograph.director.scene.add( ball );
+	ball.name = 'Sun Halo'
 
 	return sphere;
 }
-L.scenograph.director.make_sphere = function(position, colour, radius) {
+L.scenograph.director.make_sphere = function(name, position, radius) {
 	// Sphere parameters: radius, segments along width, segments along height
-	var sphere = new THREE.Mesh( new THREE.SphereGeometry( radius, 32, 16 ), new THREE.MeshPhongMaterial( { color: colour } ) );
+	var sphere = THREEx.Planets['create' + name]();
+	sphere.name = name;
+
+	if (name == 'Earth') {
+		var clouds    = THREEx.Planets.createEarthCloud()
+		clouds.position.set(position.x, position.y, position.z);		
+		clouds.scale.set(radius * 1.01,radius* 1.01,radius* 1.01)
+		L.scenograph.director.scene.add(clouds)
+	}
+
+	if (name == 'Saturn' || name == 'Uranus') {
+		var mesh    = THREEx.Planets['create' +name+'Ring']();
+		mesh.position.set(position.x, position.y, position.z);		
+		mesh.scale.set(radius * 1.05,radius* 1.05,radius* 1.05)
+		L.scenograph.director.scene.add(mesh)
+	}
 
 	sphere.position.set(position.x, position.y, position.z);
-	if (radius > 20)
-		sphere.scale.set(3, 3, 3)
-	else 
-		sphere.scale.set(10, 10, 10)
+	sphere.scale.set(radius,radius,radius)
 	
 	return sphere;
 }

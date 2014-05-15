@@ -12,7 +12,6 @@ L.scenograph.director.character_test = function() {
 	character.position.y = -25;
 	this.scene.add(character);
 	this.animation_queue.push(character.animation)
-	$('.dg.main ul').append('<li class="folder" id="character_stuff"></li>');
 
 	// direction (normalized), origin, length, color(hex)
 	var origin = new THREE.Vector3(0,-130,0);
@@ -118,19 +117,19 @@ L.scenograph.director.make_animation = function( character, texture, tilesHoriz,
 		switch(this.face) {
 			case 'front':
 				tile_start = 0;
-				tile_end = 7;
+				tile_end = 6;
 				break;
 			case 'back':
 				tile_start = 8;
-				tile_end = 15;
+				tile_end = 14;
 				break;
 			case 'left':
 				tile_start = 25;
-				tile_end = 33;
+				tile_end = 32;
 				break;
 			case 'right':
 				tile_start = 16;
-				tile_end = 24;
+				tile_end = 23;
 				break;
 		}
 		if (this.face != this.last_face) {
@@ -147,7 +146,6 @@ L.scenograph.director.make_animation = function( character, texture, tilesHoriz,
 		var diff = new THREE.Vector3().subVectors(character.position, L.scenograph.director.camera.position).normalize();
 		diff.applyMatrix4(matrix);
 
-		$("#character_stuff").html("rY: " + character.world_rotation + "<br>x: " + diff.x + "<br>y: " + diff.y + "<br>z: " + diff.z);
 		if (diff.x < 0.6  && diff.x > -0.6 && diff.z <= 0.0) {
 			this.face = 'front';
 		}

@@ -3,7 +3,7 @@ L.scenograph = {
 	winW: 1024,
 	winH: 768,
 	options: {
-		activeScene: 'EpochExordium',
+		activeScene: 'MMO-Title',
 		currentScene: '',
 		hideInterface: true,
 		scenes: [

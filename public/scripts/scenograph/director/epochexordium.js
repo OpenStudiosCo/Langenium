@@ -194,7 +194,7 @@ L.scenograph.director.make_sun = function(position, colour, radius) {
 	}   );
 	// Sphere parameters: radius, segments along width, segments along height
 	
-	var sphere = new THREE.Mesh( new THREE.SphereGeometry( radius, 32, 16 ), customMaterial );
+	var sphere = new THREE.Mesh( new THREE.SphereGeometry( radius, 32, 32 ), customMaterial );
 	sphere.position.set(position.x, position.y, position.z);
 	sphere.name = 'Sun'
 
@@ -208,7 +208,7 @@ L.scenograph.director.make_sun = function(position, colour, radius) {
 		transparent: true
 	}   );
 		
-	var ballGeometry = new THREE.SphereGeometry( radius * 1.1, 24, 16 );
+	var ballGeometry = new THREE.SphereGeometry( radius * 1.1, 32, 32 );
 	var ball = new THREE.Mesh( ballGeometry, customMaterial );
 	L.scenograph.director.scene.add( ball );
 	ball.name = 'Sun Halo'

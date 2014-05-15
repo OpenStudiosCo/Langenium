@@ -34,7 +34,7 @@ L.scenograph.director.mmo = function() {
 	
 	var sky = new THREE.Mesh(skyGeo, new THREE.MeshFaceMaterial(sky_materials));
 	sky.name = 'Skybox';
-	sky.position.y = 25000;
+	sky.position.y = 24600;
 	this.scene.add(sky);
 
 	this.effects.mirror = new THREE.Mirror( this.renderer, this.camera, { clipBias: 0.003, textureWidth: L.scenograph.winW, textureHeight: L.scenograph.winH, color: 0x777777 } );

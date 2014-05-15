@@ -8,15 +8,15 @@ L.scenograph.director.character_test = function() {
 		0,
 		L.scenograph.director.camera_state.zoom
 	);	
-
 	var character = L.scenograph.director.make_character();
 	character.position.y = -25;
 	this.scene.add(character);
 	this.animation_queue.push(character.animation)
+	$('.dg.main ul').append('<li class="folder" id="character_stuff"></li>');
 
 	// direction (normalized), origin, length, color(hex)
 	var origin = new THREE.Vector3(0,-130,0);
-	var arrow = new THREE.ArrowHelper(new THREE.Vector3(0,0,1), origin,200, 0xFFCC00);
+	var arrow = new THREE.ArrowHelper(new THREE.Vector3(0,0,1), origin,100, 0xFFCC00);
 	this.scene.add(arrow);
 
 	var gridXZ = new THREE.GridHelper(1000, 80);
@@ -53,61 +53,46 @@ L.scenograph.director.make_character = function() {
 	var geometry = new THREE.PlaneGeometry(12.5, 30.4);
 
 	var new_character = new THREE.Mesh(geometry, material);
-	new_character.direction = new THREE.Vector3(0,0,0);
+	new_character.world_rotation = 0;
 	new_character.animation = new L.scenograph.director.make_animation( new_character, texture, 34, 1, 34, 3400 ); // texture, #horiz, #vert, #total, duration.
 	new_character.scale.set(10,10,10);
 
 	return new_character;
 }
 
-L.scenograph.director.set_direction = function(controls, character, x, y, z) {
-	var change = false;
-	if (controls.x != x) {
-		controls.x = x;
-		change = true;
-	}
-	if (controls.y != y) {
-		controls.y = y;
-		change = true;
-	}
-	if (controls.z != z) {
-		controls.z = z;
-		change = true;
-	}
-	if (change = true) {
-		character.animation.moving = true;
-		
-	}
-	else {
-		
-	}
-}
 L.scenograph.director.move_character = function(character) {
 	character.animation.moving = false;
-	var x = L.scenograph.keyboard.pressed("A") ? 1 : L.scenograph.keyboard.pressed("D") ? -1 : 0,
-		y = 0,
-		z = L.scenograph.keyboard.pressed("W") ? 1 : L.scenograph.keyboard.pressed("S") ? -1 : 0;
-	character.direction.set(x,y,z);
-
-	var walkingKeys = ["W", "A", "S", "D"];
-	for (var i = 0; i < walkingKeys.length; i++)
-	{
-		if ( L.scenograph.keyboard.pressed(walkingKeys[i]) )
-			character.animation.moving = true;
+	var rY = 0, tZ = 0, radian = (Math.PI / 180);
+	if (L.scenograph.keyboard.pressed("W")) {
+		tZ += 1.25;
+		character.animation.moving = true;
 	}
-	
-
-
-	character.position.x += character.direction.x * ((character.direction.z === 0) ? 2 : Math.sqrt(4));
-    character.position.z += character.direction.z * ((character.direction.x === 0) ? 2 : Math.sqrt(4));
-	
+	if (L.scenograph.keyboard.pressed("S")) {
+		tZ -= 1.25;
+		character.animation.moving = true;
+	}
+	if (L.scenograph.keyboard.pressed("A")) {
+		rY += radian;
+		character.animation.moving = true;
+	}
+	if (L.scenograph.keyboard.pressed("D")) {
+		rY -= radian;
+		character.animation.moving = true;		
+	}
+	if (rY != 0) {
+		character.world_rotation += rY;
+	}
+	if (tZ != 0) {
+		character.position.x += tZ * Math.sin(character.world_rotation);
+		character.position.z += tZ * Math.cos(character.world_rotation);
+	}
 }
 
 
 L.scenograph.director.make_animation = function( character, texture, tilesHoriz, tilesVert, numTiles, tileDispDuration) {
 	this.face = 'front';
 	this.last_face = 'front';
-	this.moving = false;
+	this.moving = true;
 	// take in some variables to create a sprite object
 	this.tilesHorizontal = tilesHoriz;
 	this.tilesVertical = tilesVert;
@@ -154,9 +139,16 @@ L.scenograph.director.make_animation = function( character, texture, tilesHoriz,
 		}
 
 		character.lookAt(L.scenograph.director.camera.position);
+		var axis = new THREE.Vector3( 0, -1, 0 );
+		var angle = character.world_rotation;
+		var matrix = new THREE.Matrix4().makeRotationAxis( axis, angle );
+		var vector = character.position.clone();
+		
 		var diff = new THREE.Vector3().subVectors(character.position, L.scenograph.director.camera.position).normalize();
-		var offset = character.world_rotation;
-		if (diff.x < 0.6 && diff.x > -0.6 && diff.z <= 0.0) {
+		diff.applyMatrix4(matrix);
+
+		$("#character_stuff").html("rY: " + character.world_rotation + "<br>x: " + diff.x + "<br>y: " + diff.y + "<br>z: " + diff.z);
+		if (diff.x < 0.6  && diff.x > -0.6 && diff.z <= 0.0) {
 			this.face = 'front';
 		}
 		if (diff.x > 0.5 && diff.x < 0.8) {

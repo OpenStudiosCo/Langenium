@@ -148,45 +148,34 @@ L.scenograph.director.move_character = function(character) {
 		var ray = new THREE.Raycaster( originPoint, directionVector.clone().normalize() );
 		var intersects = ray.intersectObjects(L.scenograph.director.scene_variables.collidables);
 		if (intersects.length > 0) {
-			intersects.forEach(function(collision){
-			//var collision = intersects[0]
-				if (collision.distance < 90) {
-					
-					$('#scene_stats').html('');
-					$('#scene_stats').append('collision<br>x: ' + collision.point.x + '<br>z: ' + collision.point.z +"<br>");
-					$('#scene_stats').append('position<br>x: ' + originPoint.x + '<br>z: ' + originPoint.z +"<br>");
-					$('#scene_stats').append('formula<br>x: ' + (collision.point.x - (originPoint.x + pX)) + '<br>z: ' + (collision.point.z - (originPoint.z + pZ)) +"<br>");
-					$('#scene_stats').append('direction<br>x: ' + directionVector.clone().normalize().x + '<br>z: ' + directionVector.clone().normalize().z +"<br>");
-					$('#scene_stats').append('delta<br>x: ' + (pX) + '<br>z: ' + (pZ));
-					
-					if (collision.point.x - originPoint.x > 0) {
-						if (collision.point.x - originPoint.x > collision.point.x - (originPoint.x + pX)) {
-							pX = 0;
-						}
+			var collision = intersects[0]
+			if (collision.distance < 90) {
+									
+				if (collision.point.x - originPoint.x > 0) {
+					if (collision.point.x - originPoint.x > collision.point.x - (originPoint.x + pX)) {
+						pX = 0;
 					}
-					else {
-						if (collision.point.x - originPoint.x < collision.point.x - (originPoint.x + pX)) {
-							pX = 0;
-						}
-					}
-					if (collision.point.z - originPoint.z > 0) {
-						if (collision.point.z - originPoint.z > collision.point.z - (originPoint.z + pZ)) { 				
-							pZ = 0; 
-						}
-					}
-					else {
-						if (collision.point.z - originPoint.z < collision.point.z - (originPoint.z + pZ)) { 				
-							pZ = 0; 
-						}
-					}
-					if (rY == 0 && pX == 0 && pZ == 0) {
-						character.animation.moving = false;	
-					}
-					//L.scenograph.director.marker(collision.point)	
 				}
-			});
-					
-			
+				else {
+					if (collision.point.x - originPoint.x < collision.point.x - (originPoint.x + pX)) {
+						pX = 0;
+					}
+				}
+				if (collision.point.z - originPoint.z > 0) {
+					if (collision.point.z - originPoint.z > collision.point.z - (originPoint.z + pZ)) { 				
+						pZ = 0; 
+					}
+				}
+				else {
+					if (collision.point.z - originPoint.z < collision.point.z - (originPoint.z + pZ)) { 				
+						pZ = 0; 
+					}
+				}
+				if (rY == 0 && pX == 0 && pZ == 0) {
+					character.animation.moving = false;	
+				}
+				//L.scenograph.director.marker(collision.point)	
+			}				
 		}
 	}
 	

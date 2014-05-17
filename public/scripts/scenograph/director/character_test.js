@@ -42,21 +42,21 @@ L.scenograph.director.character_test = function() {
 	L.scenograph.director.scene_variables.collidables.push(gridZY);
 
 	var wireframeMaterial = new THREE.MeshBasicMaterial( { color: 0x666600, wireframe: true, transparent: true } ); 
-	var box1 = new THREE.Mesh(new THREE.BoxGeometry(150, 75, 75), wireframeMaterial);
+	var box1 = new THREE.Mesh(new THREE.BoxGeometry(300, 150, 75), wireframeMaterial);
 	box1.name = 'Box 1'
-	box1.position.set(300,-110,300);
+	box1.position.set(-300,-110,-300);
 	this.scene.add(box1);
 	L.scenograph.director.scene_variables.collidables.push(box1);
 
-	var box2 = new THREE.Mesh(new THREE.BoxGeometry(150, 75, 75), wireframeMaterial);
+	var box2 = new THREE.Mesh(new THREE.BoxGeometry(75, 150, 300), wireframeMaterial);
 	box2.name = 'Box 2'
-	box2.position.set(300,-110,400);
+	box2.position.set(300,-110,0);
 	this.scene.add(box2);
 	L.scenograph.director.scene_variables.collidables.push(box2);
 	
-	var box3 = new THREE.Mesh(new THREE.BoxGeometry(150, 75, 75), wireframeMaterial);
+	var box3 = new THREE.Mesh(new THREE.BoxGeometry(300, 150, 75), wireframeMaterial);
 	box3.name = 'Box 3'
-	box3.position.set(300,-35,300);
+	box3.position.set(0,-110,300);
 	this.scene.add(box3);
 	L.scenograph.director.scene_variables.collidables.push(box3);
 };
@@ -87,7 +87,7 @@ L.scenograph.director.make_character = function() {
 	var characterBox =  new THREE.Mesh(new THREE.BoxGeometry(128, 256, 128), wireframeMaterial);
 	characterBox.add(characterSprite);
 	characterBox.add(arrow);
-	//characterBox.visible = false;
+	characterBox.visible = false;
 
 	return characterBox;
 }
@@ -139,26 +139,48 @@ L.scenograph.director.move_character = function(character) {
 		var localVertex = character.parent.geometry.vertices[vertexIndex].clone();
 		var globalVertex = localVertex.applyMatrix4( character.parent.matrix );
 
+		var axis = new THREE.Vector3( 0, -1, 0 );
+		var angle = character.parent.rotation.y;
+		var matrix = new THREE.Matrix4().makeRotationAxis( axis, angle );
 		var directionVector = globalVertex.sub(moveVector);
+		directionVector.applyMatrix4(matrix)
 		
 		var ray = new THREE.Raycaster( originPoint, directionVector.clone().normalize() );
 		var intersects = ray.intersectObjects(L.scenograph.director.scene_variables.collidables);
 		if (intersects.length > 0) {
 			intersects.forEach(function(collision){
 			//var collision = intersects[0]
-				if (collision.distance < 128) {
+				if (collision.distance < 90) {
+					
 					$('#scene_stats').html('');
 					$('#scene_stats').append('collision<br>x: ' + collision.point.x + '<br>z: ' + collision.point.z +"<br>");
 					$('#scene_stats').append('position<br>x: ' + originPoint.x + '<br>z: ' + originPoint.z +"<br>");
+					$('#scene_stats').append('formula<br>x: ' + (collision.point.x - (originPoint.x + pX)) + '<br>z: ' + (collision.point.z - (originPoint.z + pZ)) +"<br>");
+					$('#scene_stats').append('direction<br>x: ' + directionVector.clone().normalize().x + '<br>z: ' + directionVector.clone().normalize().z +"<br>");
 					$('#scene_stats').append('delta<br>x: ' + (pX) + '<br>z: ' + (pZ));
-
-					if (collision.point.x - originPoint.x > collision.point.x - (originPoint.x + pX)) { 	
-						pX = 0;
-						pZ = 0;
+					
+					if (collision.point.x - originPoint.x > 0) {
+						if (collision.point.x - originPoint.x > collision.point.x - (originPoint.x + pX)) {
+							pX = 0;
+						}
 					}
-					if (collision.point.z - originPoint.z > collision.point.z - (originPoint.z + pZ)) { 				
-						pX = 0;
-						pZ = 0; 
+					else {
+						if (collision.point.x - originPoint.x < collision.point.x - (originPoint.x + pX)) {
+							pX = 0;
+						}
+					}
+					if (collision.point.z - originPoint.z > 0) {
+						if (collision.point.z - originPoint.z > collision.point.z - (originPoint.z + pZ)) { 				
+							pZ = 0; 
+						}
+					}
+					else {
+						if (collision.point.z - originPoint.z < collision.point.z - (originPoint.z + pZ)) { 				
+							pZ = 0; 
+						}
+					}
+					if (rY == 0 && pX == 0 && pZ == 0) {
+						character.animation.moving = false;	
 					}
 					//L.scenograph.director.marker(collision.point)	
 				}
@@ -167,6 +189,7 @@ L.scenograph.director.move_character = function(character) {
 			
 		}
 	}
+	
 	
 	//Translate character if no collisions occur
 	if (tZ != 0) {

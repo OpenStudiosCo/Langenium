@@ -37,6 +37,8 @@ $(document).ready(function(){
     chart.addTimeSeries(L.scenograph.stats.fps.now, { strokeStyle: 'rgba(0, 0, 255, 1)', fillStyle: 'rgba(0, 0, 255, 0.2)', lineWidth: 1 });
     chart.streamTo(document.getElementById("fps"), 500);
 	
+	$('.dg.main ul').append('<li class="folder" id="scene_stats"></li>');
+
 	var loadPage = function(page) {
 		$('#page').addClass('fadeOutUp');
 		$('#page').removeClass('fadeInDown');

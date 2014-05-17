@@ -87,7 +87,7 @@ L.scenograph.director.make_character = function() {
 	var characterBox =  new THREE.Mesh(new THREE.BoxGeometry(128, 256, 128), wireframeMaterial);
 	characterBox.add(characterSprite);
 	characterBox.add(arrow);
-	characterBox.visible = false;
+	//characterBox.visible = false;
 
 	return characterBox;
 }
@@ -95,13 +95,13 @@ L.scenograph.director.make_character = function() {
 L.scenograph.director.move_character = function(character) {
 	// Setup variables
 	character.animation.moving = false;
-	var stepSize = 2,
+	var stepSize = 2.5,
 		pX = 0,
 		pY = 0,
 		pZ = 0,
 		rY = 0, 
 		tZ = 0, 
-		radian = (Math.PI / 90);
+		radian = (Math.PI / 135);
 	
 	// Detect keyboard input
 	if (L.scenograph.keyboard.pressed("W")) {
@@ -120,6 +120,9 @@ L.scenograph.director.move_character = function(character) {
 		rY -= radian;
 		character.animation.moving = true;		
 	}
+	if (rY != 0) {
+		character.parent.rotation.y += rY;
+	}	
 
 	pX = tZ * Math.sin(character.parent.rotation.y);
 	pZ = tZ * Math.cos(character.parent.rotation.y);
@@ -131,9 +134,7 @@ L.scenograph.director.move_character = function(character) {
 		originPoint.z + pZ
 	);
 			// Rotation 
-	if (rY != 0) {
-		character.parent.rotation.y += rY;
-	}	
+	
 	for (var vertexIndex = 0; vertexIndex < character.parent.geometry.vertices.length; vertexIndex++){
 		var localVertex = character.parent.geometry.vertices[vertexIndex].clone();
 		var globalVertex = localVertex.applyMatrix4( character.parent.matrix );
@@ -143,33 +144,27 @@ L.scenograph.director.move_character = function(character) {
 		var ray = new THREE.Raycaster( originPoint, directionVector.clone().normalize() );
 		var intersects = ray.intersectObjects(L.scenograph.director.scene_variables.collidables);
 		if (intersects.length > 0) {
-			var collision = intersects[0];
-			if (collision.distance < 90) {
+			intersects.forEach(function(collision){
+			//var collision = intersects[0]
+				if (collision.distance < 128) {
+					$('#scene_stats').html('');
+					$('#scene_stats').append('collision<br>x: ' + collision.point.x + '<br>z: ' + collision.point.z +"<br>");
+					$('#scene_stats').append('position<br>x: ' + originPoint.x + '<br>z: ' + originPoint.z +"<br>");
+					$('#scene_stats').append('delta<br>x: ' + (pX) + '<br>z: ' + (pZ));
 
-				// Need to bypass this when the player is trying to head away from the collision point
-				if (collision.point.x > originPoint.x) { 
-					//character.parent.rotation.y -= collision.distance / 5000; 
-					pX = 0;
-
+					if (collision.point.x - originPoint.x > collision.point.x - (originPoint.x + pX)) { 	
+						pX = 0;
+						pZ = 0;
+					}
+					if (collision.point.z - originPoint.z > collision.point.z - (originPoint.z + pZ)) { 				
+						pX = 0;
+						pZ = 0; 
+					}
+					//L.scenograph.director.marker(collision.point)	
 				}
-				if (collision.point.x < originPoint.x) {
-					//character.parent.rotation.y += collision.distance / 5000; 
-					//pX = tZ * Math.sin(character.parent.rotation.y) * -.1; 
-				}
-
-				if (collision.point.z > originPoint.z) { 
-					//character.parent.rotation.y -= collision.distance / 5000; 
-					pZ = 0; 
-				}
-				if (collision.point.z < originPoint.z) {
-					//character.parent.rotation.y += collision.distance / 5000; 
-					//pZ = tZ * Math.cos(character.parent.rotation.y) * -.1; 
-				}
-
+			});
+					
 			
-			
-				//L.scenograph.director.marker(collision.point)	
-			}
 		}
 	}
 	

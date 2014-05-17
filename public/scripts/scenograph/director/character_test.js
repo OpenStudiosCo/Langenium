@@ -15,14 +15,7 @@ L.scenograph.director.character_test = function() {
 	var character = L.scenograph.director.make_character();
 	character.position.y = -35;
 	this.scene.add(character);
-	this.animation_queue.push(character.animation)
-
-	// direction (normalized), origin, length, color(hex)
-	var origin = new THREE.Vector3(0,-130,0);
-	var arrow = new THREE.ArrowHelper(new THREE.Vector3(0,0,1), origin,100, 0xFFCC00);
-	this.scene.add(arrow);
-
-	
+	this.animation_queue.push(character.children[0].animation)
 
 	var gridXZ = new THREE.GridHelper(1000, 80);
 	gridXZ.name = 'Floor'
@@ -78,15 +71,25 @@ L.scenograph.director.marker = function(position) {
 L.scenograph.director.make_character = function() {
 	var texture = new THREE.ImageUtils.loadTexture( '/assets/exordium-male.png' );
 	
-	var material = new THREE.MeshBasicMaterial( { map: texture, transparent: true, side:THREE.DoubleSide, alphaTest: 0.5 } );
-	var geometry = new THREE.PlaneGeometry(12.8, 25.6);
+	var spriteMaterial = new THREE.SpriteMaterial( { map: texture, transparent: true, side:THREE.DoubleSide, alphaTest: 0.5 } );
+	//var spriteGeometry = new THREE.PlaneGeometry(12.8, 25.6);
 
-	var new_character = new THREE.Mesh(geometry, material);
-	new_character.world_rotation = 0;
-	new_character.animation = new L.scenograph.director.make_animation( new_character, texture, 34, 1, 34, 3400 ); // texture, #horiz, #vert, #total, duration.
-	new_character.scale.set(10,10,10);
+	var characterSprite = new THREE.Sprite(spriteMaterial);
+	characterSprite.animation = new L.scenograph.director.make_animation( characterSprite, texture, 34, 1, 34, 3400 ); // texture, #horiz, #vert, #total, duration.
+	characterSprite.scale.set(128,256);
 
-	return new_character;
+		// direction (normalized), origin, length, color(hex)
+	var origin = new THREE.Vector3(0,-130,0);
+	var arrow = new THREE.ArrowHelper(new THREE.Vector3(0,0,1), origin,100, 0xFFCC00);
+	
+
+	var wireframeMaterial = new THREE.MeshBasicMaterial( { color: 0x660066, wireframe: true, transparent: true } ); 
+	var characterBox =  new THREE.Mesh(new THREE.BoxGeometry(128, 256, 128), wireframeMaterial);
+	characterBox.add(characterSprite);
+	characterBox.add(arrow);
+	characterBox.visible = false;
+
+	return characterBox;
 }
 
 L.scenograph.director.move_character = function(character) {
@@ -98,7 +101,7 @@ L.scenograph.director.move_character = function(character) {
 		pZ = 0,
 		rY = 0, 
 		tZ = 0, 
-		radian = (Math.PI / 180);
+		radian = (Math.PI / 90);
 	
 	// Detect keyboard input
 	if (L.scenograph.keyboard.pressed("W")) {
@@ -118,60 +121,71 @@ L.scenograph.director.move_character = function(character) {
 		character.animation.moving = true;		
 	}
 
-	
-	
+	pX = tZ * Math.sin(character.parent.rotation.y);
+	pZ = tZ * Math.cos(character.parent.rotation.y);
 	// Collision detection!
-	var originPoint = character.position.clone();
+	var originPoint = character.parent.position.clone();
 	var moveVector = new THREE.Vector3(
-		character.position.x + tZ * Math.sin(character.world_rotation),
+		originPoint.x + pX,
 		0,
-		character.position.z + tZ * Math.cos(character.world_rotation)
+		originPoint.z + pZ
 	);
-	
-	for (var vertexIndex = 0; vertexIndex < character.geometry.vertices.length; vertexIndex++){
-		var localVertex = character.geometry.vertices[vertexIndex].clone();
-		var globalVertex = localVertex.applyMatrix4( character.matrix );
+			// Rotation 
+	if (rY != 0) {
+		character.parent.rotation.y += rY;
+	}	
+	for (var vertexIndex = 0; vertexIndex < character.parent.geometry.vertices.length; vertexIndex++){
+		var localVertex = character.parent.geometry.vertices[vertexIndex].clone();
+		var globalVertex = localVertex.applyMatrix4( character.parent.matrix );
 
 		var directionVector = globalVertex.sub(moveVector);
-		var axis = new THREE.Vector3( 0, -1, 0 );
-		var angle = character.world_rotation;
-		var matrix = new THREE.Matrix4().makeRotationAxis( axis, angle );
-		directionVector.applyMatrix4(matrix)
 		
 		var ray = new THREE.Raycaster( originPoint, directionVector.clone().normalize() );
 		var intersects = ray.intersectObjects(L.scenograph.director.scene_variables.collidables);
 		if (intersects.length > 0) {
 			var collision = intersects[0];
-			if (collision.distance < 190) {
+			if (collision.distance < 90) {
+
+				// Need to bypass this when the player is trying to head away from the collision point
 				if (collision.point.x > originPoint.x) { 
-					rY -= collision.distance / 1000; 
+					//character.parent.rotation.y -= collision.distance / 5000; 
+					pX = 0;
+
 				}
-				if (collision.point.x < originPoint.x) { 
-					rY += collision.distance / 1000; 
+				if (collision.point.x < originPoint.x) {
+					//character.parent.rotation.y += collision.distance / 5000; 
+					//pX = tZ * Math.sin(character.parent.rotation.y) * -.1; 
 				}
-				tZ *= -.01;
-				
-				L.scenograph.director.marker(collision.point)	
+
+				if (collision.point.z > originPoint.z) { 
+					//character.parent.rotation.y -= collision.distance / 5000; 
+					pZ = 0; 
+				}
+				if (collision.point.z < originPoint.z) {
+					//character.parent.rotation.y += collision.distance / 5000; 
+					//pZ = tZ * Math.cos(character.parent.rotation.y) * -.1; 
+				}
+
+			
+			
+				//L.scenograph.director.marker(collision.point)	
 			}
 		}
 	}
-	// Rotation 
-	if (rY != 0) {
-		character.world_rotation += rY;
 	
-	}		
 	//Translate character if no collisions occur
 	if (tZ != 0) {
-		character.position.x += tZ * Math.sin(character.world_rotation);
-		character.position.z += tZ * Math.cos(character.world_rotation);
+		character.parent.position.x += pX;
+		character.parent.position.z += pZ;
 	}
 
 	// Focus camera on character position and character sprite back at the camera
 	L.scenograph.director.controls.target.set(
-		character.position.x,
-		character.position.y,
-		character.position.z
+		character.parent.position.x,
+		character.parent.position.y,
+		character.parent.position.z
 	);
+
 	character.lookAt(L.scenograph.director.camera.position)
 
 }
@@ -227,14 +241,14 @@ L.scenograph.director.make_animation = function( character, texture, tilesHoriz,
 		}
 
 		var axis = new THREE.Vector3( 0, -1, 0 );
-		var angle = character.world_rotation;
+		var angle = character.parent.rotation.y;
 		var matrix = new THREE.Matrix4().makeRotationAxis( axis, angle );
-		var vector = character.position.clone();
+		var vector = character.parent.position.clone();
 
 		var camera_vector = new THREE.Vector3();
 		camera_vector.setFromMatrixPosition( L.scenograph.director.camera.matrixWorld );
 	
-		var diff = new THREE.Vector3().subVectors(character.position, camera_vector).normalize();
+		var diff = new THREE.Vector3().subVectors(character.parent.position, camera_vector).normalize();
 		diff.applyMatrix4(matrix);
 
 		if (diff.x < 0.5  && diff.x > -0.5 && diff.z <= 0.0) {

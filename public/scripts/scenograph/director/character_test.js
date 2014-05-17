@@ -118,43 +118,48 @@ L.scenograph.director.move_character = function(character) {
 		character.animation.moving = true;		
 	}
 
-	// Rotation 
-	if (rY != 0) {
-		character.world_rotation += rY;
-		if (tZ == 0) {
-			tZ += stepSize / 5;
-		}
-	}
+	
 	
 	// Collision detection!
 	var originPoint = character.position.clone();
+	var moveVector = new THREE.Vector3(
+		character.position.x + tZ * Math.sin(character.world_rotation),
+		0,
+		character.position.z + tZ * Math.cos(character.world_rotation)
+	);
 	
 	for (var vertexIndex = 0; vertexIndex < character.geometry.vertices.length; vertexIndex++){
 		var localVertex = character.geometry.vertices[vertexIndex].clone();
 		var globalVertex = localVertex.applyMatrix4( character.matrix );
-		var directionVector = globalVertex.sub( character.position );
+
+		var directionVector = globalVertex.sub(moveVector);
+		var axis = new THREE.Vector3( 0, -1, 0 );
+		var angle = character.world_rotation;
+		var matrix = new THREE.Matrix4().makeRotationAxis( axis, angle );
+		directionVector.applyMatrix4(matrix)
 		
 		var ray = new THREE.Raycaster( originPoint, directionVector.clone().normalize() );
 		var intersects = ray.intersectObjects(L.scenograph.director.scene_variables.collidables);
-		if (intersects.length > 0)
-			intersects.forEach(function(collision){
-				if (collision.distance < 190) {
-					if (collision.point.x > originPoint.x) {				
-						rY -= collision.distance / 10000;
-					}
-					if (collision.point.x < originPoint.x) {
-						rY += collision.distance / 10000;
-					}
-					if (tZ != 0) {
-						tZ *= -0.5;
-					}
-					L.scenograph.director.marker(collision.point)	
+		if (intersects.length > 0) {
+			var collision = intersects[0];
+			if (collision.distance < 190) {
+				if (collision.point.x > originPoint.x) { 
+					rY -= collision.distance / 1000; 
 				}
-			});
+				if (collision.point.x < originPoint.x) { 
+					rY += collision.distance / 1000; 
+				}
+				tZ *= -.01;
+				
+				L.scenograph.director.marker(collision.point)	
+			}
+		}
 	}
-
+	// Rotation 
+	if (rY != 0) {
+		character.world_rotation += rY;
 	
-			
+	}		
 	//Translate character if no collisions occur
 	if (tZ != 0) {
 		character.position.x += tZ * Math.sin(character.world_rotation);
@@ -220,8 +225,6 @@ L.scenograph.director.make_animation = function( character, texture, tilesHoriz,
 			this.currentTile = tile_start;
 			this.last_face = this.face;
 		}
-
-
 
 		var axis = new THREE.Vector3( 0, -1, 0 );
 		var angle = character.world_rotation;

@@ -44,19 +44,19 @@ L.scenograph.director.character_test = function() {
 	var wireframeMaterial = new THREE.MeshBasicMaterial( { color: 0x666600, wireframe: true, transparent: true } ); 
 	var box1 = new THREE.Mesh(new THREE.BoxGeometry(300, 150, 75), wireframeMaterial);
 	box1.name = 'Box 1'
-	box1.position.set(-300,-110,-300);
+	box1.position.set(-300,-75,-300);
 	this.scene.add(box1);
 	L.scenograph.director.scene_variables.collidables.push(box1);
 
 	var box2 = new THREE.Mesh(new THREE.BoxGeometry(75, 150, 300), wireframeMaterial);
 	box2.name = 'Box 2'
-	box2.position.set(300,-110,0);
+	box2.position.set(300,-75,0);
 	this.scene.add(box2);
 	L.scenograph.director.scene_variables.collidables.push(box2);
 	
 	var box3 = new THREE.Mesh(new THREE.BoxGeometry(300, 150, 75), wireframeMaterial);
 	box3.name = 'Box 3'
-	box3.position.set(0,-110,300);
+	box3.position.set(0,-75,300);
 	this.scene.add(box3);
 	L.scenograph.director.scene_variables.collidables.push(box3);
 };
@@ -153,21 +153,25 @@ L.scenograph.director.move_character = function(character) {
 									
 				if (collision.point.x - originPoint.x > 0) {
 					if (collision.point.x - originPoint.x > collision.point.x - (originPoint.x + pX)) {
+						character.parent.rotation.y += collision.distance / 10000;
 						pX = 0;
 					}
 				}
 				else {
 					if (collision.point.x - originPoint.x < collision.point.x - (originPoint.x + pX)) {
+						character.parent.rotation.y += collision.distance / 10000;
 						pX = 0;
 					}
 				}
 				if (collision.point.z - originPoint.z > 0) {
 					if (collision.point.z - originPoint.z > collision.point.z - (originPoint.z + pZ)) { 				
+						character.parent.rotation.y += collision.distance / 10000;
 						pZ = 0; 
 					}
 				}
 				else {
 					if (collision.point.z - originPoint.z < collision.point.z - (originPoint.z + pZ)) { 				
+						character.parent.rotation.y += collision.distance / 10000;
 						pZ = 0; 
 					}
 				}
@@ -193,7 +197,7 @@ L.scenograph.director.move_character = function(character) {
 		character.parent.position.z
 	);
 
-	character.lookAt(L.scenograph.director.camera.position)
+	
 
 }
 

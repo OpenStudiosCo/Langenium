@@ -117,6 +117,7 @@ L.scenograph.director.move_character = function(character) {
 		rY -= radian;
 		character.animation.moving = true;		
 	}
+
 	// Rotation 
 	if (rY != 0) {
 		character.world_rotation += rY;
@@ -124,12 +125,7 @@ L.scenograph.director.move_character = function(character) {
 			tZ += stepSize / 5;
 		}
 	}
-
-	// Set the movement variables up for collisions
-	pX = character.position.x + tZ * Math.sin(character.world_rotation);
-	pZ = character.position.z + tZ * Math.cos(character.world_rotation);
 	
-
 	// Collision detection!
 	var originPoint = character.position.clone();
 	
@@ -141,16 +137,28 @@ L.scenograph.director.move_character = function(character) {
 		var ray = new THREE.Raycaster( originPoint, directionVector.clone().normalize() );
 		var intersects = ray.intersectObjects(L.scenograph.director.scene_variables.collidables);
 		if (intersects.length > 0)
-			intersects.forEach(function(intersect){
-				if (intersect.distance < 190)
-					L.scenograph.director.marker(intersect.point)	
+			intersects.forEach(function(collision){
+				if (collision.distance < 190) {
+					if (collision.point.x > originPoint.x) {				
+						rY -= collision.distance / 10000;
+					}
+					if (collision.point.x < originPoint.x) {
+						rY += collision.distance / 10000;
+					}
+					if (tZ != 0) {
+						tZ *= -0.5;
+					}
+					L.scenograph.director.marker(collision.point)	
+				}
 			});
 	}
+
+	
 			
 	//Translate character if no collisions occur
 	if (tZ != 0) {
-		character.position.x = pX;
-		character.position.z = pZ;
+		character.position.x += tZ * Math.sin(character.world_rotation);
+		character.position.z += tZ * Math.cos(character.world_rotation);
 	}
 
 	// Focus camera on character position and character sprite back at the camera

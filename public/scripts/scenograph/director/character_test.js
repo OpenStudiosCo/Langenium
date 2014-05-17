@@ -78,13 +78,13 @@ L.scenograph.director.marker = function(position) {
 L.scenograph.director.make_character = function() {
 	var texture = new THREE.ImageUtils.loadTexture( '/assets/exordium-male.png' );
 	
-	var material = new THREE.SpriteMaterial( { map: texture} );
-	
+	var material = new THREE.MeshBasicMaterial( { map: texture, transparent: true, side:THREE.DoubleSide, alphaTest: 0.5 } );
+	var geometry = new THREE.PlaneGeometry(12.8, 25.6);
 
-	var new_character = new THREE.Sprite(material);
+	var new_character = new THREE.Mesh(geometry, material);
 	new_character.world_rotation = 0;
 	new_character.animation = new L.scenograph.director.make_animation( new_character, texture, 34, 1, 34, 3400 ); // texture, #horiz, #vert, #total, duration.
-	new_character.scale.set(128,256,10);
+	new_character.scale.set(10,10,10);
 
 	return new_character;
 }
@@ -92,7 +92,7 @@ L.scenograph.director.make_character = function() {
 L.scenograph.director.move_character = function(character) {
 	// Setup variables
 	character.animation.moving = false;
-	var stepSize = 5,
+	var stepSize = 2,
 		pX = 0,
 		pY = 0,
 		pZ = 0,
@@ -139,7 +139,7 @@ L.scenograph.director.move_character = function(character) {
 		var directionVector = globalVertex.sub( character.position );
 		
 		var ray = new THREE.Raycaster( originPoint, directionVector.clone().normalize() );
-		var intersects = raycaster.intersectObjects(L.scenograph.director.scene_variables.collidables);
+		var intersects = ray.intersectObjects(L.scenograph.director.scene_variables.collidables);
 		if (intersects.length > 0)
 			intersects.forEach(function(intersect){
 				if (intersect.distance < 190)
@@ -153,12 +153,13 @@ L.scenograph.director.move_character = function(character) {
 		character.position.z = pZ;
 	}
 
-	// Focus camera on character position
+	// Focus camera on character position and character sprite back at the camera
 	L.scenograph.director.controls.target.set(
 		character.position.x,
 		character.position.y,
 		character.position.z
 	);
+	character.lookAt(L.scenograph.director.camera.position)
 
 }
 

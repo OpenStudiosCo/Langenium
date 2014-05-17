@@ -8,6 +8,10 @@ L.scenograph.director.character_test = function() {
 		0,
 		L.scenograph.director.camera_state.zoom
 	);	
+
+	L.scenograph.director.scene_variables.collidables = [];
+
+
 	var character = L.scenograph.director.make_character();
 	character.position.y = -35;
 	this.scene.add(character);
@@ -18,32 +22,58 @@ L.scenograph.director.character_test = function() {
 	var arrow = new THREE.ArrowHelper(new THREE.Vector3(0,0,1), origin,100, 0xFFCC00);
 	this.scene.add(arrow);
 
+	
+
 	var gridXZ = new THREE.GridHelper(1000, 80);
+	gridXZ.name = 'Floor'
 	gridXZ.setColors( new THREE.Color(0x006600), new THREE.Color(0x006600) );
 	gridXZ.position.set( 0,-150,0 );
 	this.scene.add(gridXZ);
+
+	
+
 	var gridXY = new THREE.GridHelper(1000, 80);
+	gridXY.name = 'West Wall'
 	gridXY.setColors( new THREE.Color(0x006600), new THREE.Color(0x006600) );
 	gridXY.rotation.z = Math.PI/2;
 	gridXY.position.set( 1000,850,0 );
 	this.scene.add(gridXY);
+	L.scenograph.director.scene_variables.collidables.push(gridXY);
+
 	var gridZY = new THREE.GridHelper(1000, 80);
+	gridZY.name = 'North Wall'
 	gridZY.setColors( new THREE.Color(0x006600), new THREE.Color(0x006600) );
 	gridZY.rotation.x = Math.PI/2;
 	gridZY.position.set( 0,850,1000 );
 	this.scene.add(gridZY);
+	L.scenograph.director.scene_variables.collidables.push(gridZY);
 
 	var wireframeMaterial = new THREE.MeshBasicMaterial( { color: 0x666600, wireframe: true, transparent: true } ); 
 	var box1 = new THREE.Mesh(new THREE.BoxGeometry(150, 75, 75), wireframeMaterial);
+	box1.name = 'Box 1'
 	box1.position.set(300,-110,300);
 	this.scene.add(box1);
+	L.scenograph.director.scene_variables.collidables.push(box1);
+
 	var box2 = new THREE.Mesh(new THREE.BoxGeometry(150, 75, 75), wireframeMaterial);
+	box2.name = 'Box 2'
 	box2.position.set(300,-110,400);
 	this.scene.add(box2);
+	L.scenograph.director.scene_variables.collidables.push(box2);
+	
 	var box3 = new THREE.Mesh(new THREE.BoxGeometry(150, 75, 75), wireframeMaterial);
+	box3.name = 'Box 3'
 	box3.position.set(300,-35,300);
 	this.scene.add(box3);
+	L.scenograph.director.scene_variables.collidables.push(box3);
 };
+
+L.scenograph.director.marker = function(position) {
+	var material = new THREE.MeshBasicMaterial( {color:0xFF0000, side:THREE.DoubleSide} );
+	var sphere = new THREE.Mesh( new THREE.SphereGeometry( 5, 1, 1 ), material );
+	sphere.position.set(position.x, position.y, position.z);
+	L.scenograph.director.scene.add(sphere);
+}
 
 L.scenograph.director.make_character = function() {
 	var texture = new THREE.ImageUtils.loadTexture( '/assets/exordium-male.png' );
@@ -60,14 +90,23 @@ L.scenograph.director.make_character = function() {
 }
 
 L.scenograph.director.move_character = function(character) {
+	// Setup variables
 	character.animation.moving = false;
-	var rY = 0, tZ = 0, radian = (Math.PI / 180);
+	var stepSize = 5,
+		pX = 0,
+		pY = 0,
+		pZ = 0,
+		rY = 0, 
+		tZ = 0, 
+		radian = (Math.PI / 180);
+	
+	// Detect keyboard input
 	if (L.scenograph.keyboard.pressed("W")) {
-		tZ += 1.25;
+		tZ += stepSize;
 		character.animation.moving = true;
 	}
 	if (L.scenograph.keyboard.pressed("S")) {
-		tZ -= 1.25;
+		tZ -= stepSize;
 		character.animation.moving = true;
 	}
 	if (L.scenograph.keyboard.pressed("A")) {
@@ -78,17 +117,49 @@ L.scenograph.director.move_character = function(character) {
 		rY -= radian;
 		character.animation.moving = true;		
 	}
+	// Rotation 
 	if (rY != 0) {
 		character.world_rotation += rY;
 		if (tZ == 0) {
-			tZ += 1.25;
+			tZ += stepSize / 5;
 		}
 	}
-	if (tZ != 0) {
-		character.position.x += tZ * Math.sin(character.world_rotation);
-		character.position.z += tZ * Math.cos(character.world_rotation);
+
+	// Set the movement variables up for collisions
+	pX = character.position.x + tZ * Math.sin(character.world_rotation);
+	pZ = character.position.z + tZ * Math.cos(character.world_rotation);
+	
+
+	// Collision detection!
+	var originPoint = character.position.clone();
+	
+	for (var vertexIndex = 0; vertexIndex < character.geometry.vertices.length; vertexIndex++){
+		var localVertex = character.geometry.vertices[vertexIndex].clone();
+		var globalVertex = localVertex.applyMatrix4( character.matrix );
+		var directionVector = globalVertex.sub( character.position );
+		
+		var ray = new THREE.Raycaster( originPoint, directionVector.clone().normalize() );
+		var intersects = raycaster.intersectObjects(L.scenograph.director.scene_variables.collidables);
+		if (intersects.length > 0)
+			intersects.forEach(function(intersect){
+				if (intersect.distance < 190)
+					L.scenograph.director.marker(intersect.point)	
+			});
 	}
-	L.scenograph.director.camera.lookAt(character.position);
+			
+	//Translate character if no collisions occur
+	if (tZ != 0) {
+		character.position.x = pX;
+		character.position.z = pZ;
+	}
+
+	// Focus camera on character position
+	L.scenograph.director.controls.target.set(
+		character.position.x,
+		character.position.y,
+		character.position.z
+	);
+
 }
 
 
@@ -154,13 +225,13 @@ L.scenograph.director.make_animation = function( character, texture, tilesHoriz,
 		var diff = new THREE.Vector3().subVectors(character.position, camera_vector).normalize();
 		diff.applyMatrix4(matrix);
 
-		if (diff.x < 0.6  && diff.x > -0.6 && diff.z <= 0.0) {
+		if (diff.x < 0.5  && diff.x > -0.5 && diff.z <= 0.0) {
 			this.face = 'front';
 		}
-		if (diff.x > 0.5 && diff.x < 0.8) {
+		if (diff.x > 0.6 && diff.x < 0.8) {
 			this.face = 'right';
 		}
-		if (diff.x < -0.5 && diff.x > -0.8) {
+		if (diff.x < -0.6 && diff.x > -0.8) {
 			this.face = 'left';
 		}
 		if (diff.z > 0.8) {

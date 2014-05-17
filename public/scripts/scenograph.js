@@ -65,6 +65,7 @@ L.scenograph.director.clear = function() {
 	L.scenograph.director.scene = new THREE.Scene();
 	L.scenograph.director.scene_variables = {};
 	if (L.scenograph.director.controls) {
+		
 		L.scenograph.director.controls.target.set(0,0,0)
 	}
 }

@@ -47,7 +47,6 @@ L.scenograph.director.epochexordium = function() {
 			{
 				name: 'Sun',
 				type: 'sun',
-				colour: 0xFDEE00,
 				radius: 1000, // units are AU
 				position: {
 					x: 0,	y: 0,	z: 0
@@ -56,7 +55,6 @@ L.scenograph.director.epochexordium = function() {
 			{
 				name: 'Mercury',
 				type: 'planet',
-				colour: 0x3D0C02,
 				radius: 3.82, // units are AU
 				position: {
 					x: 0,	y: 0,	z: 1387
@@ -65,7 +63,6 @@ L.scenograph.director.epochexordium = function() {
 			{
 				name: 'Venus',
 				type: 'planet',
-				colour: 0x915C83,
 				radius: 9.49, // units are AU
 				position: {
 					x: 0,	y: 0,	z: 1723
@@ -74,7 +71,6 @@ L.scenograph.director.epochexordium = function() {
 			{
 				name: 'Earth',
 				type: 'planet',
-				colour: 0x0033FF,
 				radius: 10, // units are AU
 				position: {
 					x: 0,	y: 0,	z: 2000
@@ -83,7 +79,6 @@ L.scenograph.director.epochexordium = function() {
 			{
 				name: 'Mars',
 				type: 'planet',
-				colour: 0xA52A2A,
 				radius: 5.32, // units are AU
 				position: {
 					x: 0,	y: 0,	z: 2524
@@ -92,7 +87,6 @@ L.scenograph.director.epochexordium = function() {
 			{
 				name: 'Jupiter',
 				type: 'planet',
-				colour: 0xB5A642,
 				radius: 111.9, // units are AU
 				position: {
 					x: 0,	y: 0,	z: 6203
@@ -101,7 +95,6 @@ L.scenograph.director.epochexordium = function() {
 			{
 				name: 'Saturn',
 				type: 'planet',
-				colour: 0xE3DAC9,
 				radius: 92.6, // units are AU
 				position: {
 					x: 0,	y: 0,	z: 10529
@@ -110,7 +103,6 @@ L.scenograph.director.epochexordium = function() {
 			{
 				name: 'Uranus',
 				type: 'planet',
-				colour: 0x0070FF,
 				radius: 40.1, // units are AU
 				position: {
 					x: 0,	y: 0,	z: 20190
@@ -119,7 +111,6 @@ L.scenograph.director.epochexordium = function() {
 			{
 				name: 'Neptune',
 				type: 'planet',
-				colour: 0x1974D2,
 				radius: 38.8, // units are AU
 				position: {
 					x: 0,	y: 0,	z: 31060
@@ -128,7 +119,6 @@ L.scenograph.director.epochexordium = function() {
 			{
 				name: 'Pluto',
 				type: 'planet',
-				colour: 0x91A3B0,
 				radius: 1.8, // units are AU
 				position: {
 					x: 0,	y: 0,	z: 40530
@@ -150,8 +140,7 @@ L.scenograph.director.epochexordium = function() {
   			case 'sun':
   				this.scene.add(
   					this.make_sun(
-  						scene_setup.objects[i].position, 
-  						scene_setup.objects[i].colour, 
+  						scene_setup.objects[i].position,  
   						scene_setup.objects[i].radius)
   				);
   				break;
@@ -187,7 +176,7 @@ L.scenograph.director.select_planet = function() {
 	return this;
 }
 
-L.scenograph.director.make_sun = function(position, colour, radius) {
+L.scenograph.director.make_sun = function(position, radius) {
 	var customMaterial = new THREE.ShaderMaterial( 
 	{
 	    uniforms: L.scenograph.director.effects.sun_uniforms,

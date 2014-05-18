@@ -32,10 +32,9 @@ float snoise ( vec3 coord, float scale, float time_factor ) {
 float heightMap( vec3 coord ) {
 	float n = 0.0;
 	
-	n += 0.125 * abs(snoise(coord, 2., -25. ));
 	n += 0.125 * abs(snoise(coord, 4., -25. ));
 	n += 0.125 * abs(snoise(coord, 8., 25. ));	
-	n *= .75;
+	n *= .3;
 
 	return n;
 }
@@ -55,8 +54,8 @@ vec4 colorFilter (float n) {
 	vec4 color = vec4( vec3( 0.001 *n, 0.015 * n, .125 * n )  , 1.0 );
 
 	color.r = limitColor(0.0, 0.05, color.r);
-	color.g = limitColor(0.025, 0.5, color.g);
-	color.b = limitColor (0.15, 0.95, color.b);
+	color.g = limitColor(0.05, 0.5, color.g);
+	color.b = limitColor (0.3, 0.95, color.b);
 
 	return color;
 }
@@ -71,13 +70,13 @@ void main(void) {
 
 	// normal
 
-	const float e = 0.01;
+	const float e = 0.001;
 
 	float nx = heightMap( vTexCoord3D + vec3( e, 0.0, 0.0 ) );
 	float ny = heightMap( vTexCoord3D + vec3( 0.0, e, 0.0 ) );
 	float nz = heightMap( vTexCoord3D + vec3( 0.0, 0.0, e ) );
 
-	vec3 normal = normalize( vNormal + 0.085 * vec3( n - nx, n - ny, n - nz ) / e );
+	vec3 normal = normalize( vNormal + 0.05 * vec3( n - nx, n - ny, n - nz ) / e );
 
 	vec3 worldToEye = eye - worldPosition.xyz;
 	vec3 eyeDirection = normalize(worldToEye);
@@ -98,25 +97,25 @@ void main(void) {
 
 	// diffuse light
 
-	vec3 vLightWeighting = vec3( -0.001 );
+    vec3 vLightWeighting = vec3( 0.1 );
 
-	vec4 lDirection = viewMatrix * vec4( normalize( vec3( 0.0, 1.0, 0.0 ) ), 0.0 );
-	float directionalLightWeighting = dot( normal, normalize( lDirection.xyz ) ) * 0.25 + 0.75;
-	vLightWeighting += vec3( 1.0 ) * directionalLightWeighting;
+    vec4 lDirection = viewMatrix * vec4( normalize( vec3( 1.0, 0.0, 0.5 ) ), 0.0 );
+    float directionalLightWeighting = dot( normal, normalize( lDirection.xyz ) ) * 0.25 + 0.75;
+    vLightWeighting += vec3( 1.0 ) * directionalLightWeighting;
 
-	// specular light
+    // specular light
 
-	vec3 dirHalfVector = normalize( lDirection.xyz + normalize( vViewPosition ) );
+    vec3 dirHalfVector = normalize( lDirection.xyz + normalize( vViewPosition ) );
 
-	float dirDotNormalHalf = dot( normal, dirHalfVector );
+    float dirDotNormalHalf = dot( normal, dirHalfVector );
 
-	float dirSpecularWeight = 0.0;
-	if ( dirDotNormalHalf >= 0.0 )
-		dirSpecularWeight = ( 1.0 - n ) * pow( dirDotNormalHalf, 5.0 );
+    float dirSpecularWeight = 0.0;
+    if ( dirDotNormalHalf >= 0.0 )
+        dirSpecularWeight = ( 1.0 - n ) * pow( dirDotNormalHalf, 5.0 );
 
-	vLightWeighting += vec3( 1.0, 1.0, 1.0 ) * dirSpecularWeight * n * 4.0;
+    vLightWeighting += vec3( 1.0, 0.5, 0.0 ) * dirSpecularWeight * n * 2.0;
 
-	gl_FragColor *= vec4( vLightWeighting, 1.0 ); //
+    gl_FragColor *= vec4( vLightWeighting, 1.0 );
 
 	
 

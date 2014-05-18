@@ -1,9 +1,9 @@
 L.scenograph.director.mmo = function() {
-	this.camera_state.zoom = 3500;
+	this.camera_state.zoom = 35;
 
 	L.scenograph.director.camera.position.set(
 		0, 
-		1000,
+		10,
 		L.scenograph.director.camera_state.zoom
 	);	
 
@@ -47,15 +47,7 @@ L.scenograph.director.mmo = function() {
 	plane.rotateX( - Math.PI / 2 );
 	this.scene.add(plane);
 
-	var animation_obj = {
-		animate: function(delta) {
-			L.scenograph.director.effects.cloud_uniforms.time.value += 0.0025 * L.scenograph.stats.time.delta;
-			mirror.material.uniforms.time.value += 0.0005 * delta;
-			mirror.render();
-		}
-	}
 
-	L.scenograph.director.animation_queue.push(animation_obj)
 
 	/*
 	
@@ -72,18 +64,73 @@ L.scenograph.director.mmo = function() {
 	var ship_cb = function(geometry, materials) {
 		var mesh = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
 		mesh.scale.set(10,10,10);
-		mesh.position.set(-5000, 15000, -5000)
+		mesh.position.set(0, 15, 0)
 		L.scenograph.director.scene.add(mesh);	
-		L.scenograph.director.camera.position.set(-5000, 15000, -5035);
-		L.scenograph.director.camera.lookAt(-5000, 15000, -5000)
+		mesh.add(L.scenograph.director.camera)
 		
+		var anim_obj = {
+			animate: function(delta) {
+				L.scenograph.director.move_ship(mesh);
+			}
+		}
+		L.scenograph.director.animation_queue.push(anim_obj)
 	}
 	L.scenograph.objects.loadObject('/assets/models/ships/mercenary/valiant2.js', ship_cb);
 	
+
+		var animation_obj = {
+		animate: function(delta) {
+			L.scenograph.director.effects.cloud_uniforms.time.value += 0.0025 * L.scenograph.stats.time.delta;
+			mirror.material.uniforms.time.value += 0.0005 * delta;
+			mirror.render();
+		}
+	}
+
+	L.scenograph.director.animation_queue.push(animation_obj)
 	var hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 1 );
 	hemiLight.name = "light1";
 	hemiLight.color.setRGB( 0.9, 0.95, 1 );
 	hemiLight.groundColor.setRGB( 0.6, 0.75, 1 );
 	hemiLight.position.set( 0, this.M, 0 );
 	this.scene.add(hemiLight);
+}
+
+L.scenograph.director.move_ship = function(ship) {
+	var stepSize = 25,
+		pX = 0,
+		pY = 0,
+		pZ = 0,
+		rY = 0, 
+		tZ = 0, 
+		tY = 0,
+		radian = (Math.PI / 135);
+	
+	// Detect keyboard input
+	if (L.scenograph.keyboard.pressed("W")) {
+		tZ -= stepSize;
+	}
+	if (L.scenograph.keyboard.pressed("S")) {
+		tZ += stepSize;
+	}
+	if (L.scenograph.keyboard.pressed("A")) {
+		rY += radian;
+	}
+	if (L.scenograph.keyboard.pressed("D")) {
+		rY -= radian;
+	}
+	if (L.scenograph.keyboard.pressed(" ")) {
+		tY += stepSize * .6;
+	}
+	if (L.scenograph.keyboard.pressed("shift")) {
+		tY -= stepSize * .6;
+	}
+
+	if (rY != 0) {
+		ship.rotation.y += rY;
+	}	
+
+	ship.position.y += tY;
+
+	ship.position.x += tZ * Math.sin(ship.rotation.y);
+	ship.position.z += tZ * Math.cos(ship.rotation.y);
 }

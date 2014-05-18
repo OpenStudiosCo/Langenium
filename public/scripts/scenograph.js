@@ -3,7 +3,7 @@ L.scenograph = {
 	winW: 1024,
 	winH: 768,
 	options: {
-		activeScene: 'Epoch Exordium',
+		activeScene: 'MMO',
 		currentScene: '',
 		hideInterface: true,
 		scenes: [
@@ -57,17 +57,14 @@ L.scenograph.director = {
 
 L.scenograph.director.clear = function() {
 	this.animation_queue = [];
-	L.scenograph.director.camera_state.zoom = 35;
-	L.scenograph.director.camera.position.set(
-		0, 
-		0,
-		L.scenograph.director.camera_state.zoom
-	);			
+
 	L.scenograph.director.scene = new THREE.Scene();
+	L.scenograph.director.camera = new THREE.PerspectiveCamera( 45, L.scenograph.winW / L.scenograph.winH, 1, this.M * 2 );
+	L.scenograph.director.camera_state.zoom = 35;
 	L.scenograph.director.scene_variables = {};
 	if (L.scenograph.director.controls) {
 		
-		L.scenograph.director.controls.target.set(0,0,0)
+		L.scenograph.director.controls = new THREE.OrbitControls( L.scenograph.director.camera, L.scenograph.director.renderer.domElement );
 	}
 	$('#scene_stats').html('');
 }

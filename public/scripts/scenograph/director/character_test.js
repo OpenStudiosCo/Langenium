@@ -40,7 +40,7 @@ L.scenograph.director.character_test = function() {
 	gridZY.position.set( 0,850,1000 );
 	this.scene.add(gridZY);
 	L.scenograph.director.scene_variables.collidables.push(gridZY);
-
+	
 	var wireframeMaterial = new THREE.MeshBasicMaterial( { color: 0x666600, wireframe: true, transparent: true } ); 
 	var box1 = new THREE.Mesh(new THREE.BoxGeometry(300, 150, 75), wireframeMaterial);
 	box1.name = 'Box 1'

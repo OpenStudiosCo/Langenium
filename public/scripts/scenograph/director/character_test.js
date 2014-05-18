@@ -4,9 +4,7 @@ L.scenograph.director.character_test = function() {
 
 	L.scenograph.director.camera_state.zoom = 500;
 	L.scenograph.director.camera.position.set(
-		0, 
-		0,
-		L.scenograph.director.camera_state.zoom
+		-17, 567, 900
 	);	
 
 	L.scenograph.director.scene_variables.collidables = [];

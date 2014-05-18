@@ -3,7 +3,7 @@ L.scenograph = {
 	winW: 1024,
 	winH: 768,
 	options: {
-		activeScene: 'Character-Test',
+		activeScene: 'MMO',
 		currentScene: '',
 		hideInterface: true,
 		scenes: [
@@ -194,9 +194,7 @@ L.scenograph.director.animate = function() {
 			L.scenograph.director.controls.update();
 		}
 
-		if (L.scenograph.director.effects.mirror) {
-			L.scenograph.director.effects.mirror.render();
-		}
+		
 		if (L.scenograph.animation) {
 			L.scenograph.animation.update(.01);
 		}
@@ -206,6 +204,9 @@ L.scenograph.director.animate = function() {
 			}
 		}
 		L.scenograph.director.cursor.leftClick = false;
+		if (L.scenograph.director.effects.mirror) {
+			L.scenograph.director.effects.mirror.render();
+		}
 		L.scenograph.director.renderer.render( L.scenograph.director.scene, L.scenograph.director.camera );
 	}
 	requestAnimationFrame( L.scenograph.director.animate );

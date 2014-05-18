@@ -119,7 +119,7 @@ L.scenograph.director.make_light = function(position) {
 		new THREE.MeshBasicMaterial( { color: 0xFFFFFF, side: THREE.BackSide} )
 	);
 	light_fixture.position.set(position.x,275,position.z);
-	light_fixture.add(new THREE.PointLight(0xffffff, .25, 0));
+	light_fixture.add(new THREE.PointLight(0xffffff, .125, 0));
 	return light_fixture;
 }
 

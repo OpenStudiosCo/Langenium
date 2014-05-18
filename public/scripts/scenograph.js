@@ -7,10 +7,11 @@ L.scenograph = {
 		currentScene: '',
 		hideInterface: true,
 		scenes: [
-			'EpochExordium',
+			'Epoch Exordium',
 			'MMO',
-			'MMO-Title',
-			'Character-Test'
+			'MMO Title',
+			'Character Test',
+			'Other Water'
 		],
 		useControls: true
 	},
@@ -91,6 +92,9 @@ L.scenograph.director.init = function() {
 	this.noiseTexture3 = THREE.ImageUtils.loadTexture( "/assets/textures/noise3.jpg" );
 	this.noiseTexture3.wrapS = this.noiseTexture3.wrapT = THREE.RepeatWrapping;
 
+	this.waterNormals = new THREE.ImageUtils.loadTexture( '/assets/textures/waternormals.jpg' );
+	this.waterNormals.wrapS = this.waterNormals.wrapT = THREE.RepeatWrapping; 
+
 	this.effects = {
 		cloud_uniforms: {
 			noiseTexture:	{ type: "t", value: this.noiseTexture2 },
@@ -100,7 +104,7 @@ L.scenograph.director.init = function() {
 		mirror: null,
 		water_uniforms: {		
 			mirrorColor: { type: "c", value: new THREE.Color(0x7F7F7F) },
-			noiseTexture:	{ type: "t", value: this.noiseTexture3 },
+			noiseTexture:	{ type: "t", value: this.waterNormals },
 			time: 			{ type: "f", value: 0.0 },
 			scale: 			{ type: "f", value: .00015337 },	
 			mirrorSampler: 	{ type: "t", value: null },
@@ -155,21 +159,25 @@ L.scenograph.director.animate = function() {
 	if (L.scenograph.options.activeScene != L.scenograph.options.currentScene) {
 		L.scenograph.director.clear();
 		switch(L.scenograph.options.activeScene) {
-			case 'EpochExordium':
+			case 'Epoch Exordium':
 				L.scenograph.director.epochexordium();
-				L.scenograph.options.currentScene = 'EpochExordium';
+				L.scenograph.options.currentScene = 'Epoch Exordium';
 				break;
 			case 'MMO':
 				L.scenograph.director.mmo();
 				L.scenograph.options.currentScene = 'MMO';
 				break;
-			case 'MMO-Title':
+			case 'MMO Title':
 				L.scenograph.director.mmo_title();
-				L.scenograph.options.currentScene = 'MMO-Title';
+				L.scenograph.options.currentScene = 'MMO Title';
 				break;
-			case 'Character-Test':
+			case 'Character Test':
 				L.scenograph.director.character_test();
-				L.scenograph.options.currentScene = 'Character-Test';
+				L.scenograph.options.currentScene = 'Character Test';
+				break;
+			case 'Other Water':
+				L.scenograph.director.other_water();
+				L.scenograph.options.currentScene = 'Other Water';
 				break;
 		}
 	}

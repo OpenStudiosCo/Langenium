@@ -68,7 +68,7 @@ L.scenograph.director.mmo = function() {
 		L.scenograph.director.scene.add(mesh);			
 	}
 	L.scenograph.objects.loadObject('/assets/models/terrain/plateau/large-angled.js', plateau_cb);
-
+*/
 	var ship_cb = function(geometry, materials) {
 		var mesh = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
 		mesh.scale.set(10,10,10);
@@ -79,7 +79,7 @@ L.scenograph.director.mmo = function() {
 		
 	}
 	L.scenograph.objects.loadObject('/assets/models/ships/mercenary/valiant2.js', ship_cb);
-	*/
+	
 	var hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 1 );
 	hemiLight.name = "light1";
 	hemiLight.color.setRGB( 0.9, 0.95, 1 );

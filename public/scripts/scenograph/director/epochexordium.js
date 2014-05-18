@@ -131,18 +131,16 @@ L.scenograph.director.epochexordium = function() {
   		switch(scene_setup.objects[i].type) {
   			case 'planet': 
   				this.scene.add(
-  					this.make_sphere(
+  					this.make_planet(
   						scene_setup.objects[i].name, 
   						scene_setup.objects[i].position, 
   						scene_setup.objects[i].radius)
   				);
   				break;
   			case 'sun':
-  				this.scene.add(
-  					this.make_sun(
-  						scene_setup.objects[i].position,  
-  						scene_setup.objects[i].radius)
-  				);
+  				var sun = this.make_sun(scene_setup.objects[i].position, scene_setup.objects[i].radius); 
+  				this.scene.add(sun);
+  				L.scenograph.director.scene_variables.target = sun;
   				break;
   			default:
   				console.log("Failed to load object:");
@@ -162,8 +160,10 @@ L.scenograph.director.select_planet = function() {
 			var intersects = raycaster.intersectObjects( L.scenograph.director.scene.children );
 			if (intersects.length > 0) {
 				if (intersects[0].object.name != 'Space Box' && 
-					intersects[0].object.name != 'Sun Halo') {
+					intersects[0].object.name != 'Sun Halo' && 
+					intersects[0].object.name != 'Sun') {
 					var vector = intersects[0].object.position.clone();
+					L.scenograph.director.scene_variables.target = intersects[0].object;
 					L.scenograph.director.controls.target.set(
 						vector.x,
 						vector.y,
@@ -208,35 +208,123 @@ L.scenograph.director.make_sun = function(position, radius) {
 
 	return sphere;
 }
-L.scenograph.director.make_sphere = function(name, position, radius) {
-	// Sphere parameters: radius, segments along width, segments along height
-	var sphere = THREEx.Planets['create' + name]();
-	sphere.name = name;
+L.scenograph.director.make_planet = function(name, position, radius) {
+	var planet = THREEx.Planets['create' + name]();
+	planet.name = name;
+	planet.material.map.anisotropy = L.scenograph.director.renderer.getMaxAnisotropy();
 	
 	if (radius < 20) {
-		radius *= 10;
+		radius *= 20;
 	}
 	else {
-		radius *= 2;
+		radius *= 6;
 	}
+
+	var spritey = makeTextSprite( name, 
+		{ fontsize: 48, borderColor: {r:255, g:0, b:0, a:1.0}, backgroundColor: {r:255, g:100, b:100, a:0.8} } );
+	spritey.position.set(0,1,0);
+	planet.add(spritey)
 
 	if (name == 'Earth') {
 		var clouds    = THREEx.Planets.createEarthCloud()
-		clouds.position.set(position.x, position.y, position.z);		
-		clouds.scale.set(radius * 1.01,radius* 1.01,radius* 1.01)
-		L.scenograph.director.scene.add(clouds)
+		planet.add(clouds)
 	}
 
 	if (name == 'Saturn' || name == 'Uranus') {
 		var mesh    = THREEx.Planets['create' +name+'Ring']();
-		mesh.position.set(position.x, position.y, position.z);		
-		mesh.scale.set(radius * 1.3,radius* 1.3,radius* 1.3)
-		L.scenograph.director.scene.add(mesh)
+		planet.add(mesh)
 	}
 
-
-	sphere.position.set(position.x, position.y, position.z);
-	sphere.scale.set(radius,radius,radius)
+	planet.position.set(position.x, position.y, position.z);
+	planet.scale.set(radius,radius,radius)
 	
-	return sphere;
+	var animation_obj = {
+		animate: function(delta) {
+			planet.rotation.y += delta / radius / 100;
+			planet.position.x = position.z  * Math.sin( position.z  -L.scenograph.stats.time.now / 150000);
+			planet.position.z = position.z  * Math.cos( position.z  -L.scenograph.stats.time.now / 150000);
+			var target = L.scenograph.director.scene_variables.target.position.clone();
+			L.scenograph.director.controls.target.set(
+				target.x,
+				target.y,
+				target.z
+			);
+		}
+	};
+
+	L.scenograph.director.animation_queue.push(animation_obj);
+
+	return planet;
+}
+
+function makeTextSprite( message, parameters )
+{
+	if ( parameters === undefined ) parameters = {};
+	
+	var fontface = parameters.hasOwnProperty("fontface") ? 
+		parameters["fontface"] : "Arial";
+	
+	var fontsize = parameters.hasOwnProperty("fontsize") ? 
+		parameters["fontsize"] : 18;
+	
+	var borderThickness = parameters.hasOwnProperty("borderThickness") ? 
+		parameters["borderThickness"] : 4;
+	
+	var borderColor = parameters.hasOwnProperty("borderColor") ?
+		parameters["borderColor"] : { r:0, g:0, b:0, a:1.0 };
+	
+	var backgroundColor = parameters.hasOwnProperty("backgroundColor") ?
+		parameters["backgroundColor"] : { r:255, g:255, b:255, a:1.0 };
+		
+	var canvas = document.createElement('canvas');
+	var context = canvas.getContext('2d');
+	context.font = "Bold " + fontsize + "px " + fontface;
+    
+	// get size data (height depends only on font size)
+	var metrics = context.measureText( message );
+	var textWidth = metrics.width;
+	
+	// background color
+	context.fillStyle   = "rgba(" + backgroundColor.r + "," + backgroundColor.g + ","
+								  + backgroundColor.b + "," + backgroundColor.a + ")";
+	// border color
+	context.strokeStyle = "rgba(" + borderColor.r + "," + borderColor.g + ","
+								  + borderColor.b + "," + borderColor.a + ")";
+
+	context.lineWidth = borderThickness;
+	roundRect(context, borderThickness/2, borderThickness/2, textWidth + borderThickness, fontsize * 1.4 + borderThickness, 6);
+	// 1.4 is extra height factor for text below baseline: g,j,p,q.
+	
+	// text color
+	context.fillStyle = "rgba(0, 0, 0, 1.0)";
+
+	context.fillText( message, borderThickness, fontsize + borderThickness);
+	
+	// canvas contents will be used for a texture
+	var texture = new THREE.Texture(canvas) 
+	texture.needsUpdate = true;
+
+	var spriteMaterial = new THREE.SpriteMaterial( 
+		{ map: texture, useScreenCoordinates: false } );
+	var sprite = new THREE.Sprite( spriteMaterial );
+	sprite.scale.set(100,50,1.0);
+	return sprite;	
+}
+
+// function for drawing rounded rectangles
+function roundRect(ctx, x, y, w, h, r) 
+{
+    ctx.beginPath();
+    ctx.moveTo(x+r, y);
+    ctx.lineTo(x+w-r, y);
+    ctx.quadraticCurveTo(x+w, y, x+w, y+r);
+    ctx.lineTo(x+w, y+h-r);
+    ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+    ctx.lineTo(x+r, y+h);
+    ctx.quadraticCurveTo(x, y+h, x, y+h-r);
+    ctx.lineTo(x, y+r);
+    ctx.quadraticCurveTo(x, y, x+r, y);
+    ctx.closePath();
+    ctx.fill();
+	ctx.stroke();   
 }

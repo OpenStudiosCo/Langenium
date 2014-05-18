@@ -13,7 +13,7 @@ L.scenograph.director.character_test = function() {
 
 
 	var character = L.scenograph.director.make_character();
-	character.position.y = -35;
+	character.position.y = -30;
 	this.scene.add(character);
 	this.animation_queue.push(character.children[0].animation)
 
@@ -90,7 +90,7 @@ L.scenograph.director.character_test = function() {
 	L.scenograph.director.scene.add(newMesh);
 	L.scenograph.director.scene_variables.collidables.push(newMesh);
 
-	var wireframeMaterial = new THREE.MeshLambertMaterial( { color: 0x666600 } ); 
+	var wireframeMaterial = new THREE.MeshLambertMaterial( { color: 0x666666 } ); 
 	var box1 = new THREE.Mesh(new THREE.BoxGeometry(300, 150, 75), wireframeMaterial);
 	box1.name = 'Box 1'
 	box1.position.set(-300,-75,-300);
@@ -119,7 +119,8 @@ L.scenograph.director.make_light = function(position) {
 		new THREE.MeshBasicMaterial( { color: 0xFFFFFF, side: THREE.BackSide} )
 	);
 	light_fixture.position.set(position.x,275,position.z);
-	light_fixture.add(new THREE.PointLight(0xffffff, .125, 0));
+
+	light_fixture.add(new THREE.PointLight(0xffffff, .15, 0));
 	return light_fixture;
 }
 

@@ -23,7 +23,7 @@ void main()
 
 	vNormal = normalize( normalMatrix * normal );
 	vViewPosition = cameraPosition - mvPosition.xyz;
-	vTexCoord3D = scale * ( position.xyz + vec3( 0.0, 0.0, 0.0  ) );
+	vTexCoord3D = scale * ( position.xyz + vec3( 0.0, 0.0, -time  ) );
 	
 	gl_Position = projectionMatrix * mvPosition;
 }

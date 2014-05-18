@@ -3,7 +3,7 @@ L.scenograph = {
 	winW: 1024,
 	winH: 768,
 	options: {
-		activeScene: 'MMO',
+		activeScene: 'Character Test',
 		currentScene: '',
 		hideInterface: true,
 		scenes: [
@@ -76,9 +76,9 @@ L.scenograph.director.init = function() {
 	L.scenograph.updateWindowVariables();
 	this.renderer = new THREE.WebGLRenderer({
 		antialias : true,
-		alpha: true,
-		shadowMapEnabled: true
+		alpha: true
 	});
+
 	this.renderer.setSize( L.scenograph.winW, L.scenograph.winH );
 	document.body.appendChild( this.renderer.domElement );
 	
@@ -183,8 +183,6 @@ L.scenograph.director.animate = function() {
 		}
 	}
 	if (L.scenograph.director.scene) {
-		L.scenograph.director.effects.cloud_uniforms.time.value += 0.0025 * L.scenograph.stats.time.delta;
-		L.scenograph.director.effects.water_uniforms.time.value += 0.0005 * L.scenograph.stats.time.delta;
 		L.scenograph.director.effects.logo_water_uniforms.time.value += 0.00001 * L.scenograph.stats.time.delta;
 		L.scenograph.director.effects.sun_uniforms.time.value += 0.005 * L.scenograph.stats.time.delta;
 
@@ -203,19 +201,13 @@ L.scenograph.director.animate = function() {
 			L.scenograph.director.controls.update();
 		}
 
-		
-		if (L.scenograph.animation) {
-			L.scenograph.animation.update(.01);
-		}
 		if (L.scenograph.director.animation_queue.length > 0) {
 			for (var i = 0; i < L.scenograph.director.animation_queue.length; i++) {
 				L.scenograph.director.animation_queue[i].animate(L.scenograph.stats.time.delta)
 			}
 		}
+		// This needs to go in a controls thing
 		L.scenograph.director.cursor.leftClick = false;
-		if (L.scenograph.director.effects.mirror) {
-			L.scenograph.director.effects.mirror.render();
-		}
 		L.scenograph.director.renderer.render( L.scenograph.director.scene, L.scenograph.director.camera );
 	}
 	requestAnimationFrame( L.scenograph.director.animate );

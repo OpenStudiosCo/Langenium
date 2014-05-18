@@ -37,17 +37,29 @@ L.scenograph.director.mmo = function() {
 	sky.position.y = 24600;
 	this.scene.add(sky);
 
-	this.effects.mirror = new THREE.Mirror( this.renderer, this.camera, { clipBias: 0.003, textureWidth: 512, textureHeight: 512, color: 0x777777 } );
-	var plane = new THREE.Mesh(new THREE.PlaneGeometry( this.M * 4.5, this.M * 4.5 , 1, 1 ), this.effects.mirror.material);
+	var mirror = new THREE.Mirror( this.renderer, this.camera, { clipBias: 0.003, textureWidth: 512, textureHeight: 512, color: 0x777777 } );
+	var plane = new THREE.Mesh(new THREE.PlaneGeometry( this.M * 4.5, this.M * 4.5 , 1, 1 ), mirror.material);
 	plane.name = 'Ocean';
-	plane.add(this.effects.mirror);
+	plane.add(mirror);
 	plane.material.side = THREE.DoubleSide;
 	plane.material.transparent = true;
 	
 	plane.rotateX( - Math.PI / 2 );
 	this.scene.add(plane);
 
+	var animation_obj = {
+		animate: function(delta) {
+			L.scenograph.director.effects.cloud_uniforms.time.value += 0.0025 * L.scenograph.stats.time.delta;
+			mirror.material.uniforms.time.value += 0.0005 * delta;
+			mirror.render();
+		}
+	}
+
+	L.scenograph.director.animation_queue.push(animation_obj)
+
+	/*
 	
+
 	var plateau_cb = function(geometry, materials) {
 		var mesh = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
 		mesh.scale.set(100,100,100);
@@ -56,7 +68,7 @@ L.scenograph.director.mmo = function() {
 		L.scenograph.director.scene.add(mesh);			
 	}
 	L.scenograph.objects.loadObject('/assets/models/terrain/plateau/large-angled.js', plateau_cb);
-	/*
+
 	var ship_cb = function(geometry, materials) {
 		var mesh = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
 		mesh.scale.set(10,10,10);

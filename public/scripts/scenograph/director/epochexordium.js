@@ -201,7 +201,7 @@ L.scenograph.director.make_sun = function(position, radius) {
 		transparent: true
 	}   );
 		
-	var ballGeometry = new THREE.SphereGeometry( radius * 1.1, 32, 32 );
+	var ballGeometry = new THREE.SphereGeometry( radius * 1.05, 32, 32 );
 	var ball = new THREE.Mesh( ballGeometry, customMaterial );
 	L.scenograph.director.scene.add( ball );
 	ball.name = 'Sun Halo'

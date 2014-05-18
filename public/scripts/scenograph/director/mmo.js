@@ -49,18 +49,17 @@ L.scenograph.director.mmo = function() {
 
 
 
-	/*
-	
 
-	var plateau_cb = function(geometry, materials) {
+
+	var mountain_cb = function(geometry, materials) {
 		var mesh = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
-		mesh.scale.set(100,100,100);
-		mesh.position.set(1000, -50, 1000)
+		mesh.scale.set(500,500,500);
+		mesh.position.set(5000, -50, -8000)
 		mesh.frustrumCulled = false;	
 		L.scenograph.director.scene.add(mesh);			
 	}
-	L.scenograph.objects.loadObject('/assets/models/terrain/plateau/large-angled.js', plateau_cb);
-*/
+	L.scenograph.objects.loadObject('/assets/models/terrain/mountain/island.js', mountain_cb);
+
 	var ship_cb = function(geometry, materials) {
 		var mesh = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
 		mesh.scale.set(10,10,10);

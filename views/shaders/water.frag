@@ -54,8 +54,8 @@ vec4 colorFilter (float n) {
 	vec4 color = vec4( vec3( 0.001 *n, 0.015 * n, .125 * n )  , 1.0 );
 
 	color.r = limitColor(0.0, 0.05, color.r);
-	color.g = limitColor(0.05, 0.5, color.g);
-	color.b = limitColor (0.3, 0.95, color.b);
+	color.g = limitColor(0.05, 1.5, color.g);
+	color.b = limitColor (0.3, 1.95, color.b);
 
 	return color;
 }

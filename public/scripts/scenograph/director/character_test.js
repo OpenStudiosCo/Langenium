@@ -17,30 +17,40 @@ L.scenograph.director.character_test = function() {
 	this.scene.add(character);
 	this.animation_queue.push(character.children[0].animation)
 
-	var gridXZ = new THREE.GridHelper(1000, 80);
+	var gridXZ = new THREE.GridHelper(2000, 80);
 	gridXZ.name = 'Floor'
-	gridXZ.setColors( new THREE.Color(0x006600), new THREE.Color(0x006600) );
+	gridXZ.setColors( new THREE.Color(0x111111), new THREE.Color(0x111111) );
 	gridXZ.position.set( 0,-150,0 );
-	this.scene.add(gridXZ);
+	//this.scene.add(gridXZ);
 
-	
+	var light = new THREE.PointLight(0xffffff, 0.5, 0);
+	light.position.set(0,100,150);
+	this.scene.add(light);
 
-	var gridXY = new THREE.GridHelper(1000, 80);
-	gridXY.name = 'West Wall'
-	gridXY.setColors( new THREE.Color(0x006600), new THREE.Color(0x006600) );
-	gridXY.rotation.z = Math.PI/2;
-	gridXY.position.set( 1000,850,0 );
-	this.scene.add(gridXY);
-	L.scenograph.director.scene_variables.collidables.push(gridXY);
+	var roomMaterial = new THREE.MeshPhongMaterial( { color: 0xCCCCCC, side: THREE.BackSide} ); 
+	var room1 = new THREE.Mesh(new THREE.BoxGeometry(1000, 450, 1000), roomMaterial);
+	room1.position.set(0, 75, 0)
+	var room1BSP = new ThreeBSP( room1 );
+    //L.scenograph.director.scene.add(room1);
+	//L.scenograph.director.scene_variables.collidables.push(room1);
 
-	var gridZY = new THREE.GridHelper(1000, 80);
-	gridZY.name = 'North Wall'
-	gridZY.setColors( new THREE.Color(0x006600), new THREE.Color(0x006600) );
-	gridZY.rotation.x = Math.PI/2;
-	gridZY.position.set( 0,850,1000 );
-	this.scene.add(gridZY);
-	L.scenograph.director.scene_variables.collidables.push(gridZY);
-	
+	var room2 = new THREE.Mesh(new THREE.BoxGeometry(1000, 450, 1000), roomMaterial);
+	room2.position.set(1100, 75, 0)
+	var room2BSP = new ThreeBSP( room2 );
+    //L.scenograph.director.scene.add(room2);
+	//L.scenograph.director.scene_variables.collidables.push(room2);
+
+	var corridor = new THREE.Mesh(new THREE.BoxGeometry(500, 300, 500), roomMaterial);
+	corridor.position.set(500, 0, 0)
+	var corridorBSP = new ThreeBSP( corridor );
+    //L.scenograph.director.scene.add(corridor);
+	//L.scenograph.director.scene_variables.collidables.push(corridor);
+
+	var newBSP = room1BSP.union( room2BSP ).union(corridorBSP);
+	var newMesh = newBSP.toMesh( roomMaterial );
+	L.scenograph.director.scene.add(newMesh);
+	L.scenograph.director.scene_variables.collidables.push(newMesh);
+
 	var wireframeMaterial = new THREE.MeshBasicMaterial( { color: 0x666600, wireframe: true, transparent: true } ); 
 	var box1 = new THREE.Mesh(new THREE.BoxGeometry(300, 150, 75), wireframeMaterial);
 	box1.name = 'Box 1'
@@ -48,7 +58,7 @@ L.scenograph.director.character_test = function() {
 	this.scene.add(box1);
 	L.scenograph.director.scene_variables.collidables.push(box1);
 
-	var box2 = new THREE.Mesh(new THREE.BoxGeometry(75, 150, 300), wireframeMaterial);
+	var box2 = new THREE.Mesh(new THREE.BoxGeometry(75, 150, 75), wireframeMaterial);
 	box2.name = 'Box 2'
 	box2.position.set(300,-75,0);
 	this.scene.add(box2);
@@ -79,8 +89,8 @@ L.scenograph.director.make_character = function() {
 	characterSprite.scale.set(128,256);
 
 		// direction (normalized), origin, length, color(hex)
-	var origin = new THREE.Vector3(0,-130,0);
-	var arrow = new THREE.ArrowHelper(new THREE.Vector3(0,0,1), origin,100, 0xFFCC00);
+	var origin = new THREE.Vector3(0,135,-10);
+	var arrow = new THREE.ArrowHelper(new THREE.Vector3(0,0,1), origin,20, 0xFFCC00);
 	
 
 	var wireframeMaterial = new THREE.MeshBasicMaterial( { color: 0x660066, wireframe: true, transparent: true } ); 
@@ -95,7 +105,7 @@ L.scenograph.director.make_character = function() {
 L.scenograph.director.move_character = function(character) {
 	// Setup variables
 	character.animation.moving = false;
-	var stepSize = 2.5,
+	var stepSize = 1.5,
 		pX = 0,
 		pY = 0,
 		pZ = 0,

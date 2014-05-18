@@ -68,6 +68,7 @@ L.scenograph.director.clear = function() {
 		
 		L.scenograph.director.controls.target.set(0,0,0)
 	}
+	$('#scene_stats').html('');
 }
 	
 L.scenograph.director.init = function() {

@@ -23,53 +23,105 @@ L.scenograph.director.character_test = function() {
 	gridXZ.position.set( 0,-150,0 );
 	//this.scene.add(gridXZ);
 
-	var light = new THREE.PointLight(0xffffff, 0.5, 0);
-	light.position.set(0,100,150);
-	this.scene.add(light);
+	// Room 1 and lights
+	var lightFixture1 = L.scenograph.director.make_light(new THREE.Vector3(0,275, 150));
+	this.scene.add(lightFixture1);
+
+	var lightFixture2 = L.scenograph.director.make_light(new THREE.Vector3(0,275, -150));
+	this.scene.add(lightFixture2);
 
 	var roomMaterial = new THREE.MeshPhongMaterial( { color: 0xCCCCCC, side: THREE.BackSide} ); 
 	var room1 = new THREE.Mesh(new THREE.BoxGeometry(1000, 450, 1000), roomMaterial);
 	room1.position.set(0, 75, 0)
+	room1.receiveShadow = true;
 	var room1BSP = new ThreeBSP( room1 );
-    //L.scenograph.director.scene.add(room1);
-	//L.scenograph.director.scene_variables.collidables.push(room1);
+
+	// Room 2 and lights
+	var lightFixture3 = L.scenograph.director.make_light(new THREE.Vector3(1300,275, 150));
+	this.scene.add(lightFixture3);
+
+	var lightFixture4 = L.scenograph.director.make_light(new THREE.Vector3(1300,275, -150));
+	this.scene.add(lightFixture4);
 
 	var room2 = new THREE.Mesh(new THREE.BoxGeometry(1000, 450, 1000), roomMaterial);
-	room2.position.set(1100, 75, 0)
+	room2.position.set(1300, 75, 0)
+	room2.receiveShadow = true;
 	var room2BSP = new ThreeBSP( room2 );
-    //L.scenograph.director.scene.add(room2);
-	//L.scenograph.director.scene_variables.collidables.push(room2);
 
+	// Connect Room 1 to Room 2
 	var corridor = new THREE.Mesh(new THREE.BoxGeometry(500, 300, 500), roomMaterial);
-	corridor.position.set(500, 0, 0)
+	corridor.position.set(600, 0, 0)
+	corridor.receiveShadow = true;
 	var corridorBSP = new ThreeBSP( corridor );
-    //L.scenograph.director.scene.add(corridor);
-	//L.scenograph.director.scene_variables.collidables.push(corridor);
 
-	var newBSP = room1BSP.union( room2BSP ).union(corridorBSP);
+	// Room 3 and lights
+	var lightFixture5 = L.scenograph.director.make_light(new THREE.Vector3(-100,275, -1450));
+	this.scene.add(lightFixture5);
+
+	var lightFixture6 = L.scenograph.director.make_light(new THREE.Vector3(-100,275, -1150));
+	this.scene.add(lightFixture6);
+	
+	var lightFixture7 = L.scenograph.director.make_light(new THREE.Vector3(1100,275, -1450));
+	this.scene.add(lightFixture7);
+
+	var lightFixture8 = L.scenograph.director.make_light(new THREE.Vector3(1100,275, -1150));
+	this.scene.add(lightFixture8);
+	
+	var room3 = new THREE.Mesh(new THREE.BoxGeometry(2200, 450, 1000), roomMaterial);
+	room3.position.set(500, 75, -1300)
+	room3.receiveShadow = true;
+	var room3BSP = new ThreeBSP( room3 );
+
+	// Connect Room 1 to Room 3
+	var corridor2 = new THREE.Mesh(new THREE.BoxGeometry(500, 300, 500), roomMaterial);
+	corridor2.position.set(0, 0, -600)
+	corridor2.receiveShadow = true;
+	var corridor2BSP = new ThreeBSP( corridor2 );
+
+	// Connect Room 2 to Room 3
+	var corridor3 = new THREE.Mesh(new THREE.BoxGeometry(500, 300, 500), roomMaterial);
+	corridor3.position.set(800, 0, -600)
+	corridor3.receiveShadow = true;
+	var corridor3BSP = new ThreeBSP( corridor3 );
+
+	var newBSP = room1BSP.union( room2BSP ).union(corridorBSP).union(room3BSP).union(corridor2BSP).union(corridor3BSP);
 	var newMesh = newBSP.toMesh( roomMaterial );
+	newMesh.receiveShadow = true;
 	L.scenograph.director.scene.add(newMesh);
 	L.scenograph.director.scene_variables.collidables.push(newMesh);
 
-	var wireframeMaterial = new THREE.MeshBasicMaterial( { color: 0x666600, wireframe: true, transparent: true } ); 
+	var wireframeMaterial = new THREE.MeshLambertMaterial( { color: 0x666600 } ); 
 	var box1 = new THREE.Mesh(new THREE.BoxGeometry(300, 150, 75), wireframeMaterial);
 	box1.name = 'Box 1'
 	box1.position.set(-300,-75,-300);
+	box1.castShadow = true;
 	this.scene.add(box1);
 	L.scenograph.director.scene_variables.collidables.push(box1);
 
 	var box2 = new THREE.Mesh(new THREE.BoxGeometry(75, 150, 75), wireframeMaterial);
 	box2.name = 'Box 2'
 	box2.position.set(300,-75,0);
+	box2.castShadow = true;
 	this.scene.add(box2);
 	L.scenograph.director.scene_variables.collidables.push(box2);
 	
 	var box3 = new THREE.Mesh(new THREE.BoxGeometry(300, 150, 75), wireframeMaterial);
 	box3.name = 'Box 3'
 	box3.position.set(0,-75,300);
+	box3.castShadow = true;
 	this.scene.add(box3);
 	L.scenograph.director.scene_variables.collidables.push(box3);
 };
+
+L.scenograph.director.make_light = function(position) {
+	var light_fixture = new THREE.Mesh(
+		new THREE.BoxGeometry(300, 15, 75), 
+		new THREE.MeshBasicMaterial( { color: 0xFFFFFF, side: THREE.BackSide} )
+	);
+	light_fixture.position.set(position.x,275,position.z);
+	light_fixture.add(new THREE.PointLight(0xffffff, .25, 0));
+	return light_fixture;
+}
 
 L.scenograph.director.marker = function(position) {
 	var material = new THREE.MeshBasicMaterial( {color:0xFF0000, side:THREE.DoubleSide} );
@@ -105,7 +157,7 @@ L.scenograph.director.make_character = function() {
 L.scenograph.director.move_character = function(character) {
 	// Setup variables
 	character.animation.moving = false;
-	var stepSize = 1.5,
+	var stepSize = 2.5,
 		pX = 0,
 		pY = 0,
 		pZ = 0,

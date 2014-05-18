@@ -75,7 +75,8 @@ L.scenograph.director.init = function() {
 	L.scenograph.updateWindowVariables();
 	this.renderer = new THREE.WebGLRenderer({
 		antialias : true,
-		alpha: true
+		alpha: true,
+		shadowMapEnabled: true
 	});
 	this.renderer.setSize( L.scenograph.winW, L.scenograph.winH );
 	document.body.appendChild( this.renderer.domElement );

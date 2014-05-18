@@ -212,6 +212,13 @@ L.scenograph.director.make_sphere = function(name, position, radius) {
 	// Sphere parameters: radius, segments along width, segments along height
 	var sphere = THREEx.Planets['create' + name]();
 	sphere.name = name;
+	
+	if (radius < 20) {
+		radius *= 10;
+	}
+	else {
+		radius *= 2;
+	}
 
 	if (name == 'Earth') {
 		var clouds    = THREEx.Planets.createEarthCloud()
@@ -227,12 +234,6 @@ L.scenograph.director.make_sphere = function(name, position, radius) {
 		L.scenograph.director.scene.add(mesh)
 	}
 
-	if (radius < 20) {
-		radius *= 10;
-	}
-	else {
-		radius *= 2;
-	}
 
 	sphere.position.set(position.x, position.y, position.z);
 	sphere.scale.set(radius,radius,radius)

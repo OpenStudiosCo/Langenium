@@ -6,7 +6,9 @@ uniform sampler2D noiseTexture;
 varying vec3 vTexCoord3D;
 varying vec3 vNormal;
 varying vec3 vViewPosition;
+varying vec4 worldPosition;
 
+uniform vec3 eye;
 uniform float alpha;
 uniform float time;
 uniform float bias;
@@ -30,10 +32,10 @@ float snoise ( vec3 coord, float scale, float time_factor ) {
 float heightMap( vec3 coord ) {
 	float n = 0.0;
 
-	n = 0.65 * abs(snoise(coord, 0.0625, 500. ));
-	n += 0.5 * abs(snoise(coord, 0.125, -500. ));
-	n += 0.125 * abs(snoise(coord, 5., -50. ));
-	n += 0.125 * abs(snoise(coord, 100., 15. ));
+
+	n += 0.125 * abs(snoise(coord, 4., -25. ));
+	n += 0.125 * abs(snoise(coord, 8., 25. ));
+	
 	n *= .75;
 
 	return n;
@@ -60,33 +62,13 @@ vec4 colorFilter (float n) {
 	return color;
 }
 
-vec4 reflectionFilter( float n , vec4 reflection ) {
-
-
-   	reflection.r = limitColor(0.005 / n, 0.025 / n, reflection.r);
-	reflection.g = limitColor(0.025 / n, 0.15 / n, reflection.g);
-	reflection.b = limitColor(0.075 / n, 0.25 / n, reflection.b);
-
-	return reflection;
-}
-
 void main(void) {
 
-	// mirror
 
-	vec4 reflection = texture2DProj(mirrorSampler, mirrorCoord);
-	reflection.a = 0.45;
-
-	// height and color
-	float n = heightMap( vTexCoord3D );
-
-	vec4 texColor = colorFilter( n );
-	texColor.a = 0.35;
-
-	// color
-	gl_FragColor = texColor;
-	gl_FragColor += reflectionFilter( n , reflection );
 	
+	
+	// height 
+	float n = heightMap( vTexCoord3D );
 
 	// normal
 
@@ -97,6 +79,23 @@ void main(void) {
 	float nz = heightMap( vTexCoord3D + vec3( 0.0, 0.0, e ) );
 
 	vec3 normal = normalize( vNormal + 0.085 * vec3( n - nx, n - ny, n - nz ) / e );
+
+	vec3 worldToEye = eye - worldPosition.xyz;
+	vec3 eyeDirection = normalize(worldToEye);
+	float distance = length(worldToEye);
+
+	// mirror
+	vec2 distortion = normal.xz * 20. * sqrt(distance) * 0.07;
+	vec3 mirrorDistord = mirrorCoord.xyz + vec3(distortion.x, distortion.y, 1.0);
+	vec4 reflection = texture2DProj(mirrorSampler, mirrorDistord);
+	reflection.a = 0.45;
+
+	// color
+	vec4 texColor = colorFilter( n );
+	texColor.a = 0.35;
+
+	gl_FragColor = texColor;
+	gl_FragColor += reflection;
 
 	// diffuse light
 
@@ -116,7 +115,7 @@ void main(void) {
 	if ( dirDotNormalHalf >= 0.0 )
 		dirSpecularWeight = ( 1.0 - n ) * pow( dirDotNormalHalf, 5.0 );
 
-	vLightWeighting += vec3( 1.0, 1.0, 1.0 ) * dirSpecularWeight * n * 2.0;
+	vLightWeighting += vec3( 1.0, 1.0, 1.0 ) * dirSpecularWeight * n * 4.0;
 
 	gl_FragColor *= vec4( vLightWeighting, 1.0 ); //
 

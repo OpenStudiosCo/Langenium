@@ -37,7 +37,7 @@ L.scenograph.director.mmo = function() {
 	sky.position.y = 24600;
 	this.scene.add(sky);
 
-	this.effects.mirror = new THREE.Mirror( this.renderer, this.camera, { clipBias: 0.003, textureWidth: L.scenograph.winW, textureHeight: L.scenograph.winH, color: 0x777777 } );
+	this.effects.mirror = new THREE.Mirror( this.renderer, this.camera, { clipBias: 0.003, textureWidth: 512, textureHeight: 512, color: 0x777777 } );
 	var plane = new THREE.Mesh(new THREE.PlaneGeometry( this.M * 4.5, this.M * 4.5 , 1, 1 ), this.effects.mirror.material);
 	plane.name = 'Ocean';
 	plane.add(this.effects.mirror);

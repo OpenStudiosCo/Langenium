@@ -242,6 +242,10 @@ THREE.Mirror.prototype.updateTextureMatrix = function () {
 	projectionMatrix.elements[6] = c.y;
 	projectionMatrix.elements[10] = c.z + 1.0 - this.clipBias;
 	projectionMatrix.elements[14] = c.w;
+	var worldCoordinates = new THREE.Vector3();
+	worldCoordinates.setFromMatrixPosition(this.camera.matrixWorld);
+	this.eye = worldCoordinates;
+	this.material.uniforms.eye.value = this.eye;
 
 };
 

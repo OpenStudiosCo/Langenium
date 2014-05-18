@@ -104,11 +104,12 @@ L.scenograph.director.init = function() {
 		mirror: null,
 		water_uniforms: {		
 			mirrorColor: { type: "c", value: new THREE.Color(0x7F7F7F) },
-			noiseTexture:	{ type: "t", value: this.waterNormals },
+			noiseTexture:	{ type: "t", value: this.noiseTexture3 },
 			time: 			{ type: "f", value: 0.0 },
 			scale: 			{ type: "f", value: .00015337 },	
 			mirrorSampler: 	{ type: "t", value: null },
-			textureMatrix: 	{ type: "m4", value: new THREE.Matrix4() }
+			textureMatrix: 	{ type: "m4", value: new THREE.Matrix4() },
+			eye:			{ type: "v3", value: new THREE.Vector3(0, 0, 0) }
 		},
 		logo_water_uniforms: {
 			noiseTexture:	{ type: "t", value: this.noiseTexture3 },

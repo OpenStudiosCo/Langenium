@@ -72,7 +72,7 @@ L.scenograph.director.clear = function() {
 L.scenograph.director.init = function() {
 	L.scenograph.updateWindowVariables();
 	this.renderer = new THREE.WebGLRenderer({
-		antialias : true,
+		//antialias : true,
 		alpha: true
 	});
 

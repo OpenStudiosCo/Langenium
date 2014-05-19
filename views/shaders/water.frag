@@ -86,11 +86,12 @@ void main(void) {
 	vec2 distortion = normal.xz * 20. * sqrt(distance) * 0.07;
 	vec3 mirrorDistord = mirrorCoord.xyz + vec3(distortion.x, distortion.y, 1.0);
 	vec4 reflection = texture2DProj(mirrorSampler, mirrorDistord);
-	reflection.a = 0.45;
+	reflection *= 2.0;
+	reflection.a = .6;
 
 	// color
 	vec4 texColor = colorFilter( n );
-	texColor.a = 0.35;
+	texColor.a = 0.25;
 
 	gl_FragColor = texColor;
 	gl_FragColor += reflection;

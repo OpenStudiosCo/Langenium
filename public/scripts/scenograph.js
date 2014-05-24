@@ -3,7 +3,7 @@ L.scenograph = {
 	winW: 1024,
 	winH: 768,
 	options: {
-		activeScene: 'MMO',
+		activeScene: 'Character Test',
 		currentScene: '',
 		hideInterface: true,
 		scenes: [
@@ -11,6 +11,7 @@ L.scenograph = {
 			'MMO',
 			'MMO Title',
 			'Character Test',
+			'Sandbox',
 			'Other Water'
 		],
 		useControls: true

@@ -31,7 +31,6 @@ L.scenograph.director.character_test = function() {
 	var roomMaterial = new THREE.MeshPhongMaterial( { color: 0xCCCCCC, side: THREE.BackSide} ); 
 	var room1 = new THREE.Mesh(new THREE.BoxGeometry(1000, 450, 1000), roomMaterial);
 	room1.position.set(0, 75, 0)
-	room1.receiveShadow = true;
 	var room1BSP = new ThreeBSP( room1 );
 
 	// Room 2 and lights
@@ -43,13 +42,11 @@ L.scenograph.director.character_test = function() {
 
 	var room2 = new THREE.Mesh(new THREE.BoxGeometry(1000, 450, 1000), roomMaterial);
 	room2.position.set(1300, 75, 0)
-	room2.receiveShadow = true;
 	var room2BSP = new ThreeBSP( room2 );
 
 	// Connect Room 1 to Room 2
 	var corridor = new THREE.Mesh(new THREE.BoxGeometry(500, 300, 500), roomMaterial);
 	corridor.position.set(600, 0, 0)
-	corridor.receiveShadow = true;
 	var corridorBSP = new ThreeBSP( corridor );
 
 	// Room 3 and lights
@@ -67,24 +64,24 @@ L.scenograph.director.character_test = function() {
 	
 	var room3 = new THREE.Mesh(new THREE.BoxGeometry(2200, 450, 1000), roomMaterial);
 	room3.position.set(500, 75, -1300)
-	room3.receiveShadow = true;
 	var room3BSP = new ThreeBSP( room3 );
 
 	// Connect Room 1 to Room 3
 	var corridor2 = new THREE.Mesh(new THREE.BoxGeometry(500, 300, 500), roomMaterial);
 	corridor2.position.set(0, 0, -600)
-	corridor2.receiveShadow = true;
 	var corridor2BSP = new ThreeBSP( corridor2 );
 
 	// Connect Room 2 to Room 3
 	var corridor3 = new THREE.Mesh(new THREE.BoxGeometry(500, 300, 500), roomMaterial);
 	corridor3.position.set(800, 0, -600)
-	corridor3.receiveShadow = true;
 	var corridor3BSP = new ThreeBSP( corridor3 );
 
 	var newBSP = room1BSP.union( room2BSP ).union(corridorBSP).union(room3BSP).union(corridor2BSP).union(corridor3BSP);
-	var newMesh = newBSP.toMesh( roomMaterial );
-	newMesh.receiveShadow = true;
+	var newGeo = newBSP.toGeometry( roomMaterial );
+
+	var bufferGeo = THREE.BufferGeometryUtils.fromGeometry( newGeo );
+	var newMesh = new THREE.Mesh(bufferGeo, roomMaterial);
+	newMesh.position.y = 75;
 	L.scenograph.director.scene.add(newMesh);
 	L.scenograph.director.scene_variables.collidables.push(newMesh);
 
@@ -92,21 +89,18 @@ L.scenograph.director.character_test = function() {
 	var box1 = new THREE.Mesh(new THREE.BoxGeometry(300, 150, 75), wireframeMaterial);
 	box1.name = 'Box 1'
 	box1.position.set(-300,-75,-300);
-	box1.castShadow = true;
 	this.scene.add(box1);
 	L.scenograph.director.scene_variables.collidables.push(box1);
 
 	var box2 = new THREE.Mesh(new THREE.BoxGeometry(75, 150, 75), wireframeMaterial);
 	box2.name = 'Box 2'
 	box2.position.set(300,-75,0);
-	box2.castShadow = true;
 	this.scene.add(box2);
 	L.scenograph.director.scene_variables.collidables.push(box2);
 	
 	var box3 = new THREE.Mesh(new THREE.BoxGeometry(300, 150, 75), wireframeMaterial);
 	box3.name = 'Box 3'
 	box3.position.set(0,-75,300);
-	box3.castShadow = true;
 	this.scene.add(box3);
 	L.scenograph.director.scene_variables.collidables.push(box3);
 };
@@ -141,7 +135,7 @@ L.scenograph.director.make_character = function() {
 
 		// direction (normalized), origin, length, color(hex)
 	var origin = new THREE.Vector3(0,135,-10);
-	var arrow = new THREE.ArrowHelper(new THREE.Vector3(0,0,1), origin,20, 0xFFCC00);
+	var arrow = new THREE.ArrowHelper(new THREE.Vector3(0,0,1), origin,40, 0xFFCC00);
 	
 
 	var wireframeMaterial = new THREE.MeshBasicMaterial( { color: 0x660066, wireframe: true, transparent: true } ); 
@@ -150,13 +144,15 @@ L.scenograph.director.make_character = function() {
 	characterBox.add(arrow);
 	characterBox.visible = false;
 
+	characterBox.add(L.scenograph.director.camera);
+
 	return characterBox;
 }
 
 L.scenograph.director.move_character = function(character) {
 	// Setup variables
 	character.animation.moving = false;
-	var stepSize = 2.5,
+	var stepSize = 3.5,
 		pX = 0,
 		pY = 0,
 		pZ = 0,
@@ -219,20 +215,20 @@ L.scenograph.director.move_character = function(character) {
 					}
 				}
 				else {
-					if (collision.point.x - originPoint.x < collision.point.x - (originPoint.x + pX)) {
-						character.parent.rotation.y += collision.distance / 10000;
+					if (collision.point.x + originPoint.x < collision.point.x + (originPoint.x - pX)) {
+						character.parent.rotation.y -= collision.distance / 10000;
 						pX = 0;
 					}
 				}
 				if (collision.point.z - originPoint.z > 0) {
 					if (collision.point.z - originPoint.z > collision.point.z - (originPoint.z + pZ)) { 				
-						character.parent.rotation.y += collision.distance / 10000;
+						//character.parent.rotation.y -= collision.distance / 10000;
 						pZ = 0; 
 					}
 				}
 				else {
-					if (collision.point.z - originPoint.z < collision.point.z - (originPoint.z + pZ)) { 				
-						character.parent.rotation.y += collision.distance / 10000;
+					if (collision.point.z + originPoint.z < collision.point.z + (originPoint.z - pZ)) { 				
+						//character.parent.rotation.y += collision.distance / 10000;
 						pZ = 0; 
 					}
 				}
@@ -251,13 +247,13 @@ L.scenograph.director.move_character = function(character) {
 		character.parent.position.z += pZ;
 	}
 
-	// Focus camera on character position and character sprite back at the camera
+	/*/ Focus camera on character position and character sprite back at the camera
 	L.scenograph.director.controls.target.set(
 		character.parent.position.x,
 		character.parent.position.y,
 		character.parent.position.z
 	);
-
+	*/
 	
 
 }
@@ -323,18 +319,23 @@ L.scenograph.director.make_animation = function( character, texture, tilesHoriz,
 		var diff = new THREE.Vector3().subVectors(character.parent.position, camera_vector).normalize();
 		diff.applyMatrix4(matrix);
 
-		if (diff.x < 0.5  && diff.x > -0.5 && diff.z <= 0.0) {
+		if (diff.z < 0.0 && 
+			Math.abs(diff.x) < Math.abs(diff.z)) {
 			this.face = 'front';
 		}
-		if (diff.x > 0.6 && diff.x < 0.8) {
+		if (diff.x > 0 &&
+			Math.abs(diff.x) > Math.abs(diff.z)) {
 			this.face = 'right';
 		}
-		if (diff.x < -0.6 && diff.x > -0.8) {
+		if (diff.x < 0 &&
+			Math.abs(diff.x) > Math.abs(diff.z)) {
 			this.face = 'left';
 		}
-		if (diff.z > 0.8) {
+		if (diff.z > 0.0 && 
+			Math.abs(diff.x) < Math.abs(diff.z)) {
 			this.face = 'back'
 		}
+
 		if (this.moving == true) {
 			this.currentDisplayTime += delta * 25;
 			while (this.currentDisplayTime > this.tileDisplayDuration)

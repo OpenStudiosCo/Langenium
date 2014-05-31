@@ -28,8 +28,6 @@ L.scenograph.director.mmo = function() {
 		 
 	for ( var i = 0; i < skyGeo.faces.length; i++ ) 
 	{
-
-		
 		if  (skyGeo.vertices[skyGeo.faces[ i ].a].y >  -21000) {
 			skyGeo.faces[ i ].materialIndex = 0;
 		}

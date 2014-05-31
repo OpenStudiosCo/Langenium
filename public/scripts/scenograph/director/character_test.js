@@ -1,7 +1,5 @@
 L.scenograph.director.character_test = function() {
 	// scene shit here
-	console.log('Character test started')
-
 	L.scenograph.director.camera_state.zoom = 500;
 	L.scenograph.director.camera.position.set(
 		-17, 567, 900
@@ -11,6 +9,7 @@ L.scenograph.director.character_test = function() {
 
 	var character = L.scenograph.director.make_character();
 	character.position.y = -30;
+	L.scenograph.director.scene_variables.character = character;
 	this.scene.add(character);
 	this.animation_queue.push(character.children[0].animation)
 
@@ -22,7 +21,7 @@ L.scenograph.director.character_test = function() {
 	this.scene.add(lightFixture2);
 
 	var roomMaterial = new THREE.MeshPhongMaterial( { color: 0xCCCCCC, side: THREE.BackSide} ); 
-	var room1 = new THREE.Mesh(new THREE.BoxGeometry(1000, 450, 1000), roomMaterial);
+	var room1 = new THREE.Mesh(new THREE.CylinderGeometry( 500, 500, 450, 20, 4 ), roomMaterial);
 	room1.position.set(0, 75, 0)
 	var room1BSP = new ThreeBSP( room1 );
 

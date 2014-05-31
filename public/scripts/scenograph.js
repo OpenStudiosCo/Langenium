@@ -3,7 +3,7 @@ L.scenograph = {
 	winW: 1024,
 	winH: 768,
 	options: {
-		activeScene: 'MMO',
+		activeScene: 'Sandbox',
 		currentScene: '',
 		hideInterface: true,
 		scenes: [
@@ -12,7 +12,6 @@ L.scenograph = {
 			'MMO Title',
 			'Character Test',
 			'Sandbox',
-			'Other Water'
 		],
 		useControls: true
 	},
@@ -55,6 +54,12 @@ L.scenograph.director = {
 	projector: new THREE.Projector(),
 	interpolation: this.duration / this.keyframes
 };
+
+L.scenograph.director.gui = new dat.GUI();
+L.scenograph.director.gui.domElement.style.position = 'absolute';
+L.scenograph.director.gui.domElement.style.top = '20px';
+L.scenograph.director.gui.domElement.style.left = '20px';
+L.scenograph.director.gui.domElement.style.paddingBottom = '22px';
 
 L.scenograph.director.clear = function() {
 	L.scenograph.director.animation_queue = [];
@@ -174,9 +179,9 @@ L.scenograph.director.animate = function() {
 				L.scenograph.director.character_test();
 				L.scenograph.options.currentScene = 'Character Test';
 				break;
-			case 'Other Water':
-				L.scenograph.director.other_water();
-				L.scenograph.options.currentScene = 'Other Water';
+			case 'Sandbox':
+				L.scenograph.director.sandbox();
+				L.scenograph.options.currentScene = 'Sandbox';
 				break;
 		}
 	}

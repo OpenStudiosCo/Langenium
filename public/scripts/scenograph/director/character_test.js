@@ -315,6 +315,9 @@ L.scenograph.director.make_animation = function( character, texture, tilesHoriz,
 			Math.abs(diff.x) < Math.abs(diff.z)) {
 			this.face = 'back'
 		}
+		
+		character.scale.y = 256 - Math.abs(diff.y) * 45;			
+
 
 		if (this.moving == true) {
 			this.currentDisplayTime += delta * 25;

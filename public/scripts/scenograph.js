@@ -3,7 +3,7 @@ L.scenograph = {
 	winW: 1024,
 	winH: 768,
 	options: {
-		activeScene: 'Character Test',
+		activeScene: 'Sandbox',
 		currentScene: '',
 		hideInterface: true,
 		scenes: [

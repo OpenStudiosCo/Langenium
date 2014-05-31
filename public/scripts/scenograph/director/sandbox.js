@@ -69,9 +69,17 @@ L.scenograph.director.select_object = function() {
 			var intersects = raycaster.intersectObjects( L.scenograph.director.scene.children );
 			if (intersects.length > 0) {
 				if (L.scenograph.director.scene_variables.selectedFolder) {
+					L.scenograph.director.scene_variables.selected.children.forEach(function(obj, index){
+
+						if (obj.name == "bounding_box") {
+							L.scenograph.director.scene_variables.selected.remove(obj);
+						}
+					})
 					L.scenograph.director.gui.removeFolder("Selected Object");
 				}
 				L.scenograph.director.scene_variables.selected = intersects[0].object;
+				intersects[0].object.geometry.computeBoundingBox();
+				L.scenograph.director.draw_bounding_box(intersects[0].object, intersects[0].object.position, intersects[0].object.geometry.boundingBox.max, intersects[0].object.geometry.boundingBox.min, intersects[0].object.scale.x );
 				L.scenograph.director.scene_variables.selectedFolder = L.scenograph.director.gui.addFolder("Selected Object");
 				var posFolder = L.scenograph.director.scene_variables.selectedFolder.addFolder("Position");
 				posFolder.add(L.scenograph.director.scene_variables.selected.position, "x").step(1);
@@ -93,6 +101,36 @@ L.scenograph.director.select_object = function() {
 	return this;
 }
 
+L.scenograph.director.draw_bounding_box = function(object, position, max, min, scale) {
+
+	var material = new THREE.LineBasicMaterial({
+        color: 'yellow'
+    });
+
+    var geometry = new THREE.Geometry();
+    // Bottom square
+    geometry.vertices.push(new THREE.Vector3(max.x, min.y, max.z));
+    geometry.vertices.push(new THREE.Vector3(max.x, min.y, min.z));
+    geometry.vertices.push(new THREE.Vector3(max.x, max.y, min.z));
+    geometry.vertices.push(new THREE.Vector3(max.x, min.y, min.z));
+    geometry.vertices.push(new THREE.Vector3(min.x, min.y, min.z));
+    geometry.vertices.push(new THREE.Vector3(min.x, max.y, min.z));
+    geometry.vertices.push(new THREE.Vector3(min.x, min.y, min.z));
+    geometry.vertices.push(new THREE.Vector3(min.x, min.y, max.z));
+    geometry.vertices.push(new THREE.Vector3(min.x, max.y, max.z));
+    geometry.vertices.push(new THREE.Vector3(min.x, min.y, max.z));
+    geometry.vertices.push(new THREE.Vector3(max.x, min.y, max.z));
+    geometry.vertices.push(new THREE.Vector3(max.x, max.y, max.z));
+    geometry.vertices.push(new THREE.Vector3(max.x, max.y, min.z));
+    geometry.vertices.push(new THREE.Vector3(min.x, max.y, min.z));
+    geometry.vertices.push(new THREE.Vector3(min.x, max.y, max.z));
+    geometry.vertices.push(new THREE.Vector3(max.x, max.y, max.z));
+
+    var bounding_box = new THREE.Line(geometry, material);
+    bounding_box.name = "bounding_box";
+    
+    object.add(bounding_box);
+};
 L.scenograph.director.add_cube = function() {
 	var cube = new THREE.Mesh(new THREE.BoxGeometry(400, 400, 400), new THREE.MeshNormalMaterial());
 	this.scene.add(cube);

@@ -57,6 +57,11 @@ L.scenograph.director.sandbox = function() {
 	
 	L.scenograph.director.gui.add(L.scenograph.director, "add_cube");
 
+	L.scenograph.director.scene_variables.select_multiple = true;
+	L.scenograph.director.scene_variables.selected_objects = [];
+	L.scenograph.director.scene_variables._selectedObj = ""; // holder for object chosen in multi select dropdown, this definitely needs to be put in a smarter place
+	L.scenograph.director.gui.add(L.scenograph.director.scene_variables, "select_multiple");
+
 	L.scenograph.director.animation_queue.push(new L.scenograph.director.select_object());
 }
 
@@ -68,43 +73,97 @@ L.scenograph.director.select_object = function() {
 
 			var intersects = raycaster.intersectObjects( L.scenograph.director.scene.children );
 			if (intersects.length > 0) {
-				if (L.scenograph.director.scene_variables.selectedFolder) {
-					L.scenograph.director.scene_variables.selected.children.forEach(function(obj, index){
+				if (L.scenograph.director.scene_variables.select_multiple == false) {
+					L.scenograph.director.clear_selection();
+					L.scenograph.director.scene_variables.selected = intersects[0].object;
+					intersects[0].object.geometry.computeBoundingBox();
+					L.scenograph.director.draw_bounding_box(0xFFFF00, intersects[0].object, intersects[0].object.geometry.boundingBox.max, intersects[0].object.geometry.boundingBox.min, intersects[0].object.scale.x );
+					L.scenograph.director.scene_variables.selectedFolder = L.scenograph.director.gui.addFolder("Selected Object");
+					L.scenograph.director.scene_variables.selectedFolder.add(L.scenograph.director, "clear_selection");
+					L.scenograph.director.scene_variables.selectedFolder.open();					
 
-						if (obj.name == "bounding_box") {
-							L.scenograph.director.scene_variables.selected.remove(obj);
-						}
-					})
-					L.scenograph.director.gui.removeFolder("Selected Object");
+					var posFolder = L.scenograph.director.scene_variables.selectedFolder.addFolder("Position");
+					posFolder.add(L.scenograph.director.scene_variables.selected.position, "x").step(1);
+					posFolder.add(L.scenograph.director.scene_variables.selected.position, "y").step(1);
+					posFolder.add(L.scenograph.director.scene_variables.selected.position, "z").step(1);
+					posFolder.open();
+
+					var sclFolder = L.scenograph.director.scene_variables.selectedFolder.addFolder("Scale");
+					sclFolder.add(L.scenograph.director.scene_variables.selected.scale, "x").step(.01);
+					sclFolder.add(L.scenograph.director.scene_variables.selected.scale, "y").step(.01);
+					sclFolder.add(L.scenograph.director.scene_variables.selected.scale, "z").step(.01);
+					sclFolder.open();
+
+					var vector = intersects[0].object.position.clone();
+					L.scenograph.director.scene_variables.target = intersects[0].object;
+					L.scenograph.director.controls.target.set(
+						vector.x,
+						vector.y,
+						vector.z
+					);
 				}
-				L.scenograph.director.scene_variables.selected = intersects[0].object;
-				intersects[0].object.geometry.computeBoundingBox();
-				L.scenograph.director.draw_bounding_box(intersects[0].object, intersects[0].object.position, intersects[0].object.geometry.boundingBox.max, intersects[0].object.geometry.boundingBox.min, intersects[0].object.scale.x );
-				L.scenograph.director.scene_variables.selectedFolder = L.scenograph.director.gui.addFolder("Selected Object");
-				var posFolder = L.scenograph.director.scene_variables.selectedFolder.addFolder("Position");
-				posFolder.add(L.scenograph.director.scene_variables.selected.position, "x").step(1);
-				posFolder.add(L.scenograph.director.scene_variables.selected.position, "y").step(1);
-				posFolder.add(L.scenograph.director.scene_variables.selected.position, "z").step(1);
-				posFolder.open();
-				L.scenograph.director.scene_variables.selectedFolder.open();
-
-				var vector = intersects[0].object.position.clone();
-				L.scenograph.director.scene_variables.target = intersects[0].object;
-				L.scenograph.director.controls.target.set(
-					vector.x,
-					vector.y,
-					vector.z
-				);
+				else {
+					if (L.scenograph.director.gui.__folders["Selected Object"]) {
+						L.scenograph.director.gui.removeFolder("Selected Object");
+						L.scenograph.director.clear_selection();
+					}
+					if (!L.scenograph.director.gui.__folders["Selected Objects"]) {
+						L.scenograph.director.scene_variables.selectedFolder = L.scenograph.director.gui.addFolder("Selected Objects");
+						L.scenograph.director.scene_variables.selectedFolder.add(L.scenograph.director, "clear_selection");
+						L.scenograph.director.scene_variables.selectedFolder.open();	
+					}
+					// Make sure we're not dealing with something that's already selected
+					var addToSelection = true;
+					intersects[0].object.children.forEach(function(child_obj){
+						if (child_obj.name == "bounding_box") {
+							addToSelection = false;
+						}
+					});
+					if (addToSelection == true) {
+						intersects[0].object.geometry.computeBoundingBox();
+						var randomColor = Math.random() * 0xffffff;
+						L.scenograph.director.draw_bounding_box( randomColor, intersects[0].object, intersects[0].object.geometry.boundingBox.max, intersects[0].object.geometry.boundingBox.min, intersects[0].object.scale.x );
+						L.scenograph.director.scene_variables.selected_objects.push(intersects[0].object);
+						$(L.scenograph.director.scene_variables.selectedFolder.domElement).append(
+							"<li style='background-color: #" + parseInt(randomColor).toString(16) + ";'></li>"
+						);
+					}
+				}
 			}
 		}
 	}
 	return this;
 }
 
-L.scenograph.director.draw_bounding_box = function(object, position, max, min, scale) {
+L.scenograph.director.clear_selection = function() {
+	for (var i = 0; i < L.scenograph.director.scene.children.length; i++) {
+		var obj_to_remove = [];
+		for (var j = 0; j < L.scenograph.director.scene.children[i].children.length; j++) {			
+			if (L.scenograph.director.scene.children[i].children[j].name == "bounding_box") {
+				obj_to_remove.push(L.scenograph.director.scene.children[i].children[j])
+				//L.scenograph.director.scene.children[i].remove(L.scenograph.director.scene.children[i].children[j]);
+			}
+		}
+		for (var k = 0; k < obj_to_remove.length; k++) {
+			L.scenograph.director.scene.children[i].remove(obj_to_remove[k]);
+		}
+	}
+
+	L.scenograph.director.scene_variables.selected_objects = []; // clears the selected object group
+	L.scenograph.director.scene_variables.selected = undefined;
+	
+	if (L.scenograph.director.gui.__folders["Selected Object"]) {
+		L.scenograph.director.gui.removeFolder("Selected Object");
+	}
+	if (L.scenograph.director.gui.__folders["Selected Objects"]) {
+		L.scenograph.director.gui.removeFolder("Selected Objects");
+	}
+}
+
+L.scenograph.director.draw_bounding_box = function(color, object, max, min, scale) {
 
 	var material = new THREE.LineBasicMaterial({
-        color: 'yellow'
+        color: color
     });
 
     var geometry = new THREE.Geometry();

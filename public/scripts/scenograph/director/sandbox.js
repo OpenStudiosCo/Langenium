@@ -33,8 +33,7 @@ L.scenograph.director.sandbox = function() {
 	corridor.position.set(0, 0, -600)
 	var corridorBSP = new ThreeBSP( corridor );
 
-	var newBSP = room1BSP.union( corridorBSP );
-	var newGeo = newBSP.toGeometry();
+	var newGeo = room1BSP.union( corridorBSP ).toGeometry();
 
 	for ( var i = 0; i < newGeo.faces.length; i++ ) 
 	{
@@ -61,10 +60,57 @@ L.scenograph.director.sandbox = function() {
 	L.scenograph.director.scene_variables.selected_objects = [];
 	L.scenograph.director.scene_variables._selectedObj = ""; // holder for object chosen in multi select dropdown, this definitely needs to be put in a smarter place
 	L.scenograph.director.gui.add(L.scenograph.director.scene_variables, "select_multiple");
-
 	L.scenograph.director.animation_queue.push(new L.scenograph.director.select_object());
 }
 
+// Structuring like this so it slides into dat.gui nicely. Will probably need to come up with object "views" to plug into dat.gui....
+L.scenograph.director.csg = {
+	intersect: function() {
+		var objBSP = new ThreeBSP(L.scenograph.director.scene_variables.selected_objects[0]);
+		for (var i = 1; i < L.scenograph.director.scene_variables.selected_objects.length; i++) {
+			var thisBSP = new ThreeBSP(L.scenograph.director.scene_variables.selected_objects[i]);
+			objBSP = objBSP.intersect(thisBSP);
+		}
+		var newGeo = objBSP.toGeometry();
+		var newMesh = new THREE.Mesh(newGeo, new THREE.MeshNormalMaterial({side: THREE.BackSide}));
+
+		for (var i = 0; i < L.scenograph.director.scene_variables.selected_objects.length; i++) {
+			L.scenograph.director.scene.remove(L.scenograph.director.scene_variables.selected_objects[i]);
+		}
+		L.scenograph.director.clear_selection();
+		L.scenograph.director.scene.add(newMesh);
+	},
+	subtract: function() {
+		var objBSP = new ThreeBSP(L.scenograph.director.scene_variables.selected_objects[0]);
+		for (var i = 1; i < L.scenograph.director.scene_variables.selected_objects.length; i++) {
+			var thisBSP = new ThreeBSP(L.scenograph.director.scene_variables.selected_objects[i]);
+			objBSP = objBSP.subtract(thisBSP);
+		}
+		var newGeo = objBSP.toGeometry();
+		var newMesh = new THREE.Mesh(newGeo, new THREE.MeshNormalMaterial({side: THREE.BackSide}));
+
+		for (var i = 0; i < L.scenograph.director.scene_variables.selected_objects.length; i++) {
+			L.scenograph.director.scene.remove(L.scenograph.director.scene_variables.selected_objects[i]);
+		}
+		L.scenograph.director.clear_selection();
+		L.scenograph.director.scene.add(newMesh);
+	},
+	union: function() {
+		var objBSP = new ThreeBSP(L.scenograph.director.scene_variables.selected_objects[0]);
+		for (var i = 1; i < L.scenograph.director.scene_variables.selected_objects.length; i++) {
+			var thisBSP = new ThreeBSP(L.scenograph.director.scene_variables.selected_objects[i]);
+			objBSP = objBSP.union(thisBSP);
+		}
+		var newGeo = objBSP.toGeometry();
+		var newMesh = new THREE.Mesh(newGeo, new THREE.MeshNormalMaterial({side: THREE.BackSide}));
+
+		for (var i = 0; i < L.scenograph.director.scene_variables.selected_objects.length; i++) {
+			L.scenograph.director.scene.remove(L.scenograph.director.scene_variables.selected_objects[i]);
+		}
+		L.scenograph.director.clear_selection();
+		L.scenograph.director.scene.add(newMesh);
+	}
+};
 L.scenograph.director.select_object = function() {
 	this.animate = function(delta) {
 		if (L.scenograph.director.cursor.leftClick == true) {
@@ -110,6 +156,9 @@ L.scenograph.director.select_object = function() {
 					if (!L.scenograph.director.gui.__folders["Selected Objects"]) {
 						L.scenograph.director.scene_variables.selectedFolder = L.scenograph.director.gui.addFolder("Selected Objects");
 						L.scenograph.director.scene_variables.selectedFolder.add(L.scenograph.director, "clear_selection");
+						L.scenograph.director.scene_variables.selectedFolder.add(L.scenograph.director.csg, "intersect");
+						L.scenograph.director.scene_variables.selectedFolder.add(L.scenograph.director.csg, "subtract");
+						L.scenograph.director.scene_variables.selectedFolder.add(L.scenograph.director.csg, "union");
 						L.scenograph.director.scene_variables.selectedFolder.open();	
 					}
 					// Make sure we're not dealing with something that's already selected
@@ -137,7 +186,6 @@ L.scenograph.director.select_object = function() {
 
 L.scenograph.director.clear_selection = function() {
 	for (var i = 0; i < L.scenograph.director.scene.children.length; i++) {
-		console.log(L.scenograph.director.scene.children[i])
 		if (L.scenograph.director.scene.children[i].material) {
 			if (L.scenograph.director.scene.children[i].material.materials) {
 		    	L.scenograph.director.scene.children[i].material.materials.forEach(function(material){

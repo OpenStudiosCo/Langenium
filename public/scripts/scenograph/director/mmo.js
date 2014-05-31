@@ -7,6 +7,13 @@ L.scenograph.director.mmo = function() {
 		L.scenograph.director.camera_state.zoom
 	);	
 
+	var hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 1 );
+	hemiLight.name = "light1";
+	hemiLight.color.setRGB( 0.9, 0.95, 1 );
+	hemiLight.groundColor.setRGB( 0.6, 0.75, 1 );
+	hemiLight.position.set( 0, this.M, 0 );
+	this.scene.add(hemiLight);
+
 	var skyGeo = new THREE.SphereGeometry(this.M / 2, 32, 64);
 
 	var sky_materials = [ 
@@ -34,22 +41,37 @@ L.scenograph.director.mmo = function() {
 	
 	var sky = new THREE.Mesh(skyGeo, new THREE.MeshFaceMaterial(sky_materials));
 	sky.name = 'Skybox';
-	sky.position.y = 24600;
+	sky.position.y = 24475;
 	this.scene.add(sky);
 
-	var mirror = new THREE.Mirror( this.renderer, this.camera, { clipBias: 0.003, textureWidth: 1024, textureHeight: 1024, color: 0x777777 } );
-	var plane = new THREE.Mesh(new THREE.PlaneGeometry( this.M * 4.5, this.M * 4.5 , 1, 1 ), mirror.material);
+	var water = new THREE.Water( L.scenograph.director.renderer, L.scenograph.director.camera, L.scenograph.director.scene, {
+		textureWidth: 512, 
+		textureHeight: 512,
+		waterNormals: L.scenograph.director.waterNormals,
+		alpha: 	.8,
+		sunDirection: hemiLight.position.normalize(),
+		sunColor: 0xffffff,
+		waterColor: 0x0066DD,
+		distortionScale: 20.0,
+		side: THREE.DoubleSide
+	} );
+
+	var plane = new THREE.Mesh(new THREE.PlaneGeometry( this.M * 4.5, this.M * 4.5 , 50, 50 ), water.material);
 	plane.name = 'Ocean';
-	plane.add(mirror);
-	plane.material.side = THREE.DoubleSide;
-	plane.material.transparent = true;
-	
 	plane.rotateX( - Math.PI / 2 );
+	plane.add(water);
 	this.scene.add(plane);
 
-
-
-
+	var animation_obj = {
+		animate: function(delta) {
+			L.scenograph.director.effects.cloud_uniforms.time.value += 0.0025 * L.scenograph.stats.time.delta;
+			water.material.uniforms.time.value +=1.0 / 60.0;
+			water.render();
+		}
+	}
+	
+	L.scenograph.director.animation_queue.push(animation_obj)
+	
 
 	var mountain_cb = function(geometry, materials) {
 		var mesh = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
@@ -75,23 +97,7 @@ L.scenograph.director.mmo = function() {
 		L.scenograph.director.animation_queue.push(anim_obj)
 	}
 	L.scenograph.objects.loadObject('/assets/models/ships/mercenary/valiant2.js', ship_cb);
-	
 
-		var animation_obj = {
-		animate: function(delta) {
-			L.scenograph.director.effects.cloud_uniforms.time.value += 0.0025 * L.scenograph.stats.time.delta;
-			mirror.material.uniforms.time.value += 0.0005 * delta;
-			mirror.render();
-		}
-	}
-
-	L.scenograph.director.animation_queue.push(animation_obj)
-	var hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 1 );
-	hemiLight.name = "light1";
-	hemiLight.color.setRGB( 0.9, 0.95, 1 );
-	hemiLight.groundColor.setRGB( 0.6, 0.75, 1 );
-	hemiLight.position.set( 0, this.M, 0 );
-	this.scene.add(hemiLight);
 }
 
 L.scenograph.director.move_ship = function(ship) {

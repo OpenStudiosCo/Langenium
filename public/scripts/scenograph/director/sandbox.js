@@ -137,6 +137,19 @@ L.scenograph.director.select_object = function() {
 
 L.scenograph.director.clear_selection = function() {
 	for (var i = 0; i < L.scenograph.director.scene.children.length; i++) {
+		console.log(L.scenograph.director.scene.children[i])
+		if (L.scenograph.director.scene.children[i].material) {
+			if (L.scenograph.director.scene.children[i].material.materials) {
+		    	L.scenograph.director.scene.children[i].material.materials.forEach(function(material){
+		    		material.transparent = false;
+		    		material.opacity = 1.0;
+		    	});
+		    }
+		    else {
+		    	L.scenograph.director.scene.children[i].material.transparent = false;
+		    	L.scenograph.director.scene.children[i].material.opacity = 1.0;
+		    }
+		}
 		var obj_to_remove = [];
 		for (var j = 0; j < L.scenograph.director.scene.children[i].children.length; j++) {			
 			if (L.scenograph.director.scene.children[i].children[j].name == "bounding_box") {
@@ -188,6 +201,16 @@ L.scenograph.director.draw_bounding_box = function(color, object, max, min, scal
     var bounding_box = new THREE.Line(geometry, material);
     bounding_box.name = "bounding_box";
     
+    if (object.material.materials) {
+    	object.material.materials.forEach(function(material){
+    		material.transparent = true;
+    		material.opacity = 0.7;
+    	});
+    }
+    else {
+    	object.material.transparent = true;
+    	object.material.opacity = 0.7;
+    }
     object.add(bounding_box);
 };
 L.scenograph.director.add_cube = function() {

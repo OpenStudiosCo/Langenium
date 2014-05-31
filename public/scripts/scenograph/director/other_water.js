@@ -48,11 +48,12 @@ L.scenograph.director.other_water = function() {
 		textureWidth: 512, 
 		textureHeight: 512,
 		waterNormals: L.scenograph.director.waterNormals,
-		alpha: 	.7,
+		alpha: 	.8,
 		sunDirection: hemiLight.position.normalize(),
 		sunColor: 0xffffff,
 		waterColor: 0x001e1f,
 		distortionScale: 150.0,
+		side: THREE.DoubleSide
 	} );
 
 	var plane = new THREE.Mesh(new THREE.PlaneGeometry( this.M * 4.5, this.M * 4.5 , 50, 50 ), water.material);

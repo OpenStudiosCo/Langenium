@@ -57,7 +57,7 @@ L.scenograph.director = {
 };
 
 L.scenograph.director.clear = function() {
-	this.animation_queue = [];
+	L.scenograph.director.animation_queue = [];
 
 	L.scenograph.director.scene = new THREE.Scene();
 	L.scenograph.director.camera = new THREE.PerspectiveCamera( 45, L.scenograph.winW / L.scenograph.winH, 1, this.M * 2 );

@@ -9,17 +9,10 @@ L.scenograph.director.character_test = function() {
 
 	L.scenograph.director.scene_variables.collidables = [];
 
-
 	var character = L.scenograph.director.make_character();
 	character.position.y = -30;
 	this.scene.add(character);
 	this.animation_queue.push(character.children[0].animation)
-
-	var gridXZ = new THREE.GridHelper(2000, 80);
-	gridXZ.name = 'Floor'
-	gridXZ.setColors( new THREE.Color(0x111111), new THREE.Color(0x111111) );
-	gridXZ.position.set( 0,-150,0 );
-	//this.scene.add(gridXZ);
 
 	// Room 1 and lights
 	var lightFixture1 = L.scenograph.director.make_light(new THREE.Vector3(0,275, 150));
@@ -127,13 +120,11 @@ L.scenograph.director.make_character = function() {
 	var texture = new THREE.ImageUtils.loadTexture( '/assets/exordium-male.png' );
 	
 	var spriteMaterial = new THREE.SpriteMaterial( { map: texture, transparent: true, side:THREE.DoubleSide, alphaTest: 0.5 } );
-	//var spriteGeometry = new THREE.PlaneGeometry(12.8, 25.6);
 
 	var characterSprite = new THREE.Sprite(spriteMaterial);
 	characterSprite.animation = new L.scenograph.director.make_animation( characterSprite, texture, 34, 1, 34, 3400 ); // texture, #horiz, #vert, #total, duration.
 	characterSprite.scale.set(128,256);
 
-		// direction (normalized), origin, length, color(hex)
 	var origin = new THREE.Vector3(0,135,-10);
 	var arrow = new THREE.ArrowHelper(new THREE.Vector3(0,0,1), origin,40, 0xFFCC00);
 	
@@ -152,7 +143,7 @@ L.scenograph.director.make_character = function() {
 L.scenograph.director.move_character = function(character) {
 	// Setup variables
 	character.animation.moving = false;
-	var stepSize = 3.5,
+	var stepSize = 5,
 		pX = 0,
 		pY = 0,
 		pZ = 0,
@@ -240,21 +231,11 @@ L.scenograph.director.move_character = function(character) {
 		}
 	}
 	
-	
-	//Translate character if no collisions occur
+	//Translate character
 	if (tZ != 0) {
 		character.parent.position.x += pX;
 		character.parent.position.z += pZ;
 	}
-
-	/*/ Focus camera on character position and character sprite back at the camera
-	L.scenograph.director.controls.target.set(
-		character.parent.position.x,
-		character.parent.position.y,
-		character.parent.position.z
-	);
-	*/
-	
 
 }
 

@@ -2046,6 +2046,13 @@ dat.GUI = dat.gui.GUI = (function (css, saveDialogueContents, styleSheet, contro
           });
 
         },
+        removeFolder: function(name) {
+          this.__folders[name].close();
+          this.__ul.removeChild(this.__folders[name].domElement.parentNode);
+          dom.removeClass(this.__folders[name].domElement.parentNode, 'folder');
+          this.__folders[name] = undefined;
+          this.onResize();
+        },
 
         destroy: function() {
 

@@ -21,7 +21,7 @@ L.scenograph.director.character_test = function() {
 	this.scene.add(lightFixture2);
 
 	var roomMaterial = new THREE.MeshPhongMaterial( { color: 0xCCCCCC, side: THREE.BackSide} ); 
-	var room1 = new THREE.Mesh(new THREE.CylinderGeometry( 500, 500, 450, 20, 4 ), roomMaterial);
+	var room1 = new THREE.Mesh(new THREE.CylinderGeometry( 500, 500, 450, 20, 20 ), roomMaterial);
 	room1.position.set(0, 75, 0)
 	var room1BSP = new ThreeBSP( room1 );
 
@@ -37,8 +37,8 @@ L.scenograph.director.character_test = function() {
 	var room2BSP = new ThreeBSP( room2 );
 
 	// Connect Room 1 to Room 2
-	var corridor = new THREE.Mesh(new THREE.BoxGeometry(500, 300, 500), roomMaterial);
-	corridor.position.set(600, 0, 0)
+	var corridor = new THREE.Mesh(new THREE.BoxGeometry(500, 350, 500), roomMaterial);
+	corridor.position.set(600, 25, 0)
 	var corridorBSP = new ThreeBSP( corridor );
 
 	// Room 3 and lights
@@ -59,20 +59,20 @@ L.scenograph.director.character_test = function() {
 	var room3BSP = new ThreeBSP( room3 );
 
 	// Connect Room 1 to Room 3
-	var corridor2 = new THREE.Mesh(new THREE.BoxGeometry(500, 300, 500), roomMaterial);
-	corridor2.position.set(0, 0, -600)
+	var corridor2 = new THREE.Mesh(new THREE.BoxGeometry(500, 350, 500), roomMaterial);
+	corridor2.position.set(0, 25, -600)
 	var corridor2BSP = new ThreeBSP( corridor2 );
 
 	// Connect Room 2 to Room 3
-	var corridor3 = new THREE.Mesh(new THREE.BoxGeometry(500, 300, 500), roomMaterial);
-	corridor3.position.set(800, 0, -600)
+	var corridor3 = new THREE.Mesh(new THREE.BoxGeometry(500, 350, 500), roomMaterial);
+	corridor3.position.set(800, 25, -600)
 	var corridor3BSP = new ThreeBSP( corridor3 );
 
 	var newBSP = room1BSP.union( room2BSP ).union(corridorBSP).union(room3BSP).union(corridor2BSP).union(corridor3BSP);
 	var newGeo = newBSP.toGeometry( roomMaterial );
 
-	var bufferGeo = THREE.BufferGeometryUtils.fromGeometry( newGeo );
-	var newMesh = new THREE.Mesh(bufferGeo, roomMaterial);
+	//var bufferGeo = THREE.BufferGeometryUtils.fromGeometry( newGeo );
+	var newMesh = new THREE.Mesh(newGeo, roomMaterial);
 	newMesh.position.y = 75;
 	L.scenograph.director.scene.add(newMesh);
 	L.scenograph.director.scene_variables.collidables.push(newMesh);

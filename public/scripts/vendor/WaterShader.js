@@ -110,7 +110,7 @@ THREE.ShaderLib['water'] = {
 
 		'	vec3 worldToEye = eye - worldPosition;',
 		'	vec3 eyeDirection = normalize(worldToEye);',
-		'	sunLight(surfaceNormal, eyeDirection, 100.0, 2.0, 0.5, diffuseLight, specularLight);',
+		'	sunLight(surfaceNormal, eyeDirection, 1000.0, 2.0, 0.5, diffuseLight, specularLight);',
 		
 		'	float distance = length(worldToEye);',
 

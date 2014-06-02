@@ -24,21 +24,7 @@ L.scenograph.director.sandbox = function() {
 	L.scenograph.director.gui.add(L.scenograph.director, "add_tetrahedron");
 	L.scenograph.director.gui.add(L.scenograph.director, "add_octahedron");
 
-	var randomColor = Math.random() * 0xffffff;
-	var cube = new THREE.Mesh(new THREE.BoxGeometry(400, 400, 400), new THREE.MeshBasicMaterial({color: randomColor}));
-	cube.position.x -= 150;
-	cube.position.y -= 175;
-	this.scene.add(cube);
-	
-	randomColor = Math.random() * 0xffffff;
-	cube = new THREE.Mesh(new THREE.BoxGeometry(400, 400, 400), new THREE.MeshBasicMaterial({color: randomColor}));
-	cube.position.z -= 150;
-	cube.position.x += 150;
-	cube.position.y += 125;
-	this.scene.add(cube);
-
-
-	L.scenograph.director.scene_variables.select_multiple = true;
+	L.scenograph.director.scene_variables.select_multiple = false;
 	L.scenograph.director.scene_variables.selected_objects = [];
 	L.scenograph.director.scene_variables._selectedObj = ""; // holder for object chosen in multi select dropdown, this definitely needs to be put in a smarter place
 	L.scenograph.director.gui.add(L.scenograph.director.scene_variables, "select_multiple");
@@ -191,6 +177,47 @@ L.scenograph.director.select_object = function() {
 					L.scenograph.director.scene_variables.selectedFolder = L.scenograph.director.gui.addFolder("Selected Object");
 					L.scenograph.director.scene_variables.selectedFolder.add(L.scenograph.director, "clear_selection");
 					L.scenograph.director.scene_variables.selectedFolder.open();					
+
+					var colorFolder = L.scenograph.director.scene_variables.selectedFolder.addFolder("Colors");
+					var material = L.scenograph.director.scene_variables.selected.material;
+					
+					if (material instanceof THREE.MeshFaceMaterial) {
+						material.materials.forEach(function(mat){
+							var control = {
+								color: {
+									r: mat.color.r * 256,
+									g: mat.color.g * 256,
+									b: mat.color.b * 256
+								}
+							}
+							colorFolder.addColor(control, 'color').onChange(function (e) {
+								if (typeof e == 'object' ) {								
+									mat.color = new THREE.Color().setRGB(e.r / 256,e.g / 256,e.b / 256);
+								}
+								if (typeof e == 'string') {
+									mat.color = new THREE.Color().setHex(e);	
+								}
+						    });
+						});
+					}
+					else {
+						var control = {
+							color: {
+								r: material.color.r * 256,
+								g: material.color.g * 256,
+								b: material.color.b * 256
+							}
+						}
+						colorFolder.addColor(control, 'color').onChange(function (e) {
+							if (typeof e == 'object' ) {								
+								material.color = new THREE.Color().setRGB(e.r / 256,e.g / 256,e.b / 256);
+							}
+							if (typeof e == 'string') {
+								material.color = new THREE.Color().setHex(e);	
+							}
+					    });
+					}
+					colorFolder.open();
 
 					var posFolder = L.scenograph.director.scene_variables.selectedFolder.addFolder("Position");
 					posFolder.add(L.scenograph.director.scene_variables.selected.position, "x").step(1);

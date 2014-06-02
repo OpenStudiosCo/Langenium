@@ -33,6 +33,7 @@ window.ThreeBSP = (function() {
 	
 		for ( i = 0, _length_i = geometry.faces.length; i < _length_i; i++ ) {
 			face = geometry.faces[i];
+			//console.log(face.materialIndex)
 			faceVertexUvs = geometry.faceVertexUvs[0][i];
 			polygon = new ThreeBSP.Polygon;
 			
@@ -82,7 +83,8 @@ window.ThreeBSP = (function() {
 				throw 'Invalid face type at index ' + i;
 			}
 			
-			polygon.calculateProperties();
+			polygon.calculateProperties(face.materialIndex);
+			console.log(polygon)
 			polygons.push( polygon );
 		};
 	
@@ -192,6 +194,10 @@ window.ThreeBSP = (function() {
 					vertex_idx_c,
 					new THREE.Vector3( polygon.normal.x, polygon.normal.y, polygon.normal.z )
 				);
+				//console.log(polygon)
+				if (polygon.materialIndex) {
+					face.materialIndex = polygon.materialIndex;
+				}
 				
 				geometry.faces.push( face );
 				geometry.faceVertexUvs[0].push( verticeUvs );
@@ -218,12 +224,13 @@ window.ThreeBSP = (function() {
 		
 		this.vertices = vertices;
 		if ( vertices.length > 0 ) {
-			this.calculateProperties();
+			this.calculateProperties(0);
 		} else {
 			this.normal = this.w = undefined;
-		}
+		}	
+		
 	};
-	ThreeBSP.Polygon.prototype.calculateProperties = function() {
+	ThreeBSP.Polygon.prototype.calculateProperties = function(materialIndex) {
 		var a = this.vertices[0],
 			b = this.vertices[1],
 			c = this.vertices[2];
@@ -233,6 +240,8 @@ window.ThreeBSP = (function() {
 		).normalize();
 		
 		this.w = this.normal.clone().dot( a );
+
+		this.materialIndex = materialIndex;
 		
 		return this;
 	};
@@ -243,8 +252,11 @@ window.ThreeBSP = (function() {
 		for ( i = 0, vertice_count = this.vertices.length; i < vertice_count; i++ ) {
 			polygon.vertices.push( this.vertices[i].clone() );
 		};
-		polygon.calculateProperties();
+		polygon.calculateProperties(this.materialIndex);
 		
+		//console.log(polygon)
+		//console.log(this)
+
 		return polygon;
 	};
 	
@@ -340,8 +352,8 @@ window.ThreeBSP = (function() {
 			}
 			
 			
-			if ( f.length >= 3 ) front.push( new ThreeBSP.Polygon( f ).calculateProperties() );
-			if ( b.length >= 3 ) back.push( new ThreeBSP.Polygon( b ).calculateProperties() );
+			if ( f.length >= 3 ) front.push( new ThreeBSP.Polygon( f ).calculateProperties(polygon.materialIndex) );
+			if ( b.length >= 3 ) back.push( new ThreeBSP.Polygon( b ).calculateProperties(polygon.materialIndex) );
 		}
 	};
 	

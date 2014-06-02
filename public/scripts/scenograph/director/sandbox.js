@@ -16,55 +16,18 @@ L.scenograph.director.sandbox = function() {
 
 	L.scenograph.director.scene_variables.objects = [];
 
-	var wallMaterial = new THREE.MeshPhongMaterial( { color: 0xCCCCCC, side: THREE.BackSide} ); 
-	var floorMaterial = new THREE.MeshPhongMaterial( { color: 0x006666, side: THREE.BackSide} ); 
-	var materials = [wallMaterial, floorMaterial];
-
-	// radiusAtTop, radiusAtBottom, height, segmentsAroundRadius, segmentsAlongHeight,
-	var roomGeo = new THREE.CylinderGeometry( 500, 500, 450, 20, 4 );
-	
-	var room1 = new THREE.Mesh(roomGeo, new THREE.MeshNormalMaterial());
-	room1.position.set(0, 75, 0);
-	var room1BSP = new ThreeBSP( room1 );
-
-	// Connect Room 1 to Room 3
-	
-	var corridor = new THREE.Mesh(new THREE.BoxGeometry(500, 300, 500), new THREE.MeshNormalMaterial());
-	corridor.position.set(0, 0, -600)
-	var corridorBSP = new ThreeBSP( corridor );
-
-	var newGeo = room1BSP.union( corridorBSP ).toGeometry();
-
-	for ( var i = 0; i < newGeo.faces.length; i++ ) 
-	{
-		if  (newGeo.vertices[newGeo.faces[ i ].c].y > -225) {
-			newGeo.faces[ i ].materialIndex = 0;
-		}
-		else {
-			newGeo.faces[ i ].materialIndex = 1;
-		}
-
-	}
-
-	// Commented this out for now, using simple objects with texture overrides. 
-	// Will eventually use more complex individual buffer geometries
-	//var bufferGeo = THREE.BufferGeometryUtils.fromGeometry( newGeo );
-	var newMesh = new THREE.Mesh(newGeo, new THREE.MeshFaceMaterial(materials));
-	newMesh.position.y = 75;
-	//L.scenograph.director.scene_variables.objects.push(newMesh);
-	L.scenograph.director.scene.add(L.scenograph.director.scene_variables.objects[L.scenograph.director.scene_variables.objects.length-1]);
-	
 	L.scenograph.director.gui.add(L.scenograph.director, "add_cube");
 
 	var randomColor = Math.random() * 0xffffff;
 	var cube = new THREE.Mesh(new THREE.BoxGeometry(400, 400, 400), new THREE.MeshBasicMaterial({color: randomColor}));
 	cube.position.x -= 150;
-	cube.position.y -= 125;
+	cube.position.y -= 175;
 	this.scene.add(cube);
 	
 	randomColor = Math.random() * 0xffffff;
 	cube = new THREE.Mesh(new THREE.BoxGeometry(400, 400, 400), new THREE.MeshBasicMaterial({color: randomColor}));
 	cube.position.z -= 150;
+	cube.position.x += 150;
 	cube.position.y += 125;
 	this.scene.add(cube);
 
@@ -109,160 +72,52 @@ L.scenograph.director.csg = {
 		L.scenograph.director.scene.add(newMesh);
 	},
 	union: function() {
+		var materials = [];
+		var materialIndex = 0;
+		L.scenograph.director.scene_variables.selected_objects.forEach(function(object){
+			if (object.material instanceof THREE.MeshFaceMaterial) {
+				object.material.materials.forEach(function(material, fm_index){
+					console.log(material)
+					materials.push(material);
+					object.geometry.faces.forEach(function(face){
+						if (face.materialIndex == fm_index) {
+							face.materialIndex = fm_index + materialIndex; // materialIndex is being used as an offset
+						}
+					});
+					materialIndex++;			
+				});
+				console.log(materialIndex)
+				console.log(materials);
+			}
+			else {
+				materials.push(object.material);
+				object.geometry.faces.forEach(function(face){
+					face.materialIndex = materialIndex;
+				});
+				materialIndex++;			
+			}
+		});
+		
+		//materials = materials.reverse();
+
 		var objBSP = new ThreeBSP(L.scenograph.director.scene_variables.selected_objects[0]);
+		
 		for (var i = 1; i < L.scenograph.director.scene_variables.selected_objects.length; i++) {
 			var thisBSP = new ThreeBSP(L.scenograph.director.scene_variables.selected_objects[i]);
 			objBSP = objBSP.union(thisBSP);
 		}
+		//console.log(objBSP)
 		var newGeo = objBSP.toGeometry();
-
-		// build materials array for the final object 
-		// (the material index matches the index position in selected_objects)
-		var materials = [];
-		for (var i = 0; i < L.scenograph.director.scene_variables.selected_objects.length; i++) {		
-			
-			//Support for multiple objects, commenting out for now because this whole thing is giving me a headache :(
-
-			if (L.scenograph.director.scene_variables.selected_objects[i].material instanceof THREE.MeshFaceMaterial) {
-				L.scenograph.director.scene_variables.selected_objects[i].material.materials.forEach(function(material){
-					materials.push(material);
-				});
-			}
-			else {
-				materials.push(L.scenograph.director.scene_variables.selected_objects[i].material);	
-			}
-			
-		};
-		materials = materials.reverse();
 		
-		// loop through result geometry
-		var dimensions = ['x', 'y', 'z'];
-		newGeo.faces.forEach(function(new_face, nfi){
-			// loop through all selected object's faces - if a match is found, add to score
-			
-			var matched = false;
-			// search for 3 matches
-			L.scenograph.director.scene_variables.selected_objects.forEach(function(obj, obj_index){
-				obj.geometry.faces.forEach(function(original_face){
-					var match_score = 0;
-					var oa = obj.geometry.vertices[original_face.a];
-					var ob = obj.geometry.vertices[original_face.b];
-					var oc = obj.geometry.vertices[original_face.c]; 	
-					if (oa.equals(newGeo.vertices[new_face.a]))
-					{
-						match_score += 1;
-					}
-					if (ob.equals(newGeo.vertices[new_face.b]))
-					{
-						match_score += 1;
-					}	
-					if (oc.equals(newGeo.vertices[new_face.c]))
-					{
-						match_score += 1;
-					}		
-					if (match_score == 3) {
-						matched = true;
-						new_face.materialIndex = obj_index;
-					}
-					
-				}); 
-			});
-			// search for 2 matches
-			if (matched == false) {
-				L.scenograph.director.scene_variables.selected_objects.forEach(function(obj, obj_index){
-					obj.geometry.faces.forEach(function(original_face){
-						var match_score = 0;
-						var oa = obj.geometry.vertices[original_face.a];
-						var ob = obj.geometry.vertices[original_face.b];
-						var oc = obj.geometry.vertices[original_face.c]; 	
-
-						if (oa.equals(newGeo.vertices[new_face.a]))
-						{
-							match_score += 1;
-						}
-						if (ob.equals(newGeo.vertices[new_face.b]))
-						{
-							match_score += 1;
-						}	
-						if (oc.equals(newGeo.vertices[new_face.c]))
-						{
-							match_score += 1;
-						}	
-						if (match_score == 2) {
-							matched = true;
-							new_face.materialIndex = obj_index;
-						}
-					}); 
-				});
-			}
-			// search for 1 match
-			if (matched == false) {
-				L.scenograph.director.scene_variables.selected_objects.forEach(function(obj, obj_index){
-					obj.geometry.faces.forEach(function(original_face){
-						var match_score = 0;
-						var oa = obj.geometry.vertices[original_face.a];
-						var ob = obj.geometry.vertices[original_face.b];
-						var oc = obj.geometry.vertices[original_face.c]; 	
-						if (oa.equals(newGeo.vertices[new_face.a]))
-						{
-							match_score += 1;
-						}
-						if (ob.equals(newGeo.vertices[new_face.b]))
-						{
-							match_score += 1;
-						}	
-						if (oc.equals(newGeo.vertices[new_face.c]))
-						{
-							match_score += 1;
-						}	
-
-						if (match_score == 1) {
-							matched = true;
-							new_face.materialIndex = obj_index;
-						}
-					}); 
-				});
-			}
-			// if 0 matches, materialIndex is 0.. or maybe i-1 if i > 1 ?
-			if (matched == false) {
-				L.scenograph.director.scene_variables.selected_objects.forEach(function(obj, obj_index){
-					obj.geometry.faces.forEach(function(original_face){
-						var match_score = 0;
-						var oa = obj.geometry.vertices[original_face.a];
-						var ob = obj.geometry.vertices[original_face.b];
-						var oc = obj.geometry.vertices[original_face.c]; 	
-						if (oa.equals(newGeo.vertices[new_face.a]))
-						{
-							match_score += 1;
-						}
-						if (ob.equals(newGeo.vertices[new_face.b]))
-						{
-							match_score += 1;
-						}	
-						if (oc.equals(newGeo.vertices[new_face.c]))
-						{
-							match_score += 1;
-						}	
-
-						if (match_score == 0) {
-							matched = true;
-							new_face.materialIndex = obj_index > 0 ? obj_index-1 : 0;
-						}
-					}); 
-				});
-			}
-		});
-			
-			
-			
 			
 
 		// Clean up the scene
 		for (var i = 0; i < L.scenograph.director.scene_variables.selected_objects.length; i++) {
 			L.scenograph.director.scene.remove(L.scenograph.director.scene_variables.selected_objects[i]);
 		}
-		console.log(materials)
+		
 		var newMesh = new THREE.Mesh(newGeo, new THREE.MeshFaceMaterial(materials));
+		newMesh.position.set(0,-100,50)
 		L.scenograph.director.clear_selection();
 		L.scenograph.director.scene.add(newMesh);
 	}

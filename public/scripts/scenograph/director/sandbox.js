@@ -225,11 +225,19 @@ L.scenograph.director.select_object = function() {
 					posFolder.add(L.scenograph.director.scene_variables.selected.position, "z").step(1);
 					posFolder.open();
 
+					var rotFolder = L.scenograph.director.scene_variables.selectedFolder.addFolder("Rotation");
+					rotFolder.add(L.scenograph.director.scene_variables.selected.rotation, "x").step(.01);
+					rotFolder.add(L.scenograph.director.scene_variables.selected.rotation, "y").step(.01);
+					rotFolder.add(L.scenograph.director.scene_variables.selected.rotation, "z").step(.01);
+					rotFolder.open();
+
 					var sclFolder = L.scenograph.director.scene_variables.selectedFolder.addFolder("Scale");
 					sclFolder.add(L.scenograph.director.scene_variables.selected.scale, "x").step(.01);
 					sclFolder.add(L.scenograph.director.scene_variables.selected.scale, "y").step(.01);
 					sclFolder.add(L.scenograph.director.scene_variables.selected.scale, "z").step(.01);
 					sclFolder.open();
+
+
 
 					var vector = intersects[0].object.position.clone();
 					L.scenograph.director.scene_variables.target = intersects[0].object;

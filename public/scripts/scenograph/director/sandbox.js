@@ -73,40 +73,37 @@ L.scenograph.director.csg = {
 	},
 	union: function() {
 		var materials = [];
-		var materialIndex = 0;
 		L.scenograph.director.scene_variables.selected_objects.forEach(function(object){
 			if (object.material instanceof THREE.MeshFaceMaterial) {
+				
 				object.material.materials.forEach(function(material, fm_index){
-					console.log(material)
 					materials.push(material);
 					object.geometry.faces.forEach(function(face){
 						if (face.materialIndex == fm_index) {
-							face.materialIndex = fm_index + materialIndex; // materialIndex is being used as an offset
+							face.newIndex = materials.length-1; // set it to the index of the array
 						}
 					});
-					materialIndex++;			
 				});
-				console.log(materialIndex)
-				console.log(materials);
+				// had to separate it as changing materialIndex was screwing the if statement and always setting everything to the last 
+				object.geometry.faces.forEach(function(face){
+					face.materialIndex = face.newIndex;					
+				});
 			}
 			else {
 				materials.push(object.material);
 				object.geometry.faces.forEach(function(face){
-					face.materialIndex = materialIndex;
+					face.materialIndex = materials.length-1;
 				});
-				materialIndex++;			
 			}
 		});
 		
-		//materials = materials.reverse();
-
 		var objBSP = new ThreeBSP(L.scenograph.director.scene_variables.selected_objects[0]);
 		
 		for (var i = 1; i < L.scenograph.director.scene_variables.selected_objects.length; i++) {
 			var thisBSP = new ThreeBSP(L.scenograph.director.scene_variables.selected_objects[i]);
 			objBSP = objBSP.union(thisBSP);
 		}
-		//console.log(objBSP)
+		
 		var newGeo = objBSP.toGeometry();
 		
 			

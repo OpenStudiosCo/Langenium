@@ -84,7 +84,7 @@ window.ThreeBSP = (function() {
 			}
 			
 			polygon.calculateProperties(face.materialIndex);
-			console.log(polygon)
+			//console.log(polygon)
 			polygons.push( polygon );
 		};
 	

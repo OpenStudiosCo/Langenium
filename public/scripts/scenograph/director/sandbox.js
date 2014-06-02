@@ -120,8 +120,8 @@ L.scenograph.director.csg = {
 		// (the material index matches the index position in selected_objects)
 		var materials = [];
 		for (var i = 0; i < L.scenograph.director.scene_variables.selected_objects.length; i++) {		
-			/*
-			Support for multiple objects, commenting out for now because this whole thing is giving me a headache :(
+			
+			//Support for multiple objects, commenting out for now because this whole thing is giving me a headache :(
 
 			if (L.scenograph.director.scene_variables.selected_objects[i].material instanceof THREE.MeshFaceMaterial) {
 				L.scenograph.director.scene_variables.selected_objects[i].material.materials.forEach(function(material){
@@ -129,9 +129,8 @@ L.scenograph.director.csg = {
 				});
 			}
 			else {
-				}
-			*/
-			materials.push(L.scenograph.director.scene_variables.selected_objects[i].material);	
+				materials.push(L.scenograph.director.scene_variables.selected_objects[i].material);	
+			}
 			
 		};
 		materials = materials.reverse();
@@ -144,27 +143,29 @@ L.scenograph.director.csg = {
 			var matched = false;
 			// search for 3 matches
 			L.scenograph.director.scene_variables.selected_objects.forEach(function(obj, obj_index){
-					obj.geometry.faces.forEach(function(original_face){
-						var match_score = 0;
-						var oa = obj.geometry.vertices[original_face.a];
-						var ob = obj.geometry.vertices[original_face.b];
-						var oc = obj.geometry.vertices[original_face.c]; 	
-						dimensions.forEach(function(dim){
-							if (oa[dim] == newGeo.vertices[new_face.a][dim]){
-								match_score += 1;
-							}
-							if (ob[dim] == newGeo.vertices[new_face.b][dim]){
-								match_score += 1;
-							}
-							if (oc[dim] == newGeo.vertices[new_face.c][dim]){
-								match_score += 1;
-							}
-						});	
-						if (match_score == 3) {
-							
-							new_face.materialIndex = obj_index % 2;
-						}
-					}); 
+				obj.geometry.faces.forEach(function(original_face){
+					var match_score = 0;
+					var oa = obj.geometry.vertices[original_face.a];
+					var ob = obj.geometry.vertices[original_face.b];
+					var oc = obj.geometry.vertices[original_face.c]; 	
+					if (oa.equals(newGeo.vertices[new_face.a]))
+					{
+						match_score += 1;
+					}
+					if (ob.equals(newGeo.vertices[new_face.b]))
+					{
+						match_score += 1;
+					}	
+					if (oc.equals(newGeo.vertices[new_face.c]))
+					{
+						match_score += 1;
+					}		
+					if (match_score == 3) {
+						matched = true;
+						new_face.materialIndex = obj_index;
+					}
+					
+				}); 
 			});
 			// search for 2 matches
 			if (matched == false) {
@@ -174,20 +175,22 @@ L.scenograph.director.csg = {
 						var oa = obj.geometry.vertices[original_face.a];
 						var ob = obj.geometry.vertices[original_face.b];
 						var oc = obj.geometry.vertices[original_face.c]; 	
-						dimensions.forEach(function(dim){
-							if (oa[dim] == newGeo.vertices[new_face.a][dim]){
-								match_score += 1;
-							}
-							if (ob[dim] == newGeo.vertices[new_face.b][dim]){
-								match_score += 1;
-							}
-							if (oc[dim] == newGeo.vertices[new_face.c][dim]){
-								match_score += 1;
-							}
-						});	
+
+						if (oa.equals(newGeo.vertices[new_face.a]))
+						{
+							match_score += 1;
+						}
+						if (ob.equals(newGeo.vertices[new_face.b]))
+						{
+							match_score += 1;
+						}	
+						if (oc.equals(newGeo.vertices[new_face.c]))
+						{
+							match_score += 1;
+						}	
 						if (match_score == 2) {
-							
-							new_face.materialIndex = obj_index % 2;
+							matched = true;
+							new_face.materialIndex = obj_index;
 						}
 					}); 
 				});
@@ -200,20 +203,22 @@ L.scenograph.director.csg = {
 						var oa = obj.geometry.vertices[original_face.a];
 						var ob = obj.geometry.vertices[original_face.b];
 						var oc = obj.geometry.vertices[original_face.c]; 	
-						dimensions.forEach(function(dim){
-							if (oa[dim] == newGeo.vertices[new_face.a][dim]){
-								match_score += 1;
-							}
-							if (ob[dim] == newGeo.vertices[new_face.b][dim]){
-								match_score += 1;
-							}
-							if (oc[dim] == newGeo.vertices[new_face.c][dim]){
-								match_score += 1;
-							}
-						});	
+						if (oa.equals(newGeo.vertices[new_face.a]))
+						{
+							match_score += 1;
+						}
+						if (ob.equals(newGeo.vertices[new_face.b]))
+						{
+							match_score += 1;
+						}	
+						if (oc.equals(newGeo.vertices[new_face.c]))
+						{
+							match_score += 1;
+						}	
+
 						if (match_score == 1) {
-							
-							new_face.materialIndex = obj_index % 2;
+							matched = true;
+							new_face.materialIndex = obj_index;
 						}
 					}); 
 				});
@@ -226,20 +231,22 @@ L.scenograph.director.csg = {
 						var oa = obj.geometry.vertices[original_face.a];
 						var ob = obj.geometry.vertices[original_face.b];
 						var oc = obj.geometry.vertices[original_face.c]; 	
-						dimensions.forEach(function(dim){
-							if (oa[dim] == newGeo.vertices[new_face.a][dim]){
-								match_score += 1;
-							}
-							if (ob[dim] == newGeo.vertices[new_face.b][dim]){
-								match_score += 1;
-							}
-							if (oc[dim] == newGeo.vertices[new_face.c][dim]){
-								match_score += 1;
-							}
-						});	
+						if (oa.equals(newGeo.vertices[new_face.a]))
+						{
+							match_score += 1;
+						}
+						if (ob.equals(newGeo.vertices[new_face.b]))
+						{
+							match_score += 1;
+						}	
+						if (oc.equals(newGeo.vertices[new_face.c]))
+						{
+							match_score += 1;
+						}	
+
 						if (match_score == 0) {
-							
-							new_face.materialIndex = obj_index > 0 ? obj_index-1 : obj_index % 2;
+							matched = true;
+							new_face.materialIndex = obj_index > 0 ? obj_index-1 : 0;
 						}
 					}); 
 				});

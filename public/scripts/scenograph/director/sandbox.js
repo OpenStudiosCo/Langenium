@@ -17,6 +17,12 @@ L.scenograph.director.sandbox = function() {
 	L.scenograph.director.scene_variables.objects = [];
 
 	L.scenograph.director.gui.add(L.scenograph.director, "add_cube");
+	L.scenograph.director.gui.add(L.scenograph.director, "add_cylinder");
+	L.scenograph.director.gui.add(L.scenograph.director, "add_sphere");
+	L.scenograph.director.gui.add(L.scenograph.director, "add_torus");
+	L.scenograph.director.gui.add(L.scenograph.director, "add_plane");
+	L.scenograph.director.gui.add(L.scenograph.director, "add_tetrahedron");
+	L.scenograph.director.gui.add(L.scenograph.director, "add_octahedron");
 
 	var randomColor = Math.random() * 0xffffff;
 	var cube = new THREE.Mesh(new THREE.BoxGeometry(400, 400, 400), new THREE.MeshBasicMaterial({color: randomColor}));
@@ -42,13 +48,38 @@ L.scenograph.director.sandbox = function() {
 // Structuring like this so it slides into dat.gui nicely. Will probably need to come up with object "views" to plug into dat.gui....
 L.scenograph.director.csg = {
 	intersect: function() {
+		var materials = [];
+		L.scenograph.director.scene_variables.selected_objects.forEach(function(object){
+			if (object.material instanceof THREE.MeshFaceMaterial) {
+				
+				object.material.materials.forEach(function(material, fm_index){
+					materials.push(material);
+					object.geometry.faces.forEach(function(face){
+						if (face.materialIndex == fm_index) {
+							face.newIndex = materials.length-1; // set it to the index of the array
+						}
+					});
+				});
+				// had to separate it as changing materialIndex was screwing the if statement and always setting everything to the last 
+				object.geometry.faces.forEach(function(face){
+					face.materialIndex = face.newIndex;					
+				});
+			}
+			else {
+				materials.push(object.material);
+				object.geometry.faces.forEach(function(face){
+					face.materialIndex = materials.length-1;
+				});
+			}
+		});
+
 		var objBSP = new ThreeBSP(L.scenograph.director.scene_variables.selected_objects[0]);
 		for (var i = 1; i < L.scenograph.director.scene_variables.selected_objects.length; i++) {
 			var thisBSP = new ThreeBSP(L.scenograph.director.scene_variables.selected_objects[i]);
 			objBSP = objBSP.intersect(thisBSP);
 		}
 		var newGeo = objBSP.toGeometry();
-		var newMesh = new THREE.Mesh(newGeo, new THREE.MeshNormalMaterial({side: THREE.BackSide}));
+		var newMesh = new THREE.Mesh(newGeo, new THREE.MeshFaceMaterial(materials));
 
 		for (var i = 0; i < L.scenograph.director.scene_variables.selected_objects.length; i++) {
 			L.scenograph.director.scene.remove(L.scenograph.director.scene_variables.selected_objects[i]);
@@ -57,13 +88,38 @@ L.scenograph.director.csg = {
 		L.scenograph.director.scene.add(newMesh);
 	},
 	subtract: function() {
+		var materials = [];
+		L.scenograph.director.scene_variables.selected_objects.forEach(function(object){
+			if (object.material instanceof THREE.MeshFaceMaterial) {
+				
+				object.material.materials.forEach(function(material, fm_index){
+					materials.push(material);
+					object.geometry.faces.forEach(function(face){
+						if (face.materialIndex == fm_index) {
+							face.newIndex = materials.length-1; // set it to the index of the array
+						}
+					});
+				});
+				// had to separate it as changing materialIndex was screwing the if statement and always setting everything to the last 
+				object.geometry.faces.forEach(function(face){
+					face.materialIndex = face.newIndex;					
+				});
+			}
+			else {
+				materials.push(object.material);
+				object.geometry.faces.forEach(function(face){
+					face.materialIndex = materials.length-1;
+				});
+			}
+		});
+
 		var objBSP = new ThreeBSP(L.scenograph.director.scene_variables.selected_objects[0]);
 		for (var i = 1; i < L.scenograph.director.scene_variables.selected_objects.length; i++) {
 			var thisBSP = new ThreeBSP(L.scenograph.director.scene_variables.selected_objects[i]);
 			objBSP = objBSP.subtract(thisBSP);
 		}
 		var newGeo = objBSP.toGeometry();
-		var newMesh = new THREE.Mesh(newGeo, new THREE.MeshNormalMaterial({side: THREE.BackSide}));
+		var newMesh = new THREE.Mesh(newGeo, new THREE.MeshFaceMaterial(materials));
 
 		for (var i = 0; i < L.scenograph.director.scene_variables.selected_objects.length; i++) {
 			L.scenograph.director.scene.remove(L.scenograph.director.scene_variables.selected_objects[i]);
@@ -269,9 +325,43 @@ L.scenograph.director.draw_bounding_box = function(color, object, max, min, scal
     }
     object.add(bounding_box);
 };
+
+L.scenograph.director.random_color = function(){
+	return Math.random() * 0xffffff;
+}
+
 L.scenograph.director.add_cube = function() {
-	var randomColor = Math.random() * 0xffffff;
-	var cube = new THREE.Mesh(new THREE.BoxGeometry(400, 400, 400), new THREE.MeshBasicMaterial({color: randomColor}));
+	var cube = new THREE.Mesh(new THREE.BoxGeometry(400, 400, 400), new THREE.MeshBasicMaterial({color: L.scenograph.director.random_color()}));
 	this.scene.add(cube);
 }
+
+L.scenograph.director.add_cylinder = function() {
+	var cylinder = new THREE.Mesh(new THREE.CylinderGeometry( 400, 400, 400, 40, 4 ), new THREE.MeshBasicMaterial({color: L.scenograph.director.random_color()}));
+	this.scene.add(cylinder);
+}
+
+L.scenograph.director.add_sphere = function() {
+	var sphere = new THREE.Mesh(new THREE.SphereGeometry(200, 64, 32), new THREE.MeshBasicMaterial({color: L.scenograph.director.random_color()}));
+	this.scene.add(sphere);
+}
+
+L.scenograph.director.add_torus = function() {
+	var torus = new THREE.Mesh(new THREE.TorusGeometry( 400, 80, 80, 80 ), new THREE.MeshBasicMaterial({color: L.scenograph.director.random_color()}));
+	this.scene.add(torus);
+}
+
+L.scenograph.director.add_plane = function() {
+	var plane = new THREE.Mesh(new THREE.PlaneGeometry( 400, 400, 4, 4 ), new THREE.MeshBasicMaterial({color: L.scenograph.director.random_color()}));
+	this.scene.add(plane);
+}
+
+L.scenograph.director.add_tetrahedron = function() {
+	var tetrahedron = new THREE.Mesh(new THREE.TetrahedronGeometry( 400, 0 ), new THREE.MeshBasicMaterial({color: L.scenograph.director.random_color()}));
+	this.scene.add(tetrahedron);
+}
+L.scenograph.director.add_octahedron = function() {
+	var octahedron = new THREE.Mesh(new THREE.OctahedronGeometry( 400, 2 ), new THREE.MeshBasicMaterial({color: L.scenograph.director.random_color()}));
+	this.scene.add(octahedron);
+}
+
 

@@ -51,10 +51,23 @@ L.scenograph.director.sandbox = function() {
 	//var bufferGeo = THREE.BufferGeometryUtils.fromGeometry( newGeo );
 	var newMesh = new THREE.Mesh(newGeo, new THREE.MeshFaceMaterial(materials));
 	newMesh.position.y = 75;
-	L.scenograph.director.scene_variables.objects.push(newMesh);
+	//L.scenograph.director.scene_variables.objects.push(newMesh);
 	L.scenograph.director.scene.add(L.scenograph.director.scene_variables.objects[L.scenograph.director.scene_variables.objects.length-1]);
 	
 	L.scenograph.director.gui.add(L.scenograph.director, "add_cube");
+
+	var randomColor = Math.random() * 0xffffff;
+	var cube = new THREE.Mesh(new THREE.BoxGeometry(400, 400, 400), new THREE.MeshBasicMaterial({color: randomColor}));
+	cube.position.x -= 150;
+	cube.position.y -= 125;
+	this.scene.add(cube);
+	
+	randomColor = Math.random() * 0xffffff;
+	cube = new THREE.Mesh(new THREE.BoxGeometry(400, 400, 400), new THREE.MeshBasicMaterial({color: randomColor}));
+	cube.position.z -= 150;
+	cube.position.y += 125;
+	this.scene.add(cube);
+
 
 	L.scenograph.director.scene_variables.select_multiple = true;
 	L.scenograph.director.scene_variables.selected_objects = [];
@@ -102,11 +115,147 @@ L.scenograph.director.csg = {
 			objBSP = objBSP.union(thisBSP);
 		}
 		var newGeo = objBSP.toGeometry();
-		var newMesh = new THREE.Mesh(newGeo, new THREE.MeshNormalMaterial({side: THREE.BackSide}));
 
+		// build materials array for the final object 
+		// (the material index matches the index position in selected_objects)
+		var materials = [];
+		for (var i = 0; i < L.scenograph.director.scene_variables.selected_objects.length; i++) {		
+			/*
+			Support for multiple objects, commenting out for now because this whole thing is giving me a headache :(
+
+			if (L.scenograph.director.scene_variables.selected_objects[i].material instanceof THREE.MeshFaceMaterial) {
+				L.scenograph.director.scene_variables.selected_objects[i].material.materials.forEach(function(material){
+					materials.push(material);
+				});
+			}
+			else {
+				}
+			*/
+			materials.push(L.scenograph.director.scene_variables.selected_objects[i].material);	
+			
+		};
+		materials = materials.reverse();
+		
+		// loop through result geometry
+		var dimensions = ['x', 'y', 'z'];
+		newGeo.faces.forEach(function(new_face, nfi){
+			// loop through all selected object's faces - if a match is found, add to score
+			
+			var matched = false;
+			// search for 3 matches
+			L.scenograph.director.scene_variables.selected_objects.forEach(function(obj, obj_index){
+					obj.geometry.faces.forEach(function(original_face){
+						var match_score = 0;
+						var oa = obj.geometry.vertices[original_face.a];
+						var ob = obj.geometry.vertices[original_face.b];
+						var oc = obj.geometry.vertices[original_face.c]; 	
+						dimensions.forEach(function(dim){
+							if (oa[dim] == newGeo.vertices[new_face.a][dim]){
+								match_score += 1;
+							}
+							if (ob[dim] == newGeo.vertices[new_face.b][dim]){
+								match_score += 1;
+							}
+							if (oc[dim] == newGeo.vertices[new_face.c][dim]){
+								match_score += 1;
+							}
+						});	
+						if (match_score == 3) {
+							
+							new_face.materialIndex = obj_index % 2;
+						}
+					}); 
+			});
+			// search for 2 matches
+			if (matched == false) {
+				L.scenograph.director.scene_variables.selected_objects.forEach(function(obj, obj_index){
+					obj.geometry.faces.forEach(function(original_face){
+						var match_score = 0;
+						var oa = obj.geometry.vertices[original_face.a];
+						var ob = obj.geometry.vertices[original_face.b];
+						var oc = obj.geometry.vertices[original_face.c]; 	
+						dimensions.forEach(function(dim){
+							if (oa[dim] == newGeo.vertices[new_face.a][dim]){
+								match_score += 1;
+							}
+							if (ob[dim] == newGeo.vertices[new_face.b][dim]){
+								match_score += 1;
+							}
+							if (oc[dim] == newGeo.vertices[new_face.c][dim]){
+								match_score += 1;
+							}
+						});	
+						if (match_score == 2) {
+							
+							new_face.materialIndex = obj_index % 2;
+						}
+					}); 
+				});
+			}
+			// search for 1 match
+			if (matched == false) {
+				L.scenograph.director.scene_variables.selected_objects.forEach(function(obj, obj_index){
+					obj.geometry.faces.forEach(function(original_face){
+						var match_score = 0;
+						var oa = obj.geometry.vertices[original_face.a];
+						var ob = obj.geometry.vertices[original_face.b];
+						var oc = obj.geometry.vertices[original_face.c]; 	
+						dimensions.forEach(function(dim){
+							if (oa[dim] == newGeo.vertices[new_face.a][dim]){
+								match_score += 1;
+							}
+							if (ob[dim] == newGeo.vertices[new_face.b][dim]){
+								match_score += 1;
+							}
+							if (oc[dim] == newGeo.vertices[new_face.c][dim]){
+								match_score += 1;
+							}
+						});	
+						if (match_score == 1) {
+							
+							new_face.materialIndex = obj_index % 2;
+						}
+					}); 
+				});
+			}
+			// if 0 matches, materialIndex is 0.. or maybe i-1 if i > 1 ?
+			if (matched == false) {
+				L.scenograph.director.scene_variables.selected_objects.forEach(function(obj, obj_index){
+					obj.geometry.faces.forEach(function(original_face){
+						var match_score = 0;
+						var oa = obj.geometry.vertices[original_face.a];
+						var ob = obj.geometry.vertices[original_face.b];
+						var oc = obj.geometry.vertices[original_face.c]; 	
+						dimensions.forEach(function(dim){
+							if (oa[dim] == newGeo.vertices[new_face.a][dim]){
+								match_score += 1;
+							}
+							if (ob[dim] == newGeo.vertices[new_face.b][dim]){
+								match_score += 1;
+							}
+							if (oc[dim] == newGeo.vertices[new_face.c][dim]){
+								match_score += 1;
+							}
+						});	
+						if (match_score == 0) {
+							
+							new_face.materialIndex = obj_index > 0 ? obj_index-1 : obj_index % 2;
+						}
+					}); 
+				});
+			}
+		});
+			
+			
+			
+			
+
+		// Clean up the scene
 		for (var i = 0; i < L.scenograph.director.scene_variables.selected_objects.length; i++) {
 			L.scenograph.director.scene.remove(L.scenograph.director.scene_variables.selected_objects[i]);
 		}
+		console.log(materials)
+		var newMesh = new THREE.Mesh(newGeo, new THREE.MeshFaceMaterial(materials));
 		L.scenograph.director.clear_selection();
 		L.scenograph.director.scene.add(newMesh);
 	}
@@ -262,7 +411,8 @@ L.scenograph.director.draw_bounding_box = function(color, object, max, min, scal
     object.add(bounding_box);
 };
 L.scenograph.director.add_cube = function() {
-	var cube = new THREE.Mesh(new THREE.BoxGeometry(400, 400, 400), new THREE.MeshNormalMaterial());
+	var randomColor = Math.random() * 0xffffff;
+	var cube = new THREE.Mesh(new THREE.BoxGeometry(400, 400, 400), new THREE.MeshBasicMaterial({color: randomColor}));
 	this.scene.add(cube);
 }
 

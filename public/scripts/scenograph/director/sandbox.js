@@ -178,19 +178,31 @@ L.scenograph.director.select_object = function() {
 					L.scenograph.director.scene_variables.selectedFolder.add(L.scenograph.director, "clear_selection");
 					L.scenograph.director.scene_variables.selectedFolder.open();					
 
-					var colorFolder = L.scenograph.director.scene_variables.selectedFolder.addFolder("Colors");
 					var material = L.scenograph.director.scene_variables.selected.material;
+
 					
 					if (material instanceof THREE.MeshFaceMaterial) {
-						material.materials.forEach(function(mat){
+						var materialsFolder = L.scenograph.director.scene_variables.selectedFolder.addFolder("Materials");
+						material.materials.forEach(function(mat, mi){
+							var materialFolder = materialsFolder.addFolder("#" + mi)
 							var control = {
 								color: {
 									r: mat.color.r * 256,
 									g: mat.color.g * 256,
 									b: mat.color.b * 256
-								}
+								},
+								side: [ 'FrontSide', 'BackSide', 'DoubleSide' ][mat.side],
+								opacity: mat.prev_opacity
 							}
-							colorFolder.addColor(control, 'color').onChange(function (e) {
+							materialFolder.add(control, 'side', [ 'FrontSide', 'BackSide', 'DoubleSide' ]).onChange(function(e){
+								mat.side = THREE[e];
+							});
+							materialFolder.add(mat, 'wireframe');
+							materialFolder.add(control, 'opacity').onChange(function(e){
+								mat.prev_opacity = e;
+								mat.opacity = e;
+							});
+							materialFolder.addColor(control, 'color').onChange(function (e) {
 								if (typeof e == 'object' ) {								
 									mat.color = new THREE.Color().setRGB(e.r / 256,e.g / 256,e.b / 256);
 								}
@@ -198,26 +210,41 @@ L.scenograph.director.select_object = function() {
 									mat.color = new THREE.Color().setHex(e);	
 								}
 						    });
+						    materialFolder.open();
 						});
+						materialsFolder.open();
 					}
 					else {
+						var materialFolder = L.scenograph.director.scene_variables.selectedFolder.addFolder("Material");
 						var control = {
 							color: {
 								r: material.color.r * 256,
 								g: material.color.g * 256,
 								b: material.color.b * 256
-							}
+							},
+							side: [ 'FrontSide', 'BackSide', 'DoubleSide' ][material.side],
+							opacity: material.prev_opacity
 						}
-						colorFolder.addColor(control, 'color').onChange(function (e) {
+						materialFolder.add(control, 'side', [ 'FrontSide', 'BackSide', 'DoubleSide' ]).onChange(function(e){
+							material.side = THREE[e];
+						});
+						materialFolder.add(material, 'wireframe');
+						materialFolder.add(control, 'opacity').onChange(function(e){
+							material.prev_opacity = e;
+							material.opacity = e;
+						});
+
+						materialFolder.addColor(control, 'color').onChange(function (e) {
 							if (typeof e == 'object' ) {								
 								material.color = new THREE.Color().setRGB(e.r / 256,e.g / 256,e.b / 256);
 							}
 							if (typeof e == 'string') {
 								material.color = new THREE.Color().setHex(e);	
 							}
-					    });
+					    });					    
+					    materialFolder.open();
 					}
-					colorFolder.open();
+					
 
 					var posFolder = L.scenograph.director.scene_variables.selectedFolder.addFolder("Position");
 					posFolder.add(L.scenograph.director.scene_variables.selected.position, "x").step(1);
@@ -288,13 +315,17 @@ L.scenograph.director.clear_selection = function() {
 		if (L.scenograph.director.scene.children[i].material) {
 			if (L.scenograph.director.scene.children[i].material.materials) {
 		    	L.scenograph.director.scene.children[i].material.materials.forEach(function(material){
-		    		material.transparent = false;
-		    		material.opacity = 1.0;
+		    		if (material.prev_opacity) {
+		    			material.opacity = material.prev_opacity;
+		    			//delete material.prev_opacity;
+		    		}
 		    	});
 		    }
 		    else {
-		    	L.scenograph.director.scene.children[i].material.transparent = false;
-		    	L.scenograph.director.scene.children[i].material.opacity = 1.0;
+		    	if (L.scenograph.director.scene.children[i].material.prev_opacity) {
+	    			L.scenograph.director.scene.children[i].material.opacity = L.scenograph.director.scene.children[i].material.prev_opacity;
+	    			//delete L.scenograph.director.scene.children[i].material.prev_opacity;
+	    		}
 		    }
 		}
 		var obj_to_remove = [];
@@ -351,11 +382,13 @@ L.scenograph.director.draw_bounding_box = function(color, object, max, min, scal
     if (object.material.materials) {
     	object.material.materials.forEach(function(material){
     		material.transparent = true;
+    		material.prev_opacity = material.opacity;
     		material.opacity = 0.7;
     	});
     }
     else {
     	object.material.transparent = true;
+    	object.material.prev_opacity = object.material.opacity;
     	object.material.opacity = 0.7;
     }
     object.add(bounding_box);

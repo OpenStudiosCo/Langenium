@@ -17,6 +17,7 @@ L.scenograph.director.sandbox = function() {
 	L.scenograph.director.scene_variables.objects = [];
 
 	L.scenograph.director.gui.add(L.scenograph.director, "add_cube");
+	L.scenograph.director.gui.add(L.scenograph.director, "add_prism");
 	L.scenograph.director.gui.add(L.scenograph.director, "add_cylinder");
 	L.scenograph.director.gui.add(L.scenograph.director, "add_sphere");
 	L.scenograph.director.gui.add(L.scenograph.director, "add_torus");
@@ -399,36 +400,61 @@ L.scenograph.director.random_color = function(){
 }
 
 L.scenograph.director.add_cube = function() {
-	var cube = new THREE.Mesh(new THREE.BoxGeometry(400, 400, 400), new THREE.MeshBasicMaterial({color: L.scenograph.director.random_color()}));
+	var cube = new THREE.Mesh(new THREE.BoxGeometry(400, 400, 400), new THREE.MeshLambertMaterial({color: L.scenograph.director.random_color()}));
 	this.scene.add(cube);
 }
 
+L.scenograph.director.add_prism = function() {
+	var geometry = new THREE.Geometry();
+    ////custom triangular pyramid TODO--fix problems during rotation.
+    geometry.vertices.push(new THREE.Vector3(-200, 200, 400)); // Vertex is not used anymore
+    geometry.vertices.push(new THREE.Vector3(-200, -200, 400));
+    geometry.vertices.push(new THREE.Vector3(200, -200, 400));
+    geometry.vertices.push(new THREE.Vector3(-200, 200, -400));
+    geometry.vertices.push(new THREE.Vector3(-200, -200, -400));
+    geometry.vertices.push(new THREE.Vector3(200, -200, -400));
+
+    geometry.faces.push(new THREE.Face3(0, 1, 2));
+    geometry.faces.push(new THREE.Face3(3, 4, 0));
+    geometry.faces.push(new THREE.Face3(0, 4, 1)); //041 MUST BE Counter Clockwise
+    geometry.faces.push(new THREE.Face3(1, 4, 5));
+    geometry.faces.push(new THREE.Face3(1, 5, 2)); //152 MUST BE Counter Clockwise
+    geometry.faces.push(new THREE.Face3(2, 3, 0)); //230 MUST BE Counter Clockwise
+    geometry.faces.push(new THREE.Face3(2, 5, 3)); //253 MUST BE Counter Clockwise
+    geometry.faces.push(new THREE.Face3(3, 5, 4)); //354 MUST BE Counter Clockwise
+
+
+
+	var prism = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({color: L.scenograph.director.random_color()}));
+	this.scene.add(prism)
+}
+
 L.scenograph.director.add_cylinder = function() {
-	var cylinder = new THREE.Mesh(new THREE.CylinderGeometry( 400, 400, 400, 40, 4 ), new THREE.MeshBasicMaterial({color: L.scenograph.director.random_color()}));
+	var cylinder = new THREE.Mesh(new THREE.CylinderGeometry( 400, 400, 400, 40, 4 ), new THREE.MeshLambertMaterial({color: L.scenograph.director.random_color()}));
 	this.scene.add(cylinder);
 }
 
 L.scenograph.director.add_sphere = function() {
-	var sphere = new THREE.Mesh(new THREE.SphereGeometry(200, 64, 32), new THREE.MeshBasicMaterial({color: L.scenograph.director.random_color()}));
+	var sphere = new THREE.Mesh(new THREE.SphereGeometry(200, 64, 32), new THREE.MeshLambertMaterial({color: L.scenograph.director.random_color()}));
 	this.scene.add(sphere);
 }
 
 L.scenograph.director.add_torus = function() {
-	var torus = new THREE.Mesh(new THREE.TorusGeometry( 400, 80, 80, 80 ), new THREE.MeshBasicMaterial({color: L.scenograph.director.random_color()}));
+	var torus = new THREE.Mesh(new THREE.TorusGeometry( 400, 80, 80, 80 ), new THREE.MeshLambertMaterial({color: L.scenograph.director.random_color()}));
 	this.scene.add(torus);
 }
 
 L.scenograph.director.add_plane = function() {
-	var plane = new THREE.Mesh(new THREE.PlaneGeometry( 400, 400, 4, 4 ), new THREE.MeshBasicMaterial({color: L.scenograph.director.random_color()}));
+	var plane = new THREE.Mesh(new THREE.PlaneGeometry( 400, 400, 4, 4 ), new THREE.MeshLambertMaterial({color: L.scenograph.director.random_color()}));
 	this.scene.add(plane);
 }
 
 L.scenograph.director.add_tetrahedron = function() {
-	var tetrahedron = new THREE.Mesh(new THREE.TetrahedronGeometry( 400, 0 ), new THREE.MeshBasicMaterial({color: L.scenograph.director.random_color()}));
+	var tetrahedron = new THREE.Mesh(new THREE.TetrahedronGeometry( 400, 0 ), new THREE.MeshLambertMaterial({color: L.scenograph.director.random_color()}));
 	this.scene.add(tetrahedron);
 }
 L.scenograph.director.add_octahedron = function() {
-	var octahedron = new THREE.Mesh(new THREE.OctahedronGeometry( 400, 2 ), new THREE.MeshBasicMaterial({color: L.scenograph.director.random_color()}));
+	var octahedron = new THREE.Mesh(new THREE.OctahedronGeometry( 400, 2 ), new THREE.MeshLambertMaterial({color: L.scenograph.director.random_color()}));
 	this.scene.add(octahedron);
 }
 

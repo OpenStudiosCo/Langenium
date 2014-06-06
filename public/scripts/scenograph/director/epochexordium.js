@@ -223,7 +223,7 @@ L.scenograph.director.make_planet = function(name, position, radius) {
 	var spritey = makeTextSprite( name, 
 		{ fontsize: 48, borderColor: {r:255, g:0, b:0, a:1.0}, backgroundColor: {r:255, g:100, b:100, a:0.8} } );
 	spritey.position.set(0,1,0);
-	planet.add(spritey)
+	//planet.add(spritey)
 
 	if (name == 'Earth') {
 		var clouds    = THREEx.Planets.createEarthCloud()

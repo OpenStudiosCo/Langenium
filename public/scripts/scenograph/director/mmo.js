@@ -85,8 +85,33 @@ L.scenograph.director.mmo = function() {
 		mesh.scale.set(10,10,10);
 		mesh.position.set(0, 15, 0)
 		L.scenograph.director.scene.add(mesh);	
-		mesh.add(L.scenograph.director.camera)
-		
+		mesh.add(L.scenograph.director.camera);
+
+		/*
+		http://webgl-fire.appspot.com/html/fire.html
+		var firetex = THREE.ImageUtils.loadTexture( "/assets/textures/firetex.png" );
+		firetex.wrapS = firetex.wrapT = THREE.RepeatWrapping;
+
+		var nzw = THREE.ImageUtils.loadTexture( "/assets/textures/nzw.png" );
+		nzw.wrapS = nzw.wrapT = THREE.RepeatWrapping;
+
+		var thruster_uniforms = {
+			fireProfile: 	{ type: "t", value: firetex },
+			nzw:			{ type: "t", value: nzw },
+			time: 			{ type: "f", value: 0.0 },
+			eye: 			{ type: "v3", value: new THREE.Vector3(0, 0, 0) }
+		};
+
+		var thruster = THREE.Mesh(new THREE.BoxGeometry(400, 400, 400), new THREE.ShaderMaterial({
+			side: THREE.DoubleSide,
+			uniforms: thruster_uniforms,
+			vertexShader:   document.getElementById( 'fireVertShader'   ).textContent,
+			fragmentShader: document.getElementById( 'fireFragShader' ).textContent
+		}));
+
+		mesh.add(thruster);
+		*/
+
 		var anim_obj = {
 			animate: function(delta) {
 				L.scenograph.director.move_ship(mesh);

@@ -56,14 +56,18 @@ html
 		// http://socket.io/
 		script(src="scripts/vendor/socket.io.js")
 		// Shaders
-		script(type='x-shader/x-vertex', id='haloVertShader')
-			include shaders/halo.vert
-		script(type='x-shader/x-vertex', id='haloFragShader')
-			include shaders/halo.frag
 		script(type='x-shader/x-vertex', id='cloudVertShader')
 			include shaders/cloud.vert
 		script(type='x-shader/x-vertex', id='cloudFragShader')
 			include shaders/cloud.frag
+		script(type='x-shader/x-vertex', id='fireVertShader')
+			include shaders/fire.vert
+		script(type='x-shader/x-vertex', id='fireFragShader')
+			include shaders/fire.frag
+		script(type='x-shader/x-vertex', id='haloVertShader')
+			include shaders/halo.vert
+		script(type='x-shader/x-vertex', id='haloFragShader')
+			include shaders/halo.frag	
 		script(type='x-shader/x-vertex', id='logoWaterVertShader')
 			include shaders/logo-water.vert
 		script(type='x-shader/x-vertex', id='logoWaterFragShader')

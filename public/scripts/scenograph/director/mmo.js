@@ -88,12 +88,12 @@ L.scenograph.director.mmo = function() {
 		mesh.add(L.scenograph.director.camera);
 
 		/*
-		http://webgl-fire.appspot.com/html/fire.html
+		//http://webgl-fire.appspot.com/html/fire.html
 		var firetex = THREE.ImageUtils.loadTexture( "/assets/textures/firetex.png" );
-		firetex.wrapS = firetex.wrapT = THREE.RepeatWrapping;
+		//firetex.wrapS = firetex.wrapT = THREE.RepeatWrapping;
 
 		var nzw = THREE.ImageUtils.loadTexture( "/assets/textures/nzw.png" );
-		nzw.wrapS = nzw.wrapT = THREE.RepeatWrapping;
+		//nzw.wrapS = nzw.wrapT = THREE.RepeatWrapping;
 
 		var thruster_uniforms = {
 			fireProfile: 	{ type: "t", value: firetex },
@@ -102,12 +102,14 @@ L.scenograph.director.mmo = function() {
 			eye: 			{ type: "v3", value: new THREE.Vector3(0, 0, 0) }
 		};
 
-		var thruster = THREE.Mesh(new THREE.BoxGeometry(400, 400, 400), new THREE.ShaderMaterial({
-			side: THREE.DoubleSide,
+		var thruster_material = new THREE.ShaderMaterial({
 			uniforms: thruster_uniforms,
 			vertexShader:   document.getElementById( 'fireVertShader'   ).textContent,
-			fragmentShader: document.getElementById( 'fireFragShader' ).textContent
-		}));
+			fragmentShader: document.getElementById( 'fireFragShader' ).textContent,
+			side: THREE.DoubleSide
+		});
+
+		var thruster = new THREE.Mesh(new THREE.BoxGeometry(4, 4, 4), thruster_material);
 
 		mesh.add(thruster);
 		*/
@@ -115,6 +117,10 @@ L.scenograph.director.mmo = function() {
 		var anim_obj = {
 			animate: function(delta) {
 				L.scenograph.director.move_ship(mesh);
+					var worldCoordinates = new THREE.Vector3();
+					worldCoordinates.setFromMatrixPosition(L.scenograph.director.camera.matrixWorld);
+					//thruster_uniforms.eye.value = worldCoordinates;
+					//thruster_uniforms.time.value += delta /1000;
 			}
 		}
 		L.scenograph.director.animation_queue.push(anim_obj)

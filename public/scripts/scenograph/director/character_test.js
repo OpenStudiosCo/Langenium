@@ -20,7 +20,7 @@ L.scenograph.director.character_test = function() {
 	var lightFixture2 = L.scenograph.director.make_light(new THREE.Vector3(0,275, -150));
 	this.scene.add(lightFixture2);
 
-	var roomMaterial = new THREE.MeshPhongMaterial( { color: 0xCCCCCC, side: THREE.BackSide} ); 
+	var roomMaterial = new THREE.MeshLambertMaterial( { color: 0xCCCCCC, side: THREE.BackSide} ); 
 	var room1 = new THREE.Mesh(new THREE.CylinderGeometry( 500, 500, 450, 40, 4 ), roomMaterial);
 	room1.position.set(0, 75, 0)
 	var room1BSP = new ThreeBSP( room1 );
@@ -148,7 +148,7 @@ L.scenograph.director.move_character = function(character) {
 		pZ = 0,
 		rY = 0, 
 		tZ = 0, 
-		radian = (Math.PI / 135);
+		radian = (Math.PI / 90);
 	
 	// Detect keyboard input
 	if (L.scenograph.keyboard.pressed("W")) {

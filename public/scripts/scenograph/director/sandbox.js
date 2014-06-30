@@ -253,16 +253,39 @@ L.scenograph.director.select_object = function() {
 					posFolder.add(L.scenograph.director.scene_variables.selected.position, "z").step(1);
 					posFolder.open();
 
+					var rot_step = Math.round(Math.PI / 12);
 					var rotFolder = L.scenograph.director.scene_variables.selectedFolder.addFolder("Rotation");
-					rotFolder.add(L.scenograph.director.scene_variables.selected.rotation, "x").step(.01);
-					rotFolder.add(L.scenograph.director.scene_variables.selected.rotation, "y").step(.01);
-					rotFolder.add(L.scenograph.director.scene_variables.selected.rotation, "z").step(.01);
+					rotFolder.add(L.scenograph.director.scene_variables.selected.rotation, "x").step(rot_step);
+					rotFolder.add(L.scenograph.director.scene_variables.selected.rotation, "y").step(rot_step);
+					rotFolder.add(L.scenograph.director.scene_variables.selected.rotation, "z").step(rot_step);
 					rotFolder.open();
 
+
 					var sclFolder = L.scenograph.director.scene_variables.selectedFolder.addFolder("Scale");
-					sclFolder.add(L.scenograph.director.scene_variables.selected.scale, "x").step(.01);
-					sclFolder.add(L.scenograph.director.scene_variables.selected.scale, "y").step(.01);
-					sclFolder.add(L.scenograph.director.scene_variables.selected.scale, "z").step(.01);
+					
+					var scl_control = {
+						lock_aspect: false
+					};
+
+					var scl_update = function(dim, delta) {
+						if (scl_control.lock_aspect == true) {
+							L.scenograph.director.scene_variables.selected.scale.set(delta,delta,delta)
+						}
+						else {
+							L.scenograph.director.scene_variables.selected.scale[dim] = delta;
+						}
+					}
+					
+					sclFolder.add(scl_control, "lock_aspect");
+					sclFolder.add(L.scenograph.director.scene_variables.selected.scale, "x").step(.01).onChange(function(e){
+						scl_update('x', e);
+					});
+					sclFolder.add(L.scenograph.director.scene_variables.selected.scale, "y").step(.01).onChange(function(e){
+						scl_update('y', e);
+					});
+					sclFolder.add(L.scenograph.director.scene_variables.selected.scale, "z").step(.01).onChange(function(e){
+						scl_update('z', e);
+					});
 					sclFolder.open();
 
 
@@ -309,6 +332,18 @@ L.scenograph.director.select_object = function() {
 		}
 	}
 	return this;
+}
+
+L.scenograph.director.create_group = function() {
+
+}
+
+L.scenograph.director.clone_group = function() {
+
+}
+
+L.scenograph.director.delete_selection = function() {
+	// delete the currently selected object
 }
 
 L.scenograph.director.clear_selection = function() {

@@ -1,28 +1,6 @@
 $(document).ready(function(){
 	L.scenograph.director.init();	
 	
-	L.socket.on('ping', function(data){
-		L.scenograph.stats.latency.append(
-			L.scenograph.stats.time.now,
-			data.latency
-		);
-		L.socket.emit('pong', { time: L.scenograph.stats.time.now });
-	});
-
-	L.socket.emit('pong', { time: L.scenograph.stats.time.now });
-
-	L.socket.on('content', function(data){
-		if (window.location.hash.replace('#/','') == data.request.join('/')) {
-			$('#page').html($('#pages #' + data.request[0]).html());
-			$('#content').html(data.response);
-			$('#viewport .slideshow').cycle({
-				slides: '> .slide'
-			});		
-			$('#page').addClass('fadeInDown');	
-			$('#page').removeClass('fadeOutUp');
-		}
-	});
-	
 	L.gui.add(L.scenograph.options,'hideInterface');
 	L.gui.add(L.scenograph.options,'useControls');
 	L.gui.add(L.scenograph.options,'editMode');
@@ -56,38 +34,9 @@ $(document).ready(function(){
     	this.blur();
     });
 
-	var loadPage = function(page) {
-		$('#page').addClass('fadeOutUp');
-		$('#page').removeClass('fadeInDown');
-    	if (page == '#/' || page == '') {
-			page = 'home';
-		} 
-		else {
-			page = page.replace('#/','');
-		}
-
-		var params = page.split('/');
-		
-		
-		$('#page.fadeOutUp').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
-			$('#viewport .slideshow').cycle('destroy');
-			if (params.length > 1) {
-				L.socket.emit('content',params)
-			}
-			else {
-				$('#page').html($('#pages #' + page).html());
-				$('#viewport .slideshow').cycle({
-					slides: '> .slide'
-				});		
-				$('#page').addClass('fadeInDown');
-				$('#page').removeClass('fadeOutUp');
-			}
-		});		
-    }
-	loadPage(window.location.hash);
-
+    L.content.loadPage(window.location.hash);
 	$(window).bind('hashchange', function () { //detect hash change
-        loadPage(window.location.hash);
+        L.content.loadPage(window.location.hash);
     });
 
 });

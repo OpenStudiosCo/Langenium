@@ -1,6 +1,6 @@
 ### Langenium: Epoch Exordium (E.E.)
 
-![Epoch Exordium Poster](./assets/content/feature1.png)
+![Epoch Exordium Poster](./content/feature1.png)
 
 An adventure RPG with resource management elements from RTS.
 

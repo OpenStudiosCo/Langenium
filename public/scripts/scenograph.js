@@ -3,9 +3,9 @@ L.scenograph = {
 	winW: 1024,
 	winH: 768,
 	options: {
-		activeScene: 'Sandbox',
+		activeScene: 'MMO',
 		currentScene: '',
-		hideInterface: true,
+		hideInterface: false,
 		editMode: false,
 		scenes: [
 			'Epoch Exordium',

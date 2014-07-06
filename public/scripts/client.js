@@ -25,6 +25,7 @@ $(document).ready(function(){
 	
 	L.gui.add(L.scenograph.options,'hideInterface');
 	L.gui.add(L.scenograph.options,'useControls');
+	L.gui.add(L.scenograph.options,'editMode');
 	L.gui.add(L.scenograph.options,'activeScene', L.scenograph.options.scenes);
 
 	var latency_gui = L.gui.addFolder("Latency");

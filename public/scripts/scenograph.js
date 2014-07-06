@@ -3,9 +3,10 @@ L.scenograph = {
 	winW: 1024,
 	winH: 768,
 	options: {
-		activeScene: 'MMO',
+		activeScene: 'Sandbox',
 		currentScene: '',
 		hideInterface: true,
+		editMode: false,
 		scenes: [
 			'Epoch Exordium',
 			'MMO',
@@ -190,7 +191,7 @@ L.scenograph.director.animate = function() {
 				L.scenograph.options.currentScene = 'Character Test';
 				break;
 			case 'Sandbox':
-				L.scenograph.director.sandbox();
+				L.scenograph.editor();
 				L.scenograph.options.currentScene = 'Sandbox';
 				break;
 		}

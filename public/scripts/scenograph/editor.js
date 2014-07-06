@@ -1,5 +1,6 @@
-L.scenograph.director.sandbox = function() {
-	this.camera_state.zoom = 3500;
+L.scenograph.editor = function() {
+
+		L.scenograph.director.camera_state.zoom = 3500;
 
 	L.scenograph.director.camera.position.set(
 		0, 
@@ -12,28 +13,30 @@ L.scenograph.director.sandbox = function() {
 	hemiLight.color.setRGB( 0.9, 0.95, 1 );
 	hemiLight.groundColor.setRGB( 0.6, 0.75, 1 );
 	hemiLight.position.set( 0, 100, 0 );
-	this.scene.add(hemiLight);
+	L.scenograph.director.scene.add(hemiLight);
 
 	L.scenograph.director.scene_variables.objects = [];
 
-	L.scenograph.director.gui.add(L.scenograph.director, "add_cube");
-	L.scenograph.director.gui.add(L.scenograph.director, "add_prism");
-	L.scenograph.director.gui.add(L.scenograph.director, "add_cylinder");
-	L.scenograph.director.gui.add(L.scenograph.director, "add_sphere");
-	L.scenograph.director.gui.add(L.scenograph.director, "add_torus");
-	L.scenograph.director.gui.add(L.scenograph.director, "add_plane");
-	L.scenograph.director.gui.add(L.scenograph.director, "add_tetrahedron");
-	L.scenograph.director.gui.add(L.scenograph.director, "add_octahedron");
+
+	L.scenograph.director.scene_variables.collidables = [];
+
+	for (var folder in L.scenograph.editor.gui_folders) {
+		var newFolder = L.scenograph.director.gui.addFolder(folder);
+		for (var element in L.scenograph.editor.gui_folders[folder]) {
+			newFolder.add(L.scenograph.editor.gui_folders[folder], element)
+			newFolder.open();
+		};
+	}
 
 	L.scenograph.director.scene_variables.select_multiple = false;
 	L.scenograph.director.scene_variables.selected_objects = [];
 	L.scenograph.director.scene_variables._selectedObj = ""; // holder for object chosen in multi select dropdown, this definitely needs to be put in a smarter place
 	L.scenograph.director.gui.add(L.scenograph.director.scene_variables, "select_multiple");
-	L.scenograph.director.animation_queue.push(new L.scenograph.director.select_object());
+	L.scenograph.director.animation_queue.push(new L.scenograph.editor.select_object());
 }
 
 // Structuring like this so it slides into dat.gui nicely. Will probably need to come up with object "views" to plug into dat.gui....
-L.scenograph.director.csg = {
+L.scenograph.editor.csg = {
 	intersect: function() {
 		var materials = [];
 		L.scenograph.director.scene_variables.selected_objects.forEach(function(object){
@@ -71,7 +74,7 @@ L.scenograph.director.csg = {
 		for (var i = 0; i < L.scenograph.director.scene_variables.selected_objects.length; i++) {
 			L.scenograph.director.scene.remove(L.scenograph.director.scene_variables.selected_objects[i]);
 		}
-		L.scenograph.director.clear_selection();
+		L.scenograph.editor.clear_selection();
 		L.scenograph.director.scene.add(newMesh);
 	},
 	subtract: function() {
@@ -111,7 +114,7 @@ L.scenograph.director.csg = {
 		for (var i = 0; i < L.scenograph.director.scene_variables.selected_objects.length; i++) {
 			L.scenograph.director.scene.remove(L.scenograph.director.scene_variables.selected_objects[i]);
 		}
-		L.scenograph.director.clear_selection();
+		L.scenograph.editor.clear_selection();
 		L.scenograph.director.scene.add(newMesh);
 	},
 	union: function() {
@@ -158,11 +161,12 @@ L.scenograph.director.csg = {
 		
 		var newMesh = new THREE.Mesh(newGeo, new THREE.MeshFaceMaterial(materials));
 		newMesh.position.set(0,-100,50)
-		L.scenograph.director.clear_selection();
+		L.scenograph.editor.clear_selection();
 		L.scenograph.director.scene.add(newMesh);
 	}
 };
-L.scenograph.director.select_object = function() {
+
+L.scenograph.editor.select_object = function() {
 	this.animate = function(delta) {
 		if (L.scenograph.director.cursor.leftClick == true) {
 			L.scenograph.director.projector.unprojectVector(L.scenograph.director.cursor.position, L.scenograph.director.camera);
@@ -171,12 +175,12 @@ L.scenograph.director.select_object = function() {
 			var intersects = raycaster.intersectObjects( L.scenograph.director.scene.children );
 			if (intersects.length > 0) {
 				if (L.scenograph.director.scene_variables.select_multiple == false) {
-					L.scenograph.director.clear_selection();
+					L.scenograph.editor.clear_selection();
 					L.scenograph.director.scene_variables.selected = intersects[0].object;
 					intersects[0].object.geometry.computeBoundingBox();
-					L.scenograph.director.draw_bounding_box(0xFFFF00, intersects[0].object, intersects[0].object.geometry.boundingBox.max, intersects[0].object.geometry.boundingBox.min, intersects[0].object.scale.x );
+					L.scenograph.editor.draw_bounding_box(0xFFFF00, intersects[0].object, intersects[0].object.geometry.boundingBox.max, intersects[0].object.geometry.boundingBox.min, intersects[0].object.scale.x );
 					L.scenograph.director.scene_variables.selectedFolder = L.scenograph.director.gui.addFolder("Selected Object");
-					L.scenograph.director.scene_variables.selectedFolder.add(L.scenograph.director, "clear_selection");
+					L.scenograph.director.scene_variables.selectedFolder.add(L.scenograph.editor, "clear_selection");
 					L.scenograph.director.scene_variables.selectedFolder.open();					
 
 					var material = L.scenograph.director.scene_variables.selected.material;
@@ -301,14 +305,14 @@ L.scenograph.director.select_object = function() {
 				else {
 					if (L.scenograph.director.gui.__folders["Selected Object"]) {
 						L.scenograph.director.gui.removeFolder("Selected Object");
-						L.scenograph.director.clear_selection();
+						L.scenograph.editor.clear_selection();
 					}
 					if (!L.scenograph.director.gui.__folders["Selected Objects"]) {
 						L.scenograph.director.scene_variables.selectedFolder = L.scenograph.director.gui.addFolder("Selected Objects");
-						L.scenograph.director.scene_variables.selectedFolder.add(L.scenograph.director, "clear_selection");
-						L.scenograph.director.scene_variables.selectedFolder.add(L.scenograph.director.csg, "intersect");
-						L.scenograph.director.scene_variables.selectedFolder.add(L.scenograph.director.csg, "subtract");
-						L.scenograph.director.scene_variables.selectedFolder.add(L.scenograph.director.csg, "union");
+						L.scenograph.director.scene_variables.selectedFolder.add(L.scenograph.editor, "clear_selection");
+						L.scenograph.director.scene_variables.selectedFolder.add(L.scenograph.editor.csg, "intersect");
+						L.scenograph.director.scene_variables.selectedFolder.add(L.scenograph.editor.csg, "subtract");
+						L.scenograph.director.scene_variables.selectedFolder.add(L.scenograph.editor.csg, "union");
 						L.scenograph.director.scene_variables.selectedFolder.open();	
 					}
 					// Make sure we're not dealing with something that's already selected
@@ -321,7 +325,7 @@ L.scenograph.director.select_object = function() {
 					if (addToSelection == true) {
 						intersects[0].object.geometry.computeBoundingBox();
 						var randomColor = Math.random() * 0xffffff;
-						L.scenograph.director.draw_bounding_box( randomColor, intersects[0].object, intersects[0].object.geometry.boundingBox.max, intersects[0].object.geometry.boundingBox.min, intersects[0].object.scale.x );
+						L.scenograph.editor.draw_bounding_box( randomColor, intersects[0].object, intersects[0].object.geometry.boundingBox.max, intersects[0].object.geometry.boundingBox.min, intersects[0].object.scale.x );
 						L.scenograph.director.scene_variables.selected_objects.push(intersects[0].object);
 						$(L.scenograph.director.scene_variables.selectedFolder.domElement).append(
 							"<li style='background-color: #" + parseInt(randomColor).toString(16) + ";'></li>"
@@ -334,19 +338,19 @@ L.scenograph.director.select_object = function() {
 	return this;
 }
 
-L.scenograph.director.create_group = function() {
+L.scenograph.editor.create_group = function() {
 
 }
 
-L.scenograph.director.clone_group = function() {
+L.scenograph.editor.clone_group = function() {
 
 }
 
-L.scenograph.director.delete_selection = function() {
+L.scenograph.editor.delete_selection = function() {
 	// delete the currently selected object
 }
 
-L.scenograph.director.clear_selection = function() {
+L.scenograph.editor.clear_selection = function() {
 	for (var i = 0; i < L.scenograph.director.scene.children.length; i++) {
 		if (L.scenograph.director.scene.children[i].material) {
 			if (L.scenograph.director.scene.children[i].material.materials) {
@@ -387,7 +391,7 @@ L.scenograph.director.clear_selection = function() {
 	}
 }
 
-L.scenograph.director.draw_bounding_box = function(color, object, max, min, scale) {
+L.scenograph.editor.draw_bounding_box = function(color, object, max, min, scale) {
 
 	var material = new THREE.LineBasicMaterial({
         color: color
@@ -430,67 +434,169 @@ L.scenograph.director.draw_bounding_box = function(color, object, max, min, scal
     object.add(bounding_box);
 };
 
-L.scenograph.director.random_color = function(){
+L.scenograph.editor.random_color = function(){
 	return Math.random() * 0xffffff;
 }
 
-L.scenograph.director.add_cube = function() {
-	var cube = new THREE.Mesh(new THREE.BoxGeometry(400, 400, 400), new THREE.MeshLambertMaterial({color: L.scenograph.director.random_color()}));
-	this.scene.add(cube);
+L.scenograph.editor.add = function(type, position, scale, rotation) {
+	var length = 40;
+	var geometry;
+	switch(type) {
+		case 'cube': 
+			geometry = new THREE.BoxGeometry(length, length, length);
+			break;
+		case 'prism': 
+			geometry = new THREE.Geometry();
+		    ////custom triangular pyramid TODO--fix problems during rotation.
+		    geometry.vertices.push(new THREE.Vector3(-length/2, length/2, length)); // Vertex is not used anymore
+		    geometry.vertices.push(new THREE.Vector3(-length/2, -length/2, length));
+		    geometry.vertices.push(new THREE.Vector3(length/2, -length/2, length));
+		    geometry.vertices.push(new THREE.Vector3(-length/2, length/2, -length));
+		    geometry.vertices.push(new THREE.Vector3(-length/2, -length/2, -length));
+		    geometry.vertices.push(new THREE.Vector3(length/2, -length/2, -length));
+
+		    geometry.faces.push(new THREE.Face3(0, 1, 2));
+		    geometry.faces.push(new THREE.Face3(3, 4, 0));
+		    geometry.faces.push(new THREE.Face3(0, 4, 1)); //041 MUST BE Counter Clockwise
+		    geometry.faces.push(new THREE.Face3(1, 4, 5));
+		    geometry.faces.push(new THREE.Face3(1, 5, 2)); //152 MUST BE Counter Clockwise
+		    geometry.faces.push(new THREE.Face3(2, 3, 0)); //230 MUST BE Counter Clockwise
+		    geometry.faces.push(new THREE.Face3(2, 5, 3)); //253 MUST BE Counter Clockwise
+		    geometry.faces.push(new THREE.Face3(3, 5, 4)); //354 MUST BE Counter Clockwise
+			break;
+		case 'cylinder': 
+			geometry = new THREE.CylinderGeometry( length, length, length, 32, 4 );
+			break;
+		case 'sphere': 
+			geometry = new THREE.SphereGeometry(length/2, 64, 32);
+			break;
+		case 'torus': 
+			geometry = new THREE.TorusGeometry( length, 8, 8, 8 );
+			break;
+		case 'plane': 
+			geometry = new THREE.PlaneGeometry( length, length, 4, 4 );
+			break;
+		case 'tetrahedron': 
+			geometry = new THREE.TetrahedronGeometry( length, 0 );
+			break;
+		case 'octahedron': 
+			geometry = new THREE.OctahedronGeometry( length, 2 );
+			break;
+	}
+	var mesh = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({color: L.scenograph.editor.random_color()}));
+	mesh.type = type;
+	mesh.position.set(position.x, position.y, position.z);
+	mesh.rotation.set(rotation.x, rotation.y, rotation.z);
+	mesh.scale.set(scale.x, scale.y, scale.z);
+	L.scenograph.director.scene.add(mesh);
 }
 
-L.scenograph.director.add_prism = function() {
-	var geometry = new THREE.Geometry();
-    ////custom triangular pyramid TODO--fix problems during rotation.
-    geometry.vertices.push(new THREE.Vector3(-200, 200, 400)); // Vertex is not used anymore
-    geometry.vertices.push(new THREE.Vector3(-200, -200, 400));
-    geometry.vertices.push(new THREE.Vector3(200, -200, 400));
-    geometry.vertices.push(new THREE.Vector3(-200, 200, -400));
-    geometry.vertices.push(new THREE.Vector3(-200, -200, -400));
-    geometry.vertices.push(new THREE.Vector3(200, -200, -400));
-
-    geometry.faces.push(new THREE.Face3(0, 1, 2));
-    geometry.faces.push(new THREE.Face3(3, 4, 0));
-    geometry.faces.push(new THREE.Face3(0, 4, 1)); //041 MUST BE Counter Clockwise
-    geometry.faces.push(new THREE.Face3(1, 4, 5));
-    geometry.faces.push(new THREE.Face3(1, 5, 2)); //152 MUST BE Counter Clockwise
-    geometry.faces.push(new THREE.Face3(2, 3, 0)); //230 MUST BE Counter Clockwise
-    geometry.faces.push(new THREE.Face3(2, 5, 3)); //253 MUST BE Counter Clockwise
-    geometry.faces.push(new THREE.Face3(3, 5, 4)); //354 MUST BE Counter Clockwise
-
-
-
-	var prism = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({color: L.scenograph.director.random_color()}));
-	this.scene.add(prism)
-}
-
-L.scenograph.director.add_cylinder = function() {
-	var cylinder = new THREE.Mesh(new THREE.CylinderGeometry( 400, 400, 400, 40, 4 ), new THREE.MeshLambertMaterial({color: L.scenograph.director.random_color()}));
-	this.scene.add(cylinder);
-}
-
-L.scenograph.director.add_sphere = function() {
-	var sphere = new THREE.Mesh(new THREE.SphereGeometry(200, 64, 32), new THREE.MeshLambertMaterial({color: L.scenograph.director.random_color()}));
-	this.scene.add(sphere);
-}
-
-L.scenograph.director.add_torus = function() {
-	var torus = new THREE.Mesh(new THREE.TorusGeometry( 400, 80, 80, 80 ), new THREE.MeshLambertMaterial({color: L.scenograph.director.random_color()}));
-	this.scene.add(torus);
-}
-
-L.scenograph.director.add_plane = function() {
-	var plane = new THREE.Mesh(new THREE.PlaneGeometry( 400, 400, 4, 4 ), new THREE.MeshLambertMaterial({color: L.scenograph.director.random_color()}));
-	this.scene.add(plane);
-}
-
-L.scenograph.director.add_tetrahedron = function() {
-	var tetrahedron = new THREE.Mesh(new THREE.TetrahedronGeometry( 400, 0 ), new THREE.MeshLambertMaterial({color: L.scenograph.director.random_color()}));
-	this.scene.add(tetrahedron);
-}
-L.scenograph.director.add_octahedron = function() {
-	var octahedron = new THREE.Mesh(new THREE.OctahedronGeometry( 400, 2 ), new THREE.MeshLambertMaterial({color: L.scenograph.director.random_color()}));
-	this.scene.add(octahedron);
-}
+// pointer will be a place-able thingo in the environment. Objects get dropped there and the camera orbits around it.
+var pointer = {
+	x: 0, y: 0, z: 0
+};
+L.scenograph.editor.gui_folders = {
+	'Add': {
+		'Cube': function() {
+			L.scenograph.editor.add('cube', pointer, {x:10,y:10,z:10}, {x: 0, y: 0, z: 0});
+		},
+		'Prism': function() {
+			L.scenograph.editor.add('prism', pointer, {x:10,y:10,z:10}, {x: 0, y: 0, z: 0});
+		},
+		'Cylinder': function() {
+			L.scenograph.editor.add('cylinder', pointer, {x:10,y:10,z:10}, {x: 0, y: 0, z: 0});
+		},
+		'Sphere': function() {
+			L.scenograph.editor.add('sphere', pointer, {x:10,y:10,z:10}, {x: 0, y: 0, z: 0});
+		},
+		'Torus': function() {
+			L.scenograph.editor.add('torus', pointer, {x:10,y:10,z:10}, {x: 0, y: 0, z: 0});
+		},
+		'Plane': function() {
+			L.scenograph.editor.add('plane', pointer, {x:10,y:10,z:10}, {x: 0, y: 0, z: 0});
+		},
+		'Tetrahedron': function() {
+			L.scenograph.editor.add('tetrahedron', pointer, {x:10,y:10,z:10}, {x: 0, y: 0, z: 0});
+		},
+		'Octahedron': function() {
+			L.scenograph.editor.add('octahedron', pointer, {x:10,y:10,z:10}, {x: 0, y: 0, z: 0});
+		}
+	}
+};
 
 
+/*
+
+	TODO:
+		- Function to fart out object creation script  (--implicit tagged fields are built into the object and don't need to be added. They're shown here purely to help understand the data model)
+			-- object details
+			{
+				type: 'cube',
+				--implicit-material: THREE.MeshLambertMaterial(),
+				--implicit-position: {},
+				--implicit-rotation: {},
+				--implicit-scale: {}
+			}
+			e.g. L.scenograph.add('cube');
+		- Will need to be able to dispatch infinite nesting for CSG functions
+		{
+			type: 'csg',
+			operation: 'subtract',
+			position: {},
+			rotation: {},
+			scale: {}
+			object1: {
+				type: 'cube',
+				material: THREE.MeshLambertMaterial(),
+				position: {},
+				rotation: {},
+				scale: {}
+			}
+			object2: {
+				type: 'cube',
+				material: THREE.MeshLambertMaterial(),
+				position: {},
+				rotation: {},
+				scale: {}
+			}
+		}
+		- Nested CSG:
+		{
+			type: 'csg',
+			operation: 'union',
+			position: {},
+			rotation: {},
+			scale: {}
+			object1: {
+				type: 'cube',
+				material: THREE.MeshLambertMaterial(),
+				position: {},
+				rotation: {},
+				scale: {}
+			}
+			object2: {
+				type: 'csg',
+				operation: 'subtract',
+				position: {},
+				rotation: {},
+				scale: {}
+				object1: {
+					type: 'cube',
+					material: THREE.MeshLambertMaterial(),
+					position: {},
+					rotation: {},
+					scale: {}
+				}
+				object2: {
+					type: 'cube',
+					material: THREE.MeshLambertMaterial(),
+					position: {},
+					rotation: {},
+					scale: {}
+				}
+			}
+		}
+
+
+
+*/

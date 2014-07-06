@@ -93,15 +93,20 @@ h3
 				a
 					text-decoration none
 					h3
+						clear both
 						color #FFFFFF
 						font-size 1.5em
 						letter-spacing 0.05em
 						text-transform uppercase
+				a.push-left
+					padding-right 1.5em
+				a.push-right
+					padding-right 1.5em
 			.blog-feature
 				width 100%
 				a
 					color #FFFFFF
-					font-size 2.5em
+					font-size 1.5em
 					letter-spacing 0.05em
 					text-transform uppercase
 					text-decoration none
@@ -131,6 +136,9 @@ h3
 									display block
 									margin 0 auto
 			#content
+				a.title
+					color #FFFFFF
+					text-decoration none
 				border-style solid
 				border-width 32px
 				border-image url("/assets/border-02.png") 42 fill round
@@ -138,6 +146,20 @@ h3
 				column(2/3)
 				&.home
 					column(5/8)
+				&.games
+					h3
+						font-size 2.5em
+						margin .25em 0
+				&.blog
+					h3
+						font-size 2.5em
+						margin .25em 0
+					h4
+						font-size 1.75em
+						margin .25em 0
+					h5, h6
+						font-size 1.5em
+						margin .25em 0
 				&.media
 					column(1)
 			#sidebar

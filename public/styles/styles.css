@@ -183,17 +183,24 @@ h3 {
   text-decoration: none;
 }
 #container #viewport #page .blog-item a h3 {
+  clear: both;
   color: #fff;
   font-size: 1.5em;
   letter-spacing: 0.05em;
   text-transform: uppercase;
+}
+#container #viewport #page .blog-item a.push-left {
+  padding-right: 1.5em;
+}
+#container #viewport #page .blog-item a.push-right {
+  padding-right: 1.5em;
 }
 #container #viewport #page .blog-feature {
   width: 100%;
 }
 #container #viewport #page .blog-feature a {
   color: #fff;
-  font-size: 2.5em;
+  font-size: 1.5em;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   text-decoration: none;
@@ -242,6 +249,10 @@ h3 {
   margin-left: 0%;
   margin-right: 3%;
 }
+#container #viewport #page #content a.title {
+  color: #fff;
+  text-decoration: none;
+}
 #container #viewport #page #content:before,
 #container #viewport #page #content:after {
   content: '';
@@ -275,6 +286,23 @@ h3 {
 }
 #container #viewport #page #content.home:last-child {
   margin-right: 0%;
+}
+#container #viewport #page #content.games h3 {
+  font-size: 2.5em;
+  margin: 0.25em 0;
+}
+#container #viewport #page #content.blog h3 {
+  font-size: 2.5em;
+  margin: 0.25em 0;
+}
+#container #viewport #page #content.blog h4 {
+  font-size: 1.75em;
+  margin: 0.25em 0;
+}
+#container #viewport #page #content.blog h5,
+#container #viewport #page #content.blog h6 {
+  font-size: 1.5em;
+  margin: 0.25em 0;
 }
 #container #viewport #page #content.media {
   *zoom: 1;

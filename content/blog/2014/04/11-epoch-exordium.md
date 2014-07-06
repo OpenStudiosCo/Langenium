@@ -6,7 +6,7 @@ An adventure RPG with resource management elements from RTS.
 
 This tells the story of human explorers of a network of space stations that were built by automated drones at the direction of an AI.
 
-## Purpose
+#### Purpose
 This mini-game is mainly for me to build up game mechanics and functionality in the engine.
 
 Epoch Exordium leads into the world of 2099. It serves as a transitionary piece from today's world into the Earth that will fall at the start of Langenium proper.

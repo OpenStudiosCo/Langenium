@@ -168,7 +168,6 @@ L.scenograph.editor.csg = {
 		}
 		
 		var newMesh = new THREE.Mesh(newGeo, new THREE.MeshFaceMaterial(materials));
-		newMesh.position.set(0,-100,50)
 
 		var scale = L.scenograph.editor.csg.scale_avg();
 		newMesh.scale.set(scale,scale,scale);
@@ -193,6 +192,7 @@ L.scenograph.editor.select_object = function() {
 					L.scenograph.editor.draw_bounding_box(0xFFFF00, intersects[0].object, intersects[0].object.geometry.boundingBox.max, intersects[0].object.geometry.boundingBox.min, intersects[0].object.scale.x );
 					L.scenograph.director.scene_variables.selectedFolder = L.scenograph.director.gui.addFolder("Selected Object");
 					L.scenograph.director.scene_variables.selectedFolder.add(L.scenograph.editor.gui_functions, 'Clear Selection');
+					L.scenograph.director.scene_variables.selectedFolder.add(L.scenograph.editor.gui_functions, "Delete Selected");
 					L.scenograph.director.scene_variables.selectedFolder.open();					
 
 					var material = L.scenograph.director.scene_variables.selected.material;
@@ -269,7 +269,7 @@ L.scenograph.editor.select_object = function() {
 					posFolder.add(L.scenograph.director.scene_variables.selected.position, "z").step(1);
 					posFolder.open();
 
-					var rot_step = Math.round(Math.PI / 12);
+					var rot_step = Math.abs(Math.PI / 12);
 					var rotFolder = L.scenograph.director.scene_variables.selectedFolder.addFolder("Rotation");
 					rotFolder.add(L.scenograph.director.scene_variables.selected.rotation, "x").step(rot_step);
 					rotFolder.add(L.scenograph.director.scene_variables.selected.rotation, "y").step(rot_step);
@@ -322,6 +322,7 @@ L.scenograph.editor.select_object = function() {
 					if (!L.scenograph.director.gui.__folders["Selected Objects"]) {
 						L.scenograph.director.scene_variables.selectedFolder = L.scenograph.director.gui.addFolder("Selected Objects");
 						L.scenograph.director.scene_variables.selectedFolder.add(L.scenograph.editor.gui_functions, "Clear Selection");
+						L.scenograph.director.scene_variables.selectedFolder.add(L.scenograph.editor.gui_functions, "Delete Selected");
 						L.scenograph.director.scene_variables.selectedFolder.add(L.scenograph.editor.csg, "intersect");
 						L.scenograph.director.scene_variables.selectedFolder.add(L.scenograph.editor.csg, "subtract");
 						L.scenograph.director.scene_variables.selectedFolder.add(L.scenograph.editor.csg, "union");
@@ -356,10 +357,6 @@ L.scenograph.editor.create_group = function() {
 
 L.scenograph.editor.clone_group = function() {
 
-}
-
-L.scenograph.editor.delete_selection = function() {
-	// delete the currently selected object
 }
 
 L.scenograph.editor.draw_bounding_box = function(color, object, max, min, scale) {
@@ -468,6 +465,22 @@ var pointer = {
 };
 
 L.scenograph.editor.gui_functions = {
+	'Object Select Listener': function() {
+	},
+	'Delete Selected': function() {
+		if (confirm('Delete selected objects?')) {
+			if (L.scenograph.director.scene_variables.select_multiple == false) {
+				L.scenograph.director.scene.remove(L.scenograph.director.scene_variables.selected);
+			}
+			else {
+				L.scenograph.director.scene_variables.selected_objects.forEach(function(object){
+					L.scenograph.director.scene.remove(object);
+				});	
+			}
+			
+			L.scenograph.editor.gui_functions['Clear Selection']();
+		}
+	},
 	'Clear Selection': function() {
 		for (var i = 0; i < L.scenograph.director.scene.children.length; i++) {
 			if (L.scenograph.director.scene.children[i].material) {
@@ -510,7 +523,7 @@ L.scenograph.editor.gui_functions = {
 	}
 }
 L.scenograph.editor.gui_folders = {
-	'Add': {
+	'Add Shape': {
 		'Cube': function() {
 			L.scenograph.editor.add('cube', pointer, {x:10,y:10,z:10}, {x: 0, y: 0, z: 0});
 		},

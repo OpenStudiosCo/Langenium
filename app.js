@@ -50,7 +50,6 @@ module.exports = function() {
 	app.express.set('view engine', 'jade');
 	app.express.locals.pretty = true;
 
-
 	// Utility functions that don't really have a place and can be called from anywhere
 	app.util = require('./util')(app);
 

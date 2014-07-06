@@ -468,7 +468,7 @@ L.scenograph.editor.gui_functions = {
 	'Object Select Listener': function() {
 	},
 	'Delete Selected': function() {
-		if (confirm('Delete selected objects?')) {
+		if (confirm('Delete selected objects? (THERE IS NO UNDO)')) {
 			if (L.scenograph.director.scene_variables.select_multiple == false) {
 				L.scenograph.director.scene.remove(L.scenograph.director.scene_variables.selected);
 			}

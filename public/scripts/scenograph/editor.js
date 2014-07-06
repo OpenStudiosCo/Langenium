@@ -37,11 +37,18 @@ L.scenograph.editor = function() {
 
 // Structuring like this so it slides into dat.gui nicely. Will probably need to come up with object "views" to plug into dat.gui....
 L.scenograph.editor.csg = {
+	scale_avg: function() {
+		var scale = 0;
+		L.scenograph.director.scene_variables.selected_objects.forEach(function(object) {
+			scale += object.scale.x;
+		})
+		scale = scale / L.scenograph.director.scene_variables.selected_objects.length;
+		return scale;
+	},
 	intersect: function() {
 		var materials = [];
 		L.scenograph.director.scene_variables.selected_objects.forEach(function(object){
 			if (object.material instanceof THREE.MeshFaceMaterial) {
-				
 				object.material.materials.forEach(function(material, fm_index){
 					materials.push(material);
 					object.geometry.faces.forEach(function(face){
@@ -70,11 +77,13 @@ L.scenograph.editor.csg = {
 		}
 		var newGeo = objBSP.toGeometry();
 		var newMesh = new THREE.Mesh(newGeo, new THREE.MeshFaceMaterial(materials));
+		var scale = L.scenograph.editor.csg.scale_avg();
+		newMesh.scale.set(scale,scale,scale);
 
 		for (var i = 0; i < L.scenograph.director.scene_variables.selected_objects.length; i++) {
 			L.scenograph.director.scene.remove(L.scenograph.director.scene_variables.selected_objects[i]);
 		}
-		L.scenograph.editor.clear_selection();
+		L.scenograph.editor.gui_functions['Clear Selection']();
 		L.scenograph.director.scene.add(newMesh);
 	},
 	subtract: function() {
@@ -110,11 +119,13 @@ L.scenograph.editor.csg = {
 		}
 		var newGeo = objBSP.toGeometry();
 		var newMesh = new THREE.Mesh(newGeo, new THREE.MeshFaceMaterial(materials));
+		var scale = L.scenograph.editor.csg.scale_avg();
+		newMesh.scale.set(scale,scale,scale);
 
 		for (var i = 0; i < L.scenograph.director.scene_variables.selected_objects.length; i++) {
 			L.scenograph.director.scene.remove(L.scenograph.director.scene_variables.selected_objects[i]);
 		}
-		L.scenograph.editor.clear_selection();
+		L.scenograph.editor.gui_functions['Clear Selection']();
 		L.scenograph.director.scene.add(newMesh);
 	},
 	union: function() {
@@ -151,9 +162,6 @@ L.scenograph.editor.csg = {
 		}
 		
 		var newGeo = objBSP.toGeometry();
-		
-			
-
 		// Clean up the scene
 		for (var i = 0; i < L.scenograph.director.scene_variables.selected_objects.length; i++) {
 			L.scenograph.director.scene.remove(L.scenograph.director.scene_variables.selected_objects[i]);
@@ -161,7 +169,11 @@ L.scenograph.editor.csg = {
 		
 		var newMesh = new THREE.Mesh(newGeo, new THREE.MeshFaceMaterial(materials));
 		newMesh.position.set(0,-100,50)
-		L.scenograph.editor.clear_selection();
+
+		var scale = L.scenograph.editor.csg.scale_avg();
+		newMesh.scale.set(scale,scale,scale);
+
+		L.scenograph.editor.gui_functions['Clear Selection']();
 		L.scenograph.director.scene.add(newMesh);
 	}
 };
@@ -175,12 +187,12 @@ L.scenograph.editor.select_object = function() {
 			var intersects = raycaster.intersectObjects( L.scenograph.director.scene.children );
 			if (intersects.length > 0) {
 				if (L.scenograph.director.scene_variables.select_multiple == false) {
-					L.scenograph.editor.clear_selection();
+					L.scenograph.editor.gui_functions['Clear Selection']();
 					L.scenograph.director.scene_variables.selected = intersects[0].object;
 					intersects[0].object.geometry.computeBoundingBox();
 					L.scenograph.editor.draw_bounding_box(0xFFFF00, intersects[0].object, intersects[0].object.geometry.boundingBox.max, intersects[0].object.geometry.boundingBox.min, intersects[0].object.scale.x );
 					L.scenograph.director.scene_variables.selectedFolder = L.scenograph.director.gui.addFolder("Selected Object");
-					L.scenograph.director.scene_variables.selectedFolder.add(L.scenograph.editor, "clear_selection");
+					L.scenograph.director.scene_variables.selectedFolder.add(L.scenograph.editor.gui_functions, 'Clear Selection');
 					L.scenograph.director.scene_variables.selectedFolder.open();					
 
 					var material = L.scenograph.director.scene_variables.selected.material;
@@ -305,11 +317,11 @@ L.scenograph.editor.select_object = function() {
 				else {
 					if (L.scenograph.director.gui.__folders["Selected Object"]) {
 						L.scenograph.director.gui.removeFolder("Selected Object");
-						L.scenograph.editor.clear_selection();
+						L.scenograph.editor.gui_functions['Clear Selection']();
 					}
 					if (!L.scenograph.director.gui.__folders["Selected Objects"]) {
 						L.scenograph.director.scene_variables.selectedFolder = L.scenograph.director.gui.addFolder("Selected Objects");
-						L.scenograph.director.scene_variables.selectedFolder.add(L.scenograph.editor, "clear_selection");
+						L.scenograph.director.scene_variables.selectedFolder.add(L.scenograph.editor.gui_functions, "Clear Selection");
 						L.scenograph.director.scene_variables.selectedFolder.add(L.scenograph.editor.csg, "intersect");
 						L.scenograph.director.scene_variables.selectedFolder.add(L.scenograph.editor.csg, "subtract");
 						L.scenograph.director.scene_variables.selectedFolder.add(L.scenograph.editor.csg, "union");
@@ -348,47 +360,6 @@ L.scenograph.editor.clone_group = function() {
 
 L.scenograph.editor.delete_selection = function() {
 	// delete the currently selected object
-}
-
-L.scenograph.editor.clear_selection = function() {
-	for (var i = 0; i < L.scenograph.director.scene.children.length; i++) {
-		if (L.scenograph.director.scene.children[i].material) {
-			if (L.scenograph.director.scene.children[i].material.materials) {
-		    	L.scenograph.director.scene.children[i].material.materials.forEach(function(material){
-		    		if (material.prev_opacity) {
-		    			material.opacity = material.prev_opacity;
-		    			//delete material.prev_opacity;
-		    		}
-		    	});
-		    }
-		    else {
-		    	if (L.scenograph.director.scene.children[i].material.prev_opacity) {
-	    			L.scenograph.director.scene.children[i].material.opacity = L.scenograph.director.scene.children[i].material.prev_opacity;
-	    			//delete L.scenograph.director.scene.children[i].material.prev_opacity;
-	    		}
-		    }
-		}
-		var obj_to_remove = [];
-		for (var j = 0; j < L.scenograph.director.scene.children[i].children.length; j++) {			
-			if (L.scenograph.director.scene.children[i].children[j].name == "bounding_box") {
-				obj_to_remove.push(L.scenograph.director.scene.children[i].children[j])
-				//L.scenograph.director.scene.children[i].remove(L.scenograph.director.scene.children[i].children[j]);
-			}
-		}
-		for (var k = 0; k < obj_to_remove.length; k++) {
-			L.scenograph.director.scene.children[i].remove(obj_to_remove[k]);
-		}
-	}
-
-	L.scenograph.director.scene_variables.selected_objects = []; // clears the selected object group
-	L.scenograph.director.scene_variables.selected = undefined;
-	
-	if (L.scenograph.director.gui.__folders["Selected Object"]) {
-		L.scenograph.director.gui.removeFolder("Selected Object");
-	}
-	if (L.scenograph.director.gui.__folders["Selected Objects"]) {
-		L.scenograph.director.gui.removeFolder("Selected Objects");
-	}
 }
 
 L.scenograph.editor.draw_bounding_box = function(color, object, max, min, scale) {
@@ -495,6 +466,49 @@ L.scenograph.editor.add = function(type, position, scale, rotation) {
 var pointer = {
 	x: 0, y: 0, z: 0
 };
+
+L.scenograph.editor.gui_functions = {
+	'Clear Selection': function() {
+		for (var i = 0; i < L.scenograph.director.scene.children.length; i++) {
+			if (L.scenograph.director.scene.children[i].material) {
+				if (L.scenograph.director.scene.children[i].material.materials) {
+			    	L.scenograph.director.scene.children[i].material.materials.forEach(function(material){
+			    		if (material.prev_opacity) {
+			    			material.opacity = material.prev_opacity;
+			    			//delete material.prev_opacity;
+			    		}
+			    	});
+			    }
+			    else {
+			    	if (L.scenograph.director.scene.children[i].material.prev_opacity) {
+		    			L.scenograph.director.scene.children[i].material.opacity = L.scenograph.director.scene.children[i].material.prev_opacity;
+		    			//delete L.scenograph.director.scene.children[i].material.prev_opacity;
+		    		}
+			    }
+			}
+			var obj_to_remove = [];
+			for (var j = 0; j < L.scenograph.director.scene.children[i].children.length; j++) {			
+				if (L.scenograph.director.scene.children[i].children[j].name == "bounding_box") {
+					obj_to_remove.push(L.scenograph.director.scene.children[i].children[j])
+					//L.scenograph.director.scene.children[i].remove(L.scenograph.director.scene.children[i].children[j]);
+				}
+			}
+			for (var k = 0; k < obj_to_remove.length; k++) {
+				L.scenograph.director.scene.children[i].remove(obj_to_remove[k]);
+			}
+		}
+
+		L.scenograph.director.scene_variables.selected_objects = []; // clears the selected object group
+		L.scenograph.director.scene_variables.selected = undefined;
+		
+		if (L.scenograph.director.gui.__folders["Selected Object"]) {
+			L.scenograph.director.gui.removeFolder("Selected Object");
+		}
+		if (L.scenograph.director.gui.__folders["Selected Objects"]) {
+			L.scenograph.director.gui.removeFolder("Selected Objects");
+		}
+	}
+}
 L.scenograph.editor.gui_folders = {
 	'Add': {
 		'Cube': function() {

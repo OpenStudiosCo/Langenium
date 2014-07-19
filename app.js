@@ -4,11 +4,10 @@
 
 module.exports = function() {
 
-	var app = {
-		controllers: {},
-		models: {},
-		routes: {}
-	};
+	var app = {};
+
+	app.content = require('./content')();
+
 	// All vendor modules/libraries hang off here
 	app.libs = require('./libs')();
 	
@@ -67,7 +66,7 @@ module.exports = function() {
 			}(socket, data) 
 		});
 		socket.on('content', function(request){
-			app.libs.fs.readFile('./content/' + request.join('/') + '.md', "utf-8", function(err, data){
+			var callback = function(data, err){
 				if (err) {
 					socket.emit('content', {
 						request: request,
@@ -80,6 +79,9 @@ module.exports = function() {
 						response: app.libs.markdown.toHTML(data)
 					})
 				}
+			};
+			app.libs.fs.readFile('./content/' + request.join('/') + '.md', "utf-8", function(err, data){
+				callback(data, err);
 			});	
 		});
 	});

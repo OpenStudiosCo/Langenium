@@ -158,11 +158,10 @@ L.scenograph.director.make_character = function() {
 	var arrow = new THREE.ArrowHelper(new THREE.Vector3(0,0,1), origin,40, 0xFFCC00);
 	
 
-	var wireframeMaterial = new THREE.MeshBasicMaterial( { color: 0x660066, wireframe: true, transparent: true } ); 
+	var wireframeMaterial = new THREE.MeshBasicMaterial({transparent: true, visible: false }); 
 	var characterBox =  new THREE.Mesh(new THREE.BoxGeometry(128, 256, 128), wireframeMaterial);
 	characterBox.add(characterSprite);
 	characterBox.add(arrow);
-	characterBox.visible = false;
 
 	characterBox.add(L.scenograph.director.camera);
 

@@ -243,6 +243,15 @@ h3 {
 #container #viewport #page #content a.title {
   color: #fff;
   text-decoration: none;
+  max-height: 220px;
+  width: 100%;
+  overflow: hidden;
+  display: block;
+}
+#container #viewport #page #content a.title img {
+  display: block;
+  width: 100%;
+  margin-top: -140px;
 }
 #container #viewport #page #content:before,
 #container #viewport #page #content:after {

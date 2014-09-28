@@ -114,11 +114,8 @@ h3 {
 #container #viewport nav#main-menu {
   *zoom: 1;
   float: left;
-  display: inline;
   clear: none;
   text-align: inherit;
-  padding-left: 0;
-  padding-right: 0;
   width: 100%;
   margin-left: 0%;
   margin-right: 3%;
@@ -159,11 +156,8 @@ h3 {
   padding: 1.5% 0;
   *zoom: 1;
   float: left;
-  display: inline;
   clear: none;
   text-align: inherit;
-  padding-left: 0;
-  padding-right: 0;
   width: 100%;
   margin-left: 0%;
   margin-right: 3%;
@@ -240,11 +234,8 @@ h3 {
   box-sizing: border-box;
   *zoom: 1;
   float: left;
-  display: inline;
   clear: none;
   text-align: inherit;
-  padding-left: 0;
-  padding-right: 0;
   width: 65.6666666666667%;
   margin-left: 0%;
   margin-right: 3%;
@@ -267,11 +258,8 @@ h3 {
 #container #viewport #page #content.home {
   *zoom: 1;
   float: left;
-  display: inline;
   clear: none;
   text-align: inherit;
-  padding-left: 0;
-  padding-right: 0;
   width: 61.375%;
   margin-left: 0%;
   margin-right: 3%;
@@ -307,11 +295,8 @@ h3 {
 #container #viewport #page #content.media {
   *zoom: 1;
   float: left;
-  display: inline;
   clear: none;
   text-align: inherit;
-  padding-left: 0;
-  padding-right: 0;
   width: 100%;
   margin-left: 0%;
   margin-right: 3%;
@@ -334,11 +319,8 @@ h3 {
   box-sizing: border-box;
   *zoom: 1;
   float: left;
-  display: inline;
   clear: none;
   text-align: inherit;
-  padding-left: 0;
-  padding-right: 0;
   width: 31.3333333333333%;
   margin-left: 0%;
   margin-right: 3%;
@@ -357,11 +339,8 @@ h3 {
 #container #viewport #page #sidebar.home {
   *zoom: 1;
   float: left;
-  display: inline;
   clear: none;
   text-align: inherit;
-  padding-left: 0;
-  padding-right: 0;
   width: 35.625%;
   margin-left: 0%;
   margin-right: 3%;
@@ -404,11 +383,8 @@ h3 {
   #container #viewport #page #content.home {
     *zoom: 1;
     float: left;
-    display: inline;
     clear: none;
     text-align: inherit;
-    padding-left: 0;
-    padding-right: 0;
     width: 100%;
     margin-left: 0%;
     margin-right: 3%;
@@ -432,11 +408,8 @@ h3 {
   #container #viewport #page #sidebar.home {
     *zoom: 1;
     float: left;
-    display: inline;
     clear: none;
     text-align: inherit;
-    padding-left: 0;
-    padding-right: 0;
     width: 100%;
     margin-left: 0%;
     margin-right: 3%;

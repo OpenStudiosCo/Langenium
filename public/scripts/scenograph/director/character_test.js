@@ -7,6 +7,36 @@ L.scenograph.director.character_test = function() {
 
 	L.scenograph.director.scene_variables.collidables = [];
 
+	var geometry = new THREE.BoxGeometry( 1000000, 1000000, 1000000 );
+
+	var texture_prefix = '/assets/textures/epoch-exordium_'
+	var textures = [
+		texture_prefix + 'right1.png',
+		texture_prefix + 'left2.png',
+		texture_prefix + 'top3.png',
+		texture_prefix + 'bottom4.png',
+		texture_prefix + 'front5.png',
+		texture_prefix + 'back6.png'
+	];
+
+	var textureCube = THREE.ImageUtils.loadTextureCube( textures );
+	textureCube.format = THREE.RGBFormat;
+
+	var shader = THREE.ShaderLib[ "cube" ];
+	shader.uniforms[ "tCube" ].value = textureCube;
+
+	var material = new THREE.ShaderMaterial( {
+		fragmentShader: shader.fragmentShader,
+		vertexShader: shader.vertexShader,
+		uniforms: shader.uniforms,
+		depthWrite: false,
+		side: THREE.BackSide
+	} );
+
+	mesh = new THREE.Mesh( geometry, material );
+	mesh.name = 'Space Box';
+	this.scene.add( mesh );
+
 	var character = L.scenograph.director.make_character();
 	character.position.y = -30;
 	L.scenograph.director.scene_variables.character = character;

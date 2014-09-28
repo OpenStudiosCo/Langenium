@@ -5,7 +5,7 @@ L.scenograph = {
 	options: {
 		activeScene: 'Character Test',
 		currentScene: '',
-		hideInterface: true,
+		hideInterface: false,
 		editMode: false,
 		scenes: [
 			'Epoch Exordium',

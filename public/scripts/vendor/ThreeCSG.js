@@ -1,3 +1,10 @@
+/*
+- Already includes my changes for multiple material support
+- Adapted changes from https://raw.githubusercontent.com/BabylonJS/Babylon.js/master/Babylon/Mesh/babylon.csg.js
+- Adapting changes from: https://github.com/chiamingyen/pygroup_sqlite/blob/6a52acc072c8a9a414e45c1584f2a5642be7f7bb/wsgi/static/openjscad/csg.js
+
+*/
+
 'use strict';
 window.ThreeBSP = (function() {
 	
@@ -14,7 +21,9 @@ window.ThreeBSP = (function() {
 			face, vertex, faceVertexUvs, uvs,
 			polygon,
 			polygons = [],
-			tree;
+			tree,
+			isCanonicalized = false,
+			isRetesselated = false;
 	
 		if ( geometry instanceof THREE.Geometry ) {
 			this.matrix = new THREE.Matrix4;
@@ -106,7 +115,24 @@ window.ThreeBSP = (function() {
 		a.matrix = this.matrix;
 		return a;
 	};
+
 	ThreeBSP.prototype.union = function( other_tree ) {
+		var trees;
+		if(other_tree instanceof Array) {
+			trees = other_tree;
+		} else {
+			trees = [other_tree];
+		}
+
+		var result = this;
+		for(var i = 0; i < trees.length; i++) {
+			var islast = (i == (trees.length - 1));
+			result = result.unionSub(trees[i], islast, islast);
+		}
+		return result;
+	};
+
+	ThreeBSP.prototype.unionSub = function( other_tree, retesselate, canonicalize ) {
 		var a = this.tree.clone(),
 			b = other_tree.tree.clone();
 		
@@ -118,8 +144,11 @@ window.ThreeBSP = (function() {
 		a.build( b.allPolygons() );
 		a = new ThreeBSP( a );
 		a.matrix = this.matrix;
+		if(retesselate) a = a.reTesselated();
+		if(canonicalize) a = a.canonicalized();
 		return a;
-	};
+	}
+
 	ThreeBSP.prototype.intersect = function( other_tree ) {
 		var a = this.tree.clone(),
 			b = other_tree.tree.clone();
@@ -215,6 +244,52 @@ window.ThreeBSP = (function() {
 		
 		return mesh;
 	};
+	ThreeBSP.prototype.canonicalized = function() {
+		if(this.isCanonicalized) {
+			return this;
+		} else {
+			var factory = new CSG.fuzzyCSGFactory();
+			var result = factory.getCSG(this);
+			result.isCanonicalized = true;
+			result.isRetesselated = this.isRetesselated;
+			result.properties = this.properties; // keep original properties
+			return result;
+		}
+	};
+	ThreeBSP.prototype.reTesselated = function() {
+		if(this.isRetesselated) {
+			return this;
+		} else {
+			var csg = this.canonicalized();
+			var polygonsPerPlane = {};
+			csg.polygons.map(function(polygon) {
+				var planetag = polygon.plane.getTag();
+				var sharedtag = polygon.shared.getTag();
+				planetag += "/" + sharedtag;
+				if(!(planetag in polygonsPerPlane)) {
+					polygonsPerPlane[planetag] = [];
+				}
+				polygonsPerPlane[planetag].push(polygon);
+			});
+			var destpolygons = [];
+			for(var planetag in polygonsPerPlane) {
+				var sourcepolygons = polygonsPerPlane[planetag];
+				if(sourcepolygons.length < 2) {
+					destpolygons = destpolygons.concat(sourcepolygons);
+				} else {
+					var retesselayedpolygons = [];
+					CSG.reTesselateCoplanarPolygons(sourcepolygons, retesselayedpolygons);
+					destpolygons = destpolygons.concat(retesselayedpolygons);
+				}
+			}
+			var result = CSG.fromPolygons(destpolygons);
+			result.isRetesselated = true;
+			result = result.canonicalized();
+			//      result.isCanonicalized = true;
+			result.properties = this.properties; // keep original properties
+			return result;
+		}
+	}
 	
 	
 	ThreeBSP.Polygon = function( vertices, normal, w ) {

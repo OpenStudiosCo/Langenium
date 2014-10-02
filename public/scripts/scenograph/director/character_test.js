@@ -51,7 +51,7 @@ L.scenograph.director.character_test = function() {
 	this.scene.add(lightFixture2);
 
 	var roomMaterial = new THREE.MeshLambertMaterial( { color: 0xCCCCCC, side: THREE.BackSide} ); 
-	var room1 = new THREE.Mesh(new THREE.CylinderGeometry( 500, 500, 450, 40, 4 ), roomMaterial);
+	var room1 = new THREE.Mesh(new THREE.CylinderGeometry( 500, 500, 450, 20, 32, false), roomMaterial);
 	room1.position.set(0, 75, 0)
 	var room1BSP = new ThreeBSP( room1 );
 

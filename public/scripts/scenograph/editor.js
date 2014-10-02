@@ -48,6 +48,7 @@ L.scenograph.editor.csg = {
 	intersect: function() {
 		var materials = [];
 		L.scenograph.director.scene_variables.selected_objects.forEach(function(object){
+			// Check if we're dealing with something that has sub materials or not
 			if (object.material instanceof THREE.MeshFaceMaterial) {
 				object.material.materials.forEach(function(material, fm_index){
 					materials.push(material);
@@ -132,7 +133,6 @@ L.scenograph.editor.csg = {
 		var materials = [];
 		L.scenograph.director.scene_variables.selected_objects.forEach(function(object){
 			if (object.material instanceof THREE.MeshFaceMaterial) {
-				
 				object.material.materials.forEach(function(material, fm_index){
 					materials.push(material);
 					object.geometry.faces.forEach(function(face){
@@ -433,10 +433,10 @@ L.scenograph.editor.add = function(type, position, scale, rotation) {
 		    geometry.faces.push(new THREE.Face3(3, 5, 4)); //354 MUST BE Counter Clockwise
 			break;
 		case 'cylinder': 
-			geometry = new THREE.CylinderGeometry( length, length, length, 32, 4 );
+			geometry = new THREE.CylinderGeometry( length, length, length, 32, 20, false );
 			break;
 		case 'sphere': 
-			geometry = new THREE.SphereGeometry(length/2, 64, 32);
+			geometry = new THREE.SphereGeometry(length/2, 32, 32);
 			break;
 		case 'torus': 
 			geometry = new THREE.TorusGeometry( length, 8, 8, 8 );

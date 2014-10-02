@@ -226,8 +226,9 @@ window.ThreeBSP = (function() {
 		if ( vertices.length > 0 ) {
 			this.calculateProperties(0);
 		} else {
-			this.normal = this.w = undefined;
+			this.normal = undefined;
 		}	
+		this.w = w;
 		
 	};
 	ThreeBSP.Polygon.prototype.calculateProperties = function(materialIndex) {
@@ -235,9 +236,14 @@ window.ThreeBSP = (function() {
 			b = this.vertices[1],
 			c = this.vertices[2];
 			
-		this.normal = b.clone().subtract( a ).cross(
-			c.clone().subtract( a )
-		).normalize();
+		// https://github.com/BabylonJS/Babylon.js/blob/master/Babylon/Mesh/babylon.csg.js
+		var v0 = b.clone().subtract( a );
+		var v1 = c.clone().subtract( a );
+
+		if (v0.normalize() === 0 || v1.normalize() === 0) {
+            return null;
+        }
+		this.normal = v0.cross(v1).normalize();
 		
 		this.w = this.normal.clone().dot( a );
 
@@ -342,12 +348,12 @@ window.ThreeBSP = (function() {
 				tj = this.classifyVertex( vj );
 				
 				if ( ti != BACK ) f.push( vi );
-				if ( ti != FRONT ) b.push( vi );
+				if ( ti != FRONT ) b.push( ti != BACK ? vi.clone() : vi );
 				if ( (ti | tj) === SPANNING ) {
 					t = ( this.w - this.normal.dot( vi ) ) / this.normal.dot( vj.clone().subtract( vi ) );
 					v = vi.interpolate( vj, t );
 					f.push( v );
-					b.push( v );
+					b.push( v.clone() );
 				}
 			}
 			
@@ -510,7 +516,7 @@ window.ThreeBSP = (function() {
 	ThreeBSP.Node.prototype.clone = function() {
 		var node = new ThreeBSP.Node();
 		
-		node.divider = this.divider.clone();
+		node.divider = this.divider && this.divider.clone();
 		node.polygons = this.polygons.map( function( polygon ) { return polygon.clone(); } );
 		node.front = this.front && this.front.clone();
 		node.back = this.back && this.back.clone();
@@ -524,7 +530,7 @@ window.ThreeBSP = (function() {
 			this.polygons[i].flip();
 		}
 		
-		this.divider.flip();
+		if ( this.divider) this.divider.flip();
 		if ( this.front ) this.front.invert();
 		if ( this.back ) this.back.invert();
 		

@@ -1,10 +1,3 @@
-/*
-- Already includes my changes for multiple material support
-- Adapted changes from https://raw.githubusercontent.com/BabylonJS/Babylon.js/master/Babylon/Mesh/babylon.csg.js
-- Adapting changes from: https://github.com/chiamingyen/pygroup_sqlite/blob/6a52acc072c8a9a414e45c1584f2a5642be7f7bb/wsgi/static/openjscad/csg.js
-
-*/
-
 'use strict';
 window.ThreeBSP = (function() {
 	
@@ -21,9 +14,7 @@ window.ThreeBSP = (function() {
 			face, vertex, faceVertexUvs, uvs,
 			polygon,
 			polygons = [],
-			tree,
-			isCanonicalized = false,
-			isRetesselated = false;
+			tree;
 	
 		if ( geometry instanceof THREE.Geometry ) {
 			this.matrix = new THREE.Matrix4;
@@ -115,24 +106,7 @@ window.ThreeBSP = (function() {
 		a.matrix = this.matrix;
 		return a;
 	};
-
 	ThreeBSP.prototype.union = function( other_tree ) {
-		var trees;
-		if(other_tree instanceof Array) {
-			trees = other_tree;
-		} else {
-			trees = [other_tree];
-		}
-
-		var result = this;
-		for(var i = 0; i < trees.length; i++) {
-			var islast = (i == (trees.length - 1));
-			result = result.unionSub(trees[i], islast, islast);
-		}
-		return result;
-	};
-
-	ThreeBSP.prototype.unionSub = function( other_tree, retesselate, canonicalize ) {
 		var a = this.tree.clone(),
 			b = other_tree.tree.clone();
 		
@@ -144,11 +118,8 @@ window.ThreeBSP = (function() {
 		a.build( b.allPolygons() );
 		a = new ThreeBSP( a );
 		a.matrix = this.matrix;
-		if(retesselate) a = a.reTesselated();
-		if(canonicalize) a = a.canonicalized();
 		return a;
-	}
-
+	};
 	ThreeBSP.prototype.intersect = function( other_tree ) {
 		var a = this.tree.clone(),
 			b = other_tree.tree.clone();
@@ -244,52 +215,6 @@ window.ThreeBSP = (function() {
 		
 		return mesh;
 	};
-	ThreeBSP.prototype.canonicalized = function() {
-		if(this.isCanonicalized) {
-			return this;
-		} else {
-			var factory = new CSG.fuzzyCSGFactory();
-			var result = factory.getCSG(this);
-			result.isCanonicalized = true;
-			result.isRetesselated = this.isRetesselated;
-			result.properties = this.properties; // keep original properties
-			return result;
-		}
-	};
-	ThreeBSP.prototype.reTesselated = function() {
-		if(this.isRetesselated) {
-			return this;
-		} else {
-			var csg = this.canonicalized();
-			var polygonsPerPlane = {};
-			csg.polygons.map(function(polygon) {
-				var planetag = polygon.plane.getTag();
-				var sharedtag = polygon.shared.getTag();
-				planetag += "/" + sharedtag;
-				if(!(planetag in polygonsPerPlane)) {
-					polygonsPerPlane[planetag] = [];
-				}
-				polygonsPerPlane[planetag].push(polygon);
-			});
-			var destpolygons = [];
-			for(var planetag in polygonsPerPlane) {
-				var sourcepolygons = polygonsPerPlane[planetag];
-				if(sourcepolygons.length < 2) {
-					destpolygons = destpolygons.concat(sourcepolygons);
-				} else {
-					var retesselayedpolygons = [];
-					CSG.reTesselateCoplanarPolygons(sourcepolygons, retesselayedpolygons);
-					destpolygons = destpolygons.concat(retesselayedpolygons);
-				}
-			}
-			var result = CSG.fromPolygons(destpolygons);
-			result.isRetesselated = true;
-			result = result.canonicalized();
-			//      result.isCanonicalized = true;
-			result.properties = this.properties; // keep original properties
-			return result;
-		}
-	}
 	
 	
 	ThreeBSP.Polygon = function( vertices, normal, w ) {
@@ -301,9 +226,8 @@ window.ThreeBSP = (function() {
 		if ( vertices.length > 0 ) {
 			this.calculateProperties(0);
 		} else {
-			this.normal = undefined;
+			this.normal = this.w = undefined;
 		}	
-		this.w = w;
 		
 	};
 	ThreeBSP.Polygon.prototype.calculateProperties = function(materialIndex) {
@@ -311,14 +235,9 @@ window.ThreeBSP = (function() {
 			b = this.vertices[1],
 			c = this.vertices[2];
 			
-		// https://github.com/BabylonJS/Babylon.js/blob/master/Babylon/Mesh/babylon.csg.js
-		var v0 = b.clone().subtract( a );
-		var v1 = c.clone().subtract( a );
-
-		if (v0.normalize() === 0 || v1.normalize() === 0) {
-            return null;
-        }
-		this.normal = v0.cross(v1).normalize();
+		this.normal = b.clone().subtract( a ).cross(
+			c.clone().subtract( a )
+		).normalize();
 		
 		this.w = this.normal.clone().dot( a );
 
@@ -423,12 +342,12 @@ window.ThreeBSP = (function() {
 				tj = this.classifyVertex( vj );
 				
 				if ( ti != BACK ) f.push( vi );
-				if ( ti != FRONT ) b.push( ti != BACK ? vi.clone() : vi );
+				if ( ti != FRONT ) b.push( vi );
 				if ( (ti | tj) === SPANNING ) {
 					t = ( this.w - this.normal.dot( vi ) ) / this.normal.dot( vj.clone().subtract( vi ) );
 					v = vi.interpolate( vj, t );
 					f.push( v );
-					b.push( v.clone() );
+					b.push( v );
 				}
 			}
 			
@@ -591,7 +510,7 @@ window.ThreeBSP = (function() {
 	ThreeBSP.Node.prototype.clone = function() {
 		var node = new ThreeBSP.Node();
 		
-		node.divider = this.divider && this.divider.clone();
+		node.divider = this.divider.clone();
 		node.polygons = this.polygons.map( function( polygon ) { return polygon.clone(); } );
 		node.front = this.front && this.front.clone();
 		node.back = this.back && this.back.clone();
@@ -605,7 +524,7 @@ window.ThreeBSP = (function() {
 			this.polygons[i].flip();
 		}
 		
-		if ( this.divider) this.divider.flip();
+		this.divider.flip();
 		if ( this.front ) this.front.invert();
 		if ( this.back ) this.back.invert();
 		

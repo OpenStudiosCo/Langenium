@@ -1,7 +1,5 @@
 L.scenograph.editor = function() {
-
-		L.scenograph.director.camera_state.zoom = 3500;
-
+	L.scenograph.director.camera_state.zoom = 3500;
 	L.scenograph.director.camera.position.set(
 		0, 
 		1000,

@@ -21,6 +21,7 @@ app.express.get('/', function(req, res){
 app.http.listen(process.env['HTTP_PORT']); // dev
 
 console.log("\nServer started in " + process.env.NODE_ENV + " mode succesfully");
+
 app.libs.fb.api('/Langenium/albums', function(err, response){
 	console.log(response.data)
 	

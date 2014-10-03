@@ -10,3 +10,13 @@ Folder | Description
 **[Routes](/routes)** | Expose server based routes including data points, authentication paths and socket connections
 **[Styles](/styles)** | Stylus files for the web client
 **[Views](/views)** | Jade templates for the web client
+
+##TODO:
+
+### Installing and running the server
+
+#### Environment setup
+
+#### Server boot options
+
+### Dev tools

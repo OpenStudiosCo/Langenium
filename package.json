@@ -3,7 +3,7 @@
   "preferGlobal": true,
   "version": "0.5.1-alpha",
   "author": "Paul Brzeski <mail@paulbrzeski.com>",
-  "description": "The Langenium server application",
+  "description": "The Langenium Codebase",
   "repository": "https://github.com/paulbrzeski/Langenium",
   "dependencies": {
     "xmlhttprequest": "*",

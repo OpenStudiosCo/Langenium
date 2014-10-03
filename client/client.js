@@ -45,7 +45,7 @@ function _init() {
 	modules.forEach(function(module){
 		module.files.forEach(function(file){
 			console.log( '- Loading ' + module.name + ' ( ' + file.path + ' ) ' );
-			_load(file.path, file.callback);	
+			_load(module.name, file.path, file.callback);	
 		});
 		
 	}); 
@@ -83,17 +83,18 @@ function _check_environment () {
 	
 }
 
-function _load(path, callback) {
+function _load(name, path, callback) {
 	var head = document.getElementsByTagName('head')[0];
 	if (path.match(/\.js/)) {
 		var script = document.createElement('script');
 		script.type = 'text/javascript';
 		script.src = path;
-		if (callback) {
-			// most browsers
-			script.onload = _execute(callback, window);
-			
-		}
+		script.onload = function() {
+			console.log( '- Loaded ' + name + ' ( ' + path + ' ) ' );
+			if (callback) {
+				_execute(callback, window)
+			}
+		};
 		head.appendChild(script);
 	}
 	if (path.match(/\.css/)) {

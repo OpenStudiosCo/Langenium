@@ -29,7 +29,10 @@ function _init() {
 		},
 		{
 			name: "Semantic UI" , 	
-			files: [ { path: "./src/vendor/semantic.js" } ] 						
+			files: 	[ 
+						{ path: "./src/vendor/semantic.js" }, 
+						{ path: "./src/vendor/semantic.css" }, 
+				   	] 						
 		},
 		{ 	
 			name: "Core", 		
@@ -99,7 +102,7 @@ function _load(name, path, callback) {
 	}
 	if (path.match(/\.css/)) {
 		var stylesheet = document.createElement('link');
-		stylesheet.rel = 'Stylesheet';
+		stylesheet.rel = 'stylesheet';
 		stylesheet.href = path;
 		if (callback) {
 			stylesheet.onload = _execute(callback, window);

@@ -104,6 +104,6 @@ function _load(name, path, callback) {
 		if (callback) {
 			stylesheet.onload = _execute(callback, window);
 		}
-		head.appendChild(stylesheet);
+		head.appendChild(stylesheet); 	
 	}
 }

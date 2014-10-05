@@ -52,7 +52,7 @@ L.Core = function () {
 	    cache: (L.env == 'Dev' || L.env == 'Staging') ? false : true,
 	    success: function(html) {
 	        $("body").html(html);
-	        console.log( '-\t Loaded ' + L.mode + ' template - ( ' + L.Core.modes[L.Core.mode].template_url + ' ) ' );
+	        console.log( '-\t Loaded ' + L.Core.mode + ' template - ( ' + L.Core.modes[L.Core.mode].template_url + ' ) ' );
 	    }
 	});
 

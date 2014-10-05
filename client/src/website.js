@@ -7,6 +7,7 @@ var l = function () {
 		slides: '> .slide',
 		log: false
 	});		
+	console.log('[ Website started ]');
 };
 
 window.l = l;

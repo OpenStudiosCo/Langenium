@@ -3,7 +3,7 @@
 */
 
 L.Core = function () {
-	console.log( '[ Client started ]' );
+	console.log( '[ Client starting ]' );
 	/*
 		Modes:
 			Default

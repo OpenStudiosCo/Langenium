@@ -3,5 +3,6 @@
 */
 
 $('.slideshow').cycle({
-	slides: '> .slide'
+	slides: '> .slide',
+	log: false
 });		

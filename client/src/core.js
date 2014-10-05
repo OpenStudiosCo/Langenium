@@ -52,7 +52,7 @@ L.Core = function () {
 	    cache: (L.env == 'Dev' || L.env == 'Staging') ? false : true,
 	    success: function(html) {
 	        $("body").html(html);
-	        console.log( '[ Client template loaded ]' );
+	        console.log( '-\t Loaded ' + mode + ' template - ( ' + L.Core.mode.template_url + ' ) ' );
 	    }
 	});
 

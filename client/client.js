@@ -78,13 +78,14 @@ function _check_environment () {
 }
 
 function _load_modules (modules, finished_loading) {
+
+	// Sort the modules array so the load in order
+	modules.sort( function( a, b ) { return a - b });
 	
 	var modules_loaded = 0;	
 
 	var modules_callbacks = [];  // Note callback queue is sequential
-
 	modules.forEach(function(module, module_idx){
-		
 		var loaded_module = function() {
 			console.log('-\t Loaded ' + (module_idx + 1) + '/' + modules.length + ' : ' + module.name);
 			modules_loaded++;
@@ -92,10 +93,10 @@ function _load_modules (modules, finished_loading) {
 
 		var loaded_files = 0;
 		
-		module.files.forEach(function(file){
-			
+		module.files.forEach(function(file){	
 			console.log( '-\t Loading ' + (module_idx + 1) + '/' + modules.length + ' : ' + module.name + ' ( ' + file.path + ' ) ' );
 
+			if (file.callback) modules_callbacks.push(file.callback);
 			// Add a default callback that wraps the normal callback
 			var default_callback = function() {			
 				loaded_files++;				
@@ -105,21 +106,15 @@ function _load_modules (modules, finished_loading) {
 				if (modules_loaded == modules.length) {
 					// This is a hook to do something before module callbacks are fired
 					if (finished_loading) finished_loading();
+					// Sort the callbacks so that they fire in order
+					modules_callbacks.sort( function( a, b ) { return a - b });
+					
 					// Fire all the enqueued callbacks
 					modules_callbacks.forEach(function(callback){
 						console.log( '-\t Executing ' + callback );
 						_execute(callback, window);	
 					});
-					// Fire the last module's callback (which is the last in the sequence)
-					if (file.callback) {
-						console.log( '-\t Executing ' + file.callback );
-						_execute(file.callback, window);
-					}
-					
-				}
-				else {
-					// Enqueue the callback
-					if (file.callback) modules_callbacks.push(file.callback);
+				
 				}
 			}
 

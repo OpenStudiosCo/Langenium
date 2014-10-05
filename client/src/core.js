@@ -22,7 +22,7 @@ L.Core = function () {
 					name: "Website Defaults",
 					files: [
 						{ path: "./src/website.css" },
-						{ path: "./src/website.js" }
+						{ path: "./src/website.js", callback:"l.prototype._init" }
 					]
 				}
 			], 
@@ -35,24 +35,24 @@ L.Core = function () {
 		}
 	};
 	// This variable 'mode' will come from somewhere
-	var mode = 'Default';
-	this.mode = this.modes[mode];
+	this.mode = 'Default';
+	this.modes[this.mode].modules.sort( function( a, b ) { return a - b });
 
 	var finished_loading = function() {
 		console.log('[ Client modules loaded ]')
 	}
 
-	_load_modules(this.mode.modules, finished_loading);
-	
-	console.log( '-\t Mode: ' + mode );
-	console.log( '-\t Loading ' + mode + ' template - ( ' + this.mode.template_url + ' ) ' );
+	_load_modules(this.modes[this.mode].modules, finished_loading);
+
+	console.log( '-\t Mode: ' + this.mode );
+	console.log( '-\t Loading ' + this.mode + ' template - ( ' + this.modes[this.mode].template_url + ' ) ' );
 	$.ajax({
-	    url: L.url + this.mode.template_url,
+	    url: L.url + this.modes[this.mode].template_url,
 	    type: "GET",
 	    cache: (L.env == 'Dev' || L.env == 'Staging') ? false : true,
 	    success: function(html) {
 	        $("body").html(html);
-	        console.log( '-\t Loaded ' + mode + ' template - ( ' + L.Core.mode.template_url + ' ) ' );
+	        console.log( '-\t Loaded ' + L.mode + ' template - ( ' + L.Core.modes[L.Core.mode].template_url + ' ) ' );
 	    }
 	});
 

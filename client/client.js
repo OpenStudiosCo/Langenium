@@ -4,7 +4,7 @@
 
 // Boot up the client and populate the L accessor
 function _init() {
-
+	
 	// Create the main engine accessor L
 	window.L = {};
 	L.version = '.5.1-alpha';

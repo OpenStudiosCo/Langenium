@@ -2,6 +2,6 @@
 	core.js
 */
 
-L.bleh = function () {
+L.Core = function () {
 	console.log('-- Core module loaded successfully!')
 }

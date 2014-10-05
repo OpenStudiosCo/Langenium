@@ -2,45 +2,42 @@
 	client.js
 */
 
-
+// Boot up the client 
 function _init() {
-	// Boot up the client 
 
+	// Create the main engine accessor L
 	window.L = {};
+	L.url = 'http://' + location.hostname; // output is http://prefix.langenium.com without a trailing '/'
 
 	var env = _check_environment();
 
-	console.log( '%c', 'line-height: 50px; padding: 30px 120px; background:url("http://' + location.hostname + '/res/logo-colour-medium.png") no-repeat left center;' );
-
+	console.log( '%c', 'line-height: 50px; padding: 30px 120px; background:url("' + L.url + '/res/logo-colour-medium.png") no-repeat left center;' );
 	console.log( '---' );
 	console.log( 'Version: 0.5.1-alpha' );
-	
 	console.log( 'Environment: ' + env );
 	console.log( '---' );
 	console.log( 'Starting client ' );
-
 	
-	
-	// Default modules set in variable (core.js, jquery) 
+	// Default modules
 	var modules = [
 		{ 
 			name: "JQuery" ,
 			files: [ { path: "./src/vendor/jquery-2.1.1.min.js" } ]
 		},
 		{
-			name: "Semantic UI" , 	
+			name: "Semantic UI" ,
 			files: 	[ 
 						{ path: "./src/vendor/semantic.js" }, 
 						{ path: "./src/vendor/semantic.css" }, 
 				   	] 						
 		},
 		{ 	
-			name: "Core", 		
-			files: [ { path: "./src/core.js", 	callback: 'L.bleh' }]
+			name: "Core",
+			files: [ { path: "./src/core.js", 	callback: 'L.Core' }]
 		}
 	];
-
-	// Determine list of modules to use (hardcode for now)
+	var modules_loaded = false;
+	var modules_count = modules.length;
 
 	// Load all the modules and fire relevant callbacks
 	// executeFunctionByName below can be used to fire callbacks that aren't defined yet
@@ -50,12 +47,15 @@ function _init() {
 			console.log( '- Loading ' + module.name + ' ( ' + file.path + ' ) ' );
 			_load(module.name, file.path, file.callback);	
 		});
-		
 	}); 
 
-	var stylesheets = [
-		{ name: "Semantic UI",	path: "./src/" }
-	];
+	// Need to make a ticker that tracks module load progress and then fires the bootup script
+	// This is the beginning of the website bootup script
+	$('body').load(L.url + 'res/templates/homepage.html');
+
+	// Determine list of modules to use (hardcode for now)
+
+
 }
 
 function _execute(functionName, context /*, args */) {

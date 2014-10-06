@@ -7,6 +7,11 @@ var l = function () {
 		slides: '> .slide',
 		log: false
 	});		
+	$('.ui.dropdown')
+      .dropdown({
+        on: 'hover'
+      })
+    ;
 	console.log('[ Website started ]');
 };
 
@@ -16,4 +21,3 @@ l.prototype._init = function() {
 	window.l = new l();
 	delete l._init;
 }
-

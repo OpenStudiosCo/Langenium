@@ -1,6 +1,14 @@
-.ui.menu .item {
+.ui.inverted.secondary.pointing.menu .right.menu .item {
 	font-size: 1.65rem;
 	font-family: "Franchise";
+}
+
+.ui.inverted.secondary.pointing.menu .right.menu > .item {
+    padding: 1em;
+}
+
+.ui.inverted.secondary.pointing.menu .right.menu > .mobile.item {
+    display: none;
 }
 
 .slideshow .slide a.img img {
@@ -8,4 +16,14 @@
 	height: 100%;
 	display: block;
 	margin: 0 auto;
+}
+
+@media only screen and (max-width : 768px) {
+	.ui.inverted.secondary.pointing.menu .right.menu > .item {
+	    display: none;
+	}
+	  
+	.ui.inverted.secondary.pointing.menu .right.menu > .mobile.item {
+	    display: inline-block;
+	}
 }

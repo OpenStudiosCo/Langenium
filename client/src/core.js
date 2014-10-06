@@ -10,7 +10,7 @@ L.Core = function () {
 			Editor
 	*/
 	this.modes = {
-		Default: { 
+		Website: { 
 			modules: [
 				{
 					name: "JQuery Cycle",
@@ -26,7 +26,7 @@ L.Core = function () {
 					]
 				}
 			], 
-			template_url: '/res/templates/homepage.html'
+			template_url: '/res/templates/website.html'
 		},
 		Editor: { 
 			modules: [
@@ -35,8 +35,9 @@ L.Core = function () {
 		}
 	};
 	// This variable 'mode' will come from somewhere
-	this.mode = 'Default';
+	this.mode = 'Website';
 	this.modes[this.mode].modules.sort( function( a, b ) { return a - b });
+	console.log( '-\t Mode: ' + this.mode );
 
 	var finished_loading = function() {
 		console.log('[ Client modules loaded ]')
@@ -44,7 +45,7 @@ L.Core = function () {
 
 	_load_modules(this.modes[this.mode].modules, finished_loading);
 
-	console.log( '-\t Mode: ' + this.mode );
+	
 	console.log( '-\t Loading ' + this.mode + ' template - ( ' + this.modes[this.mode].template_url + ' ) ' );
 	$.ajax({
 	    url: L.url + this.modes[this.mode].template_url,

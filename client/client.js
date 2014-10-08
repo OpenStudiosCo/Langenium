@@ -84,26 +84,30 @@ function _load_modules (modules, finished_loading) {
 	
 	var modules_loaded = 0;	
 
-	var require_queue = {};
+	// Array of modules waiting to be loaded
+	var require_queue = [];
+
+	// Array of required modules that will be removed. 
+	// Every time a module is loaded, it goes through this 
+	// modulename: loaded (true/false)
+	var required_modules = {};
 
 	var modules_callbacks = [];  // Note callback queue is sequential
 	modules.forEach(function(module, module_idx){
 		if (module.requires){
 			console.log('-\t ' + module.name + ' requires: ' + module.requires.join(', ') + '. Adding to requirement queue.');
 			module.requires.forEach(function(dependency){
-				if (!require_queue[dependency]) require_queue[dependency] = [];
-				require_queue[dependency].push(module);
+				if ( typeof required_modules[dependency] === 'undefined' ) {
+					required_modules[dependency] = false;
+				}
+				require_queue.push(module);
+				console.log(require_queue)
 			});
-			console.log(require_queue);
 		}
 		else {
 			var loaded_module = function() {
 				console.log('-\t Loaded ' + (module_idx + 1) + '/' + modules.length + ' : ' + module.name);
-				if (require_queue[module.name]){
-					console.log("-\t Loading requirement queue for " + module.name)
-					console.log(require_queue[module.name])
-				}
-				modules_loaded++;
+				modules_loaded++;			
 			};
 
 			var loaded_files = 0;

@@ -101,6 +101,7 @@ function _load_modules (modules, finished_loading) {
 				console.log('-\t Loaded ' + (module_idx + 1) + '/' + modules.length + ' : ' + module.name);
 				if (require_queue[module.name]){
 					console.log("-\t Loading requirement queue for " + module.name)
+					console.log(require_queue[module.name])
 				}
 				modules_loaded++;
 			};

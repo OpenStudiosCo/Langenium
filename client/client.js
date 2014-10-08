@@ -84,43 +84,58 @@ function _load_modules (modules, finished_loading) {
 	
 	var modules_loaded = 0;	
 
+	var require_queue = {};
+
 	var modules_callbacks = [];  // Note callback queue is sequential
 	modules.forEach(function(module, module_idx){
-		var loaded_module = function() {
-			console.log('-\t Loaded ' + (module_idx + 1) + '/' + modules.length + ' : ' + module.name);
-			modules_loaded++;
-		};
-
-		var loaded_files = 0;
-		
-		module.files.forEach(function(file){	
-			console.log( '-\t Loading ' + (module_idx + 1) + '/' + modules.length + ' : ' + module.name + ' ( ' + file.path + ' ) ' );
-
-			if (file.callback) modules_callbacks.push(file.callback);
-			// Add a default callback that wraps the normal callback
-			var default_callback = function() {			
-				loaded_files++;				
-				if (loaded_files == module.files.length) {
-					loaded_module();	
+		if (module.requires){
+			console.log('-\t ' + module.name + ' requires: ' + module.requires.join(', ') + '. Adding to requirement queue.');
+			module.requires.forEach(function(dependency){
+				if (!require_queue[dependency]) require_queue[dependency] = [];
+				require_queue[dependency].push(module);
+			});
+			console.log(require_queue);
+		}
+		else {
+			var loaded_module = function() {
+				console.log('-\t Loaded ' + (module_idx + 1) + '/' + modules.length + ' : ' + module.name);
+				if (require_queue[module.name]){
+					console.log("-\t Loading requirement queue for " + module.name)
 				}
-				if (modules_loaded == modules.length) {
-					// This is a hook to do something before module callbacks are fired
-					if (finished_loading) finished_loading();
-					// Sort the callbacks so that they fire in order
-					modules_callbacks.sort( function( a, b ) { return a - b });
+				modules_loaded++;
+			};
+
+			var loaded_files = 0;
+			
+			module.files.forEach(function(file){	
+				console.log( '-\t Loading ' + (module_idx + 1) + '/' + modules.length + ' : ' + module.name + ' ( ' + file.path + ' ) ' );
+
+				if (file.callback) modules_callbacks.push(file.callback);
+				// Add a default callback that wraps the normal callback
+				var default_callback = function() {			
+					loaded_files++;				
+					if (loaded_files == module.files.length) {
+						loaded_module();	
+					}
+					if (modules_loaded == modules.length) {
+						// This is a hook to do something before module callbacks are fired
+						if (finished_loading) finished_loading();
+						// Sort the callbacks so that they fire in order
+						modules_callbacks.sort( function( a, b ) { return a - b });
+						
+						// Fire all the enqueued callbacks
+						modules_callbacks.forEach(function(callback){
+							console.log( '-\t Executing ' + callback );
+							_execute(callback, window);	
+						});
 					
-					// Fire all the enqueued callbacks
-					modules_callbacks.forEach(function(callback){
-						console.log( '-\t Executing ' + callback );
-						_execute(callback, window);	
-					});
-				
+					}
 				}
-			}
 
-			_load(module.name, file.path, default_callback);
+				_load(module.name, file.path, default_callback);
 
-		});
+			});
+		}
 
 	}); 
 

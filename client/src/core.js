@@ -5,6 +5,9 @@
 L.Core = function () {
 	console.log( '[ Client starting ]' );
 	/*
+		Modes are basically self contained applications within the application that can be swapped 
+		out at runtime.
+
 		Modes:
 			Default
 			Editor
@@ -30,12 +33,47 @@ L.Core = function () {
 		},
 		Editor: { 
 			modules: [
+				{
+					name: "three.js",
+					files: [ 
+						{ path: './src/vendor/three.min.js' }						
+					]
+				},
+				{
+					name: "threex",
+					requires: [ 'three.js' ],
+					files: [
+						{ path: './src/vendor/threex.keyboardstate.js' }, 
+						{ path: './src/vendor/threex.planets.js' } 
+					]
+				},
+				{
+					name: "Scenograph",
+					requires: [ 'three.js' ],
+					files: [
+						{ path: "./src/scenograph.js" },
+						{ path: "./src/scenograph/editor.js" },
+						{ path: "./src/scenograph/objects.js" },
+						{ path: "./src/scenograph/stats.js" },
+						{ path: "./src/scenograph/director/character_test.js" },
+						{ path: "./src/scenograph/director/epochexordium.js" },
+						{ path: "./src/scenograph/director/mmo.js" },
+						{ path: "./src/scenograph/director/mmo_title.js" }
+					]
+				},
+				{
+					name: "Editor Defaults",
+					files: [
+						{ path: "./src/editor.css" },
+						{ path: "./src/editor.js", callback:"l.prototype._init" }
+					]
+				}
 			], 
 			template_url: '/res/templates/editor.html'
 		}
 	};
 	// This variable 'mode' will come from somewhere
-	this.mode = 'Website';
+	this.mode = 'Editor';
 	this.modes[this.mode].modules.sort( function( a, b ) { return a - b });
 	console.log( '-\t Mode: ' + this.mode );
 

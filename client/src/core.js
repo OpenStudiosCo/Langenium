@@ -73,7 +73,7 @@ L.Core = function () {
 		}
 	};
 	// This variable 'mode' will come from somewhere
-	this.mode = 'Editor';
+	this.mode = 'Website';
 	this.modes[this.mode].modules.sort( function( a, b ) { return a - b });
 	console.log( '-\t Mode: ' + this.mode );
 

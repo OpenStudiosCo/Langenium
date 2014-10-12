@@ -18,18 +18,11 @@ L.scenograph.editor = function() {
 
 	L.scenograph.director.scene_variables.collidables = [];
 
-	for (var folder in L.scenograph.editor.gui_folders) {
-		var newFolder = L.scenograph.director.gui.addFolder(folder);
-		for (var element in L.scenograph.editor.gui_folders[folder]) {
-			newFolder.add(L.scenograph.editor.gui_folders[folder], element)
-			newFolder.open();
-		};
-	}
-
 	L.scenograph.director.scene_variables.select_multiple = false;
 	L.scenograph.director.scene_variables.selected_objects = [];
 	L.scenograph.director.scene_variables._selectedObj = ""; // holder for object chosen in multi select dropdown, this definitely needs to be put in a smarter place
-	L.scenograph.director.gui.add(L.scenograph.director.scene_variables, "select_multiple");
+	
+	console.log("wtf")
 	L.scenograph.director.animation_queue.push(new L.scenograph.editor.select_object());
 }
 
@@ -188,121 +181,8 @@ L.scenograph.editor.select_object = function() {
 					L.scenograph.director.scene_variables.selected = intersects[0].object;
 					intersects[0].object.geometry.computeBoundingBox();
 					L.scenograph.editor.draw_bounding_box(0xFFFF00, intersects[0].object, intersects[0].object.geometry.boundingBox.max, intersects[0].object.geometry.boundingBox.min, intersects[0].object.scale.x );
-					L.scenograph.director.scene_variables.selectedFolder = L.scenograph.director.gui.addFolder("Selected Object");
-					L.scenograph.director.scene_variables.selectedFolder.add(L.scenograph.editor.gui_functions, 'Clear Selection');
-					L.scenograph.director.scene_variables.selectedFolder.add(L.scenograph.editor.gui_functions, "Delete Selected");
-					L.scenograph.director.scene_variables.selectedFolder.open();					
-
+					
 					var material = L.scenograph.director.scene_variables.selected.material;
-
-					
-					if (material instanceof THREE.MeshFaceMaterial) {
-						var materialsFolder = L.scenograph.director.scene_variables.selectedFolder.addFolder("Materials");
-						material.materials.forEach(function(mat, mi){
-							var materialFolder = materialsFolder.addFolder("#" + mi)
-							var control = {
-								color: {
-									r: mat.color.r * 256,
-									g: mat.color.g * 256,
-									b: mat.color.b * 256
-								},
-								side: [ 'FrontSide', 'BackSide', 'DoubleSide' ][mat.side],
-								opacity: mat.prev_opacity
-							}
-							materialFolder.add(control, 'side', [ 'FrontSide', 'BackSide', 'DoubleSide' ]).onChange(function(e){
-								mat.side = THREE[e];
-							});
-							materialFolder.add(mat, 'wireframe');
-							materialFolder.add(control, 'opacity').onChange(function(e){
-								mat.prev_opacity = e;
-								mat.opacity = e;
-							});
-							materialFolder.addColor(control, 'color').onChange(function (e) {
-								if (typeof e == 'object' ) {								
-									mat.color = new THREE.Color().setRGB(e.r / 256,e.g / 256,e.b / 256);
-								}
-								if (typeof e == 'string') {
-									mat.color = new THREE.Color().setHex(e);	
-								}
-						    });
-						    materialFolder.open();
-						});
-						materialsFolder.open();
-					}
-					else {
-						var materialFolder = L.scenograph.director.scene_variables.selectedFolder.addFolder("Material");
-						var control = {
-							color: {
-								r: material.color.r * 256,
-								g: material.color.g * 256,
-								b: material.color.b * 256
-							},
-							side: [ 'FrontSide', 'BackSide', 'DoubleSide' ][material.side],
-							opacity: material.prev_opacity
-						}
-						materialFolder.add(control, 'side', [ 'FrontSide', 'BackSide', 'DoubleSide' ]).onChange(function(e){
-							material.side = THREE[e];
-						});
-						materialFolder.add(material, 'wireframe');
-						materialFolder.add(control, 'opacity').onChange(function(e){
-							material.prev_opacity = e;
-							material.opacity = e;
-						});
-
-						materialFolder.addColor(control, 'color').onChange(function (e) {
-							if (typeof e == 'object' ) {								
-								material.color = new THREE.Color().setRGB(e.r / 256,e.g / 256,e.b / 256);
-							}
-							if (typeof e == 'string') {
-								material.color = new THREE.Color().setHex(e);	
-							}
-					    });					    
-					    materialFolder.open();
-					}
-					
-
-					var posFolder = L.scenograph.director.scene_variables.selectedFolder.addFolder("Position");
-					posFolder.add(L.scenograph.director.scene_variables.selected.position, "x").step(1);
-					posFolder.add(L.scenograph.director.scene_variables.selected.position, "y").step(1);
-					posFolder.add(L.scenograph.director.scene_variables.selected.position, "z").step(1);
-					posFolder.open();
-
-					var rot_step = Math.abs(Math.PI / 12);
-					var rotFolder = L.scenograph.director.scene_variables.selectedFolder.addFolder("Rotation");
-					rotFolder.add(L.scenograph.director.scene_variables.selected.rotation, "x").step(rot_step);
-					rotFolder.add(L.scenograph.director.scene_variables.selected.rotation, "y").step(rot_step);
-					rotFolder.add(L.scenograph.director.scene_variables.selected.rotation, "z").step(rot_step);
-					rotFolder.open();
-
-
-					var sclFolder = L.scenograph.director.scene_variables.selectedFolder.addFolder("Scale");
-					
-					var scl_control = {
-						lock_aspect: false
-					};
-
-					var scl_update = function(dim, delta) {
-						if (scl_control.lock_aspect == true) {
-							L.scenograph.director.scene_variables.selected.scale.set(delta,delta,delta)
-						}
-						else {
-							L.scenograph.director.scene_variables.selected.scale[dim] = delta;
-						}
-					}
-					
-					sclFolder.add(scl_control, "lock_aspect");
-					sclFolder.add(L.scenograph.director.scene_variables.selected.scale, "x").step(.01).onChange(function(e){
-						scl_update('x', e);
-					});
-					sclFolder.add(L.scenograph.director.scene_variables.selected.scale, "y").step(.01).onChange(function(e){
-						scl_update('y', e);
-					});
-					sclFolder.add(L.scenograph.director.scene_variables.selected.scale, "z").step(.01).onChange(function(e){
-						scl_update('z', e);
-					});
-					sclFolder.open();
-
-
 
 					var vector = intersects[0].object.position.clone();
 					L.scenograph.director.scene_variables.target = intersects[0].object;
@@ -313,19 +193,7 @@ L.scenograph.editor.select_object = function() {
 					);
 				}
 				else {
-					if (L.scenograph.director.gui.__folders["Selected Object"]) {
-						L.scenograph.director.gui.removeFolder("Selected Object");
-						L.scenograph.editor.gui_functions['Clear Selection']();
-					}
-					if (!L.scenograph.director.gui.__folders["Selected Objects"]) {
-						L.scenograph.director.scene_variables.selectedFolder = L.scenograph.director.gui.addFolder("Selected Objects");
-						L.scenograph.director.scene_variables.selectedFolder.add(L.scenograph.editor.gui_functions, "Clear Selection");
-						L.scenograph.director.scene_variables.selectedFolder.add(L.scenograph.editor.gui_functions, "Delete Selected");
-						L.scenograph.director.scene_variables.selectedFolder.add(L.scenograph.editor.csg, "intersect");
-						L.scenograph.director.scene_variables.selectedFolder.add(L.scenograph.editor.csg, "subtract");
-						L.scenograph.director.scene_variables.selectedFolder.add(L.scenograph.editor.csg, "union");
-						L.scenograph.director.scene_variables.selectedFolder.open();	
-					}
+					
 					// Make sure we're not dealing with something that's already selected
 					var addToSelection = true;
 					intersects[0].object.children.forEach(function(child_obj){
@@ -512,12 +380,6 @@ L.scenograph.editor.gui_functions = {
 		L.scenograph.director.scene_variables.selected_objects = []; // clears the selected object group
 		L.scenograph.director.scene_variables.selected = undefined;
 		
-		if (L.scenograph.director.gui.__folders["Selected Object"]) {
-			L.scenograph.director.gui.removeFolder("Selected Object");
-		}
-		if (L.scenograph.director.gui.__folders["Selected Objects"]) {
-			L.scenograph.director.gui.removeFolder("Selected Objects");
-		}
 	}
 }
 L.scenograph.editor.gui_folders = {

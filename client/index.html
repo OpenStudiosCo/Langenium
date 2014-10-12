@@ -3,6 +3,805 @@
 	<head>
 		<title>Langenium</title>
 		<script src="./client.js"></script>
+		    <!-- Shaders-->
+    <script type="x-shader/x-vertex" id="cloudVertShader">varying vec3 vTexCoord3D;
+varying vec3 vNormal;
+varying vec3 vViewPosition;
+
+uniform float time;
+uniform float scale;
+
+varying vec2 vUv;
+
+void main() 
+{ 
+    vUv = uv;
+
+  // mirror stuff
+  vec4 mvPosition = modelMatrix * vec4( position, 1.0 );
+
+  vNormal = normalize( normalMatrix * normal );
+  vViewPosition = cameraPosition - mvPosition.xyz;
+  vTexCoord3D = scale * ( position.xyz + vec3( 0.0, 0.0, -time ) );
+  
+  gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+}
+    </script>
+    <script type="x-shader/x-vertex" id="cloudFragShader">varying vec3 vTexCoord3D;
+varying vec3 vNormal;
+varying vec3 vViewPosition;
+
+uniform sampler2D noiseTexture;
+
+uniform float time;
+varying vec2 vUv;
+
+float blendOverlay(float base, float blend) {
+    return( base < 0.5 ? ( 2.0 * base * blend ) : (1.0 - 2.0 * ( 1.0 - base ) * ( 1.1 - blend ) ) );
+}
+
+float snoise ( vec3 coord, float scale, float time_factor ) {
+    vec3 scaledCoord = coord * scale - (vNormal / time_factor + vec3(0.0, 0.0, -time / time_factor));
+
+    vec2 uvTimeShift = vec2((scaledCoord.x + scaledCoord.z) / 2.0, scaledCoord.y) + vec2( -0.7, 1.5 ) * time / time_factor * 0.015;
+    vec4 noiseGeneratorTimeShift = texture2D( noiseTexture, uvTimeShift );
+    vec2 uvNoiseTimeShift = vec2(scaledCoord.x, scaledCoord.y) + 0.5 * vec2( noiseGeneratorTimeShift.r, noiseGeneratorTimeShift.b );
+    vec4 baseColor = texture2D( noiseTexture, uvNoiseTimeShift * vec2(4.0, 4.0) );
+
+    return baseColor.b;
+}
+
+float heightMap( vec3 coord ) {
+    float n = abs(snoise(coord , 1.0 , 1800.0));
+    n -= 0.75 * abs(snoise(coord , 4.0 , 2500.0));
+    n += 0.125 * abs(snoise(coord , 14.0 , 3500.0));
+
+    n *= 0.7;
+
+    return n;
+}
+
+float limitColor( float min, float max, float channel) {
+    if (channel < min) {
+        channel = min;
+    }
+    if (channel > max) {
+        channel = max;
+    }
+    return channel;
+}
+
+vec4 colorFilter (float n, vec3 coord) {
+
+    vec4 color = vec4( vec3( 1.75 *n, 1.75 * n, 1.75 * n )  , 1.0 );
+
+    if ( n >= 0.3 ) {
+        color.r = limitColor(0.5, 0.85, color.r) ;
+        color.g = limitColor(0.5, 0.85, color.g) ;
+        color.b = limitColor (0.5, 0.85, color.b) ;
+
+    }
+    else {
+        if ( n >= 0.2 ) {
+            color.r = dot(color.r, n) / 1.5 + 0.0;
+            color.g = color.g * n / 1.5 + 0.5 - coord.y * 1.12;
+            color.b = color.b * n / 1.5 + .95 - coord.y * 1.12;
+        }
+        else {
+            color.r = color.r * n / 3.5 + 0.0;
+            color.g = color.g * n  / 3.5 + 0.5 - coord.y * 1.12;
+            color.b = color.b * n  / 3.5 + .95 - coord.y * 1.12;
+        }
+    }
+
+    // targetting the grey parts of the clouds
+    if (n < 1.0 && n > 0.3) {
+    
+        color.r = pow(color.r , 0.0);
+        color.g = pow(color.g  , 0.5 ) ;
+        color.b = pow(color.b , 1.0 ) ;
+    }
+    return color;
+}
+
+void main(void) {
+
+    // height
+
+    float n = heightMap( vTexCoord3D );
+
+    vec4 texColor = colorFilter( n, vTexCoord3D );
+
+    // color
+    gl_FragColor = texColor;
+
+    // normal
+
+     if ( n > 0.3  ) {
+
+        const float e = .01;
+
+        float nx = heightMap( vTexCoord3D + vec3( e, 0.0, 0.0 ) );
+        float ny = heightMap( vTexCoord3D + vec3( 0.0, e, 0.0 ) );
+        float nz = heightMap( vTexCoord3D + vec3( 0.0, 0.0, e ) );
+
+        vec3 normal = normalize( vNormal + .5 * vec3( n - nx, n - ny, n - nz ) / e );
+
+        // diffuse light
+
+        vec3 vLightWeighting = vec3( 0.0005 );
+
+        vec4 lDirection = viewMatrix * vec4( normalize( vec3( 1.0, 0.0, 0.5 ) ), 0.0 );
+        float directionalLightWeighting = dot( normal, normalize( lDirection.xyz ) ) * 0.15 + 0.85;
+        vLightWeighting += vec3( 1.0 ) * directionalLightWeighting;
+
+        // specular light
+
+        vec3 dirHalfVector = normalize( lDirection.xyz + normalize( vViewPosition ) );
+
+        float dirDotNormalHalf = dot( normal, dirHalfVector );
+
+        float dirSpecularWeight = 0.0;
+        if ( dirDotNormalHalf >= 0.0 )
+            dirSpecularWeight = ( 1.0 - n ) * pow( dirDotNormalHalf, 5.0 );
+
+        vLightWeighting += vec3( 1.0, 0.5, 0.0 ) * dirSpecularWeight * n * 2.0;
+
+        gl_FragColor *= vec4( vLightWeighting, 1.0 ); //
+    }
+}
+    </script>
+    <script type="x-shader/x-vertex" id="fireVertShader">  attribute vec3 pos;
+  attribute vec3 tex;
+  
+  varying vec3 texOut;
+
+  void main(void) {
+    //gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1);
+    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+    texOut = tex;
+  }
+
+    </script>
+    <script type="x-shader/x-vertex" id="fireFragShader">precision highp float;
+
+// Modified Blum Blum Shub pseudo-random number generator.
+vec2 mBBS(vec2 val, float modulus) {
+  val = mod(val, modulus); // For numerical consistancy.
+  return mod(val * val, modulus);
+}
+
+// Pregenerated noise texture.
+uniform sampler2D nzw;
+const float modulus = 61.0;  // Value used in pregenerated noise texture.
+
+/**
+ * Modified noise function.
+ * @see http://www.csee.umbc.edu/~olano/papers/index.html#mNoise
+ **/
+float mnoise(vec3 pos) {
+  float intArg = floor(pos.z);
+  float fracArg = fract(pos.z);
+  vec2 hash = mBBS(intArg * 3.0 + vec2(0, 3), modulus);
+  vec4 g = vec4(
+      texture2D(nzw, vec2(pos.x, pos.y + hash.x) / modulus).xy,
+      texture2D(nzw, vec2(pos.x, pos.y + hash.y) / modulus).xy) * 2.0 - 1.0;
+  return mix(g.x + g.y * fracArg,
+             g.z + g.w * (fracArg - 1.0),
+             smoothstep(0.0, 1.0, fracArg));
+}
+
+const int octives = 4;
+const float lacunarity = 2.0;
+const float gain = 0.5;
+
+/**
+ * Adds multiple octives of noise together.
+ **/
+float turbulence(vec3 pos) {
+  float sum = 0.0;
+  float freq = 1.0;
+  float amp = 1.0;
+  for(int i = 0; i < 4; i++) {
+    sum += abs(mnoise(pos * freq)) * amp;
+    freq *= lacunarity;
+    amp *= gain;
+  }
+  return sum;
+}
+
+const float magnatude = 1.3;
+uniform float time;
+uniform sampler2D fireProfile;
+
+/**
+ * Samples the fire.
+ *
+ * @param loc the normalized location (0.0-1.0) to sample the fire
+ * @param scale the 'size' of the fire in world space and time
+ **/
+vec4 sampleFire(vec3 loc, vec4 scale) {
+  // Convert xz to [-1.0, 1.0] range.
+  loc.xz = loc.xz * 2.0 - 1.0;
+
+  // Convert to (radius, height) to sample fire profile texture.
+  vec2 st = vec2(sqrt(dot(loc.xz, loc.xz)), loc.y);
+
+  // Convert loc to 'noise' space
+  loc.y -= time * scale.w; // Scrolling noise upwards over time.
+  loc *= scale.xyz; // Scaling noise space.
+
+  // Offsetting vertial texture lookup.
+  // We scale this by the sqrt of the height so that things are
+  // relatively stable at the base of the fire and volital at the
+  // top.
+  float offset = sqrt(st.y) * magnatude * turbulence(loc);
+  st.y += offset;
+
+  // TODO: Update fireProfile texture to have a black row of pixels.
+  if (st.y > 1.0) {
+    return vec4(0, 0, 0, 1);
+  }
+
+  vec4 result = texture2D(fireProfile, st);
+
+  // Fading out bottom so slice clipping isnt obvious
+  if (st.y < .1) {
+    result *= st.y / 0.1;
+  }
+  return result;
+}
+
+// Get the range of t to sample.
+vec2 get_range(vec3 pos, vec3 dir) {
+  float pd = dot(pos.xz, dir.xz);
+  float pp = dot(pos.xz, pos.xz);
+  float dd = dot(dir.xz, dir.xz);
+
+  float temp = pd * pd + dd * (1.0 - pp);
+  if (temp < 0.0)  // No intersection
+    return vec2(0.0);
+  temp = sqrt(temp);
+  return max(vec2(0.0), vec2(-pd - temp, -pd + temp)) / dd;
+}
+
+vec4 ray_trace(vec3 pos, vec3 dir, vec3 t) {
+  float samples = (t.y - t.x) / t.z;
+
+  pos = pos + t.x * dir;
+  vec3 integral = vec3(0.0);
+  for (int i = 0; i < 8; i++) {
+    if (pos.y > 1.0 || pos.y < 0.0 || float(i) >= samples)
+      break;
+    vec4 sample = 2.0 * sampleFire(pos, vec4(2.0, 2.0, 2.0, 1.0));
+    integral += sample.xyz;
+    pos += t.z * dir;
+  }
+  return vec4(integral, 1);
+}
+
+uniform vec3 eye;
+varying vec3 texOut;
+varying vec3 worldCoord;
+void main(void) {
+  // Mapping texture coordinate to -1 => 1 for xy, 0=> 1 for y
+
+  //gl_FragColor = vec4(0.5, 0.5, 0.0, 0.5);
+  //gl_FragColor = vec4(texOut, 1);
+  //gl_FragColor = vec4(vec3((t.x - t.y) / 2.0), 1);
+  vec3 color = sampleFire(texOut, vec4(1.0, 2.0, 1.0, 0.5)).xyz;
+  //gl_FragColor = vec4(color, length(color) * 2.5);
+  gl_FragColor = vec4(color * .25, 1);
+}
+
+    </script>
+    <script type="x-shader/x-vertex" id="haloVertShader">varying vec3 vNormal;
+varying vec3 vWorldPosition;
+
+void main() 
+{
+    vNormal = normalize( normalMatrix * normal );
+
+    vWorldPosition = (modelMatrix * vec4(position, 1.0)).xyz;
+
+    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+}
+    </script>
+    <script type="x-shader/x-vertex" id="haloFragShader">varying vec3 vNormal;
+varying vec3 vWorldPosition;
+
+void main() 
+{
+	vec3 worldCameraToVertex = cameraPosition - vWorldPosition;
+	vec3 viewCameraToVertex	= (viewMatrix * vec4(worldCameraToVertex, 0.0)).xyz;
+	viewCameraToVertex	= normalize(viewCameraToVertex);
+	float intensity = pow( 0.65 - dot( vNormal, viewCameraToVertex  ), 4.0 ); 
+    gl_FragColor = vec4( 1.0, 0.6, 0.0, 1.0 ) * intensity;
+}
+    </script>
+    <script type="x-shader/x-vertex" id="logoWaterVertShader">varying vec3 vNormal;
+varying vec3 vTexCoord3D;
+varying vec3 vViewPosition;
+
+uniform float time;
+
+void main() 
+{
+    vNormal = normalize( normalMatrix * normal );
+
+    vec4 mvPosition = modelMatrix * vec4( position, 1.0 );
+    vViewPosition = cameraPosition - mvPosition.xyz;
+
+    vTexCoord3D = 11. * ( position.xyz + vec3( -time, -time, -time ) );
+
+    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+}
+    </script>
+    <script type="x-shader/x-vertex" id="logoWaterFragShader">varying vec3 vNormal;
+varying vec3 vTexCoord3D;
+varying vec3 vViewPosition;
+
+uniform sampler2D noiseTexture;
+uniform float time;
+
+float snoise ( vec3 coord, float scale, float time_factor ) {
+    vec3 scaledCoord = coord * scale - (vNormal / time_factor + vec3(0.0, 0.0, -time / time_factor));
+
+    vec2 uvTimeShift = vec2((scaledCoord.x + scaledCoord.z) / 2.0, scaledCoord.y) + vec2( -0.7, 1.5 ) * time / time_factor * 0.015;
+    vec4 noiseGeneratorTimeShift = texture2D( noiseTexture, uvTimeShift );
+    vec2 uvNoiseTimeShift = vec2(scaledCoord.x, scaledCoord.y) + 0.5 * vec2( noiseGeneratorTimeShift.g, noiseGeneratorTimeShift.b );
+    vec4 baseColor = texture2D( noiseTexture, uvNoiseTimeShift * vec2(4.0, 4.0) );
+
+    return baseColor.b;
+}
+
+float heightMap( vec3 coord ) {
+	float n = 0.0;
+
+	n = 0.65 * abs(snoise(coord, 0.0625, 500. ));
+	n += 0.5 * abs(snoise(coord, 0.125, -500. ));
+	n += 0.125 * abs(snoise(coord, 5., -50. ));
+	n -= 0.125 * abs(snoise(coord, 100., 150. ));
+	n *= .75;
+
+	return n;
+}
+
+float limitColor( float min, float max, float channel) {
+	if (channel < min) {
+		channel = min;
+	}
+	if (channel > max) {
+		channel = max;
+	}
+	return channel;
+}
+
+vec4 colorFilter(float n) {
+
+	vec4 color = vec4( vec3( 0.01 *n, 0.25 * n, .95 * n )  , 1.0 );
+
+	color.r = limitColor(0.0, 0.05, color.r);
+	color.g = limitColor(0.025, 0.25, color.g);
+	color.b = limitColor (0.15, 0.75, color.b);
+
+	return color;
+}
+
+void main() 
+{
+	float n = heightMap( vTexCoord3D );
+
+    vec4 texColor = colorFilter( n );
+
+    // color
+    gl_FragColor = texColor;
+	
+	// normal
+
+	const float e = 0.01;
+
+	float nx = heightMap( vTexCoord3D + vec3( e, 0.0, 0.0 ) );
+	float ny = heightMap( vTexCoord3D + vec3( 0.0, e, 0.0 ) );
+	float nz = heightMap( vTexCoord3D + vec3( 0.0, 0.0, e ) );
+
+	vec3 normal = normalize( vNormal + 0.085 * vec3( n - nx, n - ny, n - nz ) / e );
+
+	// diffuse light
+
+	vec3 vLightWeighting = vec3( -0.001 );
+
+	vec4 lDirection = viewMatrix * vec4( normalize( vec3( 0.0, 1.0, 1.0 ) ), 0.0 );
+	float directionalLightWeighting = dot( normal, normalize( lDirection.xyz ) ) * 0.15 + 0.85;
+	vLightWeighting += vec3( 1.0 ) * directionalLightWeighting;
+
+	// specular light
+
+	vec3 dirHalfVector = normalize( lDirection.xyz + normalize( vViewPosition ) );
+
+	float dirDotNormalHalf = dot( normal, dirHalfVector );
+
+	float dirSpecularWeight = 0.0;
+	if ( dirDotNormalHalf >= 0.0 )
+		dirSpecularWeight = ( 1.0 - n ) * pow( dirDotNormalHalf, 5.0 );
+
+	vLightWeighting += vec3( 0.5, 0.5, 1.5 ) * dirSpecularWeight * n * 6.0;
+
+	gl_FragColor *= vec4( vLightWeighting, 1.0 ); //
+}
+    </script>
+    <script type="x-shader/x-vertex" id="logoMetalVertShader">varying vec3 vNormal;
+varying vec3 vTexCoord3D;
+varying vec3 vViewPosition;
+
+uniform float time;
+
+void main() 
+{
+    vNormal = normalize( normalMatrix * normal );
+
+    vec4 mvPosition = modelMatrix * vec4( position, 1.0 );
+    vViewPosition = cameraPosition - mvPosition.xyz;
+
+    vTexCoord3D = 15.5 * ( position.xyz + vec3( time, time , time ) );
+
+    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+}
+    </script>
+    <script type="x-shader/x-vertex" id="logoMetalFragShader">varying vec3 vNormal;
+varying vec3 vTexCoord3D;
+varying vec3 vViewPosition;
+
+uniform sampler2D noiseTexture;
+uniform float time;
+
+float snoise ( vec3 coord, float scale, float time_factor ) {
+    vec3 scaledCoord = coord * scale - (vNormal / time_factor + vec3(0., 0.0, -time / time_factor));
+
+    vec2 uvTimeShift = vec2((scaledCoord.x + scaledCoord.z) / 2.0, scaledCoord.y) + vec2( -0.7, 1.5 ) * time / time_factor * 0.015;
+    vec4 noiseGeneratorTimeShift = texture2D( noiseTexture, uvTimeShift );
+    vec2 uvNoiseTimeShift = vec2(scaledCoord.x, scaledCoord.z) + 0.5 * vec2( noiseGeneratorTimeShift.g, noiseGeneratorTimeShift.b );
+    vec4 baseColor = texture2D( noiseTexture, uvNoiseTimeShift * vec2(4.0, 4.0) );
+
+    return baseColor.b;
+}
+
+float heightMap( vec3 coord ) {
+	float n = 0.0;
+
+	n = 0.0125 * abs(snoise(coord, 0.0625, 500. ));
+	n += 0.25 * abs(snoise(coord, 0.125, -500. ));
+	n += 1.125 * abs(snoise(coord, 5., -50. ));
+	return n;
+}
+
+float limitColor( float min, float max, float channel) {
+	if (channel < min) {
+		channel = min;
+	}
+	if (channel > max) {
+		channel = max;
+	}
+	return channel;
+}
+
+vec4 colorFilter(float n) {
+
+	vec4 color = vec4( vec3( 0.25 *n, 0.25 * n, 0.25 * n )  , 1.0 );
+
+	color.r = limitColor(0.05, 0.25, color.r);
+	color.g = limitColor(0.05, 0.25, color.g);
+	color.b = limitColor (0.05, 0.25, color.b);
+
+	return color;
+}
+
+void main() 
+{
+	float n = heightMap( vTexCoord3D );
+
+    vec4 texColor = colorFilter( n );
+
+    // color
+    gl_FragColor = texColor;
+	
+	// normal
+
+	const float e = 0.0001;
+
+	float nx = heightMap( vTexCoord3D + vec3( e, 0.0, 0.0 ) );
+	float ny = heightMap( vTexCoord3D + vec3( 0.0, e, 0.0 ) );
+	float nz = heightMap( vTexCoord3D + vec3( 0.0, 0.0, e ) );
+
+	vec3 normal = normalize( vNormal + 0.085 * vec3( n - nx, n - ny, n - nz ) / e );
+
+	// diffuse light
+
+	vec3 vLightWeighting = vec3( -0.1 );
+
+	vec4 lDirection = viewMatrix * vec4( normalize( vec3( 0.0, -1.0, 1.0 ) ), 0.0 );
+	float directionalLightWeighting = dot( normal, normalize( lDirection.xyz ) ) * 0.35 + 0.65;
+	vLightWeighting += vec3( 1.0 ) * directionalLightWeighting;
+
+	// specular light
+
+	vec3 dirHalfVector = normalize( lDirection.xyz + normalize( vViewPosition ) );
+
+	float dirDotNormalHalf = dot( normal, dirHalfVector );
+
+	float dirSpecularWeight = 0.0;
+	if ( dirDotNormalHalf >= 0.0 )
+		dirSpecularWeight = ( 1.0 - n ) * pow( dirDotNormalHalf, 5.0 );
+
+	vLightWeighting += vec3( 0.75, 0.75, 0.75 ) * dirSpecularWeight * n * 6.0;
+
+	gl_FragColor *= vec4( vLightWeighting, 1.0 ); //
+}
+    </script>
+    <script type="x-shader/x-vertex" id="sunVertShader">varying vec3 vNormal;
+varying vec3 vTexCoord3D;
+varying vec3 vViewPosition;
+
+uniform float time;
+
+void main() 
+{
+    vNormal = normalize( normalMatrix * normal );
+
+    vec4 mvPosition = modelMatrix * vec4( position, 1.0 );
+    vViewPosition = cameraPosition - mvPosition.xyz;
+
+    vTexCoord3D = .01 * ( position.xyz + vec3( -time, -time, -time ) );
+
+    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+}
+    </script>
+    <script type="x-shader/x-vertex" id="sunFragShader">varying vec3 vNormal;
+varying vec3 vTexCoord3D;
+varying vec3 vViewPosition;
+
+uniform sampler2D noiseTexture;
+uniform float time;
+
+float snoise ( vec3 coord, float scale, float time_factor ) {
+    vec3 scaledCoord = coord * scale - (vNormal / time_factor + vec3(0.0, 0.0, -time / time_factor));
+
+    vec2 uvTimeShift = vec2((scaledCoord.x + scaledCoord.z) / 2.0, scaledCoord.y) + vec2( -0.7, 1.5 ) * time / time_factor * 0.015;
+    vec4 noiseGeneratorTimeShift = texture2D( noiseTexture, uvTimeShift );
+    vec2 uvNoiseTimeShift = vec2(scaledCoord.x, scaledCoord.y) + 0.5 * vec2( noiseGeneratorTimeShift.g, noiseGeneratorTimeShift.b );
+    vec4 baseColor = texture2D( noiseTexture, uvNoiseTimeShift * vec2(4.0, 4.0) );
+
+    return baseColor.b;
+}
+
+float heightMap( vec3 coord ) {
+	float n = 0.0;
+
+	n =  abs(snoise(coord, 0.05, -500. ));
+	
+	return n;
+}
+
+float limitColor( float min, float max, float channel) {
+	if (channel < min) {
+		channel = min;
+	}
+	if (channel > max) {
+		channel = max;
+	}
+	return channel;
+}
+
+vec4 colorFilter(float n) {
+
+	vec4 color = vec4( vec3( 2.5 * n, n, 0.5 * n )  , 1.0 );
+
+	color.r = limitColor(1.8, 4.0, color.r);
+	
+	color.g = limitColor(0.8, 1., color.g);
+	
+	color.b = limitColor (0.0, 0.0, color.b);
+
+	return color;
+}
+
+void main() 
+{
+	float n = heightMap( vTexCoord3D );
+
+    vec4 texColor = colorFilter( n );
+
+    // color
+    gl_FragColor = texColor;
+	// normal
+
+	const float e = 0.01;
+
+	float nx = heightMap( vTexCoord3D + vec3( e, 0.0, 0.0 ) );
+	float ny = heightMap( vTexCoord3D + vec3( 0.0, e, 0.0 ) );
+	float nz = heightMap( vTexCoord3D + vec3( 0.0, 0.0, e ) );
+
+	vec3 normal = normalize( vNormal + 0.085 * vec3( n - nx, n - ny, n - nz ) / e );
+
+	// diffuse light
+
+	vec3 vLightWeighting = vec3( -0.001 );
+
+	vec4 lDirection = viewMatrix * vec4( normalize( vec3( 1.0, 1.0, 1.0 ) ), 1.0 );
+	float directionalLightWeighting = dot( normal, normalize( lDirection.xyz ) ) * 0.35 + 0.65;
+	vLightWeighting += vec3( 1.0 ) * directionalLightWeighting;
+
+	// specular light
+
+	vec3 dirHalfVector = normalize( lDirection.xyz + normalize( vViewPosition ) );
+
+	float dirDotNormalHalf = dot( normal, dirHalfVector );
+
+	float dirSpecularWeight = 0.0;
+	if ( dirDotNormalHalf >= 0.0 )
+		dirSpecularWeight = ( 1.0 - n ) * pow( dirDotNormalHalf, 5.0 );
+
+	vLightWeighting += vec3( 1.0, 1.0, 1.0 ) * dirSpecularWeight * n * 8.0;
+
+	gl_FragColor *= vec4( vLightWeighting, 1.0 ); //
+
+	gl_FragColor += texColor * 0.3;
+}
+    </script>
+    <script type="x-shader/x-vertex" id="waterVertShader">uniform mat4 textureMatrix;
+varying vec4 mirrorCoord;
+
+varying vec3 vTexCoord3D;
+varying vec3 vNormal;
+varying vec3 vViewPosition;
+varying vec4 worldPosition;
+
+uniform float time;
+uniform float scale;
+uniform float alpha;
+
+varying vec2 vUv;
+
+void main() 
+{ 
+    vUv = uv;
+
+	// mirror stuff
+	vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+	worldPosition = modelMatrix * vec4( position, 1.0 );
+	mirrorCoord = textureMatrix * worldPosition;
+
+	vNormal = normalize( normalMatrix * normal );
+	vViewPosition = cameraPosition - mvPosition.xyz;
+	vTexCoord3D = scale * ( position.xyz + vec3( 0.0, 0.0, -time  ) );
+	
+	gl_Position = projectionMatrix * mvPosition;
+}
+    </script>
+    <script type="x-shader/x-vertex" id="waterFragShader">uniform sampler2D mirrorSampler;
+varying vec4 mirrorCoord;
+
+uniform sampler2D noiseTexture;
+
+varying vec3 vTexCoord3D;
+varying vec3 vNormal;
+varying vec3 vViewPosition;
+varying vec4 worldPosition;
+
+uniform vec3 eye;
+uniform float alpha;
+uniform float time;
+uniform float bias;
+varying vec2 vUv;
+
+float blendOverlay(float base, float blend) {
+	return( base < 0.5 ? ( 2.0 * base * blend ) : (1.0 - 2.0 * ( 1.0 - base ) * ( 1.1 - blend ) ) );
+}
+
+float snoise ( vec3 coord, float scale, float time_factor ) {
+	vec3 scaledCoord = coord * scale - (vNormal / time_factor + vec3(0.0, 0.0, -time / time_factor));
+
+	vec2 uvTimeShift = vec2((scaledCoord.x + scaledCoord.z) / 2.0, scaledCoord.y)  + vec2( -0.75, 1.5 ) * (time / time_factor);
+	vec4 noiseGeneratorTimeShift = texture2D( noiseTexture, uvTimeShift );
+	vec2 uvNoiseTimeShift = vec2(scaledCoord.x, scaledCoord.y) + 0.5 * vec2( noiseGeneratorTimeShift.r, noiseGeneratorTimeShift.b );
+	vec4 baseColor = texture2D( noiseTexture, uvNoiseTimeShift * vec2(4.0, 4.0) );
+
+	return baseColor.b;
+}
+
+float heightMap( vec3 coord ) {
+	float n = 0.0;
+	
+	n += 0.125 * abs(snoise(coord, 4., -25. ));
+	n += 0.125 * abs(snoise(coord, 8., 25. ));	
+	n *= .3;
+
+	return n;
+}
+
+float limitColor( float min, float max, float channel) {
+	if (channel < min) {
+		channel = min;
+	}
+	if (channel > max) {
+		channel = max;
+	}
+	return channel;
+}
+
+vec4 colorFilter (float n) {
+
+	vec4 color = vec4( vec3( 0.001 *n, 0.015 * n, .125 * n )  , 1.0 );
+
+	color.r = limitColor(0.0, 0.05, color.r);
+	color.g = limitColor(0.05, 1.5, color.g);
+	color.b = limitColor (0.3, 1.95, color.b);
+
+	return color;
+}
+
+void main(void) {
+
+
+	
+	
+	// height 
+	float n = heightMap( vTexCoord3D );
+
+	// normal
+
+	const float e = 0.001;
+
+	float nx = heightMap( vTexCoord3D + vec3( e, 0.0, 0.0 ) );
+	float ny = heightMap( vTexCoord3D + vec3( 0.0, e, 0.0 ) );
+	float nz = heightMap( vTexCoord3D + vec3( 0.0, 0.0, e ) );
+
+	vec3 normal = normalize( vNormal + 0.05 * vec3( n - nx, n - ny, n - nz ) / e );
+
+	vec3 worldToEye = eye - worldPosition.xyz;
+	vec3 eyeDirection = normalize(worldToEye);
+	float distance = length(worldToEye);
+
+	// mirror
+	vec2 distortion = normal.xz * 20. * sqrt(distance) * 0.07;
+	vec3 mirrorDistord = mirrorCoord.xyz + vec3(distortion.x, distortion.y, 1.0);
+	vec4 reflection = texture2DProj(mirrorSampler, mirrorDistord);
+	reflection *= 2.0;
+	reflection.a = .6;
+
+	// color
+	vec4 texColor = colorFilter( n );
+	texColor.a = 0.25;
+
+	gl_FragColor = texColor;
+	gl_FragColor += reflection;
+
+	// diffuse light
+
+    vec3 vLightWeighting = vec3( 0.1 );
+
+    vec4 lDirection = viewMatrix * vec4( normalize( vec3( 1.0, 0.0, 0.5 ) ), 0.0 );
+    float directionalLightWeighting = dot( normal, normalize( lDirection.xyz ) ) * 0.25 + 0.75;
+    vLightWeighting += vec3( 1.0 ) * directionalLightWeighting;
+
+    // specular light
+
+    vec3 dirHalfVector = normalize( lDirection.xyz + normalize( vViewPosition ) );
+
+    float dirDotNormalHalf = dot( normal, dirHalfVector );
+
+    float dirSpecularWeight = 0.0;
+    if ( dirDotNormalHalf >= 0.0 )
+        dirSpecularWeight = ( 1.0 - n ) * pow( dirDotNormalHalf, 5.0 );
+
+    vLightWeighting += vec3( 1.0, 0.5, 0.0 ) * dirSpecularWeight * n * 2.0;
+
+    gl_FragColor *= vec4( vLightWeighting, 1.0 );
+
+	
+
+}
+    </script>
 	</head>
 	<body onload="_init();">
 		<h1>Error: Client failed to start</h1>

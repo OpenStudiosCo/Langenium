@@ -43,6 +43,7 @@ L.Core = function () {
 					name: "threex",
 					requires: [ 'three.js' ],
 					files: [
+						{ path: './src/vendor/OrbitControls.js' }, 
 						{ path: './src/vendor/threex.keyboardstate.js' }, 
 						{ path: './src/vendor/threex.planets.js' } 
 					]
@@ -50,7 +51,6 @@ L.Core = function () {
 				{
 					name: "Scenograph Compatibility",
 					files: [
-						{ path: './src/vendor/dat.gui.js' },
 						{ path: './src/vendor/smoothie.js' }
 					]
 				},
@@ -93,7 +93,7 @@ L.Core = function () {
 		}
 	};
 	// This variable 'mode' will come from somewhere
-	this.mode = 'Website';
+	this.mode = 'Editor';
 	this.modes[this.mode].modules.sort( function( a, b ) { return a - b });
 	console.log( '-\t Mode: ' + this.mode );
 

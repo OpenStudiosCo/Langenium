@@ -3,7 +3,7 @@ L.scenograph = {
 	winW: 1024,
 	winH: 768,
 	options: {
-		activeScene: 'Sandbox',
+		activeScene: 'Epoch Exordium',
 		currentScene: '',
 		hideInterface: true,
 		editMode: false,
@@ -87,13 +87,13 @@ L.scenograph.director.init = function() {
 
 	this.camera = new THREE.PerspectiveCamera( 45, L.scenograph.winW / L.scenograph.winH, 1, this.M * 2 );
 
-	this.noiseTexture2 = THREE.ImageUtils.loadTexture( "/assets/textures/noise2.jpg" );
+	this.noiseTexture2 = THREE.ImageUtils.loadTexture( "/res/textures/noise2.jpg" );
 	this.noiseTexture2.wrapS = this.noiseTexture2.wrapT = THREE.RepeatWrapping;
 	
-	this.noiseTexture3 = THREE.ImageUtils.loadTexture( "/assets/textures/noise3.jpg" );
+	this.noiseTexture3 = THREE.ImageUtils.loadTexture( "/res/textures/noise3.jpg" );
 	this.noiseTexture3.wrapS = this.noiseTexture3.wrapT = THREE.RepeatWrapping;
 
-	this.waterNormals = new THREE.ImageUtils.loadTexture( '/assets/textures/waternormals.jpg' );
+	this.waterNormals = new THREE.ImageUtils.loadTexture( '/res/textures/waternormals.jpg' );
 	this.waterNormals.wrapS = this.waterNormals.wrapT = THREE.RepeatWrapping; 
 
 	this.effects = {

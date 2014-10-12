@@ -11,7 +11,7 @@ L.scenograph.director.epochexordium = function() {
 
 	var geometry = new THREE.BoxGeometry( 1000000, 1000000, 1000000 );
 
-	var texture_prefix = '/assets/textures/epoch-exordium_'
+	var texture_prefix = '/res/textures/epoch-exordium_'
 	var textures = [
 		texture_prefix + 'right1.png',
 		texture_prefix + 'left2.png',

@@ -39,5 +39,5 @@ L.scenograph.director.mmo_title = function() {
 		mesh.rotateX( Math.PI / 2 );
 		L.scenograph.director.scene.add(mesh);			
 	}
-	L.scenograph.objects.loadObject('/assets/models/langenium-logo.js', logo_cb);
+	L.scenograph.objects.loadObject('/res/models/langenium-logo.js', logo_cb);
 }

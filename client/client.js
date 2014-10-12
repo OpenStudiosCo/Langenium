@@ -41,11 +41,7 @@ function _init() {
 		}
 	];
 
-	// Load all the modules. Callbacks don't fire until all modules are loaded
-	var finished_loading = function() {
-		console.log('[ ' + modules.length + ' core modules loaded, processing callbacks ]');
-	}
-	_load_modules(modules, finished_loading);
+	_load_modules( modules );
 
 }
 window.poop = function() {
@@ -79,11 +75,8 @@ function _check_environment () {
 	
 }
 
-function _load_modules (modules, finished_loading) {
+function _load_modules (modules) {
 
-	// Sort the modules array so the load in order
-	modules.sort( function( a, b ) { return a - b });
-	
 	var modules_loaded = 0;	
 
 	// Array of modules waiting to be loaded
@@ -96,28 +89,32 @@ function _load_modules (modules, finished_loading) {
 
 	var modules_callbacks = [];  // Note callback queue is sequential
 
-	// Check the required_modules array to see if there are any modules waiting for a module to be loaded
+	
 	var requirement_check = function(module, module_idx) {
-		if ( typeof required_modules[module.name] != 'undefined' || required_modules[module.name] == false) {
+		console.log('-\t Looping through requirement queue to see if we can process anything.');
+
+		// Set the switch so modules waiting on this module can load
+		if ( required_modules[module.name] == false) {
 			required_modules[module.name] = true;
-			console.log('-\t Looping through requirement queue to see if we can process anything.');
-			require_queue.forEach(function(queued_module, queued_module_idx){
-				// Checking each dependency and comparing it to the required_modules array to see if it's been loaded
-				var required_score = queued_module.requires.length;
-				var score = 0;
-				queued_module.requires.forEach(function(queued_module_requirement){
-					if (required_modules[queued_module_requirement] == true) {
-						score++;
-						if (required_score == score) {
-							console.log('-\t Ready to load ' + queued_module.name + ' ( Requires: ' + queued_module.requires.join(', ') + ' ) ')
-							
-							load_module(queued_module, (modules_loaded + queued_module_idx));
-							require_queue.splice(queued_module_idx,1);
-						}
-					}
-				});
-			});
 		}
+		
+		// Check the required_modules array to see if there are any modules waiting for a module to be loaded	
+		require_queue.forEach(function(queued_module, queued_module_idx){
+			// Checking each dependency and comparing it to the required_modules array to see if it's been loaded
+			var required_score = queued_module.requires.length;
+			var score = 0;
+			queued_module.requires.forEach(function(queued_module_requirement){
+				if (required_modules[queued_module_requirement] == true) {
+					score++;
+					if (required_score == score) {
+						console.log('-\t Ready to load ' + queued_module.name + ' ( Requires: ' + queued_module.requires.join(', ') + ' ) ')
+						
+						load_module(queued_module, (modules_loaded + queued_module_idx - 1));
+						require_queue.splice(queued_module_idx,1); 	
+					}
+				}
+			});
+		});
 	}
 
 	var load_module = function(module, module_idx) {
@@ -140,8 +137,7 @@ function _load_modules (modules, finished_loading) {
 					loaded_module();	
 				}
 				if (modules_loaded == modules.length) {
-					// This is a hook to do something before module callbacks are fired
-					if (finished_loading) finished_loading();
+					console.log('[ ' + modules.length + ' modules loaded, processing callbacks ]');
 					// Sort the callbacks so that they fire in order
 					modules_callbacks.sort( function( a, b ) { return a - b });
 					

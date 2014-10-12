@@ -62,6 +62,12 @@ L.Core = function () {
 						{ path: "./src/scenograph/editor.js" },
 						{ path: "./src/scenograph/objects.js" },
 						{ path: "./src/scenograph/stats.js" },
+					]
+				},
+				{
+					name: "Scenograph Director Scenes",
+					requires: [ "Scenograph" ],
+					files: [
 						{ path: "./src/scenograph/director/character_test.js" },
 						{ path: "./src/scenograph/director/epochexordium.js" },
 						{ path: "./src/scenograph/director/mmo.js" },
@@ -85,11 +91,7 @@ L.Core = function () {
 	this.modes[this.mode].modules.sort( function( a, b ) { return a - b });
 	console.log( '-\t Mode: ' + this.mode );
 
-	var finished_loading = function() {
-		console.log('[ ' + L.Core.modes[L.Core.mode].modules.length + ' client modules loaded, processing callbacks ]');
-	}
-
-	_load_modules(this.modes[this.mode].modules, finished_loading);
+	_load_modules( this.modes[this.mode].modules );
 
 	
 	console.log( '-\t Loading ' + this.mode + ' template - ( ' + this.modes[this.mode].template_url + ' ) ' );

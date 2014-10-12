@@ -48,8 +48,15 @@ L.Core = function () {
 					]
 				},
 				{
+					name: "Scenograph Compatibility",
+					files: [
+						{ path: './src/vendor/dat.gui.js' },
+						{ path: './src/vendor/smoothie.js' }
+					]
+				},
+				{
 					name: "Scenograph",
-					requires: [ 'three.js' ],
+					requires: [ 'three.js', 'threex', "Scenograph Compatibility" ],
 					files: [
 						{ path: "./src/scenograph.js" },
 						{ path: "./src/scenograph/editor.js" },
@@ -63,6 +70,7 @@ L.Core = function () {
 				},
 				{
 					name: "Editor Defaults",
+					requires: [ 'three.js', 'threex', 'Scenograph' ],
 					files: [
 						{ path: "./src/editor.css" },
 						{ path: "./src/editor.js", callback:"l.prototype._init" }
@@ -73,12 +81,12 @@ L.Core = function () {
 		}
 	};
 	// This variable 'mode' will come from somewhere
-	this.mode = 'Website';
+	this.mode = 'Editor';
 	this.modes[this.mode].modules.sort( function( a, b ) { return a - b });
 	console.log( '-\t Mode: ' + this.mode );
 
 	var finished_loading = function() {
-		console.log('[ Client modules loaded ]')
+		console.log('[ ' + L.Core.modes[L.Core.mode].modules.length + ' client modules loaded, processing callbacks ]');
 	}
 
 	_load_modules(this.modes[this.mode].modules, finished_loading);

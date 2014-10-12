@@ -87,10 +87,6 @@ function _load_modules (modules) {
 	var modules_callbacks = [];  // Note callback queue is sequential
 	
 	var requirement_check = function(module, module_idx) {
-		
-		console.log('-\t Looping through requirement queue to see if we can process anything.');	
-		
-		
 		// Set the switch so modules waiting on this module can load
 		if ( required_modules[module.name] == false) {
 			required_modules[module.name] = true;
@@ -107,7 +103,7 @@ function _load_modules (modules) {
 					if (required_score == score) {
 						console.log('-\t Ready to load ' + queued_module.name + ' ( Requires: ' + queued_module.requires.join(', ') + ' ) ')
 						
-						load_module(queued_module, (modules_loaded + queued_module_idx));
+						load_module(queued_module, queued_module.original_idx);
 						require_queue.splice(queued_module_idx,1); 	
 					}
 				}
@@ -126,8 +122,9 @@ function _load_modules (modules) {
 
 		var loaded_files = 0;
 
+		console.log( '-\t ' + (module_idx + 1) + '/' + modules.length + ' : \t [' + module.name + ']' + (module.requires ?  '\t Requires: ' + module.requires.join(', ') : '' ) );
 		module.files.forEach(function(file){	
-			console.log( '-\t Loading ' + (module_idx + 1) + '/' + modules.length + ' : ' + module.name + ' ( ' + file.path + ' ) ' );
+			console.log( '-\t ' + (module_idx + 1) + '/' + modules.length +  ' : \t - Loading ' + file.path );
 
 			if (file.callback) modules_callbacks.push(file.callback);
 			// Add a default callback that wraps the normal callback
@@ -156,12 +153,12 @@ function _load_modules (modules) {
 
 	modules.forEach(function(module, module_idx) {
 		if (module.requires){
-			console.log('-\t ' + module.name + ' requires: ' + module.requires.join(', ') + '. Checking requirement queue.');
 			module.requires.forEach(function(dependency){
 				if ( typeof required_modules[dependency] === 'undefined' ) {
 					required_modules[dependency] = false;
 				}
 			});
+			module.original_idx = module_idx;
 			require_queue.push(module);
 		}
 		else {

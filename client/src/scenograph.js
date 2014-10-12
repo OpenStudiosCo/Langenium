@@ -56,23 +56,10 @@ L.scenograph.director = {
 	interpolation: this.duration / this.keyframes
 };
 
-L.scenograph.director.gui = new dat.GUI();
-L.scenograph.director.gui.domElement.style.position = 'absolute';
-L.scenograph.director.gui.domElement.style.top = '0px';
-L.scenograph.director.gui.domElement.style.left = '20px';
-L.scenograph.director.gui.domElement.style.paddingBottom = '22px';
-L.scenograph.director.gui.onResize();
 
 L.scenograph.director.clear = function() {
 
-	L.scenograph.director.gui.destroy();
-	L.scenograph.director.gui = new dat.GUI();
-	L.scenograph.director.gui.domElement.style.position = 'absolute';
-	L.scenograph.director.gui.domElement.style.top = '0px';
-	L.scenograph.director.gui.domElement.style.left = '20px';
-	L.scenograph.director.gui.domElement.style.paddingBottom = '22px';
-	L.scenograph.director.gui.onResize();
-
+	
 	L.scenograph.director.animation_queue = [];
 
 	L.scenograph.director.scene = new THREE.Scene();

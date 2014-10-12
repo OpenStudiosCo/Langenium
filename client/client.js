@@ -15,7 +15,6 @@ function _init() {
 	console.log( '[ Langenium Engine ]' );
 	console.log( '-\t Version: ' + L.version );
 	console.log( '-\t Environment: ' + L.env );
-	console.log( '[ Loading dependencies ]' );
 	
 	// Default modules
 	var modules = [
@@ -27,7 +26,7 @@ function _init() {
 			name: "Semantic UI" ,
 			requires: [ 'JQuery' ],
 			files: 	[ 
-						{ path: "./src/vendor/semantic.js" , callback: 'poop' }, 
+						{ path: "./src/vendor/semantic.js" }, 
 						{ path: "./src/vendor/semantic.css" }, 
 				   	] 					
 		},
@@ -44,9 +43,7 @@ function _init() {
 	_load_modules( modules );
 
 }
-window.poop = function() {
-	console.log('-\t poop');
-}
+
 function _execute(functionName, context /*, args */) {
 	// Usage: executeFunctionByName("L.scenograph.director"., window, arguments);
 	var args = [].slice.call(arguments).splice(2);
@@ -76,7 +73,7 @@ function _check_environment () {
 }
 
 function _load_modules (modules) {
-
+	console.log('[ ' + modules.length + ' modules to load ]');
 	var modules_loaded = 0;	
 
 	// Array of modules waiting to be loaded
@@ -88,16 +85,17 @@ function _load_modules (modules) {
 	var required_modules = {};
 
 	var modules_callbacks = [];  // Note callback queue is sequential
-
 	
 	var requirement_check = function(module, module_idx) {
-		console.log('-\t Looping through requirement queue to see if we can process anything.');
-
+		
+		console.log('-\t Looping through requirement queue to see if we can process anything.');	
+		
+		
 		// Set the switch so modules waiting on this module can load
 		if ( required_modules[module.name] == false) {
 			required_modules[module.name] = true;
 		}
-		
+
 		// Check the required_modules array to see if there are any modules waiting for a module to be loaded	
 		require_queue.forEach(function(queued_module, queued_module_idx){
 			// Checking each dependency and comparing it to the required_modules array to see if it's been loaded
@@ -109,7 +107,7 @@ function _load_modules (modules) {
 					if (required_score == score) {
 						console.log('-\t Ready to load ' + queued_module.name + ' ( Requires: ' + queued_module.requires.join(', ') + ' ) ')
 						
-						load_module(queued_module, (modules_loaded + queued_module_idx - 1));
+						load_module(queued_module, (modules_loaded + queued_module_idx));
 						require_queue.splice(queued_module_idx,1); 	
 					}
 				}
@@ -121,7 +119,9 @@ function _load_modules (modules) {
 		var loaded_module = function() {
 			console.log('-\t Loaded ' + (module_idx + 1) + '/' + modules.length + ' : ' + module.name);
 			modules_loaded++;
-			requirement_check(module, module_idx);
+			if (require_queue.length > 0) {
+				requirement_check(module, module_idx);
+			}
 		};
 
 		var loaded_files = 0;
@@ -175,6 +175,7 @@ function _load_modules (modules) {
 function _load(name, path, callback) {
 	var head = document.getElementsByTagName('head')[0];
 
+	// Disable cache for Dev and Staging
 	path += (L.env == 'Dev' || L.env == 'Staging') ? '?_=' + Date.now() : '';
 	
 	if (path.match(/\.js/)) {

@@ -58,7 +58,8 @@ L.Core = function () {
 					name: "Scenograph",
 					requires: [ 'three.js', 'threex', "Scenograph Compatibility" ],
 					files: [
-						{ path: "./src/scenograph.js" },
+						{ path: "./src/scenograph.old.js" },
+						{ path: "./src/scenograph.js" }
 					]
 				},
 				{
@@ -81,8 +82,15 @@ L.Core = function () {
 					]
 				},
 				{
+					name: "Director",
+					requires: [ "Scenograph", "Scenograph Modules" ],
+					files: [
+						{ path: "./src/director.js", callback:"L.director.prototype._init" }
+					]
+				},
+				{
 					name: "Editor Defaults",
-					requires: [ 'three.js', 'threex', 'Scenograph', "Scenograph Modules" ],
+					requires: [ 'three.js', 'threex', 'Scenograph', "Scenograph Modules", "Director" ],
 					files: [
 						{ path: "./src/editor.css" },
 						{ path: "./src/editor.js", callback:"l.prototype._init" }

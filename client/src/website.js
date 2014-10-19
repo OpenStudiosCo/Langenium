@@ -2,7 +2,7 @@
 	website.js
 */
 
-var l = function () {
+var app = function () {
 	$('.slideshow').cycle({
 		slides: '> .slide',
 		log: false
@@ -13,11 +13,9 @@ var l = function () {
       })
     ;
 	console.log('[ Website started ]');
+	return this;
 };
 
-window.l = l;
-
-l.prototype._init = function() {
-	window.l = new l();
-	delete l._init;
+app.prototype._init = function() {
+	L.app = new app();
 }

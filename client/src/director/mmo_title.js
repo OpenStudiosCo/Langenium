@@ -1,14 +1,14 @@
-L.scenograph.director.mmo_title = function() {
-	L.scenograph.director.camera_state.zoom = 4500;
-	L.scenograph.director.camera.position.set(
+var mmo_title = function() {
+	L.director.camera_state.zoom = 4500;
+	L.director.camera.position.set(
 		0, 
 		0,
-		L.scenograph.director.camera_state.zoom
+		L.director.camera_state.zoom
 	);	
 
 	var logoWaterMaterial = new THREE.ShaderMaterial( 
 	{
-	    uniforms: L.scenograph.director.effects.logo_water_uniforms,
+	    uniforms: L.director.effects.logo_water_uniforms,
 		vertexShader:   document.getElementById( 'logoWaterVertShader'   ).textContent,
 		fragmentShader: document.getElementById( 'logoWaterFragShader' ).textContent,
 		side: THREE.DoubleSide
@@ -16,7 +16,7 @@ L.scenograph.director.mmo_title = function() {
 
 	var logoMetalMaterial = new THREE.ShaderMaterial( 
 	{
-	    uniforms: L.scenograph.director.effects.logo_metal_uniforms,
+	    uniforms: L.director.effects.logo_metal_uniforms,
 		vertexShader:   document.getElementById( 'logoMetalVertShader'   ).textContent,
 		fragmentShader: document.getElementById( 'logoMetalFragShader' ).textContent,
 		side: THREE.DoubleSide
@@ -37,7 +37,14 @@ L.scenograph.director.mmo_title = function() {
 		var mesh = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
 		mesh.scale.set(2000,2000,2000);
 		mesh.rotateX( Math.PI / 2 );
-		L.scenograph.director.scene.add(mesh);			
+		L.director.scene.add(mesh);			
 	}
+	
 	L.scenograph.objects.loadObject('/res/models/langenium-logo.js', logo_cb);
+
+	return this;
+}
+
+mmo_title.prototype._init = function() {
+	L.director.mmo_title = new mmo_title();
 }

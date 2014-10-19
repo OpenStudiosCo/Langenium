@@ -3,13 +3,13 @@
 	Once this is working, change the class name to lowercase
 */
 
-L.Scenograph = function() {
+var scenograph = function() {
 
 	this.keyboard = new THREEx.KeyboardState();
 	this.winW = 1024;
 	this.winH = 768;
 	this.options = {
-		activeScene: 'Epoch Exordium',
+		activeScene: 'MMO',
 		currentScene: '',
 		hideInterface: true,
 		editMode: false,
@@ -42,8 +42,8 @@ L.Scenograph = function() {
 
 }
 
-L.Scenograph.prototype._init = function() {
-	l.Scenograph = new L.Scenograph();
+scenograph.prototype._init = function() {
+	L.scenograph = new scenograph();
 }
 
 

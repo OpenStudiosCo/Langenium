@@ -2,16 +2,15 @@
 	editor.js
 */
 
-var l = function () {
+var app = function () {
 	
     $('.ui.sidebar').sidebar('attach events', '.launch.button');
 
 	console.log('[ Editor started ]');
+
+	return this;
 };
 
-window.l = l;
-
-l.prototype._init = function() {
-	window.l = new l();
-	delete l._init;
+app.prototype._init = function() {
+	L.app = new app();
 }

@@ -1,13 +1,14 @@
-L.scenograph.director.epochexordium = function() {
-	this.camera_state.zoom = 7500;
-	L.scenograph.director.camera.position.set(
-		L.scenograph.director.camera_state.zoom * Math.cos(0), 
-		L.scenograph.director.camera_state.zoom,
-		L.scenograph.director.camera_state.zoom * Math.sin(0))			
-	L.scenograph.director.camera.lookAt(new THREE.Vector3(0,0,0))
+var epochexordium = function() {
+	
+	L.director.camera_state.zoom = 7500;
+	L.director.camera.position.set(
+		L.director.camera_state.zoom * Math.cos(0), 
+		L.director.camera_state.zoom,
+		L.director.camera_state.zoom * Math.sin(0))			
+	L.director.camera.lookAt(new THREE.Vector3(0,0,0))
 	var light = new THREE.PointLight(0xffffff, 1, 0);
 	light.position.set(0,0,0);
-	this.scene.add(light);
+	L.director.scene.add(light);
 
 	var geometry = new THREE.BoxGeometry( 1000000, 1000000, 1000000 );
 
@@ -37,7 +38,7 @@ L.scenograph.director.epochexordium = function() {
 
 	mesh = new THREE.Mesh( geometry, material );
 	mesh.name = 'Space Box';
-	this.scene.add( mesh );
+	L.director.scene.add( mesh );
 
 	// Using AU (Astronomical Unit x 1000 + 1000 for sun's size) for distance, proportion to Earth for others
 
@@ -130,7 +131,7 @@ L.scenograph.director.epochexordium = function() {
   	for (var i = 0; i < scene_setup.objects.length; i++) {
   		switch(scene_setup.objects[i].type) {
   			case 'planet': 
-  				this.scene.add(
+  				L.director.scene.add(
   					this.make_planet(
   						scene_setup.objects[i].name, 
   						scene_setup.objects[i].position, 
@@ -139,8 +140,8 @@ L.scenograph.director.epochexordium = function() {
   				break;
   			case 'sun':
   				var sun = this.make_sun(scene_setup.objects[i].position, scene_setup.objects[i].radius); 
-  				this.scene.add(sun);
-  				L.scenograph.director.scene_variables.target = sun;
+  				L.director.scene.add(sun);
+  				L.director.scene_variables.target = sun;
   				break;
   			default:
   				console.log("Failed to load object:");
@@ -148,23 +149,28 @@ L.scenograph.director.epochexordium = function() {
   				break;
   		}
   	}
-  	L.scenograph.director.animation_queue.push(new L.scenograph.director.select_planet());
+  	L.director.animation_queue.push(new this.select_planet());
+  	return this;
 }
 
-L.scenograph.director.select_planet = function() {
-	this.animate = function(delta) {
-		if (L.scenograph.director.cursor.leftClick == true) {
-			L.scenograph.director.projector.unprojectVector(L.scenograph.director.cursor.position, L.scenograph.director.camera);
-			var raycaster = new THREE.Raycaster( L.scenograph.director.camera.position, L.scenograph.director.cursor.position.sub( L.scenograph.director.camera.position ).normalize() );	
+epochexordium.prototype._init = function() {
+	L.director.epochexordium = new epochexordium();
+}
 
-			var intersects = raycaster.intersectObjects( L.scenograph.director.scene.children );
+epochexordium.prototype.select_planet = function() {
+	this.animate = function(delta) {
+		if (L.director.cursor.leftClick == true) {
+			L.director.projector.unprojectVector(L.director.cursor.position, L.director.camera);
+			var raycaster = new THREE.Raycaster( L.director.camera.position, L.director.cursor.position.sub( L.director.camera.position ).normalize() );	
+
+			var intersects = raycaster.intersectObjects( L.director.scene.children );
 			if (intersects.length > 0) {
 				if (intersects[0].object.name != 'Space Box' && 
 					intersects[0].object.name != 'Sun Halo' && 
 					intersects[0].object.name != 'Sun') {
 					var vector = intersects[0].object.position.clone();
-					L.scenograph.director.scene_variables.target = intersects[0].object;
-					L.scenograph.director.controls.target.set(
+					L.director.scene_variables.target = intersects[0].object;
+					L.director.controls.target.set(
 						vector.x,
 						vector.y,
 						vector.z
@@ -176,10 +182,10 @@ L.scenograph.director.select_planet = function() {
 	return this;
 }
 
-L.scenograph.director.make_sun = function(position, radius) {
+epochexordium.prototype.make_sun = function(position, radius) {
 	var customMaterial = new THREE.ShaderMaterial( 
 	{
-	    uniforms: L.scenograph.director.effects.sun_uniforms,
+	    uniforms: L.director.effects.sun_uniforms,
 		vertexShader:   document.getElementById( 'sunVertShader'   ).textContent,
 		fragmentShader: document.getElementById( 'sunFragShader' ).textContent,
 		side: THREE.DoubleSide,
@@ -203,15 +209,15 @@ L.scenograph.director.make_sun = function(position, radius) {
 		
 	var ballGeometry = new THREE.SphereGeometry( radius * 1.05, 32, 32 );
 	var ball = new THREE.Mesh( ballGeometry, customMaterial );
-	L.scenograph.director.scene.add( ball );
+	L.director.scene.add( ball );
 	ball.name = 'Sun Halo'
 
 	return sphere;
 }
-L.scenograph.director.make_planet = function(name, position, radius) {
+epochexordium.prototype.make_planet = function(name, position, radius) {
 	var planet = THREEx.Planets['create' + name]();
 	planet.name = name;
-	planet.material.map.anisotropy = L.scenograph.director.renderer.getMaxAnisotropy();
+	planet.material.map.anisotropy = L.director.renderer.getMaxAnisotropy();
 	
 	if (radius < 20) {
 		radius *= 20;
@@ -220,7 +226,7 @@ L.scenograph.director.make_planet = function(name, position, radius) {
 		radius *= 6;
 	}
 
-	var spritey = makeTextSprite( name, 
+	var spritey = this.makeTextSprite( name, 
 		{ fontsize: 48, borderColor: {r:255, g:0, b:0, a:1.0}, backgroundColor: {r:255, g:100, b:100, a:0.8} } );
 	spritey.position.set(0,1,0);
 	//planet.add(spritey)
@@ -243,8 +249,8 @@ L.scenograph.director.make_planet = function(name, position, radius) {
 			planet.rotation.y += delta / radius / 100;
 			planet.position.x = position.z  * Math.sin( position.z  -L.scenograph.stats.time.now / 150000);
 			planet.position.z = position.z  * Math.cos( position.z  -L.scenograph.stats.time.now / 150000);
-			var target = L.scenograph.director.scene_variables.target.position.clone();
-			L.scenograph.director.controls.target.set(
+			var target = L.director.scene_variables.target.position.clone();
+			L.director.controls.target.set(
 				target.x,
 				target.y,
 				target.z
@@ -252,13 +258,12 @@ L.scenograph.director.make_planet = function(name, position, radius) {
 		}
 	};
 
-	L.scenograph.director.animation_queue.push(animation_obj);
+	L.director.animation_queue.push(animation_obj);
 
 	return planet;
 }
 
-function makeTextSprite( message, parameters )
-{
+epochexordium.prototype.makeTextSprite = function ( message, parameters ) {
 	if ( parameters === undefined ) parameters = {};
 	
 	var fontface = parameters.hasOwnProperty("fontface") ? 
@@ -292,7 +297,7 @@ function makeTextSprite( message, parameters )
 								  + borderColor.b + "," + borderColor.a + ")";
 
 	context.lineWidth = borderThickness;
-	roundRect(context, borderThickness/2, borderThickness/2, textWidth + borderThickness, fontsize * 1.4 + borderThickness, 6);
+	this.roundRect(context, borderThickness/2, borderThickness/2, textWidth + borderThickness, fontsize * 1.4 + borderThickness, 6);
 	// 1.4 is extra height factor for text below baseline: g,j,p,q.
 	
 	// text color
@@ -312,8 +317,7 @@ function makeTextSprite( message, parameters )
 }
 
 // function for drawing rounded rectangles
-function roundRect(ctx, x, y, w, h, r) 
-{
+epochexordium.prototype.roundRect = function (ctx, x, y, w, h, r)  {
     ctx.beginPath();
     ctx.moveTo(x+r, y);
     ctx.lineTo(x+w-r, y);

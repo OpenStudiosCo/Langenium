@@ -1,12 +1,15 @@
-L.scenograph.objects = {
-	loader: new THREE.JSONLoader(),
-	loadObject: function(url, callback) {
+var objects = function () {
+
+	this.loader = new THREE.JSONLoader();
+
+	this.loadObject = function(url, callback) {
 		this.loader.load(url, function(geometry, materials) {
 		
 			callback(geometry, materials);
 		});
-	},
-	materials: [
+	};
+
+	this.materials = [
 		// Metals
 		{	
 			name: "Light-Metal",
@@ -49,5 +52,10 @@ L.scenograph.objects = {
 				new THREE.Color( 0x112233 ),
 				new THREE.Color( 0x112244 ),
 				new THREE.Color( 0x112233 )]	}
-	]
+	];
+	return this;
 };
+
+objects.prototype._init = function() {
+	L.scenograph.objects = new objects();
+}

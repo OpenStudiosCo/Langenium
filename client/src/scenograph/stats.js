@@ -1,18 +1,22 @@
-L.scenograph.stats = {
-	latency: new TimeSeries(),
-	time: {
+var stats = function() {
+
+	this.latency = new TimeSeries();
+	
+	this.time = {
 		now: Date.now(),
 		delta: 0,
 		last: 0
-	},
-	fps: {
+	};
+
+	this.fps = {
 		frames: 0,
 		now: new TimeSeries(),
 		min: Infinity,
 		max: 0,
 		last: Date.now()
-	},
-	update: function() {
+	};
+	
+	this.update = function() {
 		// These bindings will later be abstracted to new classes
 		// Something like a view template for all the Scenograph->Ember bindings
 		L.scenograph.stats.time.last = this.time.now;
@@ -26,5 +30,9 @@ L.scenograph.stats = {
 			this.fps.frames = 0;
 		}
 
-	}
+	};
 };
+
+stats.prototype._init = function() {
+	L.scenograph.stats = new stats();
+}

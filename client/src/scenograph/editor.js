@@ -1,192 +1,258 @@
-L.scenograph.editor = function() {
-	L.scenograph.director.camera_state.zoom = 3500;
-	L.scenograph.director.camera.position.set(
-		0, 
-		1000,
-		L.scenograph.director.camera_state.zoom
-	);	
-
-	var hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 1 );
-	hemiLight.name = "light1";
-	hemiLight.color.setRGB( 0.9, 0.95, 1 );
-	hemiLight.groundColor.setRGB( 0.6, 0.75, 1 );
-	hemiLight.position.set( 0, 100, 0 );
-	L.scenograph.director.scene.add(hemiLight);
-
-	L.scenograph.director.scene_variables.objects = [];
+/*
+	Editor
+*/
 
 
-	L.scenograph.director.scene_variables.collidables = [];
+var editor = function() {
+	// Structuring like this so it slides into dat.gui nicely. Will probably need to come up with object "views" to plug into dat.gui....
+	this.csg = {
+		scale_avg: function() {
+			var scale = 0;
+			L.director.scene_variables.selected_objects.forEach(function(object) {
+				scale += object.scale.x;
+			})
+			scale = scale / L.director.scene_variables.selected_objects.length;
+			return scale;
+		},
+		intersect: function() {
+			var materials = [];
+			L.director.scene_variables.selected_objects.forEach(function(object){
+				// Check if we're dealing with something that has sub materials or not
+				if (object.material instanceof THREE.MeshFaceMaterial) {
+					object.material.materials.forEach(function(material, fm_index){
+						materials.push(material);
+						object.geometry.faces.forEach(function(face){
+							if (face.materialIndex == fm_index) {
+								face.newIndex = materials.length-1; // set it to the index of the array
+							}
+						});
+					});
+					// had to separate it as changing materialIndex was screwing the if statement and always setting everything to the last 
+					object.geometry.faces.forEach(function(face){
+						face.materialIndex = face.newIndex;					
+					});
+				}
+				else {
+					materials.push(object.material);
+					object.geometry.faces.forEach(function(face){
+						face.materialIndex = materials.length-1;
+					});
+				}
+			});
 
-	L.scenograph.director.scene_variables.select_multiple = false;
-	L.scenograph.director.scene_variables.selected_objects = [];
-	L.scenograph.director.scene_variables._selectedObj = ""; // holder for object chosen in multi select dropdown, this definitely needs to be put in a smarter place
-	
-	console.log("wtf")
-	L.scenograph.director.animation_queue.push(new L.scenograph.editor.select_object());
+			var objBSP = new ThreeBSP(L.director.scene_variables.selected_objects[0]);
+			for (var i = 1; i < L.director.scene_variables.selected_objects.length; i++) {
+				var thisBSP = new ThreeBSP(L.director.scene_variables.selected_objects[i]);
+				objBSP = objBSP.intersect(thisBSP);
+			}
+			var newGeo = objBSP.toGeometry();
+			var newMesh = new THREE.Mesh(newGeo, new THREE.MeshFaceMaterial(materials));
+			var scale = L.scenograph.editor.csg.scale_avg();
+			newMesh.scale.set(scale,scale,scale);
+
+			for (var i = 0; i < L.director.scene_variables.selected_objects.length; i++) {
+				L.director.scene.remove(L.director.scene_variables.selected_objects[i]);
+			}
+			L.scenograph.editor.gui_functions['Clear Selection']();
+			L.director.scene.add(newMesh);
+		},
+		subtract: function() {
+			var materials = [];
+			L.director.scene_variables.selected_objects.forEach(function(object){
+				if (object.material instanceof THREE.MeshFaceMaterial) {
+					
+					object.material.materials.forEach(function(material, fm_index){
+						materials.push(material);
+						object.geometry.faces.forEach(function(face){
+							if (face.materialIndex == fm_index) {
+								face.newIndex = materials.length-1; // set it to the index of the array
+							}
+						});
+					});
+					// had to separate it as changing materialIndex was screwing the if statement and always setting everything to the last 
+					object.geometry.faces.forEach(function(face){
+						face.materialIndex = face.newIndex;					
+					});
+				}
+				else {
+					materials.push(object.material);
+					object.geometry.faces.forEach(function(face){
+						face.materialIndex = materials.length-1;
+					});
+				}
+			});
+
+			var objBSP = new ThreeBSP(L.director.scene_variables.selected_objects[0]);
+			for (var i = 1; i < L.director.scene_variables.selected_objects.length; i++) {
+				var thisBSP = new ThreeBSP(L.director.scene_variables.selected_objects[i]);
+				objBSP = objBSP.subtract(thisBSP);
+			}
+			var newGeo = objBSP.toGeometry();
+			var newMesh = new THREE.Mesh(newGeo, new THREE.MeshFaceMaterial(materials));
+			var scale = L.scenograph.editor.csg.scale_avg();
+			newMesh.scale.set(scale,scale,scale);
+
+			for (var i = 0; i < L.director.scene_variables.selected_objects.length; i++) {
+				L.director.scene.remove(L.director.scene_variables.selected_objects[i]);
+			}
+			L.scenograph.editor.gui_functions['Clear Selection']();
+			L.director.scene.add(newMesh);
+		},
+		union: function() {
+			var materials = [];
+			L.director.scene_variables.selected_objects.forEach(function(object){
+				if (object.material instanceof THREE.MeshFaceMaterial) {
+					object.material.materials.forEach(function(material, fm_index){
+						materials.push(material);
+						object.geometry.faces.forEach(function(face){
+							if (face.materialIndex == fm_index) {
+								face.newIndex = materials.length-1; // set it to the index of the array
+							}
+						});
+					});
+					// had to separate it as changing materialIndex was screwing the if statement and always setting everything to the last 
+					object.geometry.faces.forEach(function(face){
+						face.materialIndex = face.newIndex;					
+					});
+				}
+				else {
+					materials.push(object.material);
+					object.geometry.faces.forEach(function(face){
+						face.materialIndex = materials.length-1;
+					});
+				}
+			});
+			
+			var objBSP = new ThreeBSP(L.director.scene_variables.selected_objects[0]);
+			
+			for (var i = 1; i < L.director.scene_variables.selected_objects.length; i++) {
+				var thisBSP = new ThreeBSP(L.director.scene_variables.selected_objects[i]);
+				objBSP = objBSP.union(thisBSP);
+			}
+			
+			var newGeo = objBSP.toGeometry();
+			// Clean up the scene
+			for (var i = 0; i < L.director.scene_variables.selected_objects.length; i++) {
+				L.director.scene.remove(L.director.scene_variables.selected_objects[i]);
+			}
+			
+			var newMesh = new THREE.Mesh(newGeo, new THREE.MeshFaceMaterial(materials));
+
+			var scale = L.scenograph.editor.csg.scale_avg();
+			newMesh.scale.set(scale,scale,scale);
+
+			L.scenograph.editor.gui_functions['Clear Selection']();
+			L.director.scene.add(newMesh);
+		}
+	};
+
+	this.gui_functions = {
+		'Object Select Listener': function() {
+		},
+		'Delete Selected': function() {
+			if (confirm('Delete selected objects? (THERE IS NO UNDO)')) {
+				if (L.director.scene_variables.select_multiple == false) {
+					L.director.scene.remove(L.director.scene_variables.selected);
+				}
+				else {
+					L.director.scene_variables.selected_objects.forEach(function(object){
+						L.director.scene.remove(object);
+					});	
+				}
+				
+				L.scenograph.editor.gui_functions['Clear Selection']();
+			}
+		},
+		'Clear Selection': function() {
+			for (var i = 0; i < L.director.scene.children.length; i++) {
+				if (L.director.scene.children[i].material) {
+					if (L.director.scene.children[i].material.materials) {
+				    	L.director.scene.children[i].material.materials.forEach(function(material){
+				    		if (material.prev_opacity) {
+				    			material.opacity = material.prev_opacity;
+				    			//delete material.prev_opacity;
+				    		}
+				    	});
+				    }
+				    else {
+				    	if (L.director.scene.children[i].material.prev_opacity) {
+			    			L.director.scene.children[i].material.opacity = L.director.scene.children[i].material.prev_opacity;
+			    			//delete L.director.scene.children[i].material.prev_opacity;
+			    		}
+				    }
+				}
+				var obj_to_remove = [];
+				for (var j = 0; j < L.director.scene.children[i].children.length; j++) {			
+					if (L.director.scene.children[i].children[j].name == "bounding_box") {
+						obj_to_remove.push(L.director.scene.children[i].children[j])
+						//L.director.scene.children[i].remove(L.director.scene.children[i].children[j]);
+					}
+				}
+				for (var k = 0; k < obj_to_remove.length; k++) {
+					L.director.scene.children[i].remove(obj_to_remove[k]);
+				}
+			}
+
+			L.director.scene_variables.selected_objects = []; // clears the selected object group
+			L.director.scene_variables.selected = undefined;
+			
+		}
+	}
+	this.gui_folders = {
+		'Add Shape': {
+			'Cube': function() {
+				L.scenograph.editor.add('cube', pointer, {x:10,y:10,z:10}, {x: 0, y: 0, z: 0});
+			},
+			'Prism': function() {
+				L.scenograph.editor.add('prism', pointer, {x:10,y:10,z:10}, {x: 0, y: 0, z: 0});
+			},
+			'Cylinder': function() {
+				L.scenograph.editor.add('cylinder', pointer, {x:10,y:10,z:10}, {x: 0, y: 0, z: 0});
+			},
+			'Sphere': function() {
+				L.scenograph.editor.add('sphere', pointer, {x:10,y:10,z:10}, {x: 0, y: 0, z: 0});
+			},
+			'Torus': function() {
+				L.scenograph.editor.add('torus', pointer, {x:10,y:10,z:10}, {x: 0, y: 0, z: 0});
+			},
+			'Plane': function() {
+				L.scenograph.editor.add('plane', pointer, {x:10,y:10,z:10}, {x: 0, y: 0, z: 0});
+			},
+			'Tetrahedron': function() {
+				L.scenograph.editor.add('tetrahedron', pointer, {x:10,y:10,z:10}, {x: 0, y: 0, z: 0});
+			},
+			'Octahedron': function() {
+				L.scenograph.editor.add('octahedron', pointer, {x:10,y:10,z:10}, {x: 0, y: 0, z: 0});
+			}
+		}
+	};
+
+	return this;
 }
 
-// Structuring like this so it slides into dat.gui nicely. Will probably need to come up with object "views" to plug into dat.gui....
-L.scenograph.editor.csg = {
-	scale_avg: function() {
-		var scale = 0;
-		L.scenograph.director.scene_variables.selected_objects.forEach(function(object) {
-			scale += object.scale.x;
-		})
-		scale = scale / L.scenograph.director.scene_variables.selected_objects.length;
-		return scale;
-	},
-	intersect: function() {
-		var materials = [];
-		L.scenograph.director.scene_variables.selected_objects.forEach(function(object){
-			// Check if we're dealing with something that has sub materials or not
-			if (object.material instanceof THREE.MeshFaceMaterial) {
-				object.material.materials.forEach(function(material, fm_index){
-					materials.push(material);
-					object.geometry.faces.forEach(function(face){
-						if (face.materialIndex == fm_index) {
-							face.newIndex = materials.length-1; // set it to the index of the array
-						}
-					});
-				});
-				// had to separate it as changing materialIndex was screwing the if statement and always setting everything to the last 
-				object.geometry.faces.forEach(function(face){
-					face.materialIndex = face.newIndex;					
-				});
-			}
-			else {
-				materials.push(object.material);
-				object.geometry.faces.forEach(function(face){
-					face.materialIndex = materials.length-1;
-				});
-			}
-		});
+editor.prototype._init = function() {
+	L.scenograph.editor = new editor();
+}
 
-		var objBSP = new ThreeBSP(L.scenograph.director.scene_variables.selected_objects[0]);
-		for (var i = 1; i < L.scenograph.director.scene_variables.selected_objects.length; i++) {
-			var thisBSP = new ThreeBSP(L.scenograph.director.scene_variables.selected_objects[i]);
-			objBSP = objBSP.intersect(thisBSP);
-		}
-		var newGeo = objBSP.toGeometry();
-		var newMesh = new THREE.Mesh(newGeo, new THREE.MeshFaceMaterial(materials));
-		var scale = L.scenograph.editor.csg.scale_avg();
-		newMesh.scale.set(scale,scale,scale);
-
-		for (var i = 0; i < L.scenograph.director.scene_variables.selected_objects.length; i++) {
-			L.scenograph.director.scene.remove(L.scenograph.director.scene_variables.selected_objects[i]);
-		}
-		L.scenograph.editor.gui_functions['Clear Selection']();
-		L.scenograph.director.scene.add(newMesh);
-	},
-	subtract: function() {
-		var materials = [];
-		L.scenograph.director.scene_variables.selected_objects.forEach(function(object){
-			if (object.material instanceof THREE.MeshFaceMaterial) {
-				
-				object.material.materials.forEach(function(material, fm_index){
-					materials.push(material);
-					object.geometry.faces.forEach(function(face){
-						if (face.materialIndex == fm_index) {
-							face.newIndex = materials.length-1; // set it to the index of the array
-						}
-					});
-				});
-				// had to separate it as changing materialIndex was screwing the if statement and always setting everything to the last 
-				object.geometry.faces.forEach(function(face){
-					face.materialIndex = face.newIndex;					
-				});
-			}
-			else {
-				materials.push(object.material);
-				object.geometry.faces.forEach(function(face){
-					face.materialIndex = materials.length-1;
-				});
-			}
-		});
-
-		var objBSP = new ThreeBSP(L.scenograph.director.scene_variables.selected_objects[0]);
-		for (var i = 1; i < L.scenograph.director.scene_variables.selected_objects.length; i++) {
-			var thisBSP = new ThreeBSP(L.scenograph.director.scene_variables.selected_objects[i]);
-			objBSP = objBSP.subtract(thisBSP);
-		}
-		var newGeo = objBSP.toGeometry();
-		var newMesh = new THREE.Mesh(newGeo, new THREE.MeshFaceMaterial(materials));
-		var scale = L.scenograph.editor.csg.scale_avg();
-		newMesh.scale.set(scale,scale,scale);
-
-		for (var i = 0; i < L.scenograph.director.scene_variables.selected_objects.length; i++) {
-			L.scenograph.director.scene.remove(L.scenograph.director.scene_variables.selected_objects[i]);
-		}
-		L.scenograph.editor.gui_functions['Clear Selection']();
-		L.scenograph.director.scene.add(newMesh);
-	},
-	union: function() {
-		var materials = [];
-		L.scenograph.director.scene_variables.selected_objects.forEach(function(object){
-			if (object.material instanceof THREE.MeshFaceMaterial) {
-				object.material.materials.forEach(function(material, fm_index){
-					materials.push(material);
-					object.geometry.faces.forEach(function(face){
-						if (face.materialIndex == fm_index) {
-							face.newIndex = materials.length-1; // set it to the index of the array
-						}
-					});
-				});
-				// had to separate it as changing materialIndex was screwing the if statement and always setting everything to the last 
-				object.geometry.faces.forEach(function(face){
-					face.materialIndex = face.newIndex;					
-				});
-			}
-			else {
-				materials.push(object.material);
-				object.geometry.faces.forEach(function(face){
-					face.materialIndex = materials.length-1;
-				});
-			}
-		});
-		
-		var objBSP = new ThreeBSP(L.scenograph.director.scene_variables.selected_objects[0]);
-		
-		for (var i = 1; i < L.scenograph.director.scene_variables.selected_objects.length; i++) {
-			var thisBSP = new ThreeBSP(L.scenograph.director.scene_variables.selected_objects[i]);
-			objBSP = objBSP.union(thisBSP);
-		}
-		
-		var newGeo = objBSP.toGeometry();
-		// Clean up the scene
-		for (var i = 0; i < L.scenograph.director.scene_variables.selected_objects.length; i++) {
-			L.scenograph.director.scene.remove(L.scenograph.director.scene_variables.selected_objects[i]);
-		}
-		
-		var newMesh = new THREE.Mesh(newGeo, new THREE.MeshFaceMaterial(materials));
-
-		var scale = L.scenograph.editor.csg.scale_avg();
-		newMesh.scale.set(scale,scale,scale);
-
-		L.scenograph.editor.gui_functions['Clear Selection']();
-		L.scenograph.director.scene.add(newMesh);
-	}
-};
-
-L.scenograph.editor.select_object = function() {
+editor.prototype.select_object = function() {
 	this.animate = function(delta) {
-		if (L.scenograph.director.cursor.leftClick == true) {
-			L.scenograph.director.projector.unprojectVector(L.scenograph.director.cursor.position, L.scenograph.director.camera);
-			var raycaster = new THREE.Raycaster( L.scenograph.director.camera.position, L.scenograph.director.cursor.position.sub( L.scenograph.director.camera.position ).normalize() );	
+		if (L.director.cursor.leftClick == true) {
+			L.director.projector.unprojectVector(L.director.cursor.position, L.director.camera);
+			var raycaster = new THREE.Raycaster( L.director.camera.position, L.director.cursor.position.sub( L.director.camera.position ).normalize() );	
 
-			var intersects = raycaster.intersectObjects( L.scenograph.director.scene.children );
+			var intersects = raycaster.intersectObjects( L.director.scene.children );
 			if (intersects.length > 0) {
-				if (L.scenograph.director.scene_variables.select_multiple == false) {
+				if (L.director.scene_variables.select_multiple == false) {
 					L.scenograph.editor.gui_functions['Clear Selection']();
-					L.scenograph.director.scene_variables.selected = intersects[0].object;
+					L.director.scene_variables.selected = intersects[0].object;
 					intersects[0].object.geometry.computeBoundingBox();
 					L.scenograph.editor.draw_bounding_box(0xFFFF00, intersects[0].object, intersects[0].object.geometry.boundingBox.max, intersects[0].object.geometry.boundingBox.min, intersects[0].object.scale.x );
 					
-					var material = L.scenograph.director.scene_variables.selected.material;
+					var material = L.director.scene_variables.selected.material;
 
 					var vector = intersects[0].object.position.clone();
-					L.scenograph.director.scene_variables.target = intersects[0].object;
-					L.scenograph.director.controls.target.set(
+					L.director.scene_variables.target = intersects[0].object;
+					L.director.controls.target.set(
 						vector.x,
 						vector.y,
 						vector.z
@@ -205,8 +271,8 @@ L.scenograph.editor.select_object = function() {
 						intersects[0].object.geometry.computeBoundingBox();
 						var randomColor = Math.random() * 0xffffff;
 						L.scenograph.editor.draw_bounding_box( randomColor, intersects[0].object, intersects[0].object.geometry.boundingBox.max, intersects[0].object.geometry.boundingBox.min, intersects[0].object.scale.x );
-						L.scenograph.director.scene_variables.selected_objects.push(intersects[0].object);
-						$(L.scenograph.director.scene_variables.selectedFolder.domElement).append(
+						L.director.scene_variables.selected_objects.push(intersects[0].object);
+						$(L.director.scene_variables.selectedFolder.domElement).append(
 							"<li style='background-color: #" + parseInt(randomColor).toString(16) + ";'></li>"
 						);
 					}
@@ -217,15 +283,15 @@ L.scenograph.editor.select_object = function() {
 	return this;
 }
 
-L.scenograph.editor.create_group = function() {
+editor.prototype.create_group = function() {
 
 }
 
-L.scenograph.editor.clone_group = function() {
+editor.prototype.clone_group = function() {
 
 }
 
-L.scenograph.editor.draw_bounding_box = function(color, object, max, min, scale) {
+editor.prototype.draw_bounding_box = function(color, object, max, min, scale) {
 
 	var material = new THREE.LineBasicMaterial({
         color: color
@@ -268,11 +334,11 @@ L.scenograph.editor.draw_bounding_box = function(color, object, max, min, scale)
     object.add(bounding_box);
 };
 
-L.scenograph.editor.random_color = function(){
+editor.prototype.random_color = function(){
 	return Math.random() * 0xffffff;
 }
 
-L.scenograph.editor.add = function(type, position, scale, rotation) {
+editor.prototype.add = function(type, position, scale, rotation) {
 	var length = 40;
 	var geometry;
 	switch(type) {
@@ -322,95 +388,13 @@ L.scenograph.editor.add = function(type, position, scale, rotation) {
 	mesh.position.set(position.x, position.y, position.z);
 	mesh.rotation.set(rotation.x, rotation.y, rotation.z);
 	mesh.scale.set(scale.x, scale.y, scale.z);
-	L.scenograph.director.scene.add(mesh);
+	L.director.scene.add(mesh);
 }
 
 // pointer will be a place-able thingo in the environment. Objects get dropped there and the camera orbits around it.
 var pointer = {
 	x: 0, y: 0, z: 0
 };
-
-L.scenograph.editor.gui_functions = {
-	'Object Select Listener': function() {
-	},
-	'Delete Selected': function() {
-		if (confirm('Delete selected objects? (THERE IS NO UNDO)')) {
-			if (L.scenograph.director.scene_variables.select_multiple == false) {
-				L.scenograph.director.scene.remove(L.scenograph.director.scene_variables.selected);
-			}
-			else {
-				L.scenograph.director.scene_variables.selected_objects.forEach(function(object){
-					L.scenograph.director.scene.remove(object);
-				});	
-			}
-			
-			L.scenograph.editor.gui_functions['Clear Selection']();
-		}
-	},
-	'Clear Selection': function() {
-		for (var i = 0; i < L.scenograph.director.scene.children.length; i++) {
-			if (L.scenograph.director.scene.children[i].material) {
-				if (L.scenograph.director.scene.children[i].material.materials) {
-			    	L.scenograph.director.scene.children[i].material.materials.forEach(function(material){
-			    		if (material.prev_opacity) {
-			    			material.opacity = material.prev_opacity;
-			    			//delete material.prev_opacity;
-			    		}
-			    	});
-			    }
-			    else {
-			    	if (L.scenograph.director.scene.children[i].material.prev_opacity) {
-		    			L.scenograph.director.scene.children[i].material.opacity = L.scenograph.director.scene.children[i].material.prev_opacity;
-		    			//delete L.scenograph.director.scene.children[i].material.prev_opacity;
-		    		}
-			    }
-			}
-			var obj_to_remove = [];
-			for (var j = 0; j < L.scenograph.director.scene.children[i].children.length; j++) {			
-				if (L.scenograph.director.scene.children[i].children[j].name == "bounding_box") {
-					obj_to_remove.push(L.scenograph.director.scene.children[i].children[j])
-					//L.scenograph.director.scene.children[i].remove(L.scenograph.director.scene.children[i].children[j]);
-				}
-			}
-			for (var k = 0; k < obj_to_remove.length; k++) {
-				L.scenograph.director.scene.children[i].remove(obj_to_remove[k]);
-			}
-		}
-
-		L.scenograph.director.scene_variables.selected_objects = []; // clears the selected object group
-		L.scenograph.director.scene_variables.selected = undefined;
-		
-	}
-}
-L.scenograph.editor.gui_folders = {
-	'Add Shape': {
-		'Cube': function() {
-			L.scenograph.editor.add('cube', pointer, {x:10,y:10,z:10}, {x: 0, y: 0, z: 0});
-		},
-		'Prism': function() {
-			L.scenograph.editor.add('prism', pointer, {x:10,y:10,z:10}, {x: 0, y: 0, z: 0});
-		},
-		'Cylinder': function() {
-			L.scenograph.editor.add('cylinder', pointer, {x:10,y:10,z:10}, {x: 0, y: 0, z: 0});
-		},
-		'Sphere': function() {
-			L.scenograph.editor.add('sphere', pointer, {x:10,y:10,z:10}, {x: 0, y: 0, z: 0});
-		},
-		'Torus': function() {
-			L.scenograph.editor.add('torus', pointer, {x:10,y:10,z:10}, {x: 0, y: 0, z: 0});
-		},
-		'Plane': function() {
-			L.scenograph.editor.add('plane', pointer, {x:10,y:10,z:10}, {x: 0, y: 0, z: 0});
-		},
-		'Tetrahedron': function() {
-			L.scenograph.editor.add('tetrahedron', pointer, {x:10,y:10,z:10}, {x: 0, y: 0, z: 0});
-		},
-		'Octahedron': function() {
-			L.scenograph.editor.add('octahedron', pointer, {x:10,y:10,z:10}, {x: 0, y: 0, z: 0});
-		}
-	}
-};
-
 
 /*
 

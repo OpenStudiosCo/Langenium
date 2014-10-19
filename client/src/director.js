@@ -2,7 +2,28 @@
 	Director
 */
 
-L.director = function() {
+var director = function() {
+	this.animation_queue = [];
+	this.scene_variables = {};
+	this.camera = null;
+	this.camera_state = {
+		rotating: false,
+		zoom: 35
+	};
+	this.cursor = {
+		position: {},
+		leftClick: false
+	};
+	this.scene = null;
+	this.renderer = null;
+	this.controls = null;
+	this.M = 500000;
+	this.duration = 150;
+	this.keyframes = 5;
+	this.projector = new THREE.Projector();
+	this.interpolation = this.duration / this.keyframes
+
+
 	L.scenograph.updateWindowVariables();
 	this.renderer = new THREE.WebGLRenderer({
 		antialias : true,
@@ -54,7 +75,6 @@ L.director = function() {
 			time: 			{ type: "f", value: 0.0 }
 		}
 	};
-	this.animate();
 
 	$(document).bind("mousemove", function(event) {
 		L.director.cursor.position = new THREE.Vector3( 
@@ -66,29 +86,30 @@ L.director = function() {
 	$(document).bind("mouseup", function(event) {
 		L.director.cursor.leftClick = true;
 	});
+	return this;
 }
 
-L.director.prototype._init = function() {
-	l.Director = new L.director();
+director.prototype._init = function() {
+	window.L.director = new director();
+	L.director.animate();
 }
 
-L.director.prototype.clear = function() {
+director.prototype.clear = function() {
 
-	
-	L.scenograph.director.animation_queue = [];
+	this.animation_queue = [];
 
-	L.scenograph.director.scene = new THREE.Scene();
-	L.scenograph.director.camera = new THREE.PerspectiveCamera( 45, L.scenograph.winW / L.scenograph.winH, 1, this.M * 2 );
-	L.scenograph.director.camera_state.zoom = 35;
-	L.scenograph.director.scene_variables = {};
-	if (L.scenograph.director.controls) {
+	this.scene = new THREE.Scene();
+	this.camera = new THREE.PerspectiveCamera( 45, L.scenograph.winW / L.scenograph.winH, 1, this.M * 2 );
+	this.camera_state.zoom = 35;
+	this.scene_variables = {};
+	if (this.controls) {
 		
-		L.scenograph.director.controls = new THREE.OrbitControls( L.scenograph.director.camera, L.scenograph.director.renderer.domElement );
+		this.controls = new THREE.OrbitControls( L.director.camera, L.director.renderer.domElement );
 	}
 	$('#scene_stats').html('');
 }
 
-L.director.prototype.animate = function() {
+director.prototype.animate = function() {
 	L.scenograph.stats.update();
 	if (L.scenograph.options.hideInterface == true && $('#container').is(":visible") == true) {
 		$('#container').slideUp();
@@ -97,29 +118,32 @@ L.director.prototype.animate = function() {
 		$('#container').slideDown();
 	}
 	if (L.scenograph.options.activeScene != L.scenograph.options.currentScene) {
-		this.clear();
+		
+		L.director.clear();
+		
 		switch(L.scenograph.options.activeScene) {
 			case 'Epoch Exordium':
-				L.director.epochexordium();
+				epochexordium.prototype._init();
 				L.scenograph.options.currentScene = 'Epoch Exordium';
 				break;
 			case 'MMO':
-				L.director.mmo();
+				mmo.prototype._init();
 				L.scenograph.options.currentScene = 'MMO';
 				break;
 			case 'MMO Title':
-				L.director.mmo_title();
+				mmo_title.prototype._init();
 				L.scenograph.options.currentScene = 'MMO Title';
 				break;
 			case 'Character Test':
-				L.director.character_test();
+				character_test.prototype._init();
 				L.scenograph.options.currentScene = 'Character Test';
 				break;
 			case 'Sandbox':
-				L.scenograph.editor();
+				sandbox.prototype._init();
 				L.scenograph.options.currentScene = 'Sandbox';
 				break;
 		}
+		
 	}
 	if (L.director.scene) {
 		L.director.effects.logo_water_uniforms.time.value += 0.00001 * L.scenograph.stats.time.delta;

@@ -45,7 +45,10 @@ L.Core = function () {
 					files: [
 						{ path: './src/vendor/OrbitControls.js' }, 
 						{ path: './src/vendor/threex.keyboardstate.js' }, 
-						{ path: './src/vendor/threex.planets.js' } 
+						{ path: './src/vendor/threex.planets.js' },
+						{ path: './src/vendor/ThreeCSG.js' },
+						{ path: './src/vendor/Mirror.js' },
+						{ path: './src/vendor/WaterShader.js' },
 					]
 				},
 				{
@@ -58,42 +61,43 @@ L.Core = function () {
 					name: "Scenograph",
 					requires: [ 'three.js', 'threex', "Scenograph Compatibility" ],
 					files: [
-						{ path: "./src/scenograph.old.js" },
-						{ path: "./src/scenograph.js" }
+						{ path: "./src/scenograph.js", callback: 'scenograph.prototype._init' }
 					]
 				},
 				{
 					name: "Scenograph Modules",
 					requires: [ 'Scenograph' ],
 					files: [
-						{ path: "./src/scenograph/editor.js" },
-						{ path: "./src/scenograph/objects.js" },
-						{ path: "./src/scenograph/stats.js" },
+						{ path: "./src/scenograph/editor.js", callback: 'editor.prototype._init' },
+						{ path: "./src/scenograph/objects.js", callback: 'objects.prototype._init' },
+						{ path: "./src/scenograph/stats.js", callback: 'stats.prototype._init' },
 					]	
-				},
-				{
-					name: "Scenograph Director Scenes",
-					requires: [ "Scenograph" ],
-					files: [
-						{ path: "./src/scenograph/director/character_test.js" },
-						{ path: "./src/scenograph/director/epochexordium.js" },
-						{ path: "./src/scenograph/director/mmo.js" },
-						{ path: "./src/scenograph/director/mmo_title.js" }
-					]
 				},
 				{
 					name: "Director",
 					requires: [ "Scenograph", "Scenograph Modules" ],
 					files: [
-						{ path: "./src/director.js", callback:"L.director.prototype._init" }
+						{ path: "./src/director.js", callback:"director.prototype._init" }
+					]
+				},
+				{
+					name: "Director Scenes",
+					requires: [ "Scenograph", "Director" ],
+					files: [
+						{ path: "./src/director/character_test.js" },
+						{ path: "./src/director/epochexordium.js" },
+						{ path: "./src/director/mmo.js" },
+						{ path: "./src/director/mmo_title.js"  },
+						{ path: "./src/director/sandbox.js"  }
+
 					]
 				},
 				{
 					name: "Editor Defaults",
-					requires: [ 'three.js', 'threex', 'Scenograph', "Scenograph Modules", "Director" ],
+					requires: [ 'three.js', 'threex', 'Scenograph', "Scenograph Modules", "Director", "Director Scenes" ],
 					files: [
 						{ path: "./src/editor.css" },
-						{ path: "./src/editor.js", callback:"l.prototype._init" }
+						{ path: "./src/editor.js", callback:"app.prototype._init" }
 					]
 				}
 			], 

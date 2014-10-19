@@ -13,6 +13,10 @@
 	-o-user-select: auto;
 	user-select: auto;          
 }
+
+.console {
+	background-color:rgba(0,0,0,0.5);
+}
 .console .menu {
 	overflow-y: scroll;
 	max-height: 160px;

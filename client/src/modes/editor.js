@@ -6,6 +6,8 @@ var app = function () {
 	
     $('.ui.sidebar').sidebar('attach events', '.launch.button');
 
+    $('.ui.dropdown').dropdown();
+
 	console.log('[ Editor started ]');
 
 	L.director.options.activeScene = "MMO";
@@ -16,4 +18,9 @@ var app = function () {
 
 app.prototype._init = function() {
 	L.app = new app();
+}
+
+app.prototype._destroy = function() {
+	L.director.options.paused = true;
+	
 }

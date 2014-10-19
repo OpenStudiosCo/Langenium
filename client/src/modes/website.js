@@ -13,9 +13,6 @@ var app = function () {
       })
     ;
 		
-	L.director.options.activeScene = "Epoch Exordium";
-	L.scenograph.animate();
-
 	console.log('[ Website started ]');
 
 	return this;
@@ -23,4 +20,8 @@ var app = function () {
 
 app.prototype._init = function() {
 	L.app = new app();
+}
+
+app.prototype._destroy = function() {
+	$('.slideshow').cycle("destroy");
 }

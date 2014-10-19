@@ -9,6 +9,7 @@ var director = function() {
 		currentScene: '',
 		hideInterface: true,
 		editMode: false,
+		paused: false,
 		scenes: [
 			'Epoch Exordium',
 			'MMO',

@@ -132,70 +132,74 @@ scenograph.prototype.onWindowResize = function() {
 }
 
 scenograph.prototype.animate = function() {
-	L.scenograph.stats.update();
-	if (L.director.options.hideInterface == true && $('#container').is(":visible") == true) {
-		$('#container').slideUp();
-	}
-	if (L.director.options.hideInterface == false && $('#container').is(":visible") == false) {
-		$('#container').slideDown();
-	}
-	if (L.director.options.activeScene != L.director.options.currentScene) {
-		
-		L.scenograph.clear();
-		
-		switch(L.director.options.activeScene) {
-			case 'Epoch Exordium':
-				epochexordium.prototype._init();
-				L.director.options.currentScene = 'Epoch Exordium';
-				break;
-			case 'MMO':
-				mmo.prototype._init();
-				L.director.options.currentScene = 'MMO';
-				break;
-			case 'MMO Title':
-				mmo_title.prototype._init();
-				L.director.options.currentScene = 'MMO Title';
-				break;
-			case 'Character Test':
-				character_test.prototype._init();
-				L.director.options.currentScene = 'Character Test';
-				break;
-			case 'Sandbox':
-				sandbox.prototype._init();
-				L.director.options.currentScene = 'Sandbox';
-				break;
+	if (L.director.options.paused == false) {
+		L.scenograph.stats.update();
+		if (L.director.options.hideInterface == true && $('#container').is(":visible") == true) {
+			$('#container').slideUp();
 		}
-		
-	}
-	if (L.scenograph.scene) {
-		L.scenograph.effects.logo_water_uniforms.time.value += 0.00001 * L.scenograph.stats.time.delta;
-		L.scenograph.effects.sun_uniforms.time.value += 0.005 * L.scenograph.stats.time.delta;
-
-		if (L.director.options.useControls == false) {		
-			var newtime = L.scenograph.stats.time.now * 0.00005;
-			L.scenograph.camera.position.set(
-				L.scenograph.camera_state.zoom * Math.cos(newtime), 
-				L.scenograph.camera_state.zoom,
-				L.scenograph.camera_state.zoom * Math.sin(newtime))			
-			L.scenograph.camera.lookAt(new THREE.Vector3(0,0,0))
+		if (L.director.options.hideInterface == false && $('#container').is(":visible") == false) {
+			$('#container').slideDown();
 		}
-		else {
-			if (L.scenograph.controls == null) {
-				L.scenograph.controls = new THREE.OrbitControls( L.scenograph.camera, L.scenograph.renderer.domElement );
+		if (L.director.options.activeScene != L.director.options.currentScene) {
+			
+			L.scenograph.clear();
+			
+			switch(L.director.options.activeScene) {
+				case 'Epoch Exordium':
+					epochexordium.prototype._init();
+					L.director.options.currentScene = 'Epoch Exordium';
+					break;
+				case 'MMO':
+					mmo.prototype._init();
+					L.director.options.currentScene = 'MMO';
+					break;
+				case 'MMO Title':
+					mmo_title.prototype._init();
+					L.director.options.currentScene = 'MMO Title';
+					break;
+				case 'Character Test':
+					character_test.prototype._init();
+					L.director.options.currentScene = 'Character Test';
+					break;
+				case 'Sandbox':
+					sandbox.prototype._init();
+					L.director.options.currentScene = 'Sandbox';
+					break;
 			}
-			L.scenograph.controls.update();
+			
 		}
+		if (L.scenograph.scene) {
+			L.scenograph.effects.logo_water_uniforms.time.value += 0.00001 * L.scenograph.stats.time.delta;
+			L.scenograph.effects.sun_uniforms.time.value += 0.005 * L.scenograph.stats.time.delta;
 
-		if (L.scenograph.animation_queue.length > 0) {
-			for (var i = 0; i < L.scenograph.animation_queue.length; i++) {
-				L.scenograph.animation_queue[i].animate(L.scenograph.stats.time.delta)
+			if (L.director.options.useControls == false) {		
+				var newtime = L.scenograph.stats.time.now * 0.00005;
+				L.scenograph.camera.position.set(
+					L.scenograph.camera_state.zoom * Math.cos(newtime), 
+					L.scenograph.camera_state.zoom,
+					L.scenograph.camera_state.zoom * Math.sin(newtime))			
+				L.scenograph.camera.lookAt(new THREE.Vector3(0,0,0))
 			}
+			else {
+				if (L.scenograph.controls == null) {
+					L.scenograph.controls = new THREE.OrbitControls( L.scenograph.camera, L.scenograph.renderer.domElement );
+				}
+				L.scenograph.controls.update();
+			}
+
+			if (L.scenograph.animation_queue.length > 0) {
+				for (var i = 0; i < L.scenograph.animation_queue.length; i++) {
+					L.scenograph.animation_queue[i].animate(L.scenograph.stats.time.delta)
+				}
+			}
+			// This needs to go in a controls thing
+			L.scenograph.cursor.leftClick = false;
+			L.scenograph.renderer.render( L.scenograph.scene, L.scenograph.camera );
 		}
-		// This needs to go in a controls thing
-		L.scenograph.cursor.leftClick = false;
-		L.scenograph.renderer.render( L.scenograph.scene, L.scenograph.camera );
+		
+		requestAnimationFrame( L.scenograph.animate );	
 	}
-	requestAnimationFrame( L.scenograph.animate );
+	
 }
 
 scenograph.prototype.clear = function() {

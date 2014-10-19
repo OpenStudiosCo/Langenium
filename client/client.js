@@ -44,7 +44,7 @@ function _init() {
 		}
 	];
 
-	_load_modules( modules );
+	_load_modules( modules, "L" );
 
 }
 
@@ -76,7 +76,7 @@ function _check_environment () {
 	
 }
 
-function _load_modules (modules) {
+function _load_modules (modules, modules_class) {
 	console.log('[ ' + modules.length + ' modules to load ]');
 	var modules_loaded = 0;	
 
@@ -149,7 +149,7 @@ function _load_modules (modules) {
 				}
 			}
 
-			_load(module.name, file.path, default_callback);
+			_load(module.name, file.path, default_callback, modules_class);
 		});
 	}
 
@@ -171,7 +171,7 @@ function _load_modules (modules) {
 
 }
 
-function _load(name, path, callback) {
+function _load(name, path, callback, modules_class) {
 	var head = document.getElementsByTagName('head')[0];
 
 	// Disable cache for Dev and Staging
@@ -180,6 +180,7 @@ function _load(name, path, callback) {
 	if (path.match(/\.js/)) {
 		var script = document.createElement('script');
 		script.type = 'text/javascript';
+		script.className += modules_class;
 		script.src = path;
 		if (callback) {
 			script.onload = callback;

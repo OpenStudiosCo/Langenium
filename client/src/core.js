@@ -23,7 +23,7 @@ var core = function () {
 				},
 				{
 					name: "Website Defaults",
-					requires: [ 'three.js', 'threex', 'Scenograph', "Scenograph Modules", "Director", "Director Scenes" ],
+					requires: [ "JQuery Cycle" ],
 					files: [
 						{ path: "./src/modes/website.css" },
 						{ path: "./src/modes/website.js", callback:"app.prototype._init" }
@@ -107,27 +107,37 @@ var core = function () {
 		}
 	};
 	// This variable 'mode' will come from somewhere
-	this.mode = 'Editor';
-	this.modes[this.mode].modules.sort( function( a, b ) { return a - b });
-	console.log( '-\t Mode: ' + this.mode );
+	this.mode = 'Website';
+	this.change_mode(this.mode);
 
-	_load_modules( this.modes[this.mode].modules );
-
-	
-	console.log( '-\t Loading ' + this.mode + ' template - ( ' + this.modes[this.mode].template_url + ' ) ' );
-	$.ajax({
-	    url: L.url + this.modes[this.mode].template_url,
-	    type: "GET",
-	    cache: (L.env == 'Dev' || L.env == 'Staging') ? false : true,
-	    success: function(html) {
-	        $("body").html(html);
-	        console.log( '-\t Loaded ' + L.core.mode + ' template - ( ' + L.core.modes[L.core.mode].template_url + ' ) ' );
-	    }
-	});
-
-	
+	return this;
 };
 
 core.prototype._init = function() {
 	L.core = new core();
 }
+
+core.prototype.change_mode = function(mode) {
+	// Remove existing modules loaded by any active mode
+	if (L.app) {
+		L.app._destroy();
+	}
+	$('script.Core').remove();
+
+	this.modes[mode].modules.sort( function( a, b ) { return a - b });
+	console.log( '-\t Client Mode: ' + mode );
+
+	_load_modules( this.modes[mode].modules, "Core");
+	
+	console.log( '-\t Loading ' + mode + ' template - ( ' + this.modes[mode].template_url + ' ) ' );
+	$.ajax({
+	    url: L.url + this.modes[mode].template_url,
+	    type: "GET",
+	    cache: (L.env == 'Dev' || L.env == 'Staging') ? false : true,
+	    success: function(html) {
+	        $("body").html(html);
+	        console.log( '-\t Loaded ' + mode + ' template - ( ' + L.core.modes[mode].template_url + ' ) ' );
+	    }
+	});
+
+}	

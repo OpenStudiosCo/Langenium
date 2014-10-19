@@ -18,6 +18,10 @@
 	max-height: 160px;
 }
 
+.console .ui.input input {
+	color: #FFFFFF;
+}
+
 
 @media only screen and (max-width : 768px) {
 

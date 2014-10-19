@@ -22,6 +22,10 @@ function _init() {
 			name: "JQuery" ,
 			files: [ { path: "./src/vendor/jquery-2.1.1.min.js" } ]
 		},
+		{ 
+			name: "Handlebars" ,
+			files: [ { path: "./src/vendor/handlebars-v2.0.0.js" } ]
+		},
 		{
 			name: "Semantic UI" ,
 			requires: [ 'JQuery' ],
@@ -32,9 +36,9 @@ function _init() {
 		},
 		{ 	
 			name: "Core",
-			requires: [ 'JQuery', 'Semantic UI' ],
+			requires: [ 'JQuery', 'Semantic UI', "Handlebars" ],
 			files: [ 
-				{ path: "./src/core.js", 	callback: 'L.Core.prototype._init' },
+				{ path: "./src/core.js", 	callback: 'L.core.prototype._init' },
 				{ path: "./src/core.css" }
 			]
 		}
@@ -100,9 +104,7 @@ function _load_modules (modules) {
 			queued_module.requires.forEach(function(queued_module_requirement){
 				if (required_modules[queued_module_requirement] == true) {
 					score++;
-					if (required_score == score) {
-						console.log('-\t Ready to load ' + queued_module.name + ' ( Requires: ' + queued_module.requires.join(', ') + ' ) ')
-						
+					if (required_score == score) {					
 						load_module(queued_module, queued_module.original_idx);
 						require_queue.splice(queued_module_idx,1); 	
 					}
@@ -113,7 +115,7 @@ function _load_modules (modules) {
 
 	var load_module = function(module, module_idx) {
 		var loaded_module = function() {
-			console.log('-\t Loaded ' + (module_idx + 1) + '/' + modules.length + ' : ' + module.name);
+			console.log('-\t ' + (module_idx + 1) + '/' + modules.length + ' : \t [' + module.name + '] finished loading');
 			modules_loaded++;
 			if (require_queue.length > 0) {
 				requirement_check(module, module_idx);

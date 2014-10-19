@@ -1,6 +1,5 @@
 /*
-	New Scenograph
-	Once this is working, change the class name to lowercase
+	scenograph
 */
 
 var scenograph = function() {

@@ -109,6 +109,17 @@ director.prototype.clear = function() {
 	$('#scene_stats').html('');
 }
 
+director.prototype.onWindowResize = function() {
+
+	L.scenograph.updateWindowVariables();
+
+	L.director.camera.aspect = L.scenograph.winW / L.scenograph.winH;
+	L.director.camera.updateProjectionMatrix();
+
+	L.director.renderer.setSize( L.scenograph.winW, L.scenograph.winH );
+
+}
+
 director.prototype.animate = function() {
 	L.scenograph.stats.update();
 	if (L.scenograph.options.hideInterface == true && $('#container').is(":visible") == true) {

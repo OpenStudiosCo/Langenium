@@ -2,7 +2,7 @@
 	core.js
 */
 
-L.Core = function () {
+L.core = function () {
 	console.log( '[ Client starting ]' );
 	/*
 		Modes are basically self contained applications within the application that can be swapped 
@@ -84,6 +84,7 @@ L.Core = function () {
 					name: "Director Scenes",
 					requires: [ "Scenograph", "Director" ],
 					files: [
+						// Note, the startup for these activates the scene :P
 						{ path: "./src/director/character_test.js" },
 						{ path: "./src/director/epochexordium.js" },
 						{ path: "./src/director/mmo.js" },
@@ -119,14 +120,14 @@ L.Core = function () {
 	    cache: (L.env == 'Dev' || L.env == 'Staging') ? false : true,
 	    success: function(html) {
 	        $("body").html(html);
-	        console.log( '-\t Loaded ' + L.Core.mode + ' template - ( ' + L.Core.modes[L.Core.mode].template_url + ' ) ' );
+	        console.log( '-\t Loaded ' + L.core.mode + ' template - ( ' + L.core.modes[L.core.mode].template_url + ' ) ' );
 	    }
 	});
 
 	
 };
 
-L.Core.prototype._init = function() {
-	L.Core = new L.Core();
-	delete L.Core._init;
+L.core.prototype._init = function() {
+	L.core = new L.core();
+	delete L.core._init;
 }

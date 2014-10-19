@@ -2,7 +2,7 @@
 	core.js
 */
 
-L.core = function () {
+var core = function () {
 	console.log( '[ Client starting ]' );
 	/*
 		Modes are basically self contained applications within the application that can be swapped 
@@ -23,13 +23,14 @@ L.core = function () {
 				},
 				{
 					name: "Website Defaults",
+					requires: [ 'three.js', 'threex', 'Scenograph', "Scenograph Modules", "Director", "Director Scenes" ],
 					files: [
-						{ path: "./src/website.css" },
-						{ path: "./src/website.js", callback:"l.prototype._init" }
+						{ path: "./src/modes/website.css" },
+						{ path: "./src/modes/website.js", callback:"app.prototype._init" }
 					]
 				}
 			], 
-			template_url: '/res/templates/website.html'
+			template_url: '/src/modes/website.html'
 		},
 		Editor: { 
 			modules: [
@@ -97,12 +98,12 @@ L.core = function () {
 					name: "Editor Defaults",
 					requires: [ 'three.js', 'threex', 'Scenograph', "Scenograph Modules", "Director", "Director Scenes" ],
 					files: [
-						{ path: "./src/editor.css" },
-						{ path: "./src/editor.js", callback:"app.prototype._init" }
+						{ path: "./src/modes/editor.css" },
+						{ path: "./src/modes/editor.js", callback:"app.prototype._init" }
 					]
 				}
 			], 
-			template_url: '/res/templates/editor.html'
+			template_url: '/src/modes/editor.html'
 		}
 	};
 	// This variable 'mode' will come from somewhere
@@ -127,7 +128,6 @@ L.core = function () {
 	
 };
 
-L.core.prototype._init = function() {
-	L.core = new L.core();
-	delete L.core._init;
+core.prototype._init = function() {
+	L.core = new core();
 }

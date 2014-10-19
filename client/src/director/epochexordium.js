@@ -1,14 +1,14 @@
 var epochexordium = function() {
 	
-	L.director.camera_state.zoom = 7500;
-	L.director.camera.position.set(
-		L.director.camera_state.zoom * Math.cos(0), 
-		L.director.camera_state.zoom,
-		L.director.camera_state.zoom * Math.sin(0))			
-	L.director.camera.lookAt(new THREE.Vector3(0,0,0))
+	L.scenograph.camera_state.zoom = 7500;
+	L.scenograph.camera.position.set(
+		L.scenograph.camera_state.zoom * Math.cos(0), 
+		L.scenograph.camera_state.zoom,
+		L.scenograph.camera_state.zoom * Math.sin(0))			
+	L.scenograph.camera.lookAt(new THREE.Vector3(0,0,0))
 	var light = new THREE.PointLight(0xffffff, 1, 0);
 	light.position.set(0,0,0);
-	L.director.scene.add(light);
+	L.scenograph.scene.add(light);
 
 	var geometry = new THREE.BoxGeometry( 1000000, 1000000, 1000000 );
 
@@ -38,7 +38,7 @@ var epochexordium = function() {
 
 	mesh = new THREE.Mesh( geometry, material );
 	mesh.name = 'Space Box';
-	L.director.scene.add( mesh );
+	L.scenograph.scene.add( mesh );
 
 	// Using AU (Astronomical Unit x 1000 + 1000 for sun's size) for distance, proportion to Earth for others
 
@@ -131,7 +131,7 @@ var epochexordium = function() {
   	for (var i = 0; i < scene_setup.objects.length; i++) {
   		switch(scene_setup.objects[i].type) {
   			case 'planet': 
-  				L.director.scene.add(
+  				L.scenograph.scene.add(
   					this.make_planet(
   						scene_setup.objects[i].name, 
   						scene_setup.objects[i].position, 
@@ -140,8 +140,8 @@ var epochexordium = function() {
   				break;
   			case 'sun':
   				var sun = this.make_sun(scene_setup.objects[i].position, scene_setup.objects[i].radius); 
-  				L.director.scene.add(sun);
-  				L.director.scene_variables.target = sun;
+  				L.scenograph.scene.add(sun);
+  				L.scenograph.scene_variables.target = sun;
   				break;
   			default:
   				console.log("Failed to load object:");
@@ -149,7 +149,7 @@ var epochexordium = function() {
   				break;
   		}
   	}
-  	L.director.animation_queue.push(new this.select_planet());
+  	L.scenograph.animation_queue.push(new this.select_planet());
   	return this;
 }
 
@@ -159,18 +159,18 @@ epochexordium.prototype._init = function() {
 
 epochexordium.prototype.select_planet = function() {
 	this.animate = function(delta) {
-		if (L.director.cursor.leftClick == true) {
-			L.director.projector.unprojectVector(L.director.cursor.position, L.director.camera);
-			var raycaster = new THREE.Raycaster( L.director.camera.position, L.director.cursor.position.sub( L.director.camera.position ).normalize() );	
+		if (L.scenograph.cursor.leftClick == true) {
+			L.scenograph.projector.unprojectVector(L.scenograph.cursor.position, L.scenograph.camera);
+			var raycaster = new THREE.Raycaster( L.scenograph.camera.position, L.scenograph.cursor.position.sub( L.scenograph.camera.position ).normalize() );	
 
-			var intersects = raycaster.intersectObjects( L.director.scene.children );
+			var intersects = raycaster.intersectObjects( L.scenograph.scene.children );
 			if (intersects.length > 0) {
 				if (intersects[0].object.name != 'Space Box' && 
 					intersects[0].object.name != 'Sun Halo' && 
 					intersects[0].object.name != 'Sun') {
 					var vector = intersects[0].object.position.clone();
-					L.director.scene_variables.target = intersects[0].object;
-					L.director.controls.target.set(
+					L.scenograph.scene_variables.target = intersects[0].object;
+					L.scenograph.controls.target.set(
 						vector.x,
 						vector.y,
 						vector.z
@@ -185,7 +185,7 @@ epochexordium.prototype.select_planet = function() {
 epochexordium.prototype.make_sun = function(position, radius) {
 	var customMaterial = new THREE.ShaderMaterial( 
 	{
-	    uniforms: L.director.effects.sun_uniforms,
+	    uniforms: L.scenograph.effects.sun_uniforms,
 		vertexShader:   document.getElementById( 'sunVertShader'   ).textContent,
 		fragmentShader: document.getElementById( 'sunFragShader' ).textContent,
 		side: THREE.DoubleSide,
@@ -209,7 +209,7 @@ epochexordium.prototype.make_sun = function(position, radius) {
 		
 	var ballGeometry = new THREE.SphereGeometry( radius * 1.05, 32, 32 );
 	var ball = new THREE.Mesh( ballGeometry, customMaterial );
-	L.director.scene.add( ball );
+	L.scenograph.scene.add( ball );
 	ball.name = 'Sun Halo'
 
 	return sphere;
@@ -217,7 +217,7 @@ epochexordium.prototype.make_sun = function(position, radius) {
 epochexordium.prototype.make_planet = function(name, position, radius) {
 	var planet = THREEx.Planets['create' + name]();
 	planet.name = name;
-	planet.material.map.anisotropy = L.director.renderer.getMaxAnisotropy();
+	planet.material.map.anisotropy = L.scenograph.renderer.getMaxAnisotropy();
 	
 	if (radius < 20) {
 		radius *= 20;
@@ -249,8 +249,8 @@ epochexordium.prototype.make_planet = function(name, position, radius) {
 			planet.rotation.y += delta / radius / 100;
 			planet.position.x = position.z  * Math.sin( position.z  -L.scenograph.stats.time.now / 150000);
 			planet.position.z = position.z  * Math.cos( position.z  -L.scenograph.stats.time.now / 150000);
-			var target = L.director.scene_variables.target.position.clone();
-			L.director.controls.target.set(
+			var target = L.scenograph.scene_variables.target.position.clone();
+			L.scenograph.controls.target.set(
 				target.x,
 				target.y,
 				target.z
@@ -258,7 +258,7 @@ epochexordium.prototype.make_planet = function(name, position, radius) {
 		}
 	};
 
-	L.director.animation_queue.push(animation_obj);
+	L.scenograph.animation_queue.push(animation_obj);
 
 	return planet;
 }

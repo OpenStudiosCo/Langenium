@@ -12,7 +12,12 @@ var app = function () {
         on: 'hover'
       })
     ;
+		
+	L.director.options.activeScene = "Epoch Exordium";
+	L.scenograph.animate();
+
 	console.log('[ Website started ]');
+
 	return this;
 };
 

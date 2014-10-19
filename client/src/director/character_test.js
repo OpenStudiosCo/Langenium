@@ -1,11 +1,11 @@
 var character_test = function() {
 	// scene shit here
-	L.director.camera_state.zoom = 500;
-	L.director.camera.position.set(
+	L.scenograph.camera_state.zoom = 500;
+	L.scenograph.camera.position.set(
 		-17, 567, 900
 	);	
 
-	L.director.scene_variables.collidables = [];
+	L.scenograph.scene_variables.collidables = [];
 
 	var geometry = new THREE.BoxGeometry( 1000000, 1000000, 1000000 );
 
@@ -35,20 +35,20 @@ var character_test = function() {
 
 	mesh = new THREE.Mesh( geometry, material );
 	mesh.name = 'Space Box';
-	L.director.scene.add( mesh );
+	L.scenograph.scene.add( mesh );
 
 	var character = this.make_character();
 	character.position.y = -30;
-	L.director.scene_variables.character = character;
-	L.director.scene.add(character);
-	L.director.animation_queue.push(character.children[0].animation)
+	L.scenograph.scene_variables.character = character;
+	L.scenograph.scene.add(character);
+	L.scenograph.animation_queue.push(character.children[0].animation)
 
 	// Room 1 and lights
 	var lightFixture1 = this.make_light(new THREE.Vector3(0,275, 150));
-	L.director.scene.add(lightFixture1);
+	L.scenograph.scene.add(lightFixture1);
 
 	var lightFixture2 = this.make_light(new THREE.Vector3(0,275, -150));
-	L.director.scene.add(lightFixture2);
+	L.scenograph.scene.add(lightFixture2);
 
 	var roomMaterial = new THREE.MeshLambertMaterial( { color: 0xCCCCCC, side: THREE.BackSide} ); 
 	var room1 = new THREE.Mesh(new THREE.CylinderGeometry( 500, 500, 450, 20, 32, false), roomMaterial);
@@ -57,10 +57,10 @@ var character_test = function() {
 
 	// Room 2 and lights
 	var lightFixture3 = this.make_light(new THREE.Vector3(1300,275, 150));
-	L.director.scene.add(lightFixture3);
+	L.scenograph.scene.add(lightFixture3);
 
 	var lightFixture4 = this.make_light(new THREE.Vector3(1300,275, -150));
-	L.director.scene.add(lightFixture4);
+	L.scenograph.scene.add(lightFixture4);
 
 	var room2 = new THREE.Mesh(new THREE.BoxGeometry(1000, 450, 1000), roomMaterial);
 	room2.position.set(1300, 75, 0)
@@ -73,16 +73,16 @@ var character_test = function() {
 
 	// Room 3 and lights
 	var lightFixture5 = this.make_light(new THREE.Vector3(-100,275, -1450));
-	L.director.scene.add(lightFixture5);
+	L.scenograph.scene.add(lightFixture5);
 
 	var lightFixture6 = this.make_light(new THREE.Vector3(-100,275, -1150));
-	L.director.scene.add(lightFixture6);
+	L.scenograph.scene.add(lightFixture6);
 	
 	var lightFixture7 = this.make_light(new THREE.Vector3(1100,275, -1450));
-	L.director.scene.add(lightFixture7);
+	L.scenograph.scene.add(lightFixture7);
 
 	var lightFixture8 = this.make_light(new THREE.Vector3(1100,275, -1150));
-	L.director.scene.add(lightFixture8);
+	L.scenograph.scene.add(lightFixture8);
 	
 	var room3 = new THREE.Mesh(new THREE.BoxGeometry(2200, 450, 1000), roomMaterial);
 	room3.position.set(500, 75, -1300)
@@ -104,27 +104,27 @@ var character_test = function() {
 	//var bufferGeo = THREE.BufferGeometryUtils.fromGeometry( newGeo );
 	var newMesh = new THREE.Mesh(newGeo, roomMaterial);
 	newMesh.position.y = 75;
-	L.director.scene.add(newMesh);
-	L.director.scene_variables.collidables.push(newMesh);
+	L.scenograph.scene.add(newMesh);
+	L.scenograph.scene_variables.collidables.push(newMesh);
 
 	var wireframeMaterial = new THREE.MeshLambertMaterial( { color: 0x666666 } ); 
 	var box1 = new THREE.Mesh(new THREE.BoxGeometry(300, 150, 75), wireframeMaterial);
 	box1.name = 'Box 1'
 	box1.position.set(-300,-75,-300);
-	L.director.scene.add(box1);
-	L.director.scene_variables.collidables.push(box1);
+	L.scenograph.scene.add(box1);
+	L.scenograph.scene_variables.collidables.push(box1);
 
 	var box2 = new THREE.Mesh(new THREE.BoxGeometry(75, 150, 75), wireframeMaterial);
 	box2.name = 'Box 2'
 	box2.position.set(300,-75,0);
-	L.director.scene.add(box2);
-	L.director.scene_variables.collidables.push(box2);
+	L.scenograph.scene.add(box2);
+	L.scenograph.scene_variables.collidables.push(box2);
 	
 	var box3 = new THREE.Mesh(new THREE.BoxGeometry(300, 150, 75), wireframeMaterial);
 	box3.name = 'Box 3'
 	box3.position.set(0,-75,300);
-	L.director.scene.add(box3);
-	L.director.scene_variables.collidables.push(box3);
+	L.scenograph.scene.add(box3);
+	L.scenograph.scene_variables.collidables.push(box3);
 
 	return this;
 };
@@ -148,7 +148,7 @@ character_test.prototype.marker = function(position) {
 	var material = new THREE.MeshBasicMaterial( {color:0xFF0000, side:THREE.DoubleSide} );
 	var sphere = new THREE.Mesh( new THREE.SphereGeometry( 5, 1, 1 ), material );
 	sphere.position.set(position.x, position.y, position.z);
-	L.director.scene.add(sphere);
+	L.scenograph.scene.add(sphere);
 }
 
 character_test.prototype.make_character = function() {
@@ -169,7 +169,7 @@ character_test.prototype.make_character = function() {
 	characterBox.add(characterSprite);
 	characterBox.add(arrow);
 
-	characterBox.add(L.director.camera);
+	characterBox.add(L.scenograph.camera);
 
 	return characterBox;
 }
@@ -228,7 +228,7 @@ character_test.prototype.move_character = function(character) {
 		directionVector.applyMatrix4(matrix)
 		
 		var ray = new THREE.Raycaster( originPoint, directionVector.clone().normalize() );
-		var intersects = ray.intersectObjects(L.director.scene_variables.collidables);
+		var intersects = ray.intersectObjects(L.scenograph.scene_variables.collidables);
 		if (intersects.length > 0) {
 			var collision = intersects[0]
 			if (collision.distance < 90) {
@@ -330,7 +330,7 @@ character_test.prototype.make_animation = function( character, texture, tilesHor
 		var vector = character.parent.position.clone();
 
 		var camera_vector = new THREE.Vector3();
-		camera_vector.setFromMatrixPosition( L.director.camera.matrixWorld );
+		camera_vector.setFromMatrixPosition( L.scenograph.camera.matrixWorld );
 	
 		var diff = new THREE.Vector3().subVectors(character.parent.position, camera_vector).normalize();
 		diff.applyMatrix4(matrix);

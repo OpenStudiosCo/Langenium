@@ -8,6 +8,9 @@ var app = function () {
 
 	console.log('[ Editor started ]');
 
+	L.director.options.activeScene = "MMO";
+	L.scenograph.animate();
+
 	return this;
 };
 

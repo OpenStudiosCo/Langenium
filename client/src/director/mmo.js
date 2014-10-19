@@ -1,25 +1,25 @@
 var mmo = function() {
-	L.director.camera_state.zoom = 35;
+	L.scenograph.camera_state.zoom = 35;
 
-	L.director.camera.position.set(
+	L.scenograph.camera.position.set(
 		0, 
 		10,
-		L.director.camera_state.zoom
+		L.scenograph.camera_state.zoom
 	);	
 
 	var hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 1 );
 	hemiLight.name = "light1";
 	hemiLight.color.setRGB( 0.9, 0.95, 1 );
 	hemiLight.groundColor.setRGB( 0.6, 0.75, 1 );
-	hemiLight.position.set( 0, L.director.M, 0 );
-	L.director.scene.add(hemiLight);
+	hemiLight.position.set( 0, L.scenograph.M, 0 );
+	L.scenograph.scene.add(hemiLight);
 
-	var skyGeo = new THREE.SphereGeometry(L.director.M / 2, 32, 64);
+	var skyGeo = new THREE.SphereGeometry(L.scenograph.M / 2, 32, 64);
 
 	var sky_materials = [ 
 		new THREE.ShaderMaterial( {
 			side: THREE.DoubleSide,
-			uniforms: L.director.effects.cloud_uniforms,
+			uniforms: L.scenograph.effects.cloud_uniforms,
 			vertexShader:   document.getElementById( 'cloudVertShader'   ).textContent,
 			fragmentShader: document.getElementById( 'cloudFragShader' ).textContent
 		} ), 
@@ -40,12 +40,12 @@ var mmo = function() {
 	var sky = new THREE.Mesh(skyGeo, new THREE.MeshFaceMaterial(sky_materials));
 	sky.name = 'Skybox';
 	sky.position.y = 24475;
-	L.director.scene.add(sky);
+	L.scenograph.scene.add(sky);
 
-	var water = new THREE.Water( L.director.renderer, L.director.camera, L.director.scene, {
+	var water = new THREE.Water( L.scenograph.renderer, L.scenograph.camera, L.scenograph.scene, {
 		textureWidth: 512, 
 		textureHeight: 512,
-		waterNormals: L.director.waterNormals,
+		waterNormals: L.scenograph.waterNormals,
 		alpha: 	.8,
 		sunDirection: hemiLight.position.normalize(),
 		sunColor: 0xffffff,
@@ -54,21 +54,21 @@ var mmo = function() {
 		side: THREE.DoubleSide
 	} );
 
-	var plane = new THREE.Mesh(new THREE.PlaneGeometry( L.director.M * 4.5, L.director.M * 4.5 , 50, 50 ), water.material);
+	var plane = new THREE.Mesh(new THREE.PlaneGeometry( L.scenograph.M * 4.5, L.scenograph.M * 4.5 , 50, 50 ), water.material);
 	plane.name = 'Ocean';
 	plane.rotateX( - Math.PI / 2 );
 	plane.add(water);
-	L.director.scene.add(plane);
+	L.scenograph.scene.add(plane);
 
 	var animation_obj = {
 		animate: function(delta) {
-			L.director.effects.cloud_uniforms.time.value += 0.0025 * L.scenograph.stats.time.delta;
+			L.scenograph.effects.cloud_uniforms.time.value += 0.0025 * L.scenograph.stats.time.delta;
 			water.material.uniforms.time.value +=1.0 / 60.0;
 			water.render();
 		}
 	}
 	
-	L.director.animation_queue.push(animation_obj)
+	L.scenograph.animation_queue.push(animation_obj)
 	
 
 	var mountain_cb = function(geometry, materials) {
@@ -76,7 +76,7 @@ var mmo = function() {
 		mesh.scale.set(500,500,500);
 		mesh.position.set(5000, -50, -8000)
 		mesh.frustrumCulled = false;	
-		L.director.scene.add(mesh);			
+		L.scenograph.scene.add(mesh);			
 	}
 	L.scenograph.objects.loadObject('/res/models/terrain/mountain/island.js', mountain_cb);
 
@@ -84,8 +84,8 @@ var mmo = function() {
 		var mesh = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
 		mesh.scale.set(10,10,10);
 		mesh.position.set(0, 15, 0)
-		L.director.scene.add(mesh);	
-		mesh.add(L.director.camera);
+		L.scenograph.scene.add(mesh);	
+		mesh.add(L.scenograph.camera);
 
 		/*
 		//http://webgl-fire.appspot.com/html/fire.html
@@ -118,12 +118,12 @@ var mmo = function() {
 			animate: function(delta) {
 				L.director.mmo.move_ship(mesh);
 					var worldCoordinates = new THREE.Vector3();
-					worldCoordinates.setFromMatrixPosition(L.director.camera.matrixWorld);
+					worldCoordinates.setFromMatrixPosition(L.scenograph.camera.matrixWorld);
 					//thruster_uniforms.eye.value = worldCoordinates;
 					//thruster_uniforms.time.value += delta /1000;
 			}
 		}
-		L.director.animation_queue.push(anim_obj)
+		L.scenograph.animation_queue.push(anim_obj)
 	}
 	L.scenograph.objects.loadObject('/res/models/ships/mercenary/valiant2.js', ship_cb);
 	return this;

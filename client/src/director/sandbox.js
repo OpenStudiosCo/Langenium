@@ -3,11 +3,11 @@
 */
 
 var sandbox = function() {
-	L.director.camera_state.zoom = 3500;
-	L.director.camera.position.set(
+	L.scenograph.camera_state.zoom = 3500;
+	L.scenograph.camera.position.set(
 		0, 
 		1000,
-		L.director.camera_state.zoom
+		L.scenograph.camera_state.zoom
 	);	
 
 	var hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 1 );
@@ -15,19 +15,19 @@ var sandbox = function() {
 	hemiLight.color.setRGB( 0.9, 0.95, 1 );
 	hemiLight.groundColor.setRGB( 0.6, 0.75, 1 );
 	hemiLight.position.set( 0, 100, 0 );
-	L.director.scene.add(hemiLight);
+	L.scenograph.scene.add(hemiLight);
 
-	L.director.scene_variables.objects = [];
+	L.scenograph.scene_variables.objects = [];
 
 
-	L.director.scene_variables.collidables = [];
+	L.scenograph.scene_variables.collidables = [];
 
-	L.director.scene_variables.select_multiple = false;
-	L.director.scene_variables.selected_objects = [];
-	L.director.scene_variables._selectedObj = ""; // holder for object chosen in multi select dropdown, this definitely needs to be put in a smarter place
+	L.scenograph.scene_variables.select_multiple = false;
+	L.scenograph.scene_variables.selected_objects = [];
+	L.scenograph.scene_variables._selectedObj = ""; // holder for object chosen in multi select dropdown, this definitely needs to be put in a smarter place
 	
 	console.log("wtf")
-	L.director.animation_queue.push(new L.scenograph.editor.select_object());
+	L.scenograph.animation_queue.push(new L.scenograph.editor.select_object());
 
 	return this;
 }

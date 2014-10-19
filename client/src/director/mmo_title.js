@@ -1,14 +1,14 @@
 var mmo_title = function() {
-	L.director.camera_state.zoom = 4500;
-	L.director.camera.position.set(
+	L.scenograph.camera_state.zoom = 4500;
+	L.scenograph.camera.position.set(
 		0, 
 		0,
-		L.director.camera_state.zoom
+		L.scenograph.camera_state.zoom
 	);	
 
 	var logoWaterMaterial = new THREE.ShaderMaterial( 
 	{
-	    uniforms: L.director.effects.logo_water_uniforms,
+	    uniforms: L.scenograph.effects.logo_water_uniforms,
 		vertexShader:   document.getElementById( 'logoWaterVertShader'   ).textContent,
 		fragmentShader: document.getElementById( 'logoWaterFragShader' ).textContent,
 		side: THREE.DoubleSide
@@ -16,7 +16,7 @@ var mmo_title = function() {
 
 	var logoMetalMaterial = new THREE.ShaderMaterial( 
 	{
-	    uniforms: L.director.effects.logo_metal_uniforms,
+	    uniforms: L.scenograph.effects.logo_metal_uniforms,
 		vertexShader:   document.getElementById( 'logoMetalVertShader'   ).textContent,
 		fragmentShader: document.getElementById( 'logoMetalFragShader' ).textContent,
 		side: THREE.DoubleSide
@@ -37,7 +37,7 @@ var mmo_title = function() {
 		var mesh = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
 		mesh.scale.set(2000,2000,2000);
 		mesh.rotateX( Math.PI / 2 );
-		L.director.scene.add(mesh);			
+		L.scenograph.scene.add(mesh);			
 	}
 	
 	L.scenograph.objects.loadObject('/res/models/langenium-logo.js', logo_cb);
@@ -46,5 +46,5 @@ var mmo_title = function() {
 }
 
 mmo_title.prototype._init = function() {
-	L.director.mmo_title = new mmo_title();
+	L.scenograph.mmo_title = new mmo_title();
 }

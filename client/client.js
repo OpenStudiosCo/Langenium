@@ -38,7 +38,7 @@ function _init() {
 			name: "Core",
 			requires: [ 'JQuery', 'Semantic UI', "Handlebars" ],
 			files: [ 
-				{ path: "./src/core.js", 	callback: 'L.core.prototype._init' },
+				{ path: "./src/core.js", 	callback: 'core.prototype._init' },
 				{ path: "./src/core.css" }
 			]
 		}

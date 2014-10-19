@@ -1,7 +1,23 @@
-.launch.button {
+.sidebar-button,
+.console {
 	position: relative;
 	z-index: 1;
 }
+
+.console .item{
+	-webkit-user-select: auto;  /* Chrome all / Safari all */
+	-moz-user-select: auto;     /* Firefox all */
+	-ms-user-select: auto;      /* IE 10+ */
+
+	/* No support for these yet, use at own risk */
+	-o-user-select: auto;
+	user-select: auto;          
+}
+.console .menu {
+	overflow-y: scroll;
+	max-height: 160px;
+}
+
 
 @media only screen and (max-width : 768px) {
 

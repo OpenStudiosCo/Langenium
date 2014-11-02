@@ -67,6 +67,10 @@ var scenograph = function() {
 			noiseTexture:	{ type: "t", value: this.noiseTexture3 },
 			time: 			{ type: "f", value: 0.0 }
 		},
+		porta_uniforms: {
+			noiseTexture:	{ type: "t", value: this.noiseTexture2 },
+			time: 			{ type: "f", value: 0.0 }
+		},
 		sun_uniforms: {
 			noiseTexture:	{ type: "t", value: this.noiseTexture2 },
 			time: 			{ type: "f", value: 0.0 }
@@ -160,6 +164,10 @@ scenograph.prototype.animate = function() {
 				case 'Character Test':
 					character_test.prototype._init();
 					L.director.options.currentScene = 'Character Test';
+					break;
+				case 'Porta':
+					porta.prototype._init();
+					L.director.options.currentScene = 'Porta';
 					break;
 				case 'Sandbox':
 					sandbox.prototype._init();

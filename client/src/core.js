@@ -37,7 +37,7 @@ var core = function () {
 				{
 					name: "three.js",
 					files: [ 
-						{ path: './src/vendor/three.min.js' }						
+						{ path: './src/vendor/three.js' }						
 					]
 				},
 				{
@@ -90,6 +90,7 @@ var core = function () {
 						{ path: "./src/director/epochexordium.js" },
 						{ path: "./src/director/mmo.js" },
 						{ path: "./src/director/mmo_title.js"  },
+						{ path: "./src/director/porta.js"  },
 						{ path: "./src/director/sandbox.js"  }
 
 					]

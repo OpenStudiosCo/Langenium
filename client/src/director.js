@@ -5,7 +5,7 @@
 var director = function() {
 
 	this.options = {
-		activeScene: 'MMO',
+		activeScene: 'Porta',
 		currentScene: '',
 		hideInterface: true,
 		editMode: false,

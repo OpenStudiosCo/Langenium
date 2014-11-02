@@ -10,25 +10,51 @@
 
 	Also need to look at how to raytrace 2D images and reproject them in 3D using rotations along the map I design above. 
 
+	Implementing via vertex/fragment shader
+
 */
 
 var porta = function() {
-	// Mapping Zodiacs to a clock as it provides 12 positions. 
-	this.Sephiroth = [
-		{
-			name: 
+
+	L.scenograph.camera_state.zoom = 35;
+	L.scenograph.camera.position.set(
+		0, 
+		100,
+		L.scenograph.camera_state.zoom
+	);	
+
+	var hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 1 );
+	hemiLight.name = "light1";
+	hemiLight.color.setRGB( 0.9, 0.95, 1 );
+	hemiLight.groundColor.setRGB( 0.6, 0.75, 1 );
+	hemiLight.position.set( 0, 100, 0 );
+	L.scenograph.scene.add(hemiLight);
+
+	var material = new THREE.ShaderMaterial( 
+	{
+	    uniforms: L.scenograph.effects.porta_uniforms,
+		vertexShader:   document.getElementById( 'portaVertShader'   ).textContent,
+		fragmentShader: document.getElementById( 'portaFragShader' ).textContent,
+		side: THREE.DoubleSide
+	}   );
+
+
+	var mesh = new THREE.Mesh(new THREE.SphereGeometry(32, 32, 32), material);
+	L.scenograph.scene.add(mesh);
+
+	var animation_obj = {
+		animate: function(delta) {
+			L.scenograph.effects.porta_uniforms.time.value += delta * 0.0001;
 		}
+	}
+	
+	L.scenograph.animation_queue.push(animation_obj)
 
-	];
-	this.Saggitarius = {
-		vector: {
-			y: 'Horse',
-			m: 
-		}
-	};
 
-	this.Aquarius = {
-
-	};
-
+	return this;
 };
+
+
+porta.prototype._init = function() {
+	L.director.porta = new porta();
+}

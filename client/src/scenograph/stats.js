@@ -21,7 +21,7 @@ var stats = function() {
 		// Something like a view template for all the Scenograph->Ember bindings
 		L.scenograph.stats.time.last = this.time.now;
 		L.scenograph.stats.time.now = Date.now();
-		L.scenograph.stats.time.delta = (this.time.now - this.time.last);
+		L.scenograph.stats.time.delta = parseFloat(this.time.now - this.time.last);
 		
 		this.fps.frames++;
 		if ( this.time.now > this.fps.last + 1000 ) {

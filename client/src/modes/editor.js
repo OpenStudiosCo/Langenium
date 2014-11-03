@@ -16,8 +16,9 @@ var app = function () {
 			L.director.options.activeScene = text;
 		}
     });
+    $('.ui.dropdown').dropdown('set selected',L.director.options.activeScene)
 
-     $('.console .menu').slideUp();
+    $('.console .menu').slideUp();
 
 	console.log('[ Editor started ]');
 

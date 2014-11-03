@@ -26,7 +26,7 @@ var sandbox = function() {
 	L.scenograph.scene_variables.selected_objects = [];
 	L.scenograph.scene_variables._selectedObj = ""; // holder for object chosen in multi select dropdown, this definitely needs to be put in a smarter place
 	
-	console.log("wtf")
+	console.log("WTF - Sandbox is pointless atm :P")
 	L.scenograph.animation_queue.push(new L.scenograph.editor.select_object());
 
 	return this;

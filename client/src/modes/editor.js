@@ -6,10 +6,18 @@ var app = function () {
 	
     $('.ui.sidebar').sidebar('attach events', '.launch.button');
 
-    $('.ui.dropdown').dropdown();
-    $('.ui.dropdown').hide();
+    $('.ui.dropdown .menu').html('');
+    L.director.options.scenes.forEach(function(scene){
+		$('.ui.dropdown .menu').append('<div class="item">' + scene + '</div>')    	
+    });
 
-    $('.console .menu').slideUp();
+    $('.ui.dropdown').dropdown({
+		onChange: function (value, text) {
+			L.director.options.activeScene = text;
+		}
+    });
+
+     $('.console .menu').slideUp();
 
 	console.log('[ Editor started ]');
 

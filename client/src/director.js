@@ -5,7 +5,7 @@
 var director = function() {
 
 	this.options = {
-		activeScene: 'Porta',
+		activeScene: 'Epoch Exordium',
 		currentScene: '',
 		hideInterface: true,
 		editMode: false,

@@ -236,23 +236,23 @@ editor.prototype._init = function() {
 
 editor.prototype.select_object = function() {
 	this.animate = function(delta) {
-		if (L.director.cursor.leftClick == true) {
-			L.director.projector.unprojectVector(L.director.cursor.position, L.director.camera);
-			var raycaster = new THREE.Raycaster( L.director.camera.position, L.director.cursor.position.sub( L.director.camera.position ).normalize() );	
+		if (L.scenograph.cursor.leftClick == true) {
+			L.scenograph.projector.unprojectVector(L.scenograph.cursor.position, L.scenograph.camera);
+			var raycaster = new THREE.Raycaster( L.scenograph.camera.position, L.scenograph.cursor.position.sub( L.scenograph.camera.position ).normalize() );	
 
-			var intersects = raycaster.intersectObjects( L.director.scene.children );
+			var intersects = raycaster.intersectObjects( L.scenograph.scene.children );
 			if (intersects.length > 0) {
-				if (L.director.scene_variables.select_multiple == false) {
+				if (L.scenograph.scene_variables.select_multiple == false) {
 					L.scenograph.editor.gui_functions['Clear Selection']();
-					L.director.scene_variables.selected = intersects[0].object;
+					L.scenograph.scene_variables.selected = intersects[0].object;
 					intersects[0].object.geometry.computeBoundingBox();
 					L.scenograph.editor.draw_bounding_box(0xFFFF00, intersects[0].object, intersects[0].object.geometry.boundingBox.max, intersects[0].object.geometry.boundingBox.min, intersects[0].object.scale.x );
 					
 					var material = L.director.scene_variables.selected.material;
 
 					var vector = intersects[0].object.position.clone();
-					L.director.scene_variables.target = intersects[0].object;
-					L.director.controls.target.set(
+					L.scenograph.scene_variables.target = intersects[0].object;
+					L.scenograph.controls.target.set(
 						vector.x,
 						vector.y,
 						vector.z
@@ -271,8 +271,8 @@ editor.prototype.select_object = function() {
 						intersects[0].object.geometry.computeBoundingBox();
 						var randomColor = Math.random() * 0xffffff;
 						L.scenograph.editor.draw_bounding_box( randomColor, intersects[0].object, intersects[0].object.geometry.boundingBox.max, intersects[0].object.geometry.boundingBox.min, intersects[0].object.scale.x );
-						L.director.scene_variables.selected_objects.push(intersects[0].object);
-						$(L.director.scene_variables.selectedFolder.domElement).append(
+						L.scenograph.scene_variables.selected_objects.push(intersects[0].object);
+						$(L.scenograph.scene_variables.selectedFolder.domElement).append(
 							"<li style='background-color: #" + parseInt(randomColor).toString(16) + ";'></li>"
 						);
 					}

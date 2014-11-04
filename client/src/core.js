@@ -108,7 +108,7 @@ var core = function () {
 		}
 	};
 	// This variable 'mode' will come from somewhere
-	this.mode = 'Editor';
+	this.mode = 'Website';
 	this.change_mode(this.mode);
 
 	return this;

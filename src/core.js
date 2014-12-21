@@ -108,7 +108,8 @@ var core = function () {
 		}
 	};
 	// This variable 'mode' will come from somewhere
-	this.mode = 'Website';
+
+	this.mode = this.query_string('mode') ? this.query_string('mode') : 'Website';
 	this.change_mode(this.mode);
 
 	return this;
@@ -142,3 +143,15 @@ core.prototype.change_mode = function(mode) {
 	});
 
 }	
+
+core.prototype.query_string = function(key, default_)
+{
+  if (default_==null) default_="";
+  key = key.replace(/[\\[]/,"\\\\\\[").replace(/[\\]]/,"\\\\\\]");
+  var regex = new RegExp("[\\\\?&]"+key+"=([^&#]*)");
+  var qs = regex.exec(window.location.href);
+  if(qs == null)
+    return default_;
+  else
+    return qs[1];
+}

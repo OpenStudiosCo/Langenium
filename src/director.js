@@ -5,7 +5,7 @@
 var director = function() {
 
 	this.options = {
-		activeScene: 'Epoch Exordium',
+		activeScene: 'Character Test',
 		currentScene: '',
 		hideInterface: true,
 		editMode: false,

@@ -131,18 +131,21 @@ core.prototype.change_mode = function(mode) {
 
 	_load_modules( this.modes[mode].modules, "Core");
 	
-	console.log( '-\t Loading ' + mode + ' template - ( ' + this.modes[mode].template_url + ' ) ' );
+	this.load_template(this.modes[mode].template_url, 'body')	
+}	
+
+core.prototype.load_template = function(template_url, target_element) {
+	console.log( '-\t Loading template - ( ' + template_url + ' ) ' );
 	$.ajax({
-	    url: L.url + this.modes[mode].template_url,
+	    url: L.url + template_url,
 	    type: "GET",
 	    cache: (L.env == 'Dev' || L.env == 'Staging') ? false : true,
 	    success: function(html) {
-	        $("body").html(html);
-	        console.log( '-\t Loaded ' + mode + ' template - ( ' + L.core.modes[mode].template_url + ' ) ' );
+	        $(target_element).html(html);
+	        console.log( '-\t Loaded template - ( ' + template_url + ' ) ' );
 	    }
 	});
-
-}	
+}
 
 core.prototype.query_string = function(key, default_)
 {

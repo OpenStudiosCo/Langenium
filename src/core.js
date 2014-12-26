@@ -131,17 +131,22 @@ core.prototype.change_mode = function(mode) {
 
 	_load_modules( this.modes[mode].modules, "Core");
 	
-	this.load_template(this.modes[mode].template_url, 'body')	
+	this.load_template(this.modes[mode].template_url, 'body', true)	
 }	
 
-core.prototype.load_template = function(template_url, target_element) {
+core.prototype.load_template = function(template_url, target_element, replace_target) {
 	console.log( '-\t Loading template - ( ' + template_url + ' ) ' );
 	$.ajax({
 	    url: L.url + template_url,
 	    type: "GET",
 	    cache: (L.env == 'Dev' || L.env == 'Staging') ? false : true,
 	    success: function(html) {
-	        $(target_element).html(html);
+	    	if (replace_target) {
+	    		$(target_element).html(html);	
+	    	}
+	    	else {
+	    		$(target_element).append(html);	
+	    	}
 	        console.log( '-\t Loaded template - ( ' + template_url + ' ) ' );
 	    }
 	});

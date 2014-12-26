@@ -3,7 +3,7 @@
 */
 
 var app = function () {
-	
+	L.core.load_template('/src/modes/shaders.html', 'head', false)	;
     $('.ui.sidebar').sidebar('attach events', '.launch.button');
 
     $('.ui.dropdown .menu').html('');

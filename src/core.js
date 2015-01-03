@@ -107,8 +107,8 @@ var core = function () {
 			template_url: '/src/modes/editor.html'
 		}
 	};
-	// This variable 'mode' will come from somewhere
 
+	// This variable 'mode' will come from querystring or default
 	this.mode = this.query_string('mode') ? this.query_string('mode') : 'Website';
 	this.change_mode(this.mode);
 

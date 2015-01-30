@@ -4,18 +4,42 @@
 }
 
 .ui.inverted.secondary.pointing.menu .right.menu > .item {
-    padding: 1em;
+    padding: 1.125em;
 }
 
 .ui.inverted.secondary.pointing.menu .right.menu > .mobile.item {
     display: none;
 }
 
+.ui.inverted.menu .header.item {
+	float: left;
+	padding-top: 20px;
+}
+
+.slideshow .slide a {
+	font-size: 2.5em;
+	color: #FFFFFF;
+	text-decoration: none;
+	display: block;
+	margin-bottom: .5em;
+}
+
 .slideshow .slide a.img img {
 	width: 100%;
 	height: 100%;
 	display: block;
-	margin: 0 auto;
+	margin: .5em auto;
+}
+
+.six.wide.column .ui.vertical.item h4 {
+	padding: .5em 0 .25em 0;
+	display: block;
+	clear: both;
+}
+.six.wide.column .ui.vertical.item a {
+	display: block;
+	float: left;
+	margin: 0 .5em .5em 0;
 }
 
 @media only screen and (max-width : 768px) {

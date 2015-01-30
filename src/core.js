@@ -9,7 +9,7 @@ var core = function () {
 		out at runtime.
 
 		Modes:
-			Default
+			Website
 			Editor
 	*/
 	this.modes = {
@@ -25,7 +25,6 @@ var core = function () {
 					name: "Website Defaults",
 					requires: [ "JQuery Cycle" ],
 					files: [
-						{ path: "./src/modes/website.css" },
 						{ path: "./src/modes/website.js", callback:"app.prototype._init" }
 					]
 				}
@@ -99,7 +98,6 @@ var core = function () {
 					name: "Editor Defaults",
 					requires: [ 'three.js', 'threex', 'Scenograph', "Scenograph Modules", "Director", "Director Scenes" ],
 					files: [
-						{ path: "./src/modes/editor.css" },
 						{ path: "./src/modes/editor.js", callback:"app.prototype._init" }
 					]
 				}
@@ -131,7 +129,7 @@ core.prototype.change_mode = function(mode) {
 
 	_load_modules( this.modes[mode].modules, "Core");
 	
-	this.load_template(this.modes[mode].template_url, 'body', true)	
+	//this.load_template(this.modes[mode].template_url, 'body', true)	
 }	
 
 core.prototype.load_template = function(template_url, target_element, replace_target) {

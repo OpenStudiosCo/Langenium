@@ -31,7 +31,6 @@ function _init() {
 			requires: [ 'JQuery' ],
 			files: 	[ 
 						{ path: "./src/vendor/semantic.js" }, 
-						{ path: "./src/vendor/semantic.css" }, 
 				   	] 					
 		},
 		{ 	
@@ -39,7 +38,6 @@ function _init() {
 			requires: [ 'JQuery', 'Semantic UI', "Handlebars" ],
 			files: [ 
 				{ path: "./src/core.js", 	callback: 'core.prototype._init' },
-				{ path: "./src/core.css" }
 			]
 		}
 	];

@@ -45,3 +45,11 @@ body > canvas {
 	position: fixed;
 	z-index: 0;
 }
+
+.slide {
+	display: none;
+}
+
+.slide.cycle-slide.cycle-slide-active {
+	display: block;
+}

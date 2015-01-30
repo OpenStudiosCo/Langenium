@@ -3,7 +3,7 @@
 */
 
 // Boot up the client and populate the L accessor
-function _init() {
+function _init(mode) {
 	
 	// Create the main engine accessor L
 	window.L = {};
@@ -13,8 +13,8 @@ function _init() {
 
 	console.log( '%c', 'line-height: 50px; padding: 30px 120px; background:url("' + L.url + '/res/logo-medium.png") no-repeat left center;' );
 	console.log( '[ Langenium Engine ]' );
-	console.log( '-\t Version: ' + L.version );
-	console.log( '-\t Environment: ' + L.env );
+	console.log( '\t Version: ' + L.version );
+	console.log( '\t Environment: ' + L.env );
 	
 	// Default modules
 	var modules = [
@@ -37,7 +37,7 @@ function _init() {
 			name: "Core",
 			requires: [ 'JQuery', 'Semantic UI', "Handlebars" ],
 			files: [ 
-				{ path: "./src/core.js", 	callback: 'core.prototype._init' },
+				{ path: "./src/core.js", 	callback: 'core.prototype._init', variables: [ mode ] },
 			]
 		}
 	];
@@ -46,15 +46,14 @@ function _init() {
 
 }
 
-function _execute(functionName, context /*, args */) {
+function _execute(functionName, arguments, context ) {
 	// Usage: executeFunctionByName("L.scenograph.director"., window, arguments);
-	var args = [].slice.call(arguments).splice(2);
 	var namespaces = functionName.split(".");
 	var func = namespaces.pop();
 	for(var i = 0; i < namespaces.length; i++) {
 		context = context[namespaces[i]];
 	}
-	return context[func].apply(this, args);
+	return context[func].apply(this, arguments);
 }
 
 function _check_environment () {
@@ -113,7 +112,7 @@ function _load_modules (modules, modules_class) {
 
 	var load_module = function(module, module_idx) {
 		var loaded_module = function() {
-			console.log('-\t ' + (module_idx + 1) + '/' + modules.length + ' : \t [' + module.name + '] finished loading');
+			console.log('\t ' + (module_idx + 1) + '/' + modules.length + ' : \t [' + module.name + '] finished loading');
 			modules_loaded++;
 			if (require_queue.length > 0) {
 				requirement_check(module, module_idx);
@@ -122,11 +121,11 @@ function _load_modules (modules, modules_class) {
 
 		var loaded_files = 0;
 
-		console.log( '-\t ' + (module_idx + 1) + '/' + modules.length + ' : \t [' + module.name + ']' + (module.requires ?  '\t Requires: ' + module.requires.join(', ') : '' ) );
+		console.log( '\t ' + (module_idx + 1) + '/' + modules.length + ' : \t [' + module.name + ']' + (module.requires ?  '\t Requires: ' + module.requires.join(', ') : '' ) );
 		module.files.forEach(function(file){	
-			console.log( '-\t ' + (module_idx + 1) + '/' + modules.length +  ' : \t - Loading ' + file.path );
+			console.log( '\t ' + (module_idx + 1) + '/' + modules.length +  ' : \t - Loading ' + file.path );
 
-			if (file.callback) modules_callbacks.push(file.callback);
+			if (file.callback) modules_callbacks.push(file);
 			// Add a default callback that wraps the normal callback
 			var default_callback = function() {			
 				loaded_files++;				
@@ -139,9 +138,9 @@ function _load_modules (modules, modules_class) {
 					modules_callbacks.sort( function( a, b ) { return a - b });
 					
 					// Fire all the enqueued callbacks
-					modules_callbacks.forEach(function(callback){
-						console.log( '-\t Executing ' + callback );
-						_execute(callback, window);	
+					modules_callbacks.forEach(function(file){
+						console.log( '\t Executing ' + file.callback );
+						_execute(file.callback, file.variables ? file.variables : {}, window );	
 					});
 				
 				}

@@ -2,7 +2,7 @@
 	core.js
 */
 
-var core = function () {
+var core = function (mode) {
 	console.log( '[ Client starting ]' );
 	/*
 		Modes are basically self contained applications within the application that can be swapped 
@@ -107,14 +107,14 @@ var core = function () {
 	};
 
 	// This variable 'mode' will come from querystring or default
-	this.mode = this.query_string('mode') ? this.query_string('mode') : 'Website';
+	this.mode = mode ? mode : 'Website';
 	this.change_mode(this.mode);
 
 	return this;
 };
 
-core.prototype._init = function() {
-	L.core = new core();
+core.prototype._init = function(mode) {
+	L.core = new core(mode);
 }
 
 core.prototype.change_mode = function(mode) {
@@ -125,7 +125,7 @@ core.prototype.change_mode = function(mode) {
 	$('script.Core').remove();
 
 	this.modes[mode].modules.sort( function( a, b ) { return a - b });
-	console.log( '-\t Client Mode: ' + mode );
+	console.log( '\t Client Mode: ' + mode );
 
 	_load_modules( this.modes[mode].modules, "Core");
 	
@@ -133,7 +133,7 @@ core.prototype.change_mode = function(mode) {
 }	
 
 core.prototype.load_template = function(template_url, target_element, replace_target) {
-	console.log( '-\t Loading template - ( ' + template_url + ' ) ' );
+	console.log( '\t Loading template - ( ' + template_url + ' ) ' );
 	$.ajax({
 	    url: L.url + template_url,
 	    type: "GET",
@@ -145,7 +145,7 @@ core.prototype.load_template = function(template_url, target_element, replace_ta
 	    	else {
 	    		$(target_element).append(html);	
 	    	}
-	        console.log( '-\t Loaded template - ( ' + template_url + ' ) ' );
+	        console.log( '\t Loaded template - ( ' + template_url + ' ) ' );
 	    }
 	});
 }

@@ -45,7 +45,9 @@ body > canvas {
 	position: fixed;
 	z-index: 0;
 }
-
+em {
+	font-style: italic;
+}
 .slide {
 	display: none;
 }

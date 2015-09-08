@@ -7,7 +7,7 @@ function _init(mode) {
 	
 	// Create the main engine accessor L
 	window.L = {};
-	L.version = '.5.1-alpha';
+	L.version = '.5.1-1';
 	L.url = 'http://' + location.hostname; // output is http://prefix.langenium.com without a trailing '/'
 	L.env = _check_environment();
 

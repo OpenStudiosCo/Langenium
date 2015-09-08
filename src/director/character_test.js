@@ -154,6 +154,7 @@ character_test.prototype.marker = function(position) {
 character_test.prototype.make_character = function() {
 	var texture = new THREE.ImageUtils.loadTexture( '/res/exordium-male.png' );
 	
+	
 	var spriteMaterial = new THREE.SpriteMaterial( { map: texture, transparent: true, side:THREE.DoubleSide, alphaTest: 0.5 } );
 
 	var characterSprite = new THREE.Sprite(spriteMaterial);

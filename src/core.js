@@ -43,6 +43,7 @@ var core = function (mode) {
 					name: "threex",
 					requires: [ 'three.js' ],
 					files: [
+						{ path: './src/vendor/Projector.js' }, 
 						{ path: './src/vendor/OrbitControls.js' }, 
 						{ path: './src/vendor/threex.keyboardstate.js' }, 
 						{ path: './src/vendor/threex.planets.js' },
@@ -146,12 +147,14 @@ core.prototype.load_template = function(template_url, target_element, replace_ta
 	    		$(target_element).append(html);	
 	    	}
 	        console.log( '\t Loaded template - ( ' + template_url + ' ) ' );
+	        if (L.app.finished_loading){
+	    		L.app.finished_loading();
+	    	}
 	    }
 	});
 }
 
-core.prototype.query_string = function(key, default_)
-{
+core.prototype.query_string = function(key, default_) {
   if (default_==null) default_="";
   key = key.replace(/[\\[]/,"\\\\\\[").replace(/[\\]]/,"\\\\\\]");
   var regex = new RegExp("[\\\\?&]"+key+"=([^&#]*)");

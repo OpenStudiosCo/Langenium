@@ -5,7 +5,7 @@
 var director = function() {
 
 	this.options = {
-		activeScene: 'Character Test',
+		activeScene: 'MMO',
 		currentScene: '',
 		hideInterface: true,
 		editMode: false,

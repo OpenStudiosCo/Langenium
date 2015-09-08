@@ -3,28 +3,32 @@
 */
 
 var app = function () {
-	L.core.load_template('/src/modes/shaders.html', 'head', false)	;
-    $('.ui.sidebar').sidebar('attach events', '.launch.button');
 
-    $('.ui.dropdown .menu').html('');
-    L.director.options.scenes.forEach(function(scene){
-		$('.ui.dropdown .menu').append('<div class="item">' + scene + '</div>')    	
-    });
+	this.finished_loading = function() {
+		$('.ui.sidebar').sidebar('attach events', '.launch.button');
 
-    $('.ui.dropdown').dropdown({
-		onChange: function (value, text) {
-			L.director.options.activeScene = text;
-		}
-    });
-    $('.ui.dropdown').dropdown('set selected',L.director.options.activeScene)
+	    $('.ui.dropdown .menu').html('');
+	    L.director.options.scenes.forEach(function(scene){
+			$('.ui.dropdown .menu').append('<div class="item">' + scene + '</div>')    	
+	    });
 
-    $('.console .menu').slideUp();
+	    $('.ui.dropdown').dropdown({
+			onChange: function (value, text) {
+				L.director.options.activeScene = text;
+			}
+	    });
+	    $('.ui.dropdown').dropdown('set selected',L.director.options.activeScene)
 
-	console.log('[ Editor started ]');
+	    $('.console .menu').slideUp();
 
-	
-	L.scenograph.animate();
+		console.log('[ Editor started ]');
 
+		
+		L.scenograph.animate();	
+	}
+
+	L.core.load_template('/src/modes/shaders.html', 'head', false);
+    
 	return this;
 };
 

@@ -54,7 +54,7 @@ var mmo = function() {
 		side: THREE.DoubleSide
 	} );
 
-	var plane = new THREE.Mesh(new THREE.PlaneGeometry( L.scenograph.M * 4.5, L.scenograph.M * 4.5 , 50, 50 ), water.material);
+	var plane = new THREE.Mesh(new THREE.PlaneBufferGeometry( L.scenograph.M , L.scenograph.M , 50, 50 ), water.material);
 	plane.name = 'Ocean';
 	plane.rotateX( - Math.PI / 2 );
 	plane.add(water);
@@ -62,7 +62,7 @@ var mmo = function() {
 
 	var animation_obj = {
 		animate: function(delta) {
-			L.scenograph.effects.cloud_uniforms.time.value += 0.0025 * L.scenograph.stats.time.delta;
+			L.scenograph.effects.cloud_uniforms.time.value += 0.0025 * delta;
 			water.material.uniforms.time.value +=1.0 / 60.0;
 			water.render();
 		}
@@ -81,51 +81,41 @@ var mmo = function() {
 	L.scenograph.objects.loadObject('/res/models/terrain/mountain/island.js', mountain_cb);
 
 	var ship_cb = function(geometry, materials) {
+		for ( var i = 0; i < materials.length; i ++ ) {
+			var m = materials[ i ];
+			m.morphTargets = true;
+		}
+
 		var mesh = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
+		mesh.name = 'Ship';
 		mesh.scale.set(10,10,10);
-		mesh.position.set(0, 15, 0)
+		mesh.position.set(0, 15, 0);
+		mesh.current_frame = 0;
+		mesh.total_frames = 5;
 		L.scenograph.scene.add(mesh);	
+
 		mesh.add(L.scenograph.camera);
-
-		/*
-		//http://webgl-fire.appspot.com/html/fire.html
-		var firetex = THREE.ImageUtils.loadTexture( "/assets/textures/firetex.png" );
-		//firetex.wrapS = firetex.wrapT = THREE.RepeatWrapping;
-
-		var nzw = THREE.ImageUtils.loadTexture( "/assets/textures/nzw.png" );
-		//nzw.wrapS = nzw.wrapT = THREE.RepeatWrapping;
-
-		var thruster_uniforms = {
-			fireProfile: 	{ type: "t", value: firetex },
-			nzw:			{ type: "t", value: nzw },
-			time: 			{ type: "f", value: 0.0 },
-			eye: 			{ type: "v3", value: new THREE.Vector3(0, 0, 0) }
-		};
-
-		var thruster_material = new THREE.ShaderMaterial({
-			uniforms: thruster_uniforms,
-			vertexShader:   document.getElementById( 'fireVertShader'   ).textContent,
-			fragmentShader: document.getElementById( 'fireFragShader' ).textContent,
-			side: THREE.DoubleSide
-		});
-
-		var thruster = new THREE.Mesh(new THREE.BoxGeometry(4, 4, 4), thruster_material);
-
-		mesh.add(thruster);
-		*/
 
 		var anim_obj = {
 			animate: function(delta) {
 				L.director.mmo.move_ship(mesh);
-					var worldCoordinates = new THREE.Vector3();
-					worldCoordinates.setFromMatrixPosition(L.scenograph.camera.matrixWorld);
-					//thruster_uniforms.eye.value = worldCoordinates;
-					//thruster_uniforms.time.value += delta /1000;
+				
+				if (mesh.current_frame < mesh.total_frames) {
+					mesh.morphTargetInfluences[mesh.current_frame] = 0;
+					mesh.current_frame += 1;
+					mesh.morphTargetInfluences[mesh.current_frame] = 1;
+				}
+				else {
+					mesh.morphTargetInfluences[mesh.current_frame] = 0;
+					mesh.current_frame = 0;
+					mesh.morphTargetInfluences[mesh.current_frame] = 0;
+				}
+				
 			}
 		}
 		L.scenograph.animation_queue.push(anim_obj)
 	}
-	L.scenograph.objects.loadObject('/res/models/ships/mercenary/valiant2.js', ship_cb);
+	L.scenograph.objects.loadObject('/res/models/ships/mercenary/valiant.js', ship_cb);
 	return this;
 }
 

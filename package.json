@@ -1,3 +1,27 @@
-{ "url" : "https://github.com/paulbrzeski/Langenium"
-, "email" : "guru@akashic.space"
+{
+  "name": "Langenium",
+  "version": "0.0.1",
+  "description": "Standalone client for the Langenium codebase",
+  "main": "index.html",
+  "window": {
+    "toolbar": false,
+    "width": 1024
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/paulbrzeski/Langenium"
+  },
+  "keywords": [
+    "webgl",
+    "appjs",
+    "langenium"
+  ],
+  "author": "Paul Brzeski",
+  "license": "GNU-GPL-v3",
+  "bugs": {
+    "url": "https://github.com/paulbrzeski/Langenium/issues"
+  },
+  "devDependencies": {
+    "nw": "~0.12.3"
+  }
 }

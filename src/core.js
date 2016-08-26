@@ -86,12 +86,12 @@ var core = function (mode) {
 					requires: [ "Scenograph", "Director" ],
 					files: [
 						// Note, the startup for these activates the scene :P
-						{ path: "./src/director/character_test.js" },
-						{ path: "./src/director/epochexordium.js" },
-						{ path: "./src/director/mmo.js" },
-						{ path: "./src/director/mmo_title.js"  },
-						{ path: "./src/director/porta.js"  },
-						{ path: "./src/director/sandbox.js"  }
+						{ path: "./src/scenes/character_test.js" },
+						{ path: "./src/scenes/epochexordium.js" },
+						{ path: "./src/scenes/mmo.js" },
+						{ path: "./src/scenes/mmo_title.js"  },
+						{ path: "./src/scenes/porta.js"  },
+						{ path: "./src/scenes/sandbox.js"  }
 
 					]
 				},

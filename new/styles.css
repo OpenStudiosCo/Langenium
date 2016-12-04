@@ -1,0 +1,23 @@
+* {
+  background: rgba(0,0,255,0.05);
+}
+.container {
+  width: auto;
+  max-width: 1920px;
+  float: none;
+  display: block;
+  margin-right: auto;
+  margin-left: auto;
+  padding-left: 0;
+  padding-right: 0;
+}
+.container::after {
+  content: '';
+  display: table;
+  clear: both;
+}
+.row::after {
+  content: '';
+  display: table;
+  clear: both;
+}

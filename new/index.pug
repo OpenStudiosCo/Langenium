@@ -3,4 +3,27 @@ html
   head
     title Langenium 2016 Rebuild
     include scripts.pug
+    link(href='styles.css', rel='stylesheet')
   body
+    .container
+      header
+        h1.logo Langenium
+        nav
+        | Header menu
+        .like_button
+          a(href='#') Like
+      .row
+        .hero Interactive Hero Area
+        .call_to_action
+          ul
+            li
+              a(href='#') Play
+            li
+              a(href='#') Concept Art
+            li
+              a(href='#') Storyline
+            li
+              a(href='#') Github
+      .row
+        .news News
+        .most_popular Most Popular

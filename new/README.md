@@ -10,13 +10,24 @@ So without further a rant, here's what I'm thinking!
 
 Ideas to implement:
 - ReactJS (https://facebook.github.io/react/)
--- Has virtual DOM, could be very valuable for non blocking game logic
--- Has virtual DOM, could be a IO nightmare... need to benchmark @ 60FPS
+  - Has virtual DOM, could be very valuable for non blocking game logic
+  - Has virtual DOM, could be a IO nightmare... need to benchmark @ 60FPS
 - Bring back my Nodes!
--- Node.js application was previously scrapped as multiplayer was put on hold
--- Server application to be restored as "file bitch", to generate files for the client such as CSS/HTML/JS
+  - Node.js application was previously scrapped as multiplayer was put on hold
+- Server application to be restored as "file bitch", to generate files for the client such as CSS/HTML/JS
 - Physics is the language of our soul
+  - Need to implement physics, either by going full Whitestorm or integrating another lib
+- Event and object management
+  - The original idea to hang everything off a global L object was good, but it lacked decent state management/event handling
+  - Rather than being triggered to do stuff directly and locking up IO, the event/object system should be able to watch a queue of commands and adjust itself and push updates out to other queues to update other things.
+- Project planning
+  - Over the years I've stopped and started a lot of trial phases and I need better documentation for me to go back on to check my own findings/examples of work
+  - JIRA/Gantt type stuff is too far, but some rudimentary task planning/milestoning is a good idea. Particularly as part of evaluating new tech for the points above
+
 
 Ideas to scrap:
 - Flat file HTML only (maintenance nightmare)
-- JS based 
+- JS based dependency injection (maintenance nightmare, probably insecure AF)
+- Engine "modes". This was a cool idea but doesn't translate well to device browsers, often causes the website client to freeze initially just to "boot up". Kind of sad :/
+- Inline shader scripts. This heavily polluted the HTML files, need to to include them externally.
+- Scenograph. Sadly this has not worked out. Need to look at either a React based scene builder or something that will hook into the "event system"

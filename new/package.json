@@ -1,0 +1,22 @@
+{
+  "name": "Langenium",
+  "version": "0.0.2",
+  "description": "Langenium Website, Game and Utilities",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/paulbrzeski/Langenium"
+  },
+  "keywords": [
+    "webgl",
+    "appjs",
+    "langenium"
+  ],
+  "author": "Paul Brzeski",
+  "license": "GNU-GPL-v3",
+  "bugs": {
+    "url": "https://github.com/paulbrzeski/Langenium/issues"
+  },
+  "dependencies": {
+    "pug": "^2.0.0-beta6"
+  }
+}

@@ -14,12 +14,18 @@ Ideas to implement:
   - Has virtual DOM, could be a IO nightmare... need to benchmark @ 60FPS
 - Bring back my Nodes!
   - Node.js application was previously scrapped as multiplayer was put on hold
-- Server application to be restored as "file bitch", to generate files for the client such as CSS/HTML/JS
+- Server application to be restored as "file bitch"
+  - Generate files for the client such as CSS/HTML/JS
+  - Build up assets built on files from universe directory (need to think about design<->dev process)
 - Physics is the language of our soul
+  - Simple environmental effects provided by physics give life to scenes
+  - Huge gameplay options are opened up
   - Need to implement physics, either by going full Whitestorm or integrating another lib
 - Event and object management
   - The original idea to hang everything off a global L object was good, but it lacked decent state management/event handling
   - Rather than being triggered to do stuff directly and locking up IO, the event/object system should be able to watch a queue of commands and adjust itself and push updates out to other queues to update other things.
+- Dev Server
+  - Rather than running http-server, a "file bitch" type server should provide HTTP, asset generation and socket.io connectivity (util).
 - Project planning
   - Over the years I've stopped and started a lot of trial phases and I need better documentation for me to go back on to check my own findings/examples of work
   - JIRA/Gantt type stuff is too far, but some rudimentary task planning/milestoning is a good idea. Particularly as part of evaluating new tech for the points above
@@ -31,3 +37,4 @@ Ideas to scrap:
 - Engine "modes". This was a cool idea but doesn't translate well to device browsers, often causes the website client to freeze initially just to "boot up". Kind of sad :/
 - Inline shader scripts. This heavily polluted the HTML files, need to to include them externally.
 - Scenograph. Sadly this has not worked out. Need to look at either a React based scene builder or something that will hook into the "event system"
+- Console logging system. Need nicer solution, probably find a library for it.

@@ -7,7 +7,6 @@ var pug = require('pug')
   , fs = require('fs')
   , stylus = require('stylus')
   , jeet = require('jeet')
-  , axis = require('axis')
   , html = fs.readFileSync('index.pug', 'utf8')
   , styl = fs.readFileSync('styles.styl', 'utf8');
 

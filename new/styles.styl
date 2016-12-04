@@ -7,3 +7,27 @@ debug()
 
 .row 
   clearfix()
+  
+.hero,
+.call_to_action,
+.news,
+.most_popular
+  column(1)
+
+// Tablet.
+@media screen and (min-width: 768px)
+  .news
+    column(3/5)
+
+  .most_popular
+    column(2/5)
+
+// Desktop.
+@media screen and (min-width: 1200px)
+  .hero,
+  .news
+    column(5/7)
+
+  .call_to_action,
+  .most_popular
+    column(2/7)

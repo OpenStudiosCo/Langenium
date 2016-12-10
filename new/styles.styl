@@ -1,24 +1,39 @@
 @import 'node_modules/jeet/jeet'
 
+// Helpers
+
 debug()
 
-.container
-  center(1920px)
+reset-list()
+  ul
+    padding 0
+  li
+    list-style-type none
 
 .row 
   clearfix()
+
+// Layout
+
+.container
+  center(1920px)
   
 .hero,
 .call_to_action,
 .news,
 .most_popular
   column(1)
-  
-.call_to_action
-  li
-    column(1/4)
 
-// Tablet.
+.call_to_action
+  reset-list()
+  li
+    column(1/4)   
+    text-align center
+
+.most_popular
+  reset-list()
+
+// Tablet
 @media screen and (min-width: 768px)
   .news
     column(3/5)
@@ -26,7 +41,7 @@ debug()
   .most_popular
     column(2/5)
 
-// Desktop.
+// Desktop
 @media screen and (min-width: 1200px)
   .hero,
   .news
@@ -38,4 +53,6 @@ debug()
 
   .call_to_action
     li
-      column(1/3)
+      column(1/2)
+      margin 0
+      text-align center

@@ -36,9 +36,9 @@ THREE.Live2DRender = function(renderer, filepath, filenm, scale) {
     this.loadLive2DCompleted = false;
     // True if model initialization is complete...
     this.initLive2DCompleted = false;
-    // WebGL Image型オブジェクトの配列
-    this.loadedImages = [];
     // Array of WebGL Image type objects
+    this.loadedImages = [];
+    // Array of motions
     this.motions = [];
     // Motion management manager
     this.motionMgr = null;
@@ -83,18 +83,18 @@ THREE.Live2DRender = function(renderer, filepath, filenm, scale) {
     this.dragX      = 0;
     this.dragY      = 0;
 
-    // Live2Dの初期化
+    // Initialize Live2D
     Live2D.init();
-    // OpenGLのコンテキストをセット
+    // Set OpenGL context
     Live2D.setGL(this.gl);
-    // Live2Dモデル管理クラスのインスタンス化
+    // Instantiating a Live2D model management class
     this.live2DMgr = new LAppLive2DManager();
-    // Jsonをロード(modelDefをセット)
+    // Load Json (set modelDef)
     this.loadJson();
-    // マウスドラッグの座標設定
+    // Coordinate setting of mouse drag
     this.setMouseView(renderer);
 
-    // マウスドラッグのイベントリスナー
+    // Mouse drag event listener
     document.addEventListener("mousedown", this.mouseEvent.bind(this), false);
     document.addEventListener("mousemove", this.mouseEvent.bind(this), false);
     document.addEventListener("mouseup", this.mouseEvent.bind(this), false);
@@ -102,33 +102,33 @@ THREE.Live2DRender = function(renderer, filepath, filenm, scale) {
 };
 
 /*
- * Live2D描画クラスのファンクション
+ * Function of Live2D rendering class...
  */
 THREE.Live2DRender.prototype = {
 
     /**
-    * WebGLコンテキストを取得・初期化。
-    * Live2Dの初期化、描画ループを開始。
+    * Get / initialize WebGL context.
+    * Initialization of Live2D, start drawing loop.
     */
     initLoop : function()
     {
-        //------------ Live2Dの初期化 ------------
-        // コールバック対策用
+        //------------ Initialize Live2D ------------
+        // For call back measures
         var that = this;
-        // mocファイルからLive2Dモデルのインスタンスを生成
+        // Generate instances of Live2D model from moc file
         this.loadBytes(that.filepath + that.modelDef.model, function(buf){
             that.live2DModel = Live2DModelWebGL.loadModel(buf);
         });
 
-        /********** テクスチャの読み込み **********/
+        /********** Load texture **********/
         var loadCount = 0;
         for(var i = 0; i < that.modelDef.textures.length; i++){
-            (function ( tno ){// 即時関数で i の値を tno に固定する（onerror用)
+            (function ( tno ){// Fix i value to tno with immediate function (for onerror)
                 that.loadedImages[tno] = new Image();
                 that.loadedImages[tno].src = that.filepath + that.modelDef.textures[tno];
                 that.loadedImages[tno].onload = function(){
                     if((++loadCount) == that.modelDef.textures.length) {
-                        that.loadLive2DCompleted = true;//全て読み終わった
+                        that.loadLive2DCompleted = true;//I finished reading everything.
                     }
                 }
                 that.loadedImages[tno].onerror = function() {
@@ -137,39 +137,39 @@ THREE.Live2DRender.prototype = {
             })( i );
         }
 
-        /********** モーションの読み込み **********/
-        var motion_keys = [];   // モーションキー配列
-        var mtn_tag = 0;        // モーションタグ
-        var mtn_num = 0;        // モーションカウント
+        /********** Load motion **********/
+        var motion_keys = [];   // Motion key arrangement
+        var mtn_tag = 0;        // Motion tag
+        var mtn_num = 0;        // Motion count
         // keyを取得
         for(var key in that.modelDef.motions){
-            // moitons配下のキーを取得
+            // Get key under motions
             motion_keys[mtn_tag] = key;
-            // 読み込むモーションファイル数を取得
+            // Get the number of motion files to load
             mtn_num += that.modelDef.motions[motion_keys[mtn_tag]].length;
             mtn_tag++;
         }
-        // モーションタグ分ループ
+        // Motion tag minute loop
         for(var mtnkey in motion_keys){
-            // モーションとサウンドを読み込む(motions配下のタグを読み込む)
+            // Load motion and sound (load tag under motions)
             for(var j = 0; j < that.modelDef.motions[motion_keys[mtnkey]].length; j++){
-                // モーションの数だけロード
+                // Load as many as motion
                 that.loadBytes(that.filepath + that.modelDef.motions[motion_keys[mtnkey]][j].file, function(buf){
                     that.motions.push(Live2DMotion.loadMotion(buf));
                 });
-                // サウンドの数だけロード
+                // Load as many sounds as you want
                 if(that.modelDef.motions[motion_keys[mtnkey]][j].sound == null){
                     that.sounds.push("");
                 }else{
                     that.sounds.push(new L2DSound(that.filepath + that.modelDef.motions[motion_keys[mtnkey]][j].sound));
                 }
-                // フェードイン
+                // Fade-in
                 if(that.modelDef.motions[motion_keys[mtnkey]][j].fade_in == null){
                     that.fadeines.push("");
                 }else{
                     that.fadeines.push(that.modelDef.motions[motion_keys[mtnkey]][j].fade_in);
                 }
-                // フェードアウト
+                // Fade out
                 if(that.modelDef.motions[motion_keys[mtnkey]][j].fade_out == null){
                     that.fadeoutes.push("");
                 }else{
@@ -177,105 +177,108 @@ THREE.Live2DRender.prototype = {
                 }
             }
         }
-        // モーションマネジャーのインスタンス化
+        // Instantiation of motion manager
         that.motionMgr = new L2DMotionManager();
 
-        /********** 表情モーションの読み込み **********/
-        var expression_name = [];   // 表情モーション名の配列
-        var expression_file = [];   // 表情モーションファイル名の配列
+        /********** Loading facial motion **********/
+        var expression_name = [];   // Array of facial motion names
+        var expression_file = [];   // Array of facial motion file names
 
-        // 表情のロード(json内にexpressionsがあるかチェック)
+        // Loading facial expressions (check if there are expressions in json)
         if(that.modelDef.expressions !== void 0){
             for(var i = 0; i < that.modelDef.expressions.length; i++){
-                // 表情モーション名の配列を取得
+                // Obtain an array of facial motion names
                 expression_name[i] = that.modelDef.expressions[i].name;
                 expression_file[i] = that.filepath + that.modelDef.expressions[i].file;
-                // 表情ファイルをロード
+                // Load expression file
                 that.loadExpression(expression_name[i], expression_file[i]);
             }
         }
-        // 表情モーションマネージャーのインスタンス化
+        // Facial expression motion manager instantiation
         that.expressionManager = new L2DMotionManager();
 
-        // ポーズのロード(json内のposeがあるかチェック)
+        // Pose loading (check if there is pose in json)
         if(that.modelDef.pose !== void 0){
             that.loadBytes(that.filepath + that.modelDef.pose, function(buf){
-                // ポースクラスのロード
+                // Loading Force Class
                 that.pose = L2DPose.load(buf);
             });
         }
 
-        // 物理演算のロード(json内のphysicsがあるかチェック)
+        // Load physical operation (check if there is physics in json)
         if(that.modelDef.physics !== void 0){
             that.loadBytes(that.filepath + that.modelDef.physics, function(buf){
-                // 物理演算クラスのロード
+                // Loading a physical operation class
                 that.physics = L2DPhysics.load(buf);
             });
         }
     },
     
     /**
-     * Live2Dのドラッグ座標軸
+     * Drag coordinate axis of Live2D
      */
     setMouseView : function(renderer){
-        // 3Dバッファの初期化
+        // Initialization of 3D buffer
         var width  = renderer.getSize().width;
         var height = renderer.getSize().height;
-        // ビュー行列
+        // View matrix
         var ratio  = height / width;
         var left   = -1.0;
         var right  =  1.0;
         var bottom = -ratio;
         var top    = ratio;
 
-        // ドラッグ用のクラス
+        // Class for dragging
         this.dragMgr = new L2DTargetPoint();
-        // Live2DのView座標クラス
+        // View coordinate class of Live2D
         this.viewMatrix = new L2DViewMatrix();
 
-        // デバイスに対応する画面の範囲。 Xの左端, Xの右端, Yの下端, Yの上端
+        // Scope of the screen corresponding to the device. 
+        // The left end of X, the right end of X, the lower end of Y, the upper end of Y
         this.viewMatrix.setScreenRect(left, right, bottom, top);
-        // デバイスに対応する画面の範囲。 Xの左端, Xの右端, Yの下端, Yの上端
+        // Scope of the screen corresponding to the device. 
+        // The left end of X, the right end of X, the lower end of Y, the upper end of Y
         this.viewMatrix.setMaxScreenRect(-2.0, 2.0, -2.0, 2.0);
         this.viewMatrix.setMaxScale(2.0);
         this.viewMatrix.setMinScale(0.8);
 
-        // Live2Dの座標系クラス
+        // Live2D coordinate system class
         this.projMatrix = new L2DMatrix44();
         this.projMatrix.multScale(1, (width / height));
 
-        // マウス用スクリーン変換行列
+        // Screen transformation matrix for mouse
         this.deviceToScreen = new L2DMatrix44();
         this.deviceToScreen.multTranslate(-width / 2.0, -height / 2.0);
         this.deviceToScreen.multScale(2 / width, -2 / width);
     },
     
     /**
-    * Live2Dの描画
+    * Drawing Live2D
     */
     draw : function()
     {
-        // Live2D初期化
+        // Live2D initialization
         if( ! this.live2DModel || ! this.loadLive2DCompleted )
-            return; //ロードが完了していないので何もしないで返る
+            return; // Since loading is not completed, return without doing anything
 
-        // ロード完了後に初回のみ初期化する
+        // Initialize only the first time after loading
         if( ! this.initLive2DCompleted ){
             this.initLive2DCompleted = true;
 
-            // 画像からWebGLテクスチャを生成し、モデルに登録
+            // Create a WebGL texture from the image and register it in the model
             for( var i = 0; i < this.loadedImages.length; i++ ){
-                //Image型オブジェクトからテクスチャを生成
+                // Generate texture from Image type object
                 var texName = this.createTexture(this.gl, this.loadedImages[i]);
 
-                this.live2DModel.setTexture(i, texName); //モデルにテクスチャをセット
+                this.live2DModel.setTexture(i, texName); // Set texture to model
             }
 
-            // テクスチャの元画像の参照をクリア
+            // Clear reference of original image of texture
             this.loadedImages = null;
 
-            // 表示位置を指定するための行列を定義する
-            var s = this.modelscale / this.live2DModel.getCanvasWidth(); //canvasの横幅を-1..1区間に収める
+            // Define matrix to specify display position
+            var s = this.modelscale / this.live2DModel.getCanvasWidth(); 
+            // Keep the width of the canvas within the range of -1..1
             var matrix4x4 = [
                  s, 0, 0, 0,
                  0,-s, 0, 0,
@@ -285,116 +288,116 @@ THREE.Live2DRender.prototype = {
             this.live2DModel.setMatrix(matrix4x4);
         }
 
-        // アイドルモーション以外の場合（フラグと優先度で判定する）
+        // In cases other than idle motion (judged by flag and priority)
         if(this.motionflg == true && this.motionMgr.getCurrentPriority() == 0){
-            // フェードインの設定
+            // Fade in settings
             this.motions[this.motionnm].setFadeIn(this.fadeines[this.motionnm]);
-            // フェードアウトの設定
+            // Set fade out
             this.motions[this.motionnm].setFadeOut(this.fadeoutes[this.motionnm]);
-            // アイドルモーションよりも優先度を高く再生する
+            // Play a higher priority than idle motion
             this.motionMgr.startMotion(this.motions[this.motionnm], 1);
             this.motionflg = false;
-            // 音声ファイルもあれば再生
+            // Audio files also play
             if(this.sounds[this.motionnm]){
-                // 前回の音声があれば停止する
+                // Stop if there was previous voice
                 if(this.sounds[this.beforesound] != ""){
                     this.sounds[this.beforesound].stop();
                 }
-                // 音声を再生
+                // Play audio
                 this.sounds[this.motionnm].play();
-                // 途中で停止できるように格納する
+                // Store so that it can be stopped halfway
                 this.beforesound = this.motionnm;
             }
         }
 
-        // モーションが終了していたらアイドルモーションの再生
+        // Playing idle motion if motion is over
         if(this.motionMgr.isFinished() && this.motionnm != null){
-            // フェードインの設定
+            // Fade in settings
             this.motions[this.motionnm].setFadeIn(this.fadeines[this.motionnm]);
-            // フェードアウトの設定
+            // Set fade out
             this.motions[this.motionnm].setFadeOut(this.fadeoutes[this.motionnm]);
-            // 優先度は低めでモーション再生
+            // Priority is low and motion playback
             this.motionMgr.startMotion(this.motions[this.motionnm], 0);
-            // 音声ファイルもあれば再生
+            // Audio files also play
             if(this.sounds[this.motionnm]){
-                // 前回の音声があれば停止する
+                // Stop if there was previous voice
                 if(this.sounds[this.beforesound] != ""){
                     this.sounds[this.beforesound].stop();
                 }
-                // 音声を再生
+                // Play audio
                 this.sounds[this.motionnm].play();
-                // 途中で停止できるように格納する
+                // Store so that it can be stopped halfway
                 this.beforesound = this.motionnm;
             }
         }
-        // モーション指定されていない場合は何も再生しない
+        // If motion is not specified, nothing is played back
         if(this.motionnm != null){
-            // モーションパラメータの更新
+            // Update motion parameters
             this.motionMgr.updateParam(this.live2DModel);
         }
 
-        // 表情でパラメータ更新（相対変化）
+        // Parameter update (relative change) with expression
         if(this.expressionManager != null &&
            this.expressions != null &&
            !this.expressionManager.isFinished())
         {
             this.expressionManager.updateParam(this.live2DModel);
         }
-        // ポーズパラメータの更新
+        // Update pause parameter
         if(this.pose != null)this.pose.updateParam(this.live2DModel);
 
-        // 物理演算パラメータの更新
+        // Updating physical operation parameters
         if(this.physics != null)this.physics.updateParam(this.live2DModel);
 
-        // ドラッグ用パラメータの更新
+        // Updating parameters for dragging
         this.dragMgr.update();
         this.dragX = this.dragMgr.getX();
         this.dragY = this.dragMgr.getY();
-        this.live2DModel.setParamFloat("PARAM_ANGLE_X", this.dragX * 30);       // -30から30の値を加える
+        this.live2DModel.setParamFloat("PARAM_ANGLE_X", this.dragX * 30);       // Add a value between -30 and 30
         this.live2DModel.setParamFloat("PARAM_ANGLE_Y", this.dragY * 30);
-        // ドラッグによる体の向きの調整
-        this.live2DModel.setParamFloat("PARAM_BODY_ANGLE_X", this.dragX*10);    // -10から10の値を加える
-        // ドラッグによる目の向きの調整
-        this.live2DModel.setParamFloat("PARAM_EYE_BALL_X", this.dragX);         // -1から1の値を加える
+        // Adjustment of body orientation by dragging
+        this.live2DModel.setParamFloat("PARAM_BODY_ANGLE_X", this.dragX*10);    // Add value from -10 to 10
+        // Adjusting the orientation of eyes by dragging
+        this.live2DModel.setParamFloat("PARAM_EYE_BALL_X", this.dragX);         // Add a value from -1 to 1
         this.live2DModel.setParamFloat("PARAM_EYE_BALL_Y", this.dragY);
-        // キャラクターのパラメータを適当に更新
-        var t = UtSystem.getTimeMSec() * 0.001 * 2 * Math.PI; //1秒ごとに2π(1周期)増える
-        var cycle = 3.0; //パラメータが一周する時間(秒)
-        // 呼吸する
+        // Update character's parameters appropriately
+        var t = UtSystem.getTimeMSec() * 0.001 * 2 * Math.PI; // Increase 2π (1 cycle) every second
+        var cycle = 3.0; // Time (in seconds) the parameter goes round
+        // Breathe
         this.live2DModel.setParamFloat("PARAM_BREATH", 0.5 + 0.5 * Math.sin(t/cycle));
 
-        // Live2Dモデルを更新して描画
-        this.live2DModel.update(); // 現在のパラメータに合わせて頂点等を計算
-        this.live2DModel.draw();    // 描画
+        // Updated Live2D model and rendered
+        this.live2DModel.update(); // Calculate vertices etc. according to the current parameters
+        this.live2DModel.draw();    // Drawing
     },
 
     /**
-     * マウスイベント
+     * Mouse event
      */
     mouseEvent : function(e)
     {
-        // 右クリック制御
+        // Right click control
         e.preventDefault();
-        // マウスダウン時
+        // When mouse is down
        if (e.type == "mousedown") {
-           // 左クリック以外なら処理を抜ける
+           // Leave processing if it is not left click
            if("button" in e && e.button != 0) return;
            this.modelTurnHead(e);
 
-       // マウス移動時
+       // When moving the mouse
        } else if (e.type == "mousemove") {
            this.followPointer(e);
 
-       // マウスアップ時
+       // Mouse up time
        } else if (e.type == "mouseup") {
-           // 左クリック以外なら処理を抜ける
+           // Leave processing if it is not left click
            if("button" in e && e.button != 0) return;
            if (this.drag){
                this.drag = false;
            }
            this.dragMgr.setPoint(0, 0);
 
-       // CANVAS外にマウスがいった時
+       // When a mouse comes outside CANVAS
        } else if (e.type == "mouseout") {
            if (this.drag)
            {
@@ -405,8 +408,8 @@ THREE.Live2DRender.prototype = {
     },
 
     /**
-    * クリックされた方向を向く
-    * タップされた場所に応じてモーションを再生
+    * Point in the clicked direction
+    * Play motion according to the tapped place
     */
     modelTurnHead : function(e)
     {
@@ -420,11 +423,11 @@ THREE.Live2DRender.prototype = {
 
         this.lastMouseX = sx;
         this.lastMouseY = sy;
-        this.dragMgr.setPoint(vx, vy); // その方向を向く
+        this.dragMgr.setPoint(vx, vy); // Facing that direction
     },
 
     /**
-    * マウスを動かした時のイベント
+    * Event when moving mouse
     */
     followPointer : function(e)
     {
@@ -438,30 +441,30 @@ THREE.Live2DRender.prototype = {
         {
             this.lastMouseX = sx;
             this.lastMouseY = sy;
-            this.dragMgr.setPoint(vx, vy); // その方向を向く
+            this.dragMgr.setPoint(vx, vy); // Facing that direction
         }
     },
 
     /**
-    * 論理座標変換したView座標X
+    * The View coordinate X
     */
     transformViewX : function(deviceX)
     {
-        var screenX = this.deviceToScreen.transformX(deviceX);  // 論理座標変換した座標を取得。
-        return this.viewMatrix.invertTransformX(screenX);       // 拡大、縮小、移動後の値。
+        var screenX = this.deviceToScreen.transformX(deviceX);  // Obtain coordinates after logical coordinate transformation.
+        return this.viewMatrix.invertTransformX(screenX);       // The value after enlargement, reduction, and movement.
     },
 
     /**
-    * 論理座標変換したView座標Y
+    * The View coordinate Y
     */
     transformViewY : function(deviceY)
     {
-        var screenY = this.deviceToScreen.transformY(deviceY);  // 論理座標変換した座標を取得。
-        return this.viewMatrix.invertTransformY(screenY);       // 拡大、縮小、移動後の値。
+        var screenY = this.deviceToScreen.transformY(deviceY);  // Obtain coordinates after logical coordinate transformation.
+        return this.viewMatrix.invertTransformY(screenY);       // The value after enlargement, reduction, and movement.
     },
 
     /**
-    * 論理座標変換したScreen座標X
+    * Screen coordinate X after logical coordinate transformation X
     */
     transformScreenX : function(deviceX)
     {
@@ -469,7 +472,7 @@ THREE.Live2DRender.prototype = {
     },
 
     /**
-    * 論理座標変換したScreen座標Y
+    * The Screen coordinate Y
     */
     transformScreenY : function(deviceY)
     {
@@ -477,42 +480,42 @@ THREE.Live2DRender.prototype = {
     },
 
     /**
-    * Image型オブジェクトからテクスチャを生成
+    * Generate texture from Image type object
     */
-    createTexture : function(gl/*WebGLコンテキスト*/, image/*WebGL Image*/)
+    createTexture : function(gl/*WebGL context*/, image/*WebGL Image*/)
     {
-        var texture = gl.createTexture(); //テクスチャオブジェクトを作成する
+        var texture = gl.createTexture(); // Create a texture object
         if ( !texture ){
             console.log("Failed to generate gl texture name.");
             return -1;
         }
 
         if(this.live2DModel.isPremultipliedAlpha() == false) {
-            // 乗算済アルファテクスチャ以外の場合
+            // In cases other than the multiplied alpha texture
             gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);
         }
-        // imageを上下反転
+        // Flip image vertically
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
-        // テクスチャのユニットを指定する
+        // Specify unit of texture
         gl.activeTexture( gl.TEXTURE0 );
-        // テクスチャをバインドする
+        // Bind a texture
         gl.bindTexture( gl.TEXTURE_2D , texture );
-        // テクスチャに画像データを紐付ける
+        // Link image data to texture
         gl.texImage2D( gl.TEXTURE_2D , 0 , gl.RGBA , gl.RGBA , gl.UNSIGNED_BYTE , image);
-        // テクスチャの品質を指定する(対象ピクセルの中心に最も近い点の値)
+        // Specify the quality of the texture (the value of the point closest to the center of the target pixel)
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-        // ミップマップの品質を指定する
+        // Specify the quality of mipmaps
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
-        // ミップマップの生成
+        // Generation of mipmap
         gl.generateMipmap(gl.TEXTURE_2D);
-        // テクスチャのバインド開放
+        // Binding of texture releasing
         gl.bindTexture( gl.TEXTURE_2D , null );
 
         return texture;
     },
 
     /**
-    * ファイルをバイト配列としてロードする
+    * Load file as byte array
     */
     loadBytes : function(path , callback)
     {
@@ -533,7 +536,7 @@ THREE.Live2DRender.prototype = {
     },
 
     /**
-    * Jsonファイルをロードする
+    * Load Json file
     */
     loadJson : function()
     {
@@ -542,9 +545,9 @@ THREE.Live2DRender.prototype = {
         request.open("GET", this.filepath + this.filenm, true);
         request.onreadystatechange = function(){
             if(request.readyState == 4 && request.status == 200){
-                // model.jsonから取得
+                // Acquired from model.json
                 thisRef.modelDef = JSON.parse(request.responseText);
-                // 初期化処理
+                // Initialization processing
                 thisRef.initLoop();
             }
         }
@@ -552,7 +555,7 @@ THREE.Live2DRender.prototype = {
     },
 
     /**
-     * 表情をロードする
+     * Load facial expressions
      */
     loadExpression : function(name, path){
         var thisRef = this;
@@ -563,7 +566,7 @@ THREE.Live2DRender.prototype = {
     },
 
     /**
-     * 表情を設定する
+     * Set facial expression
      */
     setExpression : function(name)
     {
@@ -579,28 +582,28 @@ THREE.Live2DRender.prototype = {
     },
 
     /**
-     * ランダム表情設定する
+     * Set a random expression
      */
     setRandomExpression : function()
     {
-        // ランダム再生する
+        // Random play
         var random = ~~(Math.random() * this.expressions.length);
         var expression = this.expressions[random];
         this.expressionManager.startMotion(expression, false);
     },
 
     /**
-     * モーションを設定する
+     * Set motion
      */
     setMotion : function(name)
     {
         if(this.modelDef == null)return;
 
         var cnt = 0;
-        // ファイル名からファイル番号を取り出す
+        // Retrieve file number from file name
         for(var key in this.modelDef.motions){
             for(var j = 0; j < this.modelDef.motions[key].length; j++){
-                // 余分なパスをカット
+                // Cut an extra path
                 var strfilenm = this.modelDef.motions[key][j].file.split("/");
                 if(name == strfilenm[1]){
                     break;
@@ -613,35 +616,35 @@ THREE.Live2DRender.prototype = {
     },
 
     /**
-     * ランダムモーション再生する
+     * Random motion playback
      */
     setRandomMotion : function()
     {
         if(this.modelDef == null)return;
-        // ランダム再生する
+        // Random play
         this.motionnm = ~~(Math.random() * this.motions.length);
         this.motionflg = true;
     }
 };
 
 /****************************************
-* サウンドクラス
+* Sound class
 ****************************************/
-var L2DSound = function(path /*音声ファイルパス*/) {
+var L2DSound = function(path /*Audio File Path*/) {
     this.snd = document.createElement("audio");
     this.snd.src = path;
 };
 
 L2DSound.prototype = {
     /**
-    * 音声再生
+    * Audio playback
     */
     play : function() {
         this.snd.play();
     },
 
     /**
-    * 音声停止
+    * Audio stop
     */
     stop : function() {
         this.snd.pause();

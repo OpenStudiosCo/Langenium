@@ -21,6 +21,60 @@
   display: table;
   clear: both;
 }
+header h1.logo {
+  float: left;
+  clear: none;
+  text-align: inherit;
+  width: 100%;
+  margin-left: 0%;
+  margin-right: 3%;
+}
+header h1.logo::after {
+  content: '';
+  display: table;
+  clear: both;
+}
+header h1.logo:last-child {
+  margin-right: 0%;
+}
+header nav {
+  float: left;
+  clear: none;
+  text-align: inherit;
+  width: 48.5%;
+  margin-left: 0%;
+  margin-right: 3%;
+}
+header nav::after {
+  content: '';
+  display: table;
+  clear: both;
+}
+header nav:last-child {
+  margin-right: 0%;
+}
+header nav ul {
+  padding: 0;
+}
+header nav li {
+  list-style-type: none;
+}
+header .fb-like {
+  float: left;
+  clear: none;
+  text-align: inherit;
+  width: 48.5%;
+  margin-left: 0%;
+  margin-right: 3%;
+}
+header .fb-like::after {
+  content: '';
+  display: table;
+  clear: both;
+}
+header .fb-like:last-child {
+  margin-right: 0%;
+}
 .hero,
 .call_to_action,
 .news,
@@ -110,6 +164,54 @@
   }
 }
 @media screen and (min-width: 1200px) {
+  header h1.logo {
+    float: left;
+    clear: none;
+    text-align: inherit;
+    width: 14.166666666666664%;
+    margin-left: 0%;
+    margin-right: 3%;
+  }
+  header h1.logo::after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+  header h1.logo:last-child {
+    margin-right: 0%;
+  }
+  header nav {
+    float: left;
+    clear: none;
+    text-align: inherit;
+    width: 74.25%;
+    margin-left: 0%;
+    margin-right: 3%;
+  }
+  header nav::after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+  header nav:last-child {
+    margin-right: 0%;
+  }
+  header .fb-like {
+    float: left;
+    clear: none;
+    text-align: inherit;
+    width: 5.583333333333332%;
+    margin-left: 0%;
+    margin-right: 3%;
+  }
+  header .fb-like::after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+  header .fb-like:last-child {
+    margin-right: 0%;
+  }
   .hero,
   .news {
     float: left;

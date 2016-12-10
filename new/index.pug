@@ -7,10 +7,19 @@ html
   body
     #fb-root
     .container
-      header
-        h1.logo Langenium
+      header.row
+        h1.logo 
+          a(href='/') Langenium
         nav
-        | Header menu
+          ul
+            li
+              a(href='#') About
+            li
+              a(href='#') Status
+            li
+              a(href='#') Gallery
+            li
+              a(href='#') Wiki
         .fb-like(data-href="https://www.facebook.com/Langenium/", data-layout="button_count", data-action="like" data-size="small", data-show-faces="true", data-share="false")
       .row
         .hero 

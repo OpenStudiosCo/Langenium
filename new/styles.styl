@@ -18,6 +18,17 @@ reset-list()
 .container
   center(1920px)
   
+header
+  h1.logo
+    column(1)
+
+  nav
+    column(1/2)
+    reset-list()
+
+  .fb-like
+    column(1/2)
+  
 .hero,
 .call_to_action,
 .news,
@@ -43,6 +54,14 @@ reset-list()
 
 // Desktop
 @media screen and (min-width: 1200px)
+  header
+    h1.logo
+      column(2/12)
+    nav
+      column(9/12)
+    .fb-like
+      column(1/12)
+ 
   .hero,
   .news
     column(5/7)

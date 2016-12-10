@@ -1,0 +1,3 @@
+[submodule "new/vendor/Live2D_ThreeJS"]
+	path = new/vendor/Live2D_ThreeJS
+	url = https://github.com/paulbrzeski/Live2D_ThreeJS.git

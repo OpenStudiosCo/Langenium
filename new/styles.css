@@ -46,6 +46,22 @@
 .most_popular:last-child {
   margin-right: 0%;
 }
+.call_to_action li {
+  float: left;
+  clear: none;
+  text-align: inherit;
+  width: 22.75%;
+  margin-left: 0%;
+  margin-right: 3%;
+}
+.call_to_action li::after {
+  content: '';
+  display: table;
+  clear: both;
+}
+.call_to_action li:last-child {
+  margin-right: 0%;
+}
 @media screen and (min-width: 768px) {
   .news {
     float: left;
@@ -117,6 +133,22 @@
   }
   .call_to_action:last-child,
   .most_popular:last-child {
+    margin-right: 0%;
+  }
+  .call_to_action li {
+    float: left;
+    clear: none;
+    text-align: inherit;
+    width: 31.33333333333333%;
+    margin-left: 0%;
+    margin-right: 3%;
+  }
+  .call_to_action li::after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+  .call_to_action li:last-child {
     margin-right: 0%;
   }
 }

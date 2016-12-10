@@ -5,17 +5,18 @@ html
     include scripts.pug
     link(href='styles.css', rel='stylesheet')
   body
+    #fb-root
     .container
       header
         h1.logo Langenium
         nav
         | Header menu
-        .like_button
-          a(href='#') Like
+        .fb-like(data-href="https://www.facebook.com/Langenium/", data-layout="button_count", data-action="like" data-size="small", data-show-faces="true", data-share="false")
       .row
-        .hero Interactive Hero Area
+        .hero 
+          h1 Interactive Hero Area
         .call_to_action
-          ul
+          ul.row
             li
               a(href='#') Play
             li
@@ -25,5 +26,24 @@ html
             li
               a(href='#') Github
       .row
-        .news News
-        .most_popular Most Popular
+        .news
+          h2 News
+          include:markdown news.md
+        .most_popular
+          h2 Most Popular
+          ul
+            li
+              h3 
+                a(href='#') Bacon ipsum dolor amet frankfurter boudin
+            li
+              h3 
+                a(href='#') Ham hock capicola sausage
+            li
+              h3 
+                a(href='#') Tri-tip tail meatball chicken
+            li
+              h3 
+                a(href='#') Hamburger cow alcatra strip steak drumstick
+            li
+              h3 
+                a(href='#') Capicola sirloin corned beef pancetta rump pork chop 

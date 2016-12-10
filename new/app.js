@@ -10,8 +10,24 @@ var pug = require('pug')
   , html = fs.readFileSync('index.pug', 'utf8')
   , styl = fs.readFileSync('styles.styl', 'utf8');
 
-writeFile('index.html', pug.compile(html, { filename: html, pretty: true })());
-writeFile('styles.css', stylus(styl).use(jeet()).render());
+var filesToWrite = [
+  {
+    name: 'index.html',
+    content: pug.compile(html, { filename: html, pretty: true })()
+  },
+  {
+    name: 'styles.css',
+    content: stylus(styl).use(jeet()).render()
+  }
+];
+
+writeFiles(filesToWrite);
+
+function writeFiles (files) {
+  files.forEach(function(file) {
+    writeFile(file.name, file.content);
+  });
+}
 
 function writeFile (fileName, fileContents) {
   fs.writeFile(fileName, fileContents, function(err) {
@@ -19,6 +35,6 @@ function writeFile (fileName, fileContents) {
       return console.log(err);
     }
 
-    console.log('The file ' + fileName + ' was saved!');
+    console.log('Wrote ' + fileName);
   });
 }

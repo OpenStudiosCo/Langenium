@@ -2,6 +2,7 @@
   "name": "Langenium",
   "version": "0.0.2",
   "description": "Langenium Website, Game and Utilities",
+  "main": "app.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/paulbrzeski/Langenium"
@@ -17,8 +18,9 @@
     "url": "https://github.com/paulbrzeski/Langenium/issues"
   },
   "dependencies": {
-    "pug": "^2.0.0-beta6",
     "jeet": "^7.1.0",
+    "jstransformer-markdown": "^1.1.1",
+    "pug": "^2.0.0-beta6",
     "stylus": "^0.54.5"
   }
 }

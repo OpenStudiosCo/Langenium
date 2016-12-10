@@ -1,4 +1,4 @@
-@import 'jeet'
+@import 'node_modules/jeet/jeet'
 
 debug()
 
@@ -13,6 +13,10 @@ debug()
 .news,
 .most_popular
   column(1)
+  
+.call_to_action
+  li
+    column(1/4)
 
 // Tablet.
 @media screen and (min-width: 768px)
@@ -31,3 +35,7 @@ debug()
   .call_to_action,
   .most_popular
     column(2/7)
+
+  .call_to_action
+    li
+      column(1/3)

@@ -1,3 +1,6 @@
 [submodule "new/vendor/Live2D_ThreeJS"]
 	path = new/vendor/Live2D_ThreeJS
 	url = https://github.com/paulbrzeski/Live2D_ThreeJS.git
+[submodule "universe"]
+	path = universe
+	url = https://github.com/paulbrzeski/Langenium-Universe.git

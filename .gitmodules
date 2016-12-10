@@ -4,3 +4,12 @@
 [submodule "universe"]
 	path = universe
 	url = https://github.com/paulbrzeski/Langenium-Universe.git
+[submodule "new/vendor/jquery"]
+	path = new/vendor/jquery
+	url = https://github.com/jquery/jquery.git
+[submodule "new/vendor/Live2D-WebGL-SDK"]
+	path = new/vendor/Live2D-WebGL-SDK
+	url = https://github.com/paulbrzeski/Live2D-WebGL-SDK.git
+[submodule "new/vendor/threejs"]
+	path = new/vendor/threejs
+	url = https://github.com/mrdoob/three.js.git

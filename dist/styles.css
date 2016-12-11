@@ -95,6 +95,10 @@ header .fb-like::after {
 header .fb-like:last-child {
   margin-right: 0%;
 }
+.hero canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
 .hero,
 .call_to_action,
 .news,

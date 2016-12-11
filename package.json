@@ -1,12 +1,8 @@
 {
   "name": "Langenium",
-  "version": "0.0.1",
-  "description": "Standalone client for the Langenium codebase",
-  "main": "index.html",
-  "window": {
-    "toolbar": false,
-    "width": 1024
-  },
+  "version": "0.0.2",
+  "description": "Langenium Website, Game and Utilities",
+  "main": "app.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/paulbrzeski/Langenium"
@@ -16,14 +12,23 @@
     "appjs",
     "langenium"
   ],
+  "scripts": {
+    "build": "pug pages -P -o . -b . && stylus styles -o dist",
+    "css": "stylus styles -o dist -w",
+    "pug": "pug pages -P -o . -b . -w",
+    "dev": "http-server -p 80 -c-1 ."
+  },
   "author": "Paul Brzeski",
   "license": "GNU-GPL-v3",
   "bugs": {
     "url": "https://github.com/paulbrzeski/Langenium/issues"
   },
+  "dependencies": {
+    "jeet": "^7.1.0",
+    "pug": "^2.0.0-beta6",
+    "stylus": "^0.54.5"
+  },
   "devDependencies": {
-    "babel-cli": "^6.18.0",
-    "babel-preset-latest": "^6.16.0",
-    "nw": "~0.12.3"
+    "jstransformer-markdown": "^1.1.1"
   }
 }

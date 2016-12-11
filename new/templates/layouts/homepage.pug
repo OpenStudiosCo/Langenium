@@ -1,20 +1,6 @@
 #fb-root
 .container
-  header.row
-    h1.logo 
-      a(href='/', title='Langenium')
-        img(src='logo.png')
-    nav
-      ul
-        li
-          a(href='#') About
-        li
-          a(href='#') Status
-        li
-          a(href='#') Gallery
-        li
-          a(href='#') Wiki
-    .fb-like(data-href="https://www.facebook.com/Langenium/", data-layout="button_count", data-action="like" data-size="small", data-show-faces="true", data-share="false")
+  include /templates/partials/header.pug
   .row
     .hero 
       h1 Interactive Hero Area

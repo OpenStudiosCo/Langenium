@@ -1,11 +1,6 @@
-.row::after {
-  content: '';
-  display: table;
-  clear: both;
-}
-.container {
+.row {
   width: auto;
-  max-width: 1920px;
+  max-width: 1200px;
   float: none;
   display: block;
   margin-right: auto;
@@ -13,10 +8,31 @@
   padding-left: 0;
   padding-right: 0;
 }
-.container::after {
+.row::after {
   content: '';
   display: table;
   clear: both;
+}
+.row::after {
+  content: '';
+  display: table;
+  clear: both;
+}
+header.row {
+  max-width: none;
+}
+html,
+body {
+  font-family: sans-serif;
+  background-color: #000;
+  color: #fff;
+}
+a {
+  color: #1af;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
 }
 header h1.logo {
   float: left;

@@ -14,3 +14,6 @@
 	path = new/vendor/threejs
 	url = https://github.com/mrdoob/three.js.git
 	ignore = dirty
+[submodule "universe"]
+	path = universe
+	url = https://github.com/paulbrzeski/Langenium-Universe.git

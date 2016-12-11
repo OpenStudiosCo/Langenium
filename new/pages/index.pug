@@ -1,59 +1,6 @@
 doctype html
 html
-  head
-    title Langenium 2016 Rebuild
-    link(href='dist/styles.css', rel='stylesheet')
+  include /templates/partials/head.pug
   body
-    #fb-root
-    .container
-      header.row
-        h1.logo 
-          a(href='/', title='Langenium')
-            img(src='logo.png')
-        nav
-          ul
-            li
-              a(href='#') About
-            li
-              a(href='#') Status
-            li
-              a(href='#') Gallery
-            li
-              a(href='#') Wiki
-        .fb-like(data-href="https://www.facebook.com/Langenium/", data-layout="button_count", data-action="like" data-size="small", data-show-faces="true", data-share="false")
-      .row
-        .hero 
-          h1 Interactive Hero Area
-        .call_to_action
-          ul.row
-            li
-              a(href='#') Play
-            li
-              a(href='#') Concept Art
-            li
-              a(href='#') Storyline
-            li
-              a(href='#') Github
-      .row
-        .news
-          h2 News
-          include news.md
-        .most_popular
-          h2 Most Popular
-          ul
-            li
-              h3 
-                a(href='#') Bacon ipsum dolor amet frankfurter boudin
-            li
-              h3 
-                a(href='#') Ham hock capicola sausage
-            li
-              h3 
-                a(href='#') Tri-tip tail meatball chicken
-            li
-              h3 
-                a(href='#') Hamburger cow alcatra strip steak drumstick
-            li
-              h3 
-                a(href='#') Capicola sirloin corned beef pancetta rump pork chop
-  include ../templates/vendor_scripts.pug
+    include /templates/layouts/homepage.pug
+  include /templates/partials/vendor_scripts.pug

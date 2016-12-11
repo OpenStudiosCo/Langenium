@@ -13,7 +13,8 @@
     "langenium"
   ],
   "scripts": {
-    "build": "pug pages -P -o ."
+    "build": "pug pages -P -o . -b . && stylus styles -o dist",
+    "dev": "pug pages -P -o . -b . -w && stylus styles -o dist -w"
   },
   "author": "Paul Brzeski",
   "license": "GNU-GPL-v3",

@@ -12,6 +12,9 @@
     "appjs",
     "langenium"
   ],
+  "scripts": {
+    "build": "pug pages -P -o ."
+  },
   "author": "Paul Brzeski",
   "license": "GNU-GPL-v3",
   "bugs": {
@@ -19,11 +22,10 @@
   },
   "dependencies": {
     "jeet": "^7.1.0",
-    "jstransformer-markdown": "^1.1.1",
     "pug": "^2.0.0-beta6",
     "stylus": "^0.54.5"
   },
   "devDependencies": {
-    "pugjs-brunch": "^2.8.5"
+    "jstransformer-markdown": "^1.1.1"
   }
 }

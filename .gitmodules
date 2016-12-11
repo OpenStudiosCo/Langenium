@@ -1,17 +1,17 @@
-[submodule "new/vendor/Live2D_ThreeJS"]
-	path = new/vendor/Live2D_ThreeJS
+[submodule "vendor/Live2D_ThreeJS"]
+	path = vendor/Live2D_ThreeJS
 	url = https://github.com/paulbrzeski/Live2D_ThreeJS.git
 	ignore = dirty
-[submodule "new/vendor/jquery"]
-	path = new/vendor/jquery
+[submodule "vendor/jquery"]
+	path = vendor/jquery
 	url = https://github.com/jquery/jquery.git
 	ignore = dirty
-[submodule "new/vendor/Live2D-WebGL-SDK"]
-	path = new/vendor/Live2D-WebGL-SDK
+[submodule "vendor/Live2D-WebGL-SDK"]
+	path = vendor/Live2D-WebGL-SDK
 	url = https://github.com/paulbrzeski/Live2D-WebGL-SDK.git
 	ignore = dirty
-[submodule "new/vendor/threejs"]
-	path = new/vendor/threejs
+[submodule "vendor/threejs"]
+	path = vendor/threejs
 	url = https://github.com/mrdoob/three.js.git
 	ignore = dirty
 [submodule "universe"]

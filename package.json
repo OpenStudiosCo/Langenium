@@ -16,6 +16,7 @@
     "build": "pug pages -P -o . -b . && stylus styles -o dist",
     "css": "stylus styles -o dist -w",
     "pug": "pug pages -P -o . -b . -w",
+    "rollup": "rollup -c -w",
     "dev": "http-server -p 80 -c-1 ."
   },
   "author": "Paul Brzeski",
@@ -29,6 +30,10 @@
     "stylus": "^0.54.5"
   },
   "devDependencies": {
-    "jstransformer-markdown": "^1.1.1"
+    "jstransformer-markdown": "^1.1.1",
+    "rollup": "^0.36.4",
+    "rollup-plugin-buble": "^0.14.0",
+    "rollup-plugin-uglify": "^1.0.1",
+    "rollup-watch": "^2.5.0"
   }
 }

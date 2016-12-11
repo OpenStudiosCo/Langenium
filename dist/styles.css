@@ -1,6 +1,3 @@
-* {
-  background: rgba(0,0,255,0.05);
-}
 .row::after {
   content: '';
   display: table;

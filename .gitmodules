@@ -17,3 +17,4 @@
 [submodule "universe"]
 	path = universe
 	url = https://github.com/paulbrzeski/Langenium-Universe.git
+	ignore = dirty

@@ -1,8 +1,8 @@
 import uglify from 'rollup-plugin-uglify';
 
 export default {
-  moduleName: 'vendor',
   context: 'window',
+  plugins: [ uglify() ],
   entry: 'src/vendor.js',
   dest: 'dist/vendor.js'
 };

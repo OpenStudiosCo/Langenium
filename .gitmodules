@@ -2,10 +2,6 @@
 	path = new/vendor/Live2D_ThreeJS
 	url = https://github.com/paulbrzeski/Live2D_ThreeJS.git
 	ignore = dirty
-[submodule "universe"]
-	path = universe
-	url = https://github.com/paulbrzeski/Langenium-Universe.git
-	ignore = dirty
 [submodule "new/vendor/jquery"]
 	path = new/vendor/jquery
 	url = https://github.com/jquery/jquery.git

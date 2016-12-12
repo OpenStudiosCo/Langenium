@@ -17,7 +17,8 @@
     "css": "stylus styles -o dist -w",
     "pug": "pug pages -P -o . -b . -w",
     "rollup": "rollup -c -w",
-    "dev": "http-server -p 80 -c-1 ."
+    "dev": "sudo http-server -p 80 -c-1 .",
+    "bash-dev": "npm run css & npm run pug & npm run rollup & npm run dev"
   },
   "author": "Paul Brzeski",
   "license": "GNU-GPL-v3",
@@ -31,6 +32,7 @@
   },
   "devDependencies": {
     "jstransformer-markdown": "^1.1.1",
+    "pug-cli": "^1.0.0-alpha6",
     "rollup": "^0.36.4",
     "rollup-plugin-buble": "^0.14.0",
     "rollup-plugin-uglify": "^1.0.1",

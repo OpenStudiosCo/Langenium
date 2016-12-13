@@ -24,8 +24,8 @@ var offRenderTarget1 = new THREE.WebGLRenderTarget(
 );
 
 // Live2Dモデルパス
-var MODEL_PATH1 = "/vendor/Live2D-WebGL-SDK/sample/sampleApp1/assets/live2d/Epsilon2.1/";
-var MODEL_JSON1 = "Epsilon2.1.model.json";
+var MODEL_PATH1 = "/universe/art/concept-art/Canon/Character%20models/";
+var MODEL_JSON1 = "jack.model.json";
 // Live2Dモデル生成
 var live2dmodel1 = new THREE.Live2DRender( renderer, MODEL_PATH1, MODEL_JSON1 );
 
@@ -40,16 +40,24 @@ plane.position.set(0, 0, -1);
 scene.add( plane );
 
 // ライト
-var directionalLight = new THREE.DirectionalLight('#aaaaff', 1);
+var directionalLight = new THREE.DirectionalLight('#11aaff', 1);
 directionalLight.position.set(0, 10, 10);
 scene.add(directionalLight);
 
+var directionalLight2 = new THREE.DirectionalLight('#11aaff', 1);
+directionalLight2.position.set(0, 10, -10);
+scene.add(directionalLight2);
+
 // キューブ
-var geometry1 = new THREE.BoxGeometry(1,1,1);
-var material1 = new THREE.MeshPhongMaterial( { color: '#ffffff' } );
+var geometry1 = new THREE.BoxGeometry(10,10,10);
+var material1 = new THREE.MeshLambertMaterial( { color: 0xCCCCCC, side: THREE.BackSide } );
 var cube = new THREE.Mesh( geometry1, material1 );
 cube.position.set(0, -1, 0);
 scene.add( cube );
+
+var cube2 = new THREE.Mesh( geometry1, material1 );
+cube2.position.set(0, -1, 0);
+scene.add( cube2 );
 
 // リサイズへの対応
 window.addEventListener('resize', function(){
@@ -73,13 +81,13 @@ document.addEventListener('mousedown', function(e){
     switch(e.button){
         case 0: // 左クリック
             // ランダムモーション指定
-            live2dmodel1.setRandomMotion();
+           // live2dmodel1.setRandomMotion();
             // 特定のモーション指定は、setMotion("ファイル名")を使う。
             // 例：live2dmodel.setMotion("Epsilon2.1_m_08.mtn");
             break;
         case 2: // 右クリック
             // ランダム表情切り替え
-            live2dmodel1.setRandomExpression();
+            //live2dmodel1.setRandomExpression();
             // 特定の表情切り替えは、setExpression("ファイル名")を使う。
             // 例：live2dmodel.setExpression("f04.exp.json");
             break;            
@@ -90,13 +98,21 @@ document.addEventListener('mousedown', function(e){
 /**
  * 描画処理
  */
+var time = 0;
 var render = function () {
+    time += 1;
     requestAnimationFrame( render );
     cube.rotation.x += 0.01;
-    cube.rotation.y += 0.01;
+    cube.rotation.z += 0.01;
+    //cube.rotation.y += 0.01;
     
+    cube2.rotation.x -= 0.01;
+    cube2.rotation.z -= 0.01;
+    //cube2.rotation.y -= 0.01;
+
     // オフスクリーン切り替え描画
     renderer.render( offScene1, camera, offRenderTarget1 );
+
     // オフスクリーンにLive2D描画
     live2dmodel1.draw();
     // resetGLStateしないとgl.useProgramが呼ばれず以下のエラーになる

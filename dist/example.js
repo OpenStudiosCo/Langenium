@@ -63,24 +63,30 @@ plane2.position.set(1, 0, -1);
 scene.add( plane2 );
 
 // ライト
-var directionalLight = new THREE.DirectionalLight('#11aaff', 1);
+var directionalLight = new THREE.DirectionalLight('#FFFFFF', 1);
 directionalLight.position.set(0, 10, 10);
 scene.add(directionalLight);
 
-var directionalLight2 = new THREE.DirectionalLight('#11aaff', 1);
+var directionalLight2 = new THREE.DirectionalLight('#FFFFFF', 1);
 directionalLight2.position.set(0, 10, -10);
 scene.add(directionalLight2);
 
 // キューブ
-var geometry1 = new THREE.TorusKnotGeometry( 25, 5, 25, 10 );
-var material1 = new THREE.MeshLambertMaterial( { color: 0xCCCCCC, side: THREE.BackSide } );
+var geometry1 = new THREE.BoxGeometry(20,20,20);
+var material1 = new THREE.MeshLambertMaterial( { color: 0xFFFFFF, side: THREE.BackSide } );
 var cube = new THREE.Mesh( geometry1, material1 );
-cube.position.set(0, -1, 0);
+cube.position.set(0, -1, -10);
 scene.add( cube );
 
 var cube2 = new THREE.Mesh( geometry1, material1 );
-cube2.position.set(0, -1, 0);
+cube2.position.set(0, -1, -10);
 scene.add( cube2 );
+
+
+var material2 = new THREE.MeshLambertMaterial( { color: 0x11CCFF } );
+var sphere = new THREE.Mesh(new THREE.SphereGeometry(5, 20, 10), material2);
+sphere.position.set(0, -1, -10);
+scene.add(sphere);
 
 // リサイズへの対応
 window.addEventListener('resize', function(){
@@ -127,14 +133,16 @@ var render = function () {
     requestAnimationFrame( render );
 
     var timer = Date.now() * 0.001;    
-    cube.position.x = ( Math.cos( timer ) * 30 );
-    cube.position.z = ( Math.sin( timer ) * 30 );
+    cube.position.x = ( Math.cos( timer ) * 10 );
+    cube.position.y = ( Math.sin( timer ) * 10 );
     cube.rotateX(Math.sin(timer) / 100);
     cube.rotateZ(Math.sin(timer) / 100);
-    cube2.position.x = ( Math.cos( -timer ) * 20 );
-    cube2.position.z = ( Math.sin( -timer ) * 20 );
+    cube2.position.x = ( Math.cos( -timer ) * 10 );
+    cube2.position.y = ( Math.sin( -timer ) * 10 );
     cube2.rotateX(Math.sin(-timer) / 100);
     cube2.rotateZ(Math.sin(-timer) / 100);
+
+    sphere.position.x = ( Math.cos( -timer ) * 10 );
 
     // オフスクリーン切り替え描画
     renderer.render( offScene1, camera, offRenderTarget1 );

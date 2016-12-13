@@ -13,6 +13,7 @@ document.getElementsByClassName( 'hero' )[0].appendChild( renderer.domElement );
 
 // オフスクリーン用(Live2Dを描画)
 var offScene1 = new THREE.Scene();
+var offScene2 = new THREE.Scene();
 var offRenderTarget1 = new THREE.WebGLRenderTarget(
     window.innerWidth,
     window.innerHeight,
@@ -23,11 +24,24 @@ var offRenderTarget1 = new THREE.WebGLRenderTarget(
     }
 );
 
+var offRenderTarget2 = new THREE.WebGLRenderTarget(
+    window.innerWidth,
+    window.innerHeight,
+    {
+        minFilter: THREE.LinearFilter,
+        magFilter: THREE.NearestFilter,
+        format: THREE.RGBAFormat
+    }
+);
+
 // Live2Dモデルパス
-var MODEL_PATH1 = "/universe/art/concept-art/Canon/Character%20models/";
+var MODEL_PATH1 = "/old/src/vendor/live2d-sdk/sample/jack/assets/jack/";
 var MODEL_JSON1 = "jack.model.json";
+var MODEL_JSON2 = "jack-back.model.json";
+
 // Live2Dモデル生成
 var live2dmodel1 = new THREE.Live2DRender( renderer, MODEL_PATH1, MODEL_JSON1 );
+var live2dmodel2 = new THREE.Live2DRender( renderer, MODEL_PATH1, MODEL_JSON2 );
 
 // オフスクリーンを描画するPlane生成
 var geometry = new THREE.PlaneGeometry( 6, 6, 1, 1 );
@@ -36,8 +50,17 @@ var material = new THREE.MeshBasicMaterial( { map:offRenderTarget1.texture } );
 var plane = new THREE.Mesh( geometry, material );
 // この1行がないと透過部分が抜けない
 plane.material.transparent = true;
-plane.position.set(0, 0, -1);
+plane.position.set(-1, 0, -1);
 scene.add( plane );
+
+// レンダーテクスチャをテクスチャにする
+var geometry2 = new THREE.PlaneGeometry( 6, 6, 1, 1 );
+var material2 = new THREE.MeshBasicMaterial( { map:offRenderTarget2.texture } );
+var plane2 = new THREE.Mesh( geometry2, material2 );
+// この1行がないと透過部分が抜けない
+plane2.material.transparent = true;
+plane2.position.set(1, 0, -1);
+scene.add( plane2 );
 
 // ライト
 var directionalLight = new THREE.DirectionalLight('#11aaff', 1);
@@ -49,7 +72,7 @@ directionalLight2.position.set(0, 10, -10);
 scene.add(directionalLight2);
 
 // キューブ
-var geometry1 = new THREE.BoxGeometry(10,10,10);
+var geometry1 = new THREE.TorusKnotGeometry( 25, 5, 25, 10 );
 var material1 = new THREE.MeshLambertMaterial( { color: 0xCCCCCC, side: THREE.BackSide } );
 var cube = new THREE.Mesh( geometry1, material1 );
 cube.position.set(0, -1, 0);
@@ -64,8 +87,10 @@ window.addEventListener('resize', function(){
     renderer.setSize( window.innerWidth, window.innerHeight );
     // オフスクリーンのレンダーターゲットもリサイズ
     offRenderTarget1.setSize( window.innerWidth, window.innerHeight );
+    offRenderTarget2.setSize( window.innerWidth, window.innerHeight );
     // マウスドラッグ座標もリサイズ
     live2dmodel1.setMouseView(renderer);
+    live2dmodel2.setMouseView(renderer);
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
 }, false);
@@ -98,23 +123,27 @@ document.addEventListener('mousedown', function(e){
 /**
  * 描画処理
  */
-var time = 0;
 var render = function () {
-    time += 1;
     requestAnimationFrame( render );
-    cube.rotation.x += 0.01;
-    cube.rotation.z += 0.01;
-    //cube.rotation.y += 0.01;
-    
-    cube2.rotation.x -= 0.01;
-    cube2.rotation.z -= 0.01;
-    //cube2.rotation.y -= 0.01;
+
+    var timer = Date.now() * 0.001;    
+    cube.position.x = ( Math.cos( timer ) * 30 );
+    cube.position.z = ( Math.sin( timer ) * 30 );
+    cube.rotateX(Math.sin(timer) / 100);
+    cube.rotateZ(Math.sin(timer) / 100);
+    cube2.position.x = ( Math.cos( -timer ) * 20 );
+    cube2.position.z = ( Math.sin( -timer ) * 20 );
+    cube2.rotateX(Math.sin(-timer) / 100);
+    cube2.rotateZ(Math.sin(-timer) / 100);
 
     // オフスクリーン切り替え描画
     renderer.render( offScene1, camera, offRenderTarget1 );
-
-    // オフスクリーンにLive2D描画
+    
     live2dmodel1.draw();
+
+    renderer.render( offScene2, camera, offRenderTarget2 );
+
+    live2dmodel2.draw();
     // resetGLStateしないとgl.useProgramが呼ばれず以下のエラーになる
     // [error]location is not from current program
     renderer.resetGLState();

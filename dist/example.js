@@ -1,116 +1,109 @@
-var container;
-var camera, scene, renderer;
-var mesh, group1, group2, group3, light;
-var mouseX = 0, mouseY = 0;
-var windowHalfX = window.innerWidth / 2;
-var windowHalfY = window.innerHeight / 2;
-init();
-animate();
-function init() {
-  container = document.getElementsByClassName( 'hero' )[0];
-  camera = new THREE.PerspectiveCamera( 20, window.innerWidth / window.innerHeight, 1, 10000 );
-  camera.position.z = 1800;
-  scene = new THREE.Scene();
-  light = new THREE.DirectionalLight( 0xffffff );
-  light.position.set( 0, 0, 1 );
-  scene.add( light );
-  // shadow
-  var canvas = document.createElement( 'canvas' );
-  canvas.width = 128;
-  canvas.height = 128;
-  var context = canvas.getContext( '2d' );
-  var gradient = context.createRadialGradient( canvas.width / 2, canvas.height / 2, 0, canvas.width / 2, canvas.height / 2, canvas.width / 2 );
-  gradient.addColorStop( 0.1, 'rgba(45,45,45,1)' );
-  gradient.addColorStop( 1, 'rgba(0,0,0,0)' );
-  context.fillStyle = gradient;
-  context.fillRect( 0, 0, canvas.width, canvas.height );
-  var shadowTexture = new THREE.Texture( canvas );
-  shadowTexture.needsUpdate = true;
-  var shadowMaterial = new THREE.MeshBasicMaterial( { map: shadowTexture } );
-  var shadowGeo = new THREE.PlaneBufferGeometry( 300, 300, 1, 1 );
-  mesh = new THREE.Mesh( shadowGeo, shadowMaterial );
-  mesh.position.y = - 250;
-  mesh.rotation.x = - Math.PI / 2;
-  scene.add( mesh );
-  mesh = new THREE.Mesh( shadowGeo, shadowMaterial );
-  mesh.position.y = - 250;
-  mesh.position.x = - 400;
-  mesh.rotation.x = - Math.PI / 2;
-  scene.add( mesh );
-  mesh = new THREE.Mesh( shadowGeo, shadowMaterial );
-  mesh.position.y = - 250;
-  mesh.position.x = 400;
-  mesh.rotation.x = - Math.PI / 2;
-  scene.add( mesh );
-  var faceIndices = [ 'a', 'b', 'c' ];
-  var color, f, f2, f3, p, vertexIndex,
-    radius = 200,
-    geometry  = new THREE.IcosahedronGeometry( radius, 1 ),
-    geometry2 = new THREE.IcosahedronGeometry( radius, 1 ),
-    geometry3 = new THREE.IcosahedronGeometry( radius, 1 );
-  for ( var i = 0; i < geometry.faces.length; i ++ ) {
-    f  = geometry.faces[ i ];
-    f2 = geometry2.faces[ i ];
-    f3 = geometry3.faces[ i ];
-    for( var j = 0; j < 3; j++ ) {
-      vertexIndex = f[ faceIndices[ j ] ];
-      p = geometry.vertices[ vertexIndex ];
-      color = new THREE.Color( 0xffffff );
-      color.setHSL( ( p.y / radius + 1 ) / 2, 1.0, 0.5 );
-      f.vertexColors[ j ] = color;
-      color = new THREE.Color( 0xffffff );
-      color.setHSL( 0.0, ( p.y / radius + 1 ) / 2, 0.5 );
-      f2.vertexColors[ j ] = color;
-      color = new THREE.Color( 0xffffff );
-      color.setHSL( 0.125 * vertexIndex/geometry.vertices.length, 1.0, 0.5 );
-      f3.vertexColors[ j ] = color;
-    }
-  }
-  var materials = [
-    new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.FlatShading, vertexColors: THREE.VertexColors, shininess: 0 } ),
-    new THREE.MeshBasicMaterial( { color: 0x000000, shading: THREE.FlatShading, wireframe: true, transparent: true } )
-  ];
-  group1 = THREE.SceneUtils.createMultiMaterialObject( geometry, materials );
-  group1.position.x = -400;
-  group1.rotation.x = -1.87;
-  scene.add( group1 );
-  group2 = THREE.SceneUtils.createMultiMaterialObject( geometry2, materials );
-  group2.position.x = 400;
-  group2.rotation.x = 0;
-  scene.add( group2 );
-  group3 = THREE.SceneUtils.createMultiMaterialObject( geometry3, materials );
-  group3.position.x = 0;
-  group3.rotation.x = 0;
-  scene.add( group3 );
-  renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
-  renderer.setClearColor( 0x000000, 0 );
-  renderer.setPixelRatio( window.devicePixelRatio );
-  renderer.setSize( window.innerWidth, window.innerHeight );
-  container.appendChild( renderer.domElement );
-  document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-  //
-  window.addEventListener( 'resize', onWindowResize, false );
-}
-function onWindowResize() {
-  windowHalfX = window.innerWidth / 2;
-  windowHalfY = window.innerHeight / 2;
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize( window.innerWidth, window.innerHeight );
-}
-function onDocumentMouseMove( event ) {
-  mouseX = ( event.clientX - windowHalfX );
-  mouseY = ( event.clientY - windowHalfY );
-}
-//
-function animate() {
-  requestAnimationFrame( animate );
-  render();
+// シーン生成
+var scene = new THREE.Scene();
+// カメラ生成
+var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
+camera.position.z = 5;
 
-}
-function render() {
-  camera.position.x += ( mouseX - camera.position.x ) * 0.05;
-  camera.position.y += ( - mouseY - camera.position.y ) * 0.05;
-  camera.lookAt( scene.position );
-  renderer.render( scene, camera );
-}
+// レンダラー生成
+var renderer = new THREE.WebGLRenderer();
+// レンダラーのサイズ指定
+renderer.setSize( window.innerWidth, window.innerHeight );
+// DOMを追加
+document.getElementsByClassName( 'hero' )[0].appendChild( renderer.domElement );
+
+// オフスクリーン用(Live2Dを描画)
+var offScene1 = new THREE.Scene();
+var offRenderTarget1 = new THREE.WebGLRenderTarget(
+    window.innerWidth,
+    window.innerHeight,
+    {
+        minFilter: THREE.LinearFilter,
+        magFilter: THREE.NearestFilter,
+        format: THREE.RGBAFormat
+    }
+);
+
+// Live2Dモデルパス
+var MODEL_PATH1 = "/vendor/Live2D-WebGL-SDK/sample/sampleApp1/assets/live2d/Epsilon2.1/";
+var MODEL_JSON1 = "Epsilon2.1.model.json";
+// Live2Dモデル生成
+var live2dmodel1 = new THREE.Live2DRender( renderer, MODEL_PATH1, MODEL_JSON1 );
+
+// オフスクリーンを描画するPlane生成
+var geometry = new THREE.PlaneGeometry( 6, 6, 1, 1 );
+// レンダーテクスチャをテクスチャにする
+var material = new THREE.MeshBasicMaterial( { map:offRenderTarget1.texture } );
+var plane = new THREE.Mesh( geometry, material );
+// この1行がないと透過部分が抜けない
+plane.material.transparent = true;
+plane.position.set(0, 0, -1);
+scene.add( plane );
+
+// ライト
+var directionalLight = new THREE.DirectionalLight('#aaaaff', 1);
+directionalLight.position.set(0, 10, 10);
+scene.add(directionalLight);
+
+// キューブ
+var geometry1 = new THREE.BoxGeometry(1,1,1);
+var material1 = new THREE.MeshPhongMaterial( { color: '#ffffff' } );
+var cube = new THREE.Mesh( geometry1, material1 );
+cube.position.set(0, -1, 0);
+scene.add( cube );
+
+// リサイズへの対応
+window.addEventListener('resize', function(){
+    renderer.setSize( window.innerWidth, window.innerHeight );
+    // オフスクリーンのレンダーターゲットもリサイズ
+    offRenderTarget1.setSize( window.innerWidth, window.innerHeight );
+    // マウスドラッグ座標もリサイズ
+    live2dmodel1.setMouseView(renderer);
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+}, false);
+
+// コンテキストメニューの表示を阻止
+document.addEventListener('contextmenu', function(e){
+    // 右クリックの挙動を阻止する
+    e.preventDefault();    
+}, false);
+
+// マウスクリック処理
+document.addEventListener('mousedown', function(e){
+    switch(e.button){
+        case 0: // 左クリック
+            // ランダムモーション指定
+            live2dmodel1.setRandomMotion();
+            // 特定のモーション指定は、setMotion("ファイル名")を使う。
+            // 例：live2dmodel.setMotion("Epsilon2.1_m_08.mtn");
+            break;
+        case 2: // 右クリック
+            // ランダム表情切り替え
+            live2dmodel1.setRandomExpression();
+            // 特定の表情切り替えは、setExpression("ファイル名")を使う。
+            // 例：live2dmodel.setExpression("f04.exp.json");
+            break;            
+    }
+});
+
+
+/**
+ * 描画処理
+ */
+var render = function () {
+    requestAnimationFrame( render );
+    cube.rotation.x += 0.01;
+    cube.rotation.y += 0.01;
+    
+    // オフスクリーン切り替え描画
+    renderer.render( offScene1, camera, offRenderTarget1 );
+    // オフスクリーンにLive2D描画
+    live2dmodel1.draw();
+    // resetGLStateしないとgl.useProgramが呼ばれず以下のエラーになる
+    // [error]location is not from current program
+    renderer.resetGLState();
+    // Mainシーンで描画
+    renderer.render( scene, camera );
+};
+
+render();

@@ -17,7 +17,9 @@
     "css": "stylus styles -o dist -w",
     "pug": "pug pages -P -o . -b . -w",
     "rollup": "rollup -c -w",
-    "dev": "sudo http-server -p 80 -c-1 .",
+    "vendor": "rollup -c rollup.vendor.config.js -w",
+    "dev-osx": "sudo http-server -p 80 -c-1 .",
+    "dev": "http-server -p 80 -c-1 .",
     "bash-dev": "npm run css & npm run pug & npm run rollup & npm run dev"
   },
   "author": "Paul Brzeski",

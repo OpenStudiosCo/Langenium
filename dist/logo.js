@@ -4,7 +4,7 @@ var logo_scene = new THREE.Scene();
 var logo_camera = new THREE.PerspectiveCamera( 45, document.getElementsByClassName( 'logo' )[0].offsetWidth/document.getElementsByClassName( 'logo' )[0].offsetHeight, 0.1, 100000 );
 logo_camera.position.z = 2300;
 
-// レンダラー生成
+// レンダラー生
 var logo_renderer = new THREE.WebGLRenderer();
 // レンダラーのサイズ指定
 logo_renderer.setSize( 

@@ -35,7 +35,7 @@ var offRenderTarget2 = new THREE.WebGLRenderTarget(
 );
 
 // Live2Dモデルパス
-var MODEL_PATH1 = "/old/src/vendor/live2d-sdk/sample/jack/assets/jack/";
+var MODEL_PATH1 = "universe/art/concept-art/Canon/Character%20models";
 var MODEL_JSON1 = "jack.model.json";
 var MODEL_JSON2 = "jack-back.model.json";
 

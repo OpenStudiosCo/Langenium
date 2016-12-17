@@ -99,7 +99,7 @@ plane3.material.transparent = true;
 plane3.position.set(-3, 0, -1);
 scene.add( plane3 );
 
-// レンダーテクスチャをテクスチャにする
+// レンダーテクスチャをテクスチャに
 var geometry4 = new THREE.PlaneGeometry( 6, 6, 1, 1 );
 var material4 = new THREE.MeshBasicMaterial( { map:offRenderTarget4.texture, side: THREE.DoubleSide } );
 material4.map.offset.x = 0.2;

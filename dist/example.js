@@ -91,11 +91,10 @@ plane2.position.set(1, 0, -1);
 scene.add( plane2 );
 
 var material3 = new THREE.SpriteMaterial( { map:offRenderTarget3.texture, side: THREE.DoubleSide, alphaTest: 0.5  } );
-material3.map.offset.x = 0.2;
 var plane3 = new THREE.Sprite( material3 );
 plane3.scale.set(6,6);
 plane3.material.transparent = true;
-plane3.position.set(-2, 0, -1);
+plane3.position.set(-3, 0, -1);
 scene.add( plane3 );
 
 var material4 = new THREE.SpriteMaterial( { map:offRenderTarget4.texture, side: THREE.DoubleSide, alphaTest: 0.5  } );

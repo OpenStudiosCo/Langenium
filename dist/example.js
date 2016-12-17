@@ -80,21 +80,18 @@ var material = new THREE.SpriteMaterial( { map:offRenderTarget1.texture, side: T
 var plane = new THREE.Sprite( material );
 plane.scale.set(6,6);
 plane.material.transparent = true;
-plane.position.set(-1, 0, -1);
 scene.add( plane );
 
 var material2 = new THREE.SpriteMaterial( { map:offRenderTarget2.texture, side: THREE.DoubleSide, alphaTest: 0.5  } );
 var plane2 = new THREE.Sprite( material2 );
 plane2.scale.set(6,6);
 plane2.material.transparent = true;
-plane2.position.set(1, 0, -1);
 scene.add( plane2 );
 
 var material3 = new THREE.SpriteMaterial( { map:offRenderTarget3.texture, side: THREE.DoubleSide, alphaTest: 0.5  } );
 var plane3 = new THREE.Sprite( material3 );
 plane3.scale.set(6,6);
 plane3.material.transparent = true;
-plane3.position.set(-3, 0, -1);
 scene.add( plane3 );
 
 var material4 = new THREE.SpriteMaterial( { map:offRenderTarget4.texture, side: THREE.DoubleSide, alphaTest: 0.5  } );
@@ -103,8 +100,12 @@ material4.map.offset.set(1, 0);
 var plane4 = new THREE.Sprite( material4 );
 plane4.scale.set(-6,-6);
 plane4.material.transparent = true;
-plane4.position.set(3, 0, -1);
 scene.add( plane4 );
+
+var origin = new THREE.Vector3(0,3,-1);
+var arrow = new THREE.ArrowHelper(new THREE.Vector3(0,0,2), origin, 2, 0xFFCC00);
+
+scene.add(arrow);
 
 // ライト
 var directionalLight = new THREE.DirectionalLight('#FFFFFF', 1);
@@ -189,7 +190,43 @@ var render = function () {
 
     live2dmodel4.draw();
 
-    
+    var camera_vector = new THREE.Vector3();
+    camera_vector.setFromMatrixPosition( camera.matrixWorld );
+
+    var diff = new THREE.Vector3().subVectors(plane.position, camera_vector).normalize();
+ 
+    if (diff.z < 0.0 && 
+        Math.abs(diff.x) < Math.abs(diff.z)) {
+        // front
+        plane.visible = true;
+        plane2.visible = false;
+        plane3.visible = false;
+        plane4.visible = false;
+    }
+    if (diff.x > 0 &&
+        Math.abs(diff.x) > Math.abs(diff.z)) {
+        // right
+        plane.visible = false;
+        plane2.visible = false;
+        plane3.visible = false;
+        plane4.visible = true;
+    }
+    if (diff.x < 0 &&
+        Math.abs(diff.x) > Math.abs(diff.z)) {
+        // left
+        plane.visible = false;
+        plane2.visible = false;
+        plane3.visible = true;
+        plane4.visible = false;
+    }
+    if (diff.z > 0.0 && 
+        Math.abs(diff.x) < Math.abs(diff.z)) {
+        // back
+        plane.visible = false;
+        plane2.visible = true;
+        plane3.visible = false;
+        plane4.visible = false;
+    }
     // resetGLStateしないとgl.useProgramが呼ばれず以下のエラーになる
     // [error]location is not from current program
     renderer.resetGLState();

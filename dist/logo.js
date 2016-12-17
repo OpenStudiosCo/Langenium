@@ -1,8 +1,8 @@
 // シーン生成
 var logo_scene = new THREE.Scene();
 // カメラ生成
-var logo_camera = new THREE.PerspectiveCamera( 45, document.getElementsByClassName( 'logo' )[0].offsetWidth/document.getElementsByClassName( 'logo' )[0].offsetHeight, 0.1, 100000 );
-logo_camera.position.z = 2300;
+var logo_camera = new THREE.PerspectiveCamera( 35, document.getElementsByClassName( 'logo' )[0].offsetWidth/document.getElementsByClassName( 'logo' )[0].offsetHeight, 0.1, 100000 );
+logo_camera.position.z = 2800;
 
 // レンダラー生
 var logo_renderer = new THREE.WebGLRenderer();
@@ -60,7 +60,7 @@ var logo_cb = function(geometry, materials) {
   geometry.uvsNeedUpdate = true;
   mesh = new THREE.Mesh(geometry, new THREE.MultiMaterial(materials));
   mesh.scale.set(2000,2000,2000);
-  mesh.position.set(0,250,0);
+  mesh.position.set(0,300,0);
   mesh.rotateX( Math.PI / 2 );
   logo_scene.add(mesh);     
 }
@@ -76,7 +76,7 @@ groundMirror = new THREE.Mirror( logo_renderer, logo_camera, { clipBias: 0.003, 
 var mirrorMesh = new THREE.Mesh( planeGeo, groundMirror.material );
 mirrorMesh.add( groundMirror );
 mirrorMesh.rotateX( - Math.PI / 2 );
-mirrorMesh.position.set(0, -200,0);
+mirrorMesh.position.set(0, -180,0);
 logo_scene.add( mirrorMesh );
 
 var vignette_geo = new THREE.PlaneGeometry( 6000,6000 );
@@ -85,7 +85,7 @@ var canvas1 = document.createElement('canvas');
 var context1 = canvas1.getContext('2d');
 var my_gradient=context1.createLinearGradient(0,0,0,170);
 my_gradient.addColorStop(0.2, 'rgba(0,0,0,0)');
-my_gradient.addColorStop(0.6,  'rgba(0,0,0,1)');
+my_gradient.addColorStop(0.7,  'rgba(0,0,0,1)');
 context1.fillStyle=my_gradient;
 context1.fillRect(0,0,canvas1.width,canvas1.height);
   
@@ -98,7 +98,7 @@ material1.transparent = true;
 
 var vignette = new THREE.Mesh(vignette_geo, material1)
 vignette.rotateX( - Math.PI / 2 );
-vignette.position.set(0,-150, 1500);
+vignette.position.set(0,-120, 1500);
 logo_scene.add(vignette);
 // リサイズへの対応
 window.addEventListener('resize', function(){

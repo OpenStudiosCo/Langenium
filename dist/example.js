@@ -104,7 +104,6 @@ var geometry4 = new THREE.PlaneGeometry( 6, 6, 1, 1 );
 var material4 = new THREE.MeshBasicMaterial( { map:offRenderTarget4.texture, side: THREE.DoubleSide } );
 material4.map.offset.x = 0.2;
 var plane4 = new THREE.Mesh( geometry4, material4 );
-// この1行がないと透過部分が抜けない
 plane4.material.transparent = true;
 plane4.position.set(1.8, 0, -1);
 plane4.rotation.y = Math.PI;

@@ -120,20 +120,35 @@ var directionalLight2 = new THREE.DirectionalLight('#FFFFFF', 1);
 directionalLight2.position.set(0, 10, -10);
 scene.add(directionalLight2);
 
-var material2 = new THREE.MeshLambertMaterial( { color: 0x11CCFF } );
+var material2 = new THREE.MeshLambertMaterial( { color: 0x11CCFF, transparent: true, opacity: 0.5 } );
 var sphere = new THREE.Mesh(new THREE.SphereGeometry(5, 20, 10), material2);
 sphere.position.set(0, -1, -10);
 scene.add(sphere);
 
-var hero_planeGeo = new THREE.PlaneGeometry( 60,60 );
-// MIRROR planes
-hero_groundMirror = new THREE.Mirror( renderer, camera, { clipBias: 0.003, textureWidth: 600, textureHeight: 600, color: 0x444444 } );
+var waterNormals = new THREE.TextureLoader().load('/vendor/ocean/assets/img/waternormals.jpg');
+waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping; 
 
-var hero_mirror = new THREE.Mesh( hero_planeGeo, hero_groundMirror.material );
-hero_mirror.add( hero_groundMirror );
-hero_mirror.rotateX( - Math.PI / 2 );
-hero_mirror.position.set(0, -3,0);
-scene.add( hero_mirror );
+// Create the water effect
+var ms_Water = new THREE.Water(renderer, camera, scene, {
+    textureWidth: 256,
+    textureHeight: 256,
+    waterNormals: waterNormals,
+    alpha:  1.0,
+    sunDirection: directionalLight.position.normalize(),
+    sunColor: 0xffffff,
+    waterColor: 0x11aaFF,
+    betaVersion: 0,
+    side: THREE.DoubleSide
+});
+var aMeshMirror = new THREE.Mesh(
+    new THREE.PlaneBufferGeometry(20, 20, 10, 10), 
+    this.ms_Water.material
+);
+aMeshMirror.add(this.ms_Water);
+aMeshMirror.rotation.x = - Math.PI * 0.5;
+aMeshMirror.position.set(0, -3, 0);
+
+scene.add(aMeshMirror);
 
 // リサイズへの対応
 window.addEventListener('resize', function(){
@@ -187,6 +202,8 @@ var render = function () {
 
     sphere.position.x = ( Math.cos( -timer ) * 10 );
     sphere.position.y = ( Math.sin( -timer ) * 10 );
+
+    ms_Water.material.uniforms.time.value += 1.0 / 60.0;
 
     plane.lookAt(camera.position);
     plane2.lookAt(camera.position);
@@ -249,13 +266,14 @@ var render = function () {
     }
 
     
+    ms_Water.render();
     // resetGLStateしないとgl.useProgramが呼ばれず以下のエラーになる
     // [error]location is not from current program
     renderer.resetGLState();
 
     controls.update(); 
+
     // Mainシーンで描画
-    hero_groundMirror.render();
     renderer.render( scene, camera );
 };
 

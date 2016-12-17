@@ -76,43 +76,35 @@ var live2dmodel2 = new THREE.Live2DRender( renderer, MODEL_PATH1, MODEL_JSON2 );
 var live2dmodel3 = new THREE.Live2DRender( renderer, MODEL_PATH1, MODEL_JSON3 );
 var live2dmodel4 = new THREE.Live2DRender( renderer, MODEL_PATH1, MODEL_JSON4 );
 
-// オフスクリーンを描画するPlane生成
-var geometry = new THREE.PlaneGeometry( 6, 6, 1, 1 );
-// レンダーテクスチャをテクスチャにする
-var material = new THREE.MeshBasicMaterial( { map:offRenderTarget1.texture, side: THREE.DoubleSide, alphaTest: 0.5  } );
-var plane = new THREE.Mesh( geometry, material );
-// この1行がないと透過部分が抜けない
+var material = new THREE.SpriteMaterial( { map:offRenderTarget1.texture, side: THREE.DoubleSide, alphaTest: 0.5  } );
+var plane = new THREE.Sprite( material );
+plane.scale.set(6,6);
 plane.material.transparent = true;
 plane.position.set(-1, 0, -1);
 scene.add( plane );
 
-// レンダーテクスチャをテクスチャにする
-var geometry2 = new THREE.PlaneGeometry( 6, 6, 1, 1 );
-var material2 = new THREE.MeshBasicMaterial( { map:offRenderTarget2.texture, side: THREE.DoubleSide, alphaTest: 0.5  } );
-var plane2 = new THREE.Mesh( geometry2, material2 );
-// この1行がないと透過部分が抜けない
+var material2 = new THREE.SpriteMaterial( { map:offRenderTarget2.texture, side: THREE.DoubleSide, alphaTest: 0.5  } );
+var plane2 = new THREE.Sprite( material2 );
+plane2.scale.set(6,6);
 plane2.material.transparent = true;
 plane2.position.set(1, 0, -1);
 scene.add( plane2 );
 
-// レンダーテクスチャをテクスチャにする
-var geometry3 = new THREE.PlaneGeometry( 6, 6, 1, 1 );
-var material3 = new THREE.MeshBasicMaterial( { map:offRenderTarget3.texture, side: THREE.DoubleSide, alphaTest: 0.5  } );
+var material3 = new THREE.SpriteMaterial( { map:offRenderTarget3.texture, side: THREE.DoubleSide, alphaTest: 0.5  } );
 material3.map.offset.x = 0.2;
-var plane3 = new THREE.Mesh( geometry3, material3 );
-// この1行がないと透過部分が抜けない
+var plane3 = new THREE.Sprite( material3 );
+plane3.scale.set(6,6);
 plane3.material.transparent = true;
-plane3.position.set(-3, 0, -1);
+plane3.position.set(-2, 0, -1);
 scene.add( plane3 );
 
-// レンダーテクスチャをテクスチャに
-var geometry4 = new THREE.PlaneGeometry( 6, 6, 1, 1 );
-var material4 = new THREE.MeshBasicMaterial( { map:offRenderTarget4.texture, side: THREE.DoubleSide, alphaTest: 0.5  } );
-material4.map.offset.x = 0.2;
-var plane4 = new THREE.Mesh( geometry4, material4 );
+var material4 = new THREE.SpriteMaterial( { map:offRenderTarget4.texture, side: THREE.DoubleSide, alphaTest: 0.5  } );
+material4.map.repeat.set(-1, 1);
+material4.map.offset.set(1, 0);
+var plane4 = new THREE.Sprite( material4 );
+plane4.scale.set(-6,-6);
 plane4.material.transparent = true;
-plane4.position.set(1.8, 0, -1);
-plane4.rotation.y = Math.PI;
+plane4.position.set(3, 0, -1);
 scene.add( plane4 );
 
 // ライト
@@ -180,12 +172,6 @@ var render = function () {
     var timer = Date.now() * 0.001;    
 
     sphere.position.x = ( Math.cos( -timer ) * 10 );
-
-    plane.lookAt(camera.position);
-    plane2.lookAt(camera.position);
-    plane3.lookAt(camera.position);
-    plane4.lookAt(camera.position);
-    plane4.rotation.y += Math.PI;
 
     // オフスクリーン切り替え描画
     renderer.render( offScene1, camera, offRenderTarget1 );

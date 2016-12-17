@@ -7,8 +7,7 @@
   <body>
     <div id="fb-root"></div>
     <div class="container">
-      <header class="row">
-        <h1 class="logo"> <a href="/" title="Langenium"><img src="/logo.png"></a></h1>
+      <header class="row"><a class="logo" href="/" title="Langenium"><img src="/logo.png"></a>
         <nav>
           <ul>
             <li><a href="/games">Games</a></li>
@@ -124,9 +123,9 @@ void main()
 
   // diffuse light
 
-  vec3 vLightWeighting = vec3( -0.001 );
+  vec3 vLightWeighting = vec3( -0.01 );
 
-  vec4 lDirection = viewMatrix * vec4( normalize( vec3( 0.0, 1.0, 1.0 ) ), 0.0 );
+  vec4 lDirection = viewMatrix * vec4( normalize( vec3( 0.0, -1.0, 1.0 ) ), 0.0 );
   float directionalLightWeighting = dot( normal, normalize( lDirection.xyz ) ) * 0.15 + 0.85;
   vLightWeighting += vec3( 1.0 ) * directionalLightWeighting;
 
@@ -140,7 +139,7 @@ void main()
   if ( dirDotNormalHalf >= 0.0 )
     dirSpecularWeight = ( 1.0 - n ) * pow( dirDotNormalHalf, 5.0 );
 
-  vLightWeighting += vec3( 0.5, 0.5, 1.5 ) * dirSpecularWeight * n * 6.0;
+  vLightWeighting += vec3( 0.5, 0.5, 1.5 ) * dirSpecularWeight * n * 12.0;
 
   gl_FragColor *= vec4( vLightWeighting, 1.0 ); //
 }

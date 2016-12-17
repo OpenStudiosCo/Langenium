@@ -15,12 +15,6 @@ logo_renderer.setSize(
 document.getElementsByClassName( 'logo' )[0].innerHTML = '';
 document.getElementsByClassName( 'logo' )[0].appendChild( logo_renderer.domElement );
 
-logo_controls = new THREE.OrbitControls( logo_camera, logo_renderer.domElement );
-//controls.addEventListener( 'change', render ); // add this only if there is no animation loop (requestAnimationFrame)
-logo_controls.enableDamping = true;
-logo_controls.dampingFactor = 0.25;
-logo_controls.enableZoom = true;
-
 var loader = new THREE.JSONLoader();
 
 var noiseTexture3 = new THREE.TextureLoader().load( "/old/res/textures/noise3.jpg" );
@@ -77,7 +71,7 @@ loader.load('/old/res/models/langenium-logo.js', function(geometry, materials) {
 
 var planeGeo = new THREE.PlaneGeometry( 6000,6000 );
 // MIRROR planes
-groundMirror = new THREE.Mirror( logo_renderer, logo_camera, { clipBias: 0.003, textureWidth: window.innerWidth, textureHeight: window.innerHeight, color: 0x777777 } );
+groundMirror = new THREE.Mirror( logo_renderer, logo_camera, { clipBias: 0.003, textureWidth: 600, textureHeight: 600, color: 0x777777 } );
 
 var mirrorMesh = new THREE.Mesh( planeGeo, groundMirror.material );
 mirrorMesh.add( groundMirror );
@@ -121,7 +115,6 @@ window.addEventListener('resize', function(){
 var logo_render = function () {
   requestAnimationFrame( logo_render );
   logo_water_uniforms.time.value += .0005;
-  logo_controls.update(); 
   groundMirror.render();
   logo_renderer.render( logo_scene, logo_camera );
 };

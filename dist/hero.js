@@ -76,29 +76,33 @@ var live2dmodel2 = new THREE.Live2DRender( renderer, MODEL_PATH1, MODEL_JSON2 );
 var live2dmodel3 = new THREE.Live2DRender( renderer, MODEL_PATH1, MODEL_JSON3 );
 var live2dmodel4 = new THREE.Live2DRender( renderer, MODEL_PATH1, MODEL_JSON4 );
 
-var material = new THREE.SpriteMaterial( { map:offRenderTarget1.texture, side: THREE.DoubleSide, alphaTest: 0.5  } );
-var plane = new THREE.Sprite( material );
-plane.scale.set(6,6);
+var geometry = new THREE.PlaneGeometry(6,6,1,1);
+var material = new THREE.MeshBasicMaterial( { map:offRenderTarget1.texture, side: THREE.DoubleSide, alphaTest: 0.5  } );
+var plane = new THREE.Mesh( geometry, material );
+//plane.scale.set(6,6);
 plane.material.transparent = true;
 scene.add( plane );
 
-var material2 = new THREE.SpriteMaterial( { map:offRenderTarget2.texture, side: THREE.DoubleSide, alphaTest: 0.5  } );
-var plane2 = new THREE.Sprite( material2 );
-plane2.scale.set(6,6);
+var geometry2 = new THREE.PlaneGeometry(6,6,1,1);
+var material2 = new THREE.MeshBasicMaterial( { map:offRenderTarget2.texture, side: THREE.DoubleSide, alphaTest: 0.5  } );
+var plane2 = new THREE.Mesh( geometry2, material2 );
+//plane2.scale.set(6,6);
 plane2.material.transparent = true;
 scene.add( plane2 );
 
-var material3 = new THREE.SpriteMaterial( { map:offRenderTarget3.texture, side: THREE.DoubleSide, alphaTest: 0.5  } );
-var plane3 = new THREE.Sprite( material3 );
-plane3.scale.set(6,6);
+var geometry3 = new THREE.PlaneGeometry(6,6,1,1);
+var material3 = new THREE.MeshBasicMaterial( { map:offRenderTarget3.texture, side: THREE.DoubleSide, alphaTest: 0.5  } );
+var plane3 = new THREE.Mesh( geometry3, material3 );
+//plane3.scale.set(6,6);
 plane3.material.transparent = true;
 scene.add( plane3 );
 
-var material4 = new THREE.SpriteMaterial( { map:offRenderTarget4.texture, side: THREE.DoubleSide, alphaTest: 0.5  } );
+var geometry4 = new THREE.PlaneGeometry(6,6,1,1);
+var material4 = new THREE.MeshBasicMaterial( { map:offRenderTarget4.texture, side: THREE.DoubleSide, alphaTest: 0.5  } );
 material4.map.repeat.set(-1, 1);
 material4.map.offset.set(1, 0);
-var plane4 = new THREE.Sprite( material4 );
-plane4.scale.set(-6,-6);
+var plane4 = new THREE.Mesh( geometry4, material4 );
+//plane4.scale.set(-6,-6);
 plane4.material.transparent = true;
 scene.add( plane4 );
 
@@ -120,6 +124,16 @@ var material2 = new THREE.MeshLambertMaterial( { color: 0x11CCFF } );
 var sphere = new THREE.Mesh(new THREE.SphereGeometry(5, 20, 10), material2);
 sphere.position.set(0, -1, -10);
 scene.add(sphere);
+
+var hero_planeGeo = new THREE.PlaneGeometry( 60,60 );
+// MIRROR planes
+hero_groundMirror = new THREE.Mirror( renderer, camera, { clipBias: 0.003, textureWidth: 600, textureHeight: 600, color: 0x444444 } );
+
+var hero_mirror = new THREE.Mesh( hero_planeGeo, hero_groundMirror.material );
+hero_mirror.add( hero_groundMirror );
+hero_mirror.rotateX( - Math.PI / 2 );
+hero_mirror.position.set(0, -3,0);
+scene.add( hero_mirror );
 
 // リサイズへの対応
 window.addEventListener('resize', function(){
@@ -172,6 +186,12 @@ var render = function () {
     var timer = Date.now() * 0.001;    
 
     sphere.position.x = ( Math.cos( -timer ) * 10 );
+    sphere.position.y = ( Math.sin( -timer ) * 10 );
+
+    plane.lookAt(camera.position);
+    plane2.lookAt(camera.position);
+    plane3.lookAt(camera.position);
+    plane4.lookAt(camera.position);
 
     // オフスクリーン切り替え描画
     renderer.render( offScene1, camera, offRenderTarget1 );
@@ -227,12 +247,15 @@ var render = function () {
         plane3.visible = false;
         plane4.visible = false;
     }
+
+    
     // resetGLStateしないとgl.useProgramが呼ばれず以下のエラーになる
     // [error]location is not from current program
     renderer.resetGLState();
 
     controls.update(); 
     // Mainシーンで描画
+    hero_groundMirror.render();
     renderer.render( scene, camera );
 };
 

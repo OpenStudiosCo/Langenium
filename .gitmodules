@@ -21,3 +21,6 @@
 [submodule "vendor/Semantic-UI"]
 	path = vendor/Semantic-UI
 	url = https://github.com/Semantic-Org/Semantic-UI.git
+[submodule "vendor\\ocean"]
+	path = vendor\\ocean
+	url = https://github.com/jbouny/ocean.git

@@ -1,3 +1,4 @@
+varying vec3 vNormal;
 varying vec3 vTexCoord3D;
 varying vec3 vViewPosition;
 

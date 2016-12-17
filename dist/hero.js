@@ -1,8 +1,8 @@
 // シーン生成
 var scene = new THREE.Scene();
 // カメラ生成
-var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
-camera.position.z = 6;
+var camera = new THREE.PerspectiveCamera( 45, window.innerWidth/window.innerHeight, 0.1, 1000 );
+camera.position.z = 10;
 
 // レンダラー生成
 var renderer = new THREE.WebGLRenderer();
@@ -231,7 +231,7 @@ var render = function () {
     // [error]location is not from current program
     renderer.resetGLState();
 
-   // controls.update(); 
+    controls.update(); 
     // Mainシーンで描画
     renderer.render( scene, camera );
 };

@@ -32,7 +32,6 @@
   <script src="/vendor/Live2D-WebGL-SDK/sample/sampleApp1/src/PlatformManager.js"></script>
   <script src="/vendor/Live2D-WebGL-SDK/sample/sampleApp1/src/LAppLive2DManager.js"></script>
   <script src="/vendor/Live2D_ThreeJS/Live2DRender.js"></script>
-  <script src="/dist/example.js"></script>
   <script id="logoWaterVertShader" type="x-shader/x-vertex">varying vec3 vNormal;
 varying vec3 vTexCoord3D;
 varying vec3 vViewPosition;
@@ -51,7 +50,8 @@ void main()
     gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 }
   </script>
-  <script id="logoWaterFragShader" type="x-shader/x-fragment">varying vec3 vTexCoord3D;
+  <script id="logoWaterFragShader" type="x-shader/x-fragment">varying vec3 vNormal;
+varying vec3 vTexCoord3D;
 varying vec3 vViewPosition;
 
 uniform sampler2D noiseTexture;
@@ -251,6 +251,8 @@ void main()
   gl_FragColor *= vec4( vLightWeighting, 1.0 ); //
 }
   </script>
+  <script src="/dist/hero.js"></script>
+  <script src="/dist/logo.js"></script>
   <script>
     // Facebook Like Button.
     (function(d, s, id) {

@@ -7,7 +7,6 @@ block scripts
   script(src='/vendor/Live2D-WebGL-SDK/sample/sampleApp1/src/PlatformManager.js')
   script(src='/vendor/Live2D-WebGL-SDK/sample/sampleApp1/src/LAppLive2DManager.js')
   script(src='/vendor/Live2D_ThreeJS/Live2DRender.js')
-  script(src='/dist/example.js')
   script(id='logoWaterVertShader', type='x-shader/x-vertex')
     include shaders/logo-water.vert
   script(id='logoWaterFragShader', type='x-shader/x-fragment')
@@ -16,6 +15,8 @@ block scripts
     include shaders/logo-metal.vert
   script(id='logoMetalFragShader', type='x-shader/x-fragment')
     include shaders/logo-metal.frag
+  script(src='/dist/hero.js')
+  script(src='/dist/logo.js')
   script
     | // Facebook Like Button.
     | (function(d, s, id) {

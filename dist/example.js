@@ -14,6 +14,8 @@ document.getElementsByClassName( 'hero' )[0].appendChild( renderer.domElement );
 // オフスクリーン用(Live2Dを描画)
 var offScene1 = new THREE.Scene();
 var offScene2 = new THREE.Scene();
+var offScene3 = new THREE.Scene();
+var offScene4 = new THREE.Scene();
 var offRenderTarget1 = new THREE.WebGLRenderTarget(
     window.innerWidth,
     window.innerHeight,
@@ -34,14 +36,40 @@ var offRenderTarget2 = new THREE.WebGLRenderTarget(
     }
 );
 
+var offRenderTarget3 = new THREE.WebGLRenderTarget(
+    window.innerWidth,
+    window.innerHeight,
+    {
+        minFilter: THREE.LinearFilter,
+        magFilter: THREE.NearestFilter,
+        format: THREE.RGBAFormat
+    }
+);
+
+var offRenderTarget4 = new THREE.WebGLRenderTarget(
+    window.innerWidth,
+    window.innerHeight,
+    {
+        minFilter: THREE.LinearFilter,
+        magFilter: THREE.NearestFilter,
+        format: THREE.RGBAFormat
+    }
+);
+
 // Live2Dモデルパス
-var MODEL_PATH1 = "universe/art/concept-art/Canon/Character%20models";
+var MODEL_PATH1 = "/universe/art/concept-art/Canon/Character%20models/";
 var MODEL_JSON1 = "jack.model.json";
 var MODEL_JSON2 = "jack-back.model.json";
+var MODEL_JSON3 = "jack-side-left.model.json";
+var MODEL_JSON4 = "jack-side-right.model.json";
+
 
 // Live2Dモデル生成
 var live2dmodel1 = new THREE.Live2DRender( renderer, MODEL_PATH1, MODEL_JSON1 );
 var live2dmodel2 = new THREE.Live2DRender( renderer, MODEL_PATH1, MODEL_JSON2 );
+var live2dmodel3 = new THREE.Live2DRender( renderer, MODEL_PATH1, MODEL_JSON3 );
+var live2dmodel4 = new THREE.Live2DRender( renderer, MODEL_PATH1, MODEL_JSON4 );
+
 
 // オフスクリーンを描画するPlane生成
 var geometry = new THREE.PlaneGeometry( 6, 6, 1, 1 );
@@ -61,6 +89,24 @@ var plane2 = new THREE.Mesh( geometry2, material2 );
 plane2.material.transparent = true;
 plane2.position.set(1, 0, -1);
 scene.add( plane2 );
+
+// レンダーテクスチャをテクスチャにする
+var geometry3 = new THREE.PlaneGeometry( 6, 6, 1, 1 );
+var material3 = new THREE.MeshBasicMaterial( { map:offRenderTarget3.texture } );
+var plane3 = new THREE.Mesh( geometry3, material3 );
+// この1行がないと透過部分が抜けない
+plane3.material.transparent = true;
+plane3.position.set(-3, 0, -1);
+scene.add( plane3 );
+
+// レンダーテクスチャをテクスチャにする
+var geometry4 = new THREE.PlaneGeometry( 6, 6, 1, 1 );
+var material4 = new THREE.MeshBasicMaterial( { map:offRenderTarget4.texture, side: THREE.DoubleSide } );
+var plane4 = new THREE.Mesh( geometry4, material4 );
+// この1行がないと透過部分が抜けない
+plane4.material.transparent = true;
+plane4.position.set(3, 0, -1);
+scene.add( plane4 );
 
 // ライト
 var directionalLight = new THREE.DirectionalLight('#FFFFFF', 1);
@@ -94,9 +140,13 @@ window.addEventListener('resize', function(){
     // オフスクリーンのレンダーターゲットもリサイズ
     offRenderTarget1.setSize( window.innerWidth, window.innerHeight );
     offRenderTarget2.setSize( window.innerWidth, window.innerHeight );
+    offRenderTarget3.setSize( window.innerWidth, window.innerHeight );
+    offRenderTarget4.setSize( window.innerWidth, window.innerHeight );
     // マウスドラッグ座標もリサイズ
     live2dmodel1.setMouseView(renderer);
     live2dmodel2.setMouseView(renderer);
+    live2dmodel3.setMouseView(renderer);
+    live2dmodel4.setMouseView(renderer);
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
 }, false);
@@ -152,6 +202,14 @@ var render = function () {
     renderer.render( offScene2, camera, offRenderTarget2 );
 
     live2dmodel2.draw();
+
+    renderer.render( offScene3, camera, offRenderTarget3 );
+
+    live2dmodel3.draw();
+
+    renderer.render( offScene4, camera, offRenderTarget4 );
+
+    live2dmodel4.draw();
     // resetGLStateしないとgl.useProgramが呼ばれず以下のエラーになる
     // [error]location is not from current program
     renderer.resetGLState();

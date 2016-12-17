@@ -2,7 +2,7 @@
 var scene = new THREE.Scene();
 // カメラ生成
 var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
-camera.position.z = 5;
+camera.position.z = 6;
 
 // レンダラー生成
 var renderer = new THREE.WebGLRenderer();
@@ -10,6 +10,12 @@ var renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
 // DOMを追加
 document.getElementsByClassName( 'hero' )[0].appendChild( renderer.domElement );
+
+controls = new THREE.OrbitControls( camera, renderer.domElement );
+//controls.addEventListener( 'change', render ); // add this only if there is no animation loop (requestAnimationFrame)
+controls.enableDamping = true;
+controls.dampingFactor = 0.25;
+controls.enableZoom = true;
 
 // オフスクリーン用(Live2Dを描画)
 var offScene1 = new THREE.Scene();
@@ -70,11 +76,10 @@ var live2dmodel2 = new THREE.Live2DRender( renderer, MODEL_PATH1, MODEL_JSON2 );
 var live2dmodel3 = new THREE.Live2DRender( renderer, MODEL_PATH1, MODEL_JSON3 );
 var live2dmodel4 = new THREE.Live2DRender( renderer, MODEL_PATH1, MODEL_JSON4 );
 
-
 // オフスクリーンを描画するPlane生成
 var geometry = new THREE.PlaneGeometry( 6, 6, 1, 1 );
 // レンダーテクスチャをテクスチャにする
-var material = new THREE.MeshBasicMaterial( { map:offRenderTarget1.texture } );
+var material = new THREE.MeshBasicMaterial( { map:offRenderTarget1.texture, side: THREE.DoubleSide, alphaTest: 0.5  } );
 var plane = new THREE.Mesh( geometry, material );
 // この1行がないと透過部分が抜けない
 plane.material.transparent = true;
@@ -83,7 +88,7 @@ scene.add( plane );
 
 // レンダーテクスチャをテクスチャにする
 var geometry2 = new THREE.PlaneGeometry( 6, 6, 1, 1 );
-var material2 = new THREE.MeshBasicMaterial( { map:offRenderTarget2.texture } );
+var material2 = new THREE.MeshBasicMaterial( { map:offRenderTarget2.texture, side: THREE.DoubleSide, alphaTest: 0.5  } );
 var plane2 = new THREE.Mesh( geometry2, material2 );
 // この1行がないと透過部分が抜けない
 plane2.material.transparent = true;
@@ -92,7 +97,8 @@ scene.add( plane2 );
 
 // レンダーテクスチャをテクスチャにする
 var geometry3 = new THREE.PlaneGeometry( 6, 6, 1, 1 );
-var material3 = new THREE.MeshBasicMaterial( { map:offRenderTarget3.texture } );
+var material3 = new THREE.MeshBasicMaterial( { map:offRenderTarget3.texture, side: THREE.DoubleSide, alphaTest: 0.5  } );
+material3.map.offset.x = 0.2;
 var plane3 = new THREE.Mesh( geometry3, material3 );
 // この1行がないと透過部分が抜けない
 plane3.material.transparent = true;
@@ -101,7 +107,7 @@ scene.add( plane3 );
 
 // レンダーテクスチャをテクスチャに
 var geometry4 = new THREE.PlaneGeometry( 6, 6, 1, 1 );
-var material4 = new THREE.MeshBasicMaterial( { map:offRenderTarget4.texture, side: THREE.DoubleSide } );
+var material4 = new THREE.MeshBasicMaterial( { map:offRenderTarget4.texture, side: THREE.DoubleSide, alphaTest: 0.5  } );
 material4.map.offset.x = 0.2;
 var plane4 = new THREE.Mesh( geometry4, material4 );
 plane4.material.transparent = true;
@@ -117,18 +123,6 @@ scene.add(directionalLight);
 var directionalLight2 = new THREE.DirectionalLight('#FFFFFF', 1);
 directionalLight2.position.set(0, 10, -10);
 scene.add(directionalLight2);
-
-// キューブ
-var geometry1 = new THREE.BoxGeometry(20,20,20);
-var material1 = new THREE.MeshLambertMaterial( { color: 0xFFFFFF, side: THREE.BackSide } );
-var cube = new THREE.Mesh( geometry1, material1 );
-cube.position.set(0, -1, -10);
-scene.add( cube );
-
-var cube2 = new THREE.Mesh( geometry1, material1 );
-cube2.position.set(0, -1, -10);
-scene.add( cube2 );
-
 
 var material2 = new THREE.MeshLambertMaterial( { color: 0x11CCFF } );
 var sphere = new THREE.Mesh(new THREE.SphereGeometry(5, 20, 10), material2);
@@ -184,16 +178,14 @@ var render = function () {
     requestAnimationFrame( render );
 
     var timer = Date.now() * 0.001;    
-    cube.position.x = ( Math.cos( timer ) * 10 );
-    cube.position.y = ( Math.sin( timer ) * 10 );
-    cube.rotateX(Math.sin(timer) / 100);
-    cube.rotateZ(Math.sin(timer) / 100);
-    cube2.position.x = ( Math.cos( -timer ) * 10 );
-    cube2.position.y = ( Math.sin( -timer ) * 10 );
-    cube2.rotateX(Math.sin(-timer) / 100);
-    cube2.rotateZ(Math.sin(-timer) / 100);
 
     sphere.position.x = ( Math.cos( -timer ) * 10 );
+
+    plane.lookAt(camera.position);
+    plane2.lookAt(camera.position);
+    plane3.lookAt(camera.position);
+    plane4.lookAt(camera.position);
+    plane4.rotation.y += Math.PI;
 
     // オフスクリーン切り替え描画
     renderer.render( offScene1, camera, offRenderTarget1 );
@@ -211,9 +203,13 @@ var render = function () {
     renderer.render( offScene4, camera, offRenderTarget4 );
 
     live2dmodel4.draw();
+
+    
     // resetGLStateしないとgl.useProgramが呼ばれず以下のエラーになる
     // [error]location is not from current program
     renderer.resetGLState();
+
+   // controls.update(); 
     // Mainシーンで描画
     renderer.render( scene, camera );
 };

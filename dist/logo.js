@@ -75,6 +75,37 @@ loader.load('/old/res/models/langenium-logo.js', function(geometry, materials) {
   logo_cb(geometry, materials);
 });
 
+var planeGeo = new THREE.PlaneGeometry( 6000,6000 );
+// MIRROR planes
+groundMirror = new THREE.Mirror( logo_renderer, logo_camera, { clipBias: 0.003, textureWidth: window.innerWidth, textureHeight: window.innerHeight, color: 0x777777 } );
+
+var mirrorMesh = new THREE.Mesh( planeGeo, groundMirror.material );
+mirrorMesh.add( groundMirror );
+mirrorMesh.rotateX( - Math.PI / 2 );
+mirrorMesh.position.set(0, -200,0);
+logo_scene.add( mirrorMesh );
+
+var vignette_geo = new THREE.PlaneGeometry( 6000,6000 );
+// create a canvas element
+var canvas1 = document.createElement('canvas');
+var context1 = canvas1.getContext('2d');
+var my_gradient=context1.createLinearGradient(0,0,0,170);
+my_gradient.addColorStop(0.2, 'rgba(0,0,0,0)');
+my_gradient.addColorStop(0.6,  'rgba(0,0,0,1)');
+context1.fillStyle=my_gradient;
+context1.fillRect(0,0,canvas1.width,canvas1.height);
+  
+// canvas contents will be used for a texture
+var texture1 = new THREE.Texture(canvas1) 
+texture1.needsUpdate = true;
+    
+var material1 = new THREE.MeshBasicMaterial( {map: texture1, side:THREE.DoubleSide } );
+material1.transparent = true;
+
+var vignette = new THREE.Mesh(vignette_geo, material1)
+vignette.rotateX( - Math.PI / 2 );
+vignette.position.set(0,-150, 1500);
+logo_scene.add(vignette);
 // リサイズへの対応
 window.addEventListener('resize', function(){
     logo_renderer.setSize( 
@@ -91,6 +122,7 @@ var logo_render = function () {
   requestAnimationFrame( logo_render );
   logo_water_uniforms.time.value += .0005;
   logo_controls.update(); 
+  groundMirror.render();
   logo_renderer.render( logo_scene, logo_camera );
 };
 

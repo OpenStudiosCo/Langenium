@@ -26,7 +26,7 @@ var logo_water_uniforms = {
 },
 logo_metal_uniforms = {
   noiseTexture: { type: "t", value: noiseTexture3 },
-  time:       { type: "f", value: 0.0 }
+  time:       { type: "f", value: 1.0 }
 };
 
 var logoWaterMaterial = new THREE.ShaderMaterial( 
@@ -114,7 +114,8 @@ window.addEventListener('resize', function(){
 
 var logo_render = function () {
   requestAnimationFrame( logo_render );
-  logo_water_uniforms.time.value += .0005;
+  logo_water_uniforms.time.value += .00125;
+  logo_metal_uniforms.time.value += .000125;
   groundMirror.render();
   logo_renderer.render( logo_scene, logo_camera );
 };

@@ -1,0 +1,16 @@
+doctype html
+html
+  include /templates/partials/head.pug
+  body
+    #fb-root
+    .container
+      include /templates/partials/header.pug
+      .row
+        h2 Gallery
+        ul
+          li
+            a(href='/gallery/concept-art.html')
+              h3 Concept Art
+              img(src='/universe/art/production/covers/thumb_Langenium - Lux Atlas_World Eater.png')
+
+  include /templates/partials/scripts.pug

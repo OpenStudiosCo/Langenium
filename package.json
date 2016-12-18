@@ -19,7 +19,8 @@
     "rollup": "rollup -c -w",
     "dev-osx": "sudo http-server -p 80 -c-1 .",
     "dev": "http-server -p 80 -c-1 .",
-    "bash-dev": "npm run css & npm run pug & npm run rollup & npm run dev"
+    "bash-dev": "npm run css & npm run pug & npm run rollup & npm run dev",
+    "thumb": "thumb"
   },
   "author": "Paul Brzeski",
   "license": "GNU-GPL-v3",
@@ -32,6 +33,7 @@
     "stylus": "^0.54.5"
   },
   "devDependencies": {
+    "imaginary": "^0.1.12",
     "jstransformer-markdown": "^1.1.1",
     "pug-cli": "^1.0.0-alpha6",
     "rollup": "^0.36.4",

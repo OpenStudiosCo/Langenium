@@ -2,7 +2,7 @@
 var logo_scene = new THREE.Scene();
 // カメラ生成
 var logo_camera = new THREE.PerspectiveCamera( 35, document.getElementsByClassName( 'logo' )[0].offsetWidth/document.getElementsByClassName( 'logo' )[0].offsetHeight, 0.1, 100000 );
-logo_camera.position.z = 2800;
+logo_camera.position.z = 3200;
 
 // レンダラー生
 var logo_renderer = new THREE.WebGLRenderer();
@@ -11,9 +11,6 @@ logo_renderer.setSize(
   document.getElementsByClassName( 'logo' )[0].offsetWidth, 
   document.getElementsByClassName( 'logo' )[0].offsetHeight
 );
-// DOMを追加
-document.getElementsByClassName( 'logo' )[0].innerHTML = '';
-document.getElementsByClassName( 'logo' )[0].appendChild( logo_renderer.domElement );
 
 var loader = new THREE.JSONLoader();
 
@@ -60,7 +57,7 @@ var logo_cb = function(geometry, materials) {
   geometry.uvsNeedUpdate = true;
   mesh = new THREE.Mesh(geometry, new THREE.MultiMaterial(materials));
   mesh.scale.set(2000,2000,2000);
-  mesh.position.set(0,300,0);
+  mesh.position.set(-30,370,0);
   mesh.rotateX( Math.PI / 2 );
   logo_scene.add(mesh);     
 }
@@ -76,7 +73,7 @@ groundMirror = new THREE.Mirror( logo_renderer, logo_camera, { clipBias: 0.003, 
 var mirrorMesh = new THREE.Mesh( planeGeo, groundMirror.material );
 mirrorMesh.add( groundMirror );
 mirrorMesh.rotateX( - Math.PI / 2 );
-mirrorMesh.position.set(0, -180,0);
+mirrorMesh.position.set(0, -110,0);
 logo_scene.add( mirrorMesh );
 
 var vignette_geo = new THREE.PlaneGeometry( 6000,6000 );
@@ -98,7 +95,7 @@ material1.transparent = true;
 
 var vignette = new THREE.Mesh(vignette_geo, material1)
 vignette.rotateX( - Math.PI / 2 );
-vignette.position.set(0,-120, 1500);
+vignette.position.set(0,-100, 1500);
 logo_scene.add(vignette);
 // リサイズへの対応
 window.addEventListener('resize', function(){
@@ -121,3 +118,6 @@ var logo_render = function () {
 };
 
 logo_render();
+// DOMを追加
+document.getElementsByClassName( 'logo' )[0].innerHTML = '';
+document.getElementsByClassName( 'logo' )[0].appendChild( logo_renderer.domElement );

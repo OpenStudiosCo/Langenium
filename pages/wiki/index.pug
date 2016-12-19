@@ -1,6 +1,13 @@
-doctype html
-html
-  include /templates/partials/head.pug
-  body
-    include /templates/layouts/wiki_home.pug
-  include /templates/partials/scripts.pug
+extends /templates/layout.pug
+
+block append title
+  | Wiki | Langenium
+
+block append page
+  .row
+    h2 Welcome to the Langenium Wiki
+    ul
+      li
+        a(href='/wiki/storylines.html') Storylines
+      li
+        a(href='/wiki/technology_of_2099.html') Technology of 2099

@@ -1,71 +1,69 @@
-doctype html
-html
-  include /templates/partials/head.pug
-  body
-    #fb-root
-    .container
-      include /templates/partials/header.pug
-      .row
-        h2 Concept Art
-        ul
-          li
-            a(href='/universe/art/production/covers/Langenium - Lux Atlas_Cellocher.png')
-              img(src='/universe/art/production/covers/thumb_Langenium - Lux Atlas_Cellocher.png')
-          li
-            a(href='/universe/art/production/covers/Langenium - Lux Atlas_Drak.png')
-              img(src='/universe/art/production/covers/thumb_Langenium - Lux Atlas_Drak.png')
-          li
-            a(href='/universe/art/production/covers/Langenium - Lux Atlas_Elx.png')
-              img(src='/universe/art/production/covers/thumb_Langenium - Lux Atlas_Elx.png')
-          li
-            a(href='/universe/art/production/covers/Langenium - Lux Atlas_Epoch Langenius.png')
-              img(src='/universe/art/production/covers/thumb_Langenium - Lux Atlas_Epoch Langenius.png')
-          li
-            a(href='/universe/art/production/covers/Langenium - Lux Atlas_Ganetti.png')
-              img(src='/universe/art/production/covers/thumb_Langenium - Lux Atlas_Ganetti.png')
-          li
-            a(href='/universe/art/production/covers/Langenium - Lux Atlas_Hircus.png')
-              img(src='/universe/art/production/covers/thumb_Langenium - Lux Atlas_Hircus.png')
-          li
-            a(href='/universe/art/production/covers/Langenium - Lux Atlas_Host.png')
-              img(src='/universe/art/production/covers/thumb_Langenium - Lux Atlas_Host.png')
-          li
-            a(href='/universe/art/production/covers/Langenium - Lux Atlas_Krahm.png')
-              img(src='/universe/art/production/covers/thumb_Langenium - Lux Atlas_Krahm.png')
-          li
-            a(href='/universe/art/production/covers/Langenium - Lux Atlas_Lupus.png')
-              img(src='/universe/art/production/covers/thumb_Langenium - Lux Atlas_Lupus.png')
-          li
-            a(href='/universe/art/production/covers/Langenium - Lux Atlas_Lux_Atlantis.png')
-              img(src='/universe/art/production/covers/thumb_Langenium - Lux Atlas_Lux_Atlantis.png')
-          li
-            a(href='/universe/art/production/covers/Langenium - Lux Atlas_Mantis.png')
-              img(src='/universe/art/production/covers/thumb_Langenium - Lux Atlas_Mantis.png')
-          li
-            a(href='/universe/art/production/covers/Langenium - Lux Atlas_Maya.png')
-              img(src='/universe/art/production/covers/thumb_Langenium - Lux Atlas_Maya.png')
-          li
-            a(href='/universe/art/production/covers/Langenium - Lux Atlas_Mon-Kis.png')
-              img(src='/universe/art/production/covers/thumb_Langenium - Lux Atlas_Mon-Kis.png')
-          li
-            a(href='/universe/art/production/covers/Langenium - Lux Atlas_Rise of Guardians.png')
-              img(src='/universe/art/production/covers/thumb_Langenium - Lux Atlas_Rise of Guardians.png')
-          li
-            a(href='/universe/art/production/covers/Langenium - Lux Atlas_Robot.png')
-              img(src='/universe/art/production/covers/thumb_Langenium - Lux Atlas_Robot.png')
-          li
-            a(href='/universe/art/production/covers/Langenium - Lux Atlas_Sinnis.png')
-              img(src='/universe/art/production/covers/thumb_Langenium - Lux Atlas_Sinnis.png')
-          li
-            a(href='/universe/art/production/covers/Langenium - Lux Atlas_Tigris.png')
-              img(src='/universe/art/production/covers/thumb_Langenium - Lux Atlas_Tigris.png')
-          li
-            a(href='/universe/art/production/covers/Langenium - Lux Atlas_Torton.png')
-              img(src='/universe/art/production/covers/thumb_Langenium - Lux Atlas_Torton.png')
-          li
-            a(href='/universe/art/production/covers/Langenium - Lux Atlas_WERP.png')
-              img(src='/universe/art/production/covers/thumb_Langenium - Lux Atlas_WERP.png')
-          li
-            a(href='/universe/art/production/covers/Langenium - Lux Atlas_World Eater.png')
-              img(src='/universe/art/production/covers/thumb_Langenium - Lux Atlas_World Eater.png')
-  include /templates/partials/scripts.pug
+extends /templates/layout.pug
+
+block append title
+  | Concept Art | Gallery | Langenium
+
+block append page
+  .row
+    h2 Concept Art
+    ul
+      li
+        a(href='/universe/art/production/covers/Langenium - Lux Atlas_Cellocher.png')
+          img(src='/universe/art/production/covers/thumb_Langenium - Lux Atlas_Cellocher.png')
+      li
+        a(href='/universe/art/production/covers/Langenium - Lux Atlas_Drak.png')
+          img(src='/universe/art/production/covers/thumb_Langenium - Lux Atlas_Drak.png')
+      li
+        a(href='/universe/art/production/covers/Langenium - Lux Atlas_Elx.png')
+          img(src='/universe/art/production/covers/thumb_Langenium - Lux Atlas_Elx.png')
+      li
+        a(href='/universe/art/production/covers/Langenium - Lux Atlas_Epoch Langenius.png')
+          img(src='/universe/art/production/covers/thumb_Langenium - Lux Atlas_Epoch Langenius.png')
+      li
+        a(href='/universe/art/production/covers/Langenium - Lux Atlas_Ganetti.png')
+          img(src='/universe/art/production/covers/thumb_Langenium - Lux Atlas_Ganetti.png')
+      li
+        a(href='/universe/art/production/covers/Langenium - Lux Atlas_Hircus.png')
+          img(src='/universe/art/production/covers/thumb_Langenium - Lux Atlas_Hircus.png')
+      li
+        a(href='/universe/art/production/covers/Langenium - Lux Atlas_Host.png')
+          img(src='/universe/art/production/covers/thumb_Langenium - Lux Atlas_Host.png')
+      li
+        a(href='/universe/art/production/covers/Langenium - Lux Atlas_Krahm.png')
+          img(src='/universe/art/production/covers/thumb_Langenium - Lux Atlas_Krahm.png')
+      li
+        a(href='/universe/art/production/covers/Langenium - Lux Atlas_Lupus.png')
+          img(src='/universe/art/production/covers/thumb_Langenium - Lux Atlas_Lupus.png')
+      li
+        a(href='/universe/art/production/covers/Langenium - Lux Atlas_Lux_Atlantis.png')
+          img(src='/universe/art/production/covers/thumb_Langenium - Lux Atlas_Lux_Atlantis.png')
+      li
+        a(href='/universe/art/production/covers/Langenium - Lux Atlas_Mantis.png')
+          img(src='/universe/art/production/covers/thumb_Langenium - Lux Atlas_Mantis.png')
+      li
+        a(href='/universe/art/production/covers/Langenium - Lux Atlas_Maya.png')
+          img(src='/universe/art/production/covers/thumb_Langenium - Lux Atlas_Maya.png')
+      li
+        a(href='/universe/art/production/covers/Langenium - Lux Atlas_Mon-Kis.png')
+          img(src='/universe/art/production/covers/thumb_Langenium - Lux Atlas_Mon-Kis.png')
+      li
+        a(href='/universe/art/production/covers/Langenium - Lux Atlas_Rise of Guardians.png')
+          img(src='/universe/art/production/covers/thumb_Langenium - Lux Atlas_Rise of Guardians.png')
+      li
+        a(href='/universe/art/production/covers/Langenium - Lux Atlas_Robot.png')
+          img(src='/universe/art/production/covers/thumb_Langenium - Lux Atlas_Robot.png')
+      li
+        a(href='/universe/art/production/covers/Langenium - Lux Atlas_Sinnis.png')
+          img(src='/universe/art/production/covers/thumb_Langenium - Lux Atlas_Sinnis.png')
+      li
+        a(href='/universe/art/production/covers/Langenium - Lux Atlas_Tigris.png')
+          img(src='/universe/art/production/covers/thumb_Langenium - Lux Atlas_Tigris.png')
+      li
+        a(href='/universe/art/production/covers/Langenium - Lux Atlas_Torton.png')
+          img(src='/universe/art/production/covers/thumb_Langenium - Lux Atlas_Torton.png')
+      li
+        a(href='/universe/art/production/covers/Langenium - Lux Atlas_WERP.png')
+          img(src='/universe/art/production/covers/thumb_Langenium - Lux Atlas_WERP.png')
+      li
+        a(href='/universe/art/production/covers/Langenium - Lux Atlas_World Eater.png')
+          img(src='/universe/art/production/covers/thumb_Langenium - Lux Atlas_World Eater.png')

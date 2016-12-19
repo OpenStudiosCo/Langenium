@@ -1,11 +1,9 @@
-doctype html
-html
-  include /templates/partials/head.pug
-  body
-    #fb-root
-    .container
-      include /templates/partials/header.pug
-      .row
-        h2 Technology of 2099
-        include:markdown /universe/stories-world-building/Airship Academy/Technology of 2099.md
-  include /templates/partials/scripts.pug
+extends /templates/layout.pug
+
+block append title
+  | Technology of 2099 | Wiki | Langenium
+
+block append page
+  .row
+    h2 Technology of 2099
+    include:markdown /universe/stories-world-building/Airship Academy/Technology of 2099.md

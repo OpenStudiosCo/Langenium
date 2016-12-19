@@ -1,11 +1,9 @@
-doctype html
-html
-  include /templates/partials/head.pug
-  body
-    #fb-root
-    .container
-      include /templates/partials/header.pug
-      .row
-        h2 Storylines
-        include:markdown /universe/stories-world-building/Epoch Exordium/Prologue for Epoch Exordium.md
-  include /templates/partials/scripts.pug
+extends /templates/layout.pug
+
+block append title
+  | Storylines | Wiki | Langenium
+
+block append page
+  .row
+    h2 Storylines
+    include:markdown /universe/stories-world-building/Epoch Exordium/Prologue for Epoch Exordium.md

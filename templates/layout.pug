@@ -1,0 +1,12 @@
+doctype html
+html
+  head
+    title
+      block title
+    link(href='/dist/styles.css', rel='stylesheet')
+  body
+    #fb-root
+    .container
+      include /templates/header.pug
+      block page
+  include /templates/scripts.pug

@@ -1,6 +1,24 @@
-doctype html
-html
-  include /templates/partials/head.pug
-  body
-    include /templates/layouts/homepage.pug
-  include /templates/partials/scripts.pug
+extends /templates/layout.pug
+
+block append title
+  | Home | Langenium
+
+block append page
+  .row
+    .hero 
+      h1 Interactive Hero Area
+    .call_to_action
+      ul.row
+        li
+          a(href='/games') Play
+        li
+          a(href='/gallery/concept-art.html') Concept Art
+        li
+          a(href='/wiki/storylines.html') Storylines
+        li
+          a(href='http://github.com/paulbrzeski/Langenium') Github
+  .row
+    .news
+      h2 News
+      include:markdown news.md
+    .most_popular

@@ -1,3 +1,30 @@
+@font-face {
+  font-family: 'Franchise';
+  font-style: normal;
+  font-weight: normal;
+  src: url("/dist/font/francise.eot");
+  src: url("/dist/font/franchise.eot?#iefix") format('embedded-opentype'), url("/dist/font/franchise.woff") format('woff'), url("/dist/font/franchise.ttf") format('truetype'), url("/dist/font/franchise.svg#franchiseregular") format('svg');
+}
+h1 {
+  margin: 0;
+  float: left;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  letter-spacing: 0.05em;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Franchise';
+}
 .row {
   width: auto;
   max-width: 1200px;

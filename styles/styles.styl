@@ -1,7 +1,28 @@
 @import 'node_modules/jeet/jeet'
+// Defaults
+
+bp_tablet = 'screen and (min-width: 768px)'
+bp_desktop = 'screen and (min-width: 1200px)'
+
+@font-face
+  font-family 'Franchise'
+  font-style normal
+  font-weight normal
+  src url('/dist/font/francise.eot')
+  src url('/dist/font/franchise.eot?#iefix') format('embedded-opentype'),
+     url('/dist/font/franchise.woff') format('woff'),
+     url('/dist/font/franchise.ttf') format('truetype'),
+     url('/dist/font/franchise.svg#franchiseregular') format('svg');
+h1 
+  margin 0
+  float left
+h1, h2, h3, h4, h5, h6
+  letter-spacing .05em
+
+h1, h2, h3, h4, h5, h6
+  font-family 'Franchise'
 
 // Mixins
-
 reset-list()
   ul
     padding 0
@@ -13,7 +34,6 @@ stretch-image()
   max-height 100%
 
 // Helpers
-
 .row
   clearfix()
   center(1200px)
@@ -71,7 +91,7 @@ header
   reset-list()
 
 // Tablet
-@media screen and (min-width: 768px)
+@media bp_tablet
   .news
     column(3/5)
 
@@ -79,7 +99,7 @@ header
     column(2/5)
 
 // Desktop
-@media screen and (min-width: 1200px)
+@media bp_desktop
   header
     .logo
       column(4/12)

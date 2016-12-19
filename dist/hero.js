@@ -16,6 +16,8 @@ controls = new THREE.OrbitControls( camera, renderer.domElement );
 controls.enableDamping = true;
 controls.dampingFactor = 0.25;
 controls.enableZoom = true;
+controls.minPolarAngle = Math.PI/2;
+controls.maxPolarAngle = Math.PI/2;
 
 // オフスクリーン用(Live2Dを描画)
 var offScene1 = new THREE.Scene();

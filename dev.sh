@@ -1,0 +1,1 @@
+npm run css & npm run pug & npm run rollup & npm run dev

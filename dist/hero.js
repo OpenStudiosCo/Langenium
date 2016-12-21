@@ -4,7 +4,7 @@ var scene = new THREE.Scene();
 var ratio = window.innerWidth/window.innerHeight;
 
 var camera = new THREE.PerspectiveCamera( 35, ratio , 0.1, 100000 );
-camera.position.z = 3200;
+camera.position.z = 2000;
 
 // レンダラー生
 var renderer = new THREE.WebGLRenderer();
@@ -14,92 +14,39 @@ renderer.setSize(
   document.getElementsByClassName( 'hero' )[0].offsetWidth / ratio
 );
 
-var loader = new THREE.JSONLoader();
+// ライト
+var directionalLight = new THREE.DirectionalLight('#FFFFFF', 1);
+directionalLight.position.set(0, 10, 10);
+scene.add(directionalLight);
 
-var noiseTexture3 = new THREE.TextureLoader().load( "/old/res/textures/noise3.jpg" );
-noiseTexture3.wrapS = noiseTexture3.wrapT = THREE.RepeatWrapping;
+var directionalLight2 = new THREE.DirectionalLight('#FFFFFF', 1);
+directionalLight2.position.set(0, 10, -10);
+scene.add(directionalLight2);
 
-var water_uniforms = {
-  noiseTexture: { type: "t", value: noiseTexture3 },
-  time:       { type: "f", value: 1.0 }
-},
-metal_uniforms = {
-  noiseTexture: { type: "t", value: noiseTexture3 },
-  time:       { type: "f", value: 1.0 }
-};
+var platform_loader = new THREE.JSONLoader();
 
-var logoWaterMaterial = new THREE.ShaderMaterial( 
-{
-    uniforms: water_uniforms,
-    vertexShader:   document.getElementById( 'logoWaterVertShader'   ).textContent,
-    fragmentShader: document.getElementById( 'logoWaterFragShader' ).textContent,
-    side: THREE.DoubleSide
-}   );
+var material11 = new THREE.MeshLambertMaterial( { color: 0xFF0000, transparent: true, opacity: 0.5 } );
+var material22 = new THREE.MeshLambertMaterial( { color: 0x0000FF, transparent: true, opacity: 0.5 } );
 
-var logoMetalMaterial = new THREE.ShaderMaterial( 
-{
-    uniforms: metal_uniforms,
-  vertexShader:   document.getElementById( 'logoMetalVertShader'   ).textContent,
-  fragmentShader: document.getElementById( 'logoMetalFragShader' ).textContent,
-  side: THREE.DoubleSide
-}   );
-
-var mesh;
-var cb = function(geometry, materials) {
-    
-  for (var i = 0; i < materials.length; i++) {
-    if(materials[i].name == 'Water') {
-      materials[i] = logoWaterMaterial;
+var platform;
+var cb = function(platform_geometry, platform_materials) {
+  for (var i = 0; i < platform_materials.length; i++) {
+    if(platform_materials[i].name == 'Dark-Glass' || platform_materials[i].name == 'Red-Metal') {
+      platform_materials[i] = material11;
     }
-    if (materials[i].name == 'Metal') {
-      materials[i] = logoMetalMaterial;
+    if (platform_materials[i].name == 'Metal' || platform_materials[i].name == 'Light-Metal') {
+      platform_materials[i] = material22;
     }
   }
-  geometry.buffersNeedUpdate = true;
-  geometry.uvsNeedUpdate = true;
-  mesh = new THREE.Mesh(geometry, new THREE.MultiMaterial(materials));
-  mesh.scale.set(2000,2000,2000);
-  mesh.position.set(-30,370,0);
-  mesh.rotateX( Math.PI / 2 );
-  scene.add(mesh);     
+  platform = new THREE.Mesh(platform_geometry,  new THREE.MultiMaterial(platform_materials));
+  platform.scale.set(200,200,200);
+  platform.position.set(0,-370,0);
+  scene.add(platform);     
 }
-
-loader.load('/old/res/models/langenium-logo.js', function(geometry, materials) {
-  cb(geometry, materials);
+platform_loader.load('/old/res/models/infrastructure/platforms/union.js', function(platform_geometry, platform_materials) {
+  cb(platform_geometry, platform_materials);
 });
 
-var planeGeo = new THREE.PlaneGeometry( 6000,6000 );
-// MIRROR planes
-groundMirror = new THREE.Mirror( renderer, camera, { clipBias: 0.003, textureWidth: 600, textureHeight: 600, color: 0x777777 } );
-
-var mirrorMesh = new THREE.Mesh( planeGeo, groundMirror.material );
-mirrorMesh.add( groundMirror );
-mirrorMesh.rotateX( - Math.PI / 2 );
-mirrorMesh.position.set(0, -110,0);
-scene.add( mirrorMesh );
-
-var vignette_geo = new THREE.PlaneGeometry( 6000,6000 );
-// create a canvas element
-var canvas1 = document.createElement('canvas');
-var context1 = canvas1.getContext('2d');
-var my_gradient=context1.createLinearGradient(0,0,0,170);
-my_gradient.addColorStop(0.2, 'rgba(0,0,0,0)');
-my_gradient.addColorStop(0.7,  'rgba(0,0,0,1)');
-context1.fillStyle=my_gradient;
-context1.fillRect(0,0,canvas1.width,canvas1.height);
-  
-// canvas contents will be used for a texture
-var texture1 = new THREE.Texture(canvas1) 
-texture1.needsUpdate = true;
-    
-var material1 = new THREE.MeshBasicMaterial( {map: texture1, side:THREE.DoubleSide } );
-material1.transparent = true;
-
-var vignette = new THREE.Mesh(vignette_geo, material1)
-vignette.rotateX( - Math.PI / 2 );
-vignette.position.set(0,-100, 1500);
-scene.add(vignette);
-// リサイズへの対応
 window.addEventListener('resize', function(){
     renderer.setSize( 
       document.getElementsByClassName( 'hero' )[0].offsetWidth, 
@@ -119,9 +66,6 @@ controls.enableZoom = true;
 var render = function () {
   requestAnimationFrame( render );
   controls.update();
-  water_uniforms.time.value += .00125;
-  metal_uniforms.time.value += .000125;
-  groundMirror.render();
   renderer.render( scene, camera );
 };
 

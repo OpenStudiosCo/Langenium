@@ -1,0 +1,18 @@
+extends /templates/layout.pug
+
+block append scripts
+  script(src='/dist/sound.js')
+
+block append title
+  | Sound (Music + SFX) | Game Demos | Langenium
+
+block append page
+  .row
+    h3 Sound (Music + SFX)
+    p These tests are used to evaluate various frameworks and techniques for producing sound and music in the browser (and eventually in the game).
+    .sound
+      h4 First attempt
+      p 
+      .ui.labeled.icon.button 
+        i.play.icon
+        | Play

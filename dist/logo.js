@@ -1,7 +1,10 @@
 // シーン生成
 var logo_scene = new THREE.Scene();
 // カメラ生成
-var logo_camera = new THREE.PerspectiveCamera( 35, document.getElementsByClassName( 'logo' )[0].offsetWidth/document.getElementsByClassName( 'logo' )[0].offsetHeight, 0.1, 100000 );
+
+var ratio = document.getElementsByClassName( 'logo' )[0].offsetWidth/document.getElementsByClassName( 'logo' )[0].offsetHeight;
+
+var logo_camera = new THREE.PerspectiveCamera( 35, ratio, 0.1, 100000 );
 logo_camera.position.z = 3200;
 
 // レンダラー生
@@ -101,7 +104,7 @@ logo_scene.add(vignette);
 window.addEventListener('resize', function(){
     logo_renderer.setSize( 
       document.getElementsByClassName( 'logo' )[0].offsetWidth, 
-      document.getElementsByClassName( 'logo' )[0].offsetHeight
+      document.getElementsByClassName( 'logo' )[0].offsetWidth / ratio
     );
  
     logo_camera.aspect = document.getElementsByClassName( 'logo' )[0].offsetWidth / document.getElementsByClassName( 'logo' )[0].offsetHeight;

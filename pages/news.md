@@ -1,3 +1,13 @@
+### Working with audio, making songs and fighting round the world!
+_25th of December 2016_
+
+I've just started using a new library called [WAD (Web Audio DAW)](https://github.com/rserota/wad)to synthesize audio. My original first sound demo was meant to be a Soundcloud streaming application but I'm waiting for my API key to be approved so for now I'm going to go with the more long term idea of sequencing music and effects in code and hopefully even generating it efficiently with code.
+
+The pages for the site are built and styled (mostly?). This is the first time I've had a working [gallery](/gallery) and it's all powered by the [Universe](https://github.com/paulbrzeski/Langenium-Universe) repository which is fantastic.
+
+
+
+
 ### THREE.JS and Live2D are up and running
 _18th of December 2016_
 

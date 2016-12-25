@@ -1,7 +1,6 @@
 // シーン生成
 var logo_scene = new THREE.Scene();
 // カメラ生成
-
 var ratio = document.getElementsByClassName( 'logo' )[0].offsetWidth/document.getElementsByClassName( 'logo' )[0].offsetHeight;
 
 var logo_camera = new THREE.PerspectiveCamera( 35, ratio, 0.1, 100000 );
@@ -15,6 +14,7 @@ logo_renderer.setSize(
   document.getElementsByClassName( 'logo' )[0].offsetHeight
 );
 
+var maxAnisotropy = logo_renderer.getMaxAnisotropy();
 var loader = new THREE.JSONLoader();
 
 var noiseTexture3 = new THREE.TextureLoader().load( "/old/res/textures/noise3.jpg" );
@@ -34,7 +34,7 @@ var logoWaterMaterial = new THREE.ShaderMaterial(
     uniforms: logo_water_uniforms,
     vertexShader:   document.getElementById( 'logoWaterVertShader'   ).textContent,
     fragmentShader: document.getElementById( 'logoWaterFragShader' ).textContent,
-    side: THREE.DoubleSide
+    side: THREE.DoubleSide,
 }   );
 
 var logoMetalMaterial = new THREE.ShaderMaterial( 
@@ -42,7 +42,8 @@ var logoMetalMaterial = new THREE.ShaderMaterial(
     uniforms: logo_metal_uniforms,
   vertexShader:   document.getElementById( 'logoMetalVertShader'   ).textContent,
   fragmentShader: document.getElementById( 'logoMetalFragShader' ).textContent,
-  side: THREE.DoubleSide
+  side: THREE.DoubleSide,
+  anisotropy: maxAnisotropy
 }   );
 
 var mesh;
@@ -102,13 +103,18 @@ vignette.position.set(0,-100, 1500);
 logo_scene.add(vignette);
 // リサイズへの対応
 window.addEventListener('resize', function(){
+    $('.logo img').css('display', 'inline-block');
+    $('.logo canvas').css('display', 'none');
     logo_renderer.setSize( 
       document.getElementsByClassName( 'logo' )[0].offsetWidth, 
-      document.getElementsByClassName( 'logo' )[0].offsetWidth / ratio
+      document.getElementsByClassName( 'logo' )[0].offsetHeight
     );
- 
-    logo_camera.aspect = document.getElementsByClassName( 'logo' )[0].offsetWidth / document.getElementsByClassName( 'logo' )[0].offsetHeight;
+    ratio = document.getElementsByClassName( 'logo' )[0].offsetWidth/document.getElementsByClassName( 'logo' )[0].offsetHeight;
+
+    logo_camera.aspect = ratio;
     logo_camera.updateProjectionMatrix();
+    $('.logo canvas').css('display', 'inline-block');
+    $('.logo img').css('display', 'none');
 }, false);
 
 
@@ -120,7 +126,9 @@ var logo_render = function () {
   logo_renderer.render( logo_scene, logo_camera );
 };
 
-logo_render();
-// DOMを追加
-document.getElementsByClassName( 'logo' )[0].innerHTML = '';
-document.getElementsByClassName( 'logo' )[0].appendChild( logo_renderer.domElement );
+$(document).ready(function(){
+  logo_render();
+  // DOMを追加
+  $('.logo img').css('display', 'none');
+  document.getElementsByClassName( 'logo' )[0].appendChild( logo_renderer.domElement );
+});

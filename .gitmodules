@@ -24,3 +24,6 @@
 [submodule "vendor/ocean"]
 	path = vendor/ocean
 	url = https://github.com/jbouny/ocean.git
+[submodule "vendor/wad"]
+	path = vendor/wad
+	url = https://github.com/rserota/wad.git

@@ -70,7 +70,7 @@ loader.load('/universe/art/design/logos-symbols/langenium logo.json', function(g
 });
 
 var planeGeo = new THREE.PlaneGeometry( 6000,6000 );
-// MIRROR planes
+// MIRROR planes.
 groundMirror = new THREE.Mirror( logo_renderer, logo_camera, { clipBias: 0.003, textureWidth: 600, textureHeight: 600, color: 0x777777 } );
 
 var mirrorMesh = new THREE.Mesh( planeGeo, groundMirror.material );

@@ -6,7 +6,7 @@ var NUM_TEXELS = WIDTH * WIDTH;
 // Water size in system units
 var BOUNDS = 512;
 var BOUNDS_HALF = BOUNDS * 0.5;
-var container, stats;
+var container, stats, waterMirror;
 var camera, scene, renderer, controls;
 var mouseMoved = false;
 var mouseCoords = new THREE.Vector2();
@@ -89,6 +89,12 @@ function init() {
   };
   gui.add( buttonSmooth, 'smoothWater' );
   initWater();
+
+  var material2 = new THREE.MeshLambertMaterial( { color: 0x11CCFF, transparent: true, opacity: 0.85, side: THREE.DoubleSide } );
+  var sphere = new THREE.Mesh(new THREE.SphereGeometry(50, 200, 100), material2);
+  sphere.position.set(0, 100, -10);
+  scene.add(sphere);
+
   valuesChanger();
 }
 function initWater() {
@@ -119,6 +125,16 @@ function initWater() {
   material.defines.WIDTH = WIDTH.toFixed( 1 );
   material.defines.BOUNDS = BOUNDS.toFixed( 1 );
   waterUniforms = material.uniforms;
+  
+  // ライト
+  var directionalLight = new THREE.DirectionalLight('#FFFFFF', 1);
+  directionalLight.position.set(0, 10, 10);
+  scene.add(directionalLight);
+
+  var directionalLight2 = new THREE.DirectionalLight('#FFFFFF', 1);
+  directionalLight2.position.set(0, 10, -10);
+  scene.add(directionalLight2);
+  waterMirror = new THREE.Mirror( renderer, camera, { clipBias: 0.003, textureWidth: 600, textureHeight: 600, color: 0x889999 } );
   waterMesh = new THREE.Mesh( geometry, material );
   waterMesh.rotation.x = - Math.PI / 2;
   waterMesh.matrixAutoUpdate = false;
@@ -248,6 +264,8 @@ function render() {
   gpuCompute.compute();
   // Get compute output in custom uniform
   waterUniforms.heightmap.value = gpuCompute.getCurrentRenderTarget( heightmapVariable ).texture;
+
+  waterMirror.render();
   // Render
   renderer.render( scene, camera );
 }

@@ -43,15 +43,15 @@ vec4 colorFilter(float n) {
   vec4 color = vec4( vec3( 0.01 *n, 0.25 * n, .95 * n )  , 1.0 );
 
   color.r = limitColor(0.0, 0.05, color.r);
-  color.g = limitColor(0.025, 0.25, color.g);
-  color.b = limitColor (0.15, 0.75, color.b);
+  color.g = limitColor(0.015, 0.25, color.g);
+  color.b = limitColor (0.025, 0.75, color.b);
 
   return color;
 }
 
 void main() 
 {
-  float n = heightMap( vTexCoord3D );
+    float n = heightMap( vTexCoord3D );
 
     vec4 texColor = colorFilter( n );
 
@@ -84,7 +84,7 @@ void main()
 
   float dirSpecularWeight = 0.0;
   if ( dirDotNormalHalf >= 0.0 )
-    dirSpecularWeight = ( 1.0 - n ) * pow( dirDotNormalHalf, 5.0 );
+    dirSpecularWeight = ( 1.0 - n ) * pow( dirDotNormalHalf, 15.0 );
 
   vLightWeighting += vec3( 0.5, 0.5, 1.5 ) * dirSpecularWeight * n * 12.0;
 

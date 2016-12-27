@@ -39,9 +39,9 @@ vec4 colorFilter(float n) {
 
   vec4 color = vec4( vec3( 0.25 *n, 0.25 * n, 0.25 * n )  , 1.0 );
 
-  color.r = limitColor(0.15, 0.45, color.r);
-  color.g = limitColor(0.15, 0.45, color.g);
-  color.b = limitColor (0.15, 0.45, color.b);
+  color.r = limitColor(0.1, 0.9, color.r);
+  color.g = limitColor(0.1, 0.9, color.g);
+  color.b = limitColor (0.1, 0.9, color.b);
 
   return color;
 }
@@ -50,20 +50,19 @@ void main()
 {
   float n = heightMap( vTexCoord3D );
 
-    vec4 texColor = colorFilter( n );
+  vec4 texColor = colorFilter( n );
 
-    // color
-    gl_FragColor = texColor;
+  // color
+  gl_FragColor = texColor;
   
   // normal
-
-  const float e = 0.0001;
+  const float e = .001;
 
   float nx = heightMap( vTexCoord3D + vec3( e, 0.0, 0.0 ) );
   float ny = heightMap( vTexCoord3D + vec3( 0.0, e, 0.0 ) );
   float nz = heightMap( vTexCoord3D + vec3( 0.0, 0.0, e ) );
 
-  vec3 normal = normalize( vNormal + 0.085 * vec3( n - nx, n - ny, n - nz ) / e );
+  vec3 normal = normalize( vNormal + .085 * vec3( n - nx, n - ny, n - nz ) / e );
 
   // diffuse light
 
@@ -81,9 +80,9 @@ void main()
 
   float dirSpecularWeight = 0.0;
   if ( dirDotNormalHalf >= 0.0 )
-    dirSpecularWeight = ( 1.0 - n ) * pow( dirDotNormalHalf, 5.0 );
+      dirSpecularWeight = ( 1.0 - n ) * pow( dirDotNormalHalf, 12.0 );
 
-  vLightWeighting += vec3( 0.75, 0.75, 0.75 ) * dirSpecularWeight * n * 8.0;
+  vLightWeighting += vec3( 0.75, 0.75, 0.75 ) * dirSpecularWeight * n * 22.0;
 
   gl_FragColor *= vec4( vLightWeighting, 1.0 ); //
 }

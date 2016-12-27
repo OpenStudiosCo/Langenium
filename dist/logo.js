@@ -22,11 +22,11 @@ noiseTexture3.wrapS = noiseTexture3.wrapT = THREE.RepeatWrapping;
 
 var logo_water_uniforms = {
   noiseTexture: { type: "t", value: noiseTexture3 },
-  time:       { type: "f", value: 1.0 }
+  time:       { type: "f", value: 0.0 }
 },
 logo_metal_uniforms = {
   noiseTexture: { type: "t", value: noiseTexture3 },
-  time:       { type: "f", value: 1.0 }
+  time:       { type: "f", value: 0.0 }
 };
 
 var logoWaterMaterial = new THREE.ShaderMaterial( 
@@ -76,7 +76,7 @@ groundMirror = new THREE.Mirror( logo_renderer, logo_camera, { clipBias: 0.003, 
 var mirrorMesh = new THREE.Mesh( planeGeo, groundMirror.material );
 mirrorMesh.add( groundMirror );
 mirrorMesh.rotateX( - Math.PI / 2 );
-mirrorMesh.position.set(0, -110,0);
+mirrorMesh.position.set(0, -50,0);
 logo_scene.add( mirrorMesh );
 
 var vignette_geo = new THREE.PlaneGeometry( 6000,6000 );
@@ -84,8 +84,8 @@ var vignette_geo = new THREE.PlaneGeometry( 6000,6000 );
 var canvas1 = document.createElement('canvas');
 var context1 = canvas1.getContext('2d');
 var my_gradient=context1.createLinearGradient(0,0,0,170);
-my_gradient.addColorStop(0.2, 'rgba(0,0,0,0)');
-my_gradient.addColorStop(0.7,  'rgba(0,0,0,1)');
+my_gradient.addColorStop(0.3, 'rgba(0,0,0,0)');
+my_gradient.addColorStop(0.78,  'rgba(0,0,0,1)');
 context1.fillStyle=my_gradient;
 context1.fillRect(0,0,canvas1.width,canvas1.height);
   
@@ -98,7 +98,7 @@ material1.transparent = true;
 
 var vignette = new THREE.Mesh(vignette_geo, material1)
 vignette.rotateX( - Math.PI / 2 );
-vignette.position.set(0,-100, 1500);
+vignette.position.set(0,-45, 1500);
 logo_scene.add(vignette);
 // リサイズへの対応
 window.addEventListener('resize', function(){
@@ -119,7 +119,7 @@ window.addEventListener('resize', function(){
 
 var logo_render = function () {
   requestAnimationFrame( logo_render );
-  logo_water_uniforms.time.value += .00125;
+  logo_water_uniforms.time.value += .00025;
   logo_metal_uniforms.time.value += .000125;
   groundMirror.render();
   logo_renderer.render( logo_scene, logo_camera );

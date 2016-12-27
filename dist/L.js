@@ -1,1 +1,1 @@
-var L={info:"This is the Langenium API object."};console.log(L);
+var L=function(){this.info="This is the Langenium API object."};console.log(L);

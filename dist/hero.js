@@ -32,18 +32,23 @@ var platform;
 var cb = function(platform_geometry, platform_materials) {
   for (var i = 0; i < platform_materials.length; i++) {
     if(platform_materials[i].name == 'Dark-Glass' || platform_materials[i].name == 'Red-Metal') {
-      platform_materials[i] = material11;
+      platform_materials[i].color = new THREE.Color(0xFF0000);
+      platform_materials[i].transparent = true;
+      platform_materials[i].opacity = 0.5;
     }
     if (platform_materials[i].name == 'Metal' || platform_materials[i].name == 'Light-Metal') {
       platform_materials[i] = material22;
     }
   }
+
   platform = new THREE.Mesh(platform_geometry,  new THREE.MultiMaterial(platform_materials));
   platform.scale.set(200,200,200);
   platform.position.set(0,-370,0);
-  scene.add(platform);     
+  
+  scene.add(platform);
+  render();   
 }
-platform_loader.load('/old/res/models/infrastructure/platforms/union.js', function(platform_geometry, platform_materials) {
+platform_loader.load('/universe/art/design/models/union-platform2.json', function(platform_geometry, platform_materials) {
   cb(platform_geometry, platform_materials);
 });
 
@@ -65,11 +70,12 @@ controls.enableZoom = true;
 
 var render = function () {
   requestAnimationFrame( render );
+  platform.geometry.uvsNeedUpdate = true;
   controls.update();
   renderer.render( scene, camera );
 };
 
-render();
+
 // DOMを追加
 document.getElementsByClassName( 'hero' )[0].innerHTML = '';
 document.getElementsByClassName( 'hero' )[0].appendChild( renderer.domElement );

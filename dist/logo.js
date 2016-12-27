@@ -43,7 +43,6 @@ var logoMetalMaterial = new THREE.ShaderMaterial(
   vertexShader:   document.getElementById( 'logoMetalVertShader'   ).textContent,
   fragmentShader: document.getElementById( 'logoMetalFragShader' ).textContent,
   side: THREE.DoubleSide,
-  anisotropy: maxAnisotropy
 }   );
 
 var mesh;
@@ -66,7 +65,7 @@ var logo_cb = function(geometry, materials) {
   logo_scene.add(mesh);     
 }
 
-loader.load('/old/res/models/langenium-logo.js', function(geometry, materials) {
+loader.load('/universe/art/design/logos-symbols/langenium logo.json', function(geometry, materials) {
   logo_cb(geometry, materials);
 });
 

@@ -3,7 +3,7 @@ block vendor_scripts
   script(src='/vendor/wad/build/wad.min.js')
   script(src='/vendor/Semantic-UI/dist/semantic.min.js')
   script(src='/vendor/threejs/examples/js/libs/dat.gui.min.js')
-  script(src='/vendor/threejs/build/three.min.js')
+  script(src='/vendor/threejs/build/three.js')
   script(src='/vendor/threejs/examples/js/libs/stats.min.js')
   script(src='/vendor/threejs/examples/js/controls/OrbitControls.js')
   script(src='/vendor/threejs/examples/js/loaders/ColladaLoader.js')
@@ -30,6 +30,7 @@ block vendor_scripts
     include shaders/smooth.frag
   script(id='waterVertexShader', type='x-shader/x-vertex')
     include shaders/water.vert
+  script(src='/dist/L.js')
   script(src='/dist/logo.js')
 block scripts
 script

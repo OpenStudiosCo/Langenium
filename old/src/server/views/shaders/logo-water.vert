@@ -6,12 +6,11 @@ uniform float time;
 
 void main() 
 {
-    vNormal = normalize( normalMatrix * normal );
+  vec4 mPosition = modelMatrix * vec4( position, 1.0 );
+  vNormal = normalize( normalMatrix * normal );
+  vViewPosition = cameraPosition - mPosition.xyz;
 
-    vec4 mvPosition = modelMatrix * vec4( position, 1.0 );
-    vViewPosition = cameraPosition - mvPosition.xyz;
+  vTexCoord3D = 1100. * ( mPosition.xyz + vec3( 0.0, 0.0, -time ) );
+  gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 
-    vTexCoord3D = 11. * ( position.xyz + vec3( -time, -time, -time ) );
-
-    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 }

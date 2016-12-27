@@ -34,7 +34,7 @@
   <script src="/vendor/wad/build/wad.min.js"></script>
   <script src="/vendor/Semantic-UI/dist/semantic.min.js"></script>
   <script src="/vendor/threejs/examples/js/libs/dat.gui.min.js"></script>
-  <script src="/vendor/threejs/build/three.min.js"></script>
+  <script src="/vendor/threejs/build/three.js"></script>
   <script src="/vendor/threejs/examples/js/libs/stats.min.js"></script>
   <script src="/vendor/threejs/examples/js/controls/OrbitControls.js"></script>
   <script src="/vendor/threejs/examples/js/loaders/ColladaLoader.js"></script>
@@ -171,7 +171,7 @@ void main()
     vec4 mvPosition = modelMatrix * vec4( position, 1.0 );
     vViewPosition = cameraPosition - mvPosition.xyz;
 
-    vTexCoord3D = 1.5 * ( position.xyz + vec3( time, time , time ) );
+    vTexCoord3D = 15.5 * ( position.xyz + vec3( time, time , time ) );
 
     gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 }
@@ -363,6 +363,7 @@ void main() {
   #include <shadowmap_vertex>
 }
   </script>
+  <script src="/dist/L.js"></script>
   <script src="/dist/logo.js"></script>
   <script src="/dist/ocean_scene.js"></script>
   <script>

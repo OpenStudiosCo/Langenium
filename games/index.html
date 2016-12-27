@@ -24,21 +24,31 @@
         <h2>Games</h2>
         <p>Langenium is a project that encompasses a game engine and it's own world of games and media. Here are the games currently in development, as well as some demo's.   </p>
         <h3>Langenium Epoch Exordium</h3>
-        <p>A single player experience with an emphasis on story and philosophy. The game tells the story of Jack, a lone operator of the Helios station. His job is to ensure the precious Exordium element is processed and sent to Earth to be used as an energy source. The space station AI has other plans.</p>
-        <p>Interactive demos of the game are coming soon!</p>
+        <p>A single player experience with an emphasis on story and philosophy. The game tells the story of Jack, a lone operator of the Helios station. His job is to ensure the precious Exordium mineral is processed and sent to Earth to be used as an energy source. The space station AI has other plans.</p>
         <ul>
           <li><a href="/games/character_test.html">Character test</a></li>
           <li><a href="/games/sound.html">Sound (Music + SFX)</a></li>
-        </ul><img src="/universe/new/exordium-poster-01.png">
+        </ul><img src="/universe/new/thumb_exordium-poster-01.png">
+        <h3>Langenium MMO</h3>
+        <p>The featured game driving the rest of the project. Langenium was originally envisaged as an online airship combat game with RPG exploration elements, but developing it creatively and technically over the years led to concessions in what I can reasonably build within my lifetime so the other games and experiences are being developed in order to create the necessary assets and codebase for the MMO.</p>
+        <h4>Premise</h4>
+        <p>The Earth is destroyed in the year 2099 by a solar flare. A wormhole in the sky allows some of humanity to survive on a new planet covered in Ocean. The new planet makes up for its lack of land by being rich in the mineral Langenium, named after the German scientist Dr. Bruno Lange who was a pioneer in making solar energy viable. The mineral is produced in the oceans of the new planet and can be used to collect and store solar energy. </p>
+        <p>200 years later, in the year 2299, the human race is thriving on the new world but conflicts have escalated to the point of war. The tensions between the three factions of Los Zaar, The Union and the Kingdom of Winthrom are causing minor conflicts across the world. Meanwhile, mysterious alien ships are beginning to scout the planet and the humans seem to preoccupied to notice the bigger universe around their new world.</p>
+        <ul>
+          <li><a href="/games/ocean_scene.html">Ocean scene</a></li>
+        </ul><img src="/universe/art/production/posters/thumb_MMO Poster-01.png">
       </div>
     </div>
   </body>
   <script src="/vendor/jquery.min.js"></script>
   <script src="/vendor/wad/build/wad.min.js"></script>
   <script src="/vendor/Semantic-UI/dist/semantic.min.js"></script>
+  <script src="/vendor/threejs/examples/js/libs/dat.gui.min.js"></script>
   <script src="/vendor/threejs/build/three.min.js"></script>
   <script src="/vendor/threejs/examples/js/controls/OrbitControls.js"></script>
   <script src="/vendor/threejs/examples/js/loaders/ColladaLoader.js"></script>
+  <script src="/vendor/threejs/examples/js/SimplexNoise.js"></script>
+  <script src="/vendor/threejs/examples/js/GPUComputationRenderer.js"></script>
   <script src="/dist/Mirror.js"></script>
   <script src="/vendor/ocean/water-material.js"></script>
   <script src="/vendor/Live2D-WebGL-SDK/lib/live2d.min.js"></script>
@@ -263,6 +273,99 @@ void main()
   vLightWeighting += vec3( 0.75, 0.75, 0.75 ) * dirSpecularWeight * n * 8.0;
 
   gl_FragColor *= vec4( vLightWeighting, 1.0 ); //
+}
+  </script>
+  <script id="heightmapFragmentShader" type="x-shader/x-fragment">#include <common>
+uniform vec2 mousePos;
+uniform float mouseSize;
+uniform float viscosityConstant;
+#define deltaTime ( 1.0 / 60.0 )
+#define GRAVITY_CONSTANT ( resolution.x * deltaTime * 3.0 )
+void main() {
+  vec2 cellSize = 1.0 / resolution.xy;
+  vec2 uv = gl_FragCoord.xy * cellSize;
+  // heightmapValue.x == height
+  // heightmapValue.y == velocity
+  // heightmapValue.z, heightmapValue.w not used
+  vec4 heightmapValue = texture2D( heightmap, uv );
+  // Get neighbours
+  vec4 north = texture2D( heightmap, uv + vec2( 0.0, cellSize.y ) );
+  vec4 south = texture2D( heightmap, uv + vec2( 0.0, - cellSize.y ) );
+  vec4 east = texture2D( heightmap, uv + vec2( cellSize.x, 0.0 ) );
+  vec4 west = texture2D( heightmap, uv + vec2( - cellSize.x, 0.0 ) );
+  float sump = north.x + south.x + east.x + west.x - 4.0 * heightmapValue.x;
+  float accel = sump * GRAVITY_CONSTANT;
+  // Dynamics
+  heightmapValue.y += accel;
+  heightmapValue.x += heightmapValue.y * deltaTime;
+  // Viscosity
+  heightmapValue.x += sump * viscosityConstant;
+  // Mouse influence
+  float mousePhase = clamp( length( ( uv - vec2( 0.5 ) ) * BOUNDS - vec2( mousePos.x, - mousePos.y ) ) * PI / mouseSize, 0.0, PI );
+  heightmapValue.x += cos( mousePhase ) + 1.0;
+  gl_FragColor = heightmapValue;
+}
+  </script>
+  <script id="smoothFragmentShader" type="x-shader/x-fragment">#include <common>
+uniform vec2 mousePos;
+uniform float mouseSize;
+uniform float viscosityConstant;
+#define deltaTime ( 1.0 / 60.0 )
+#define GRAVITY_CONSTANT ( resolution.x * deltaTime * 3.0 )
+void main() {
+  vec2 cellSize = 1.0 / resolution.xy;
+  vec2 uv = gl_FragCoord.xy * cellSize;
+  // heightmapValue.x == height
+  // heightmapValue.y == velocity
+  // heightmapValue.z, heightmapValue.w not used
+  vec4 heightmapValue = texture2D( heightmap, uv );
+  // Get neighbours
+  vec4 north = texture2D( heightmap, uv + vec2( 0.0, cellSize.y ) );
+  vec4 south = texture2D( heightmap, uv + vec2( 0.0, - cellSize.y ) );
+  vec4 east = texture2D( heightmap, uv + vec2( cellSize.x, 0.0 ) );
+  vec4 west = texture2D( heightmap, uv + vec2( - cellSize.x, 0.0 ) );
+  float sump = north.x + south.x + east.x + west.x - 4.0 * heightmapValue.x;
+  float accel = sump * GRAVITY_CONSTANT;
+  // Dynamics
+  heightmapValue.y += accel;
+  heightmapValue.x += heightmapValue.y * deltaTime;
+  // Viscosity
+  heightmapValue.x += sump * viscosityConstant;
+  // Mouse influence
+  float mousePhase = clamp( length( ( uv - vec2( 0.5 ) ) * BOUNDS - vec2( mousePos.x, - mousePos.y ) ) * PI / mouseSize, 0.0, PI );
+  heightmapValue.x += cos( mousePhase ) + 1.0;
+  gl_FragColor = heightmapValue;
+}
+  </script>
+  <script id="waterVertexShader" type="x-shader/x-vertex">#include <common>
+uniform vec2 mousePos;
+uniform float mouseSize;
+uniform float viscosityConstant;
+#define deltaTime ( 1.0 / 60.0 )
+#define GRAVITY_CONSTANT ( resolution.x * deltaTime * 3.0 )
+void main() {
+  vec2 cellSize = 1.0 / resolution.xy;
+  vec2 uv = gl_FragCoord.xy * cellSize;
+  // heightmapValue.x == height
+  // heightmapValue.y == velocity
+  // heightmapValue.z, heightmapValue.w not used
+  vec4 heightmapValue = texture2D( heightmap, uv );
+  // Get neighbours
+  vec4 north = texture2D( heightmap, uv + vec2( 0.0, cellSize.y ) );
+  vec4 south = texture2D( heightmap, uv + vec2( 0.0, - cellSize.y ) );
+  vec4 east = texture2D( heightmap, uv + vec2( cellSize.x, 0.0 ) );
+  vec4 west = texture2D( heightmap, uv + vec2( - cellSize.x, 0.0 ) );
+  float sump = north.x + south.x + east.x + west.x - 4.0 * heightmapValue.x;
+  float accel = sump * GRAVITY_CONSTANT;
+  // Dynamics
+  heightmapValue.y += accel;
+  heightmapValue.x += heightmapValue.y * deltaTime;
+  // Viscosity
+  heightmapValue.x += sump * viscosityConstant;
+  // Mouse influence
+  float mousePhase = clamp( length( ( uv - vec2( 0.5 ) ) * BOUNDS - vec2( mousePos.x, - mousePos.y ) ) * PI / mouseSize, 0.0, PI );
+  heightmapValue.x += cos( mousePhase ) + 1.0;
+  gl_FragColor = heightmapValue;
 }
   </script>
   <script src="/dist/logo.js"></script>

@@ -2,9 +2,12 @@ block vendor_scripts
   script(src='/vendor/jquery.min.js')
   script(src='/vendor/wad/build/wad.min.js')
   script(src='/vendor/Semantic-UI/dist/semantic.min.js')
+  script(src='/vendor/threejs/examples/js/libs/dat.gui.min.js')
   script(src='/vendor/threejs/build/three.min.js')
   script(src='/vendor/threejs/examples/js/controls/OrbitControls.js')
   script(src='/vendor/threejs/examples/js/loaders/ColladaLoader.js')
+  script(src='/vendor/threejs/examples/js/SimplexNoise.js')
+  script(src='/vendor/threejs/examples/js/GPUComputationRenderer.js')
   script(src='/dist/Mirror.js')
   script(src='/vendor/ocean/water-material.js')
   script(src='/vendor/Live2D-WebGL-SDK/lib/live2d.min.js')
@@ -20,6 +23,12 @@ block vendor_scripts
     include shaders/logo-metal.vert
   script(id='logoMetalFragShader', type='x-shader/x-fragment')
     include shaders/logo-metal.frag
+  script(id='heightmapFragmentShader', type='x-shader/x-fragment')
+    include shaders/heightmap.frag
+  script(id='smoothFragmentShader', type='x-shader/x-fragment')
+    include shaders/heightmap.frag
+  script(id='waterVertexShader', type='x-shader/x-vertex')
+    include shaders/heightmap.frag
   script(src='/dist/logo.js')
 block scripts
 script

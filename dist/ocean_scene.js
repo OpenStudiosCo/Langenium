@@ -18,8 +18,15 @@ var heightmapVariable;
 var waterUniforms;
 var smoothShader;
 var simplex = new SimplexNoise();
-var windowHalfX = window.innerWidth / 2;
-var windowHalfY = window.innerHeight / 2;
+var ratio = window.innerWidth/window.innerHeight;
+var containerWidth = document.getElementsByClassName( 'ocean_scene' )[0].offsetWidth;
+var containerHeight = (
+  (document.getElementsByClassName( 'ocean_scene' )[0].offsetHeight > 400)
+  ? document.getElementsByClassName( 'ocean_scene' )[0].offsetHeight
+  : document.getElementsByClassName( 'ocean_scene' )[0].offsetWidth / ratio
+);
+var windowHalfX = containerWidth / 2;
+var windowHalfY = containerHeight / 2;
 document.getElementById( 'waterSize' ).innerText = WIDTH + ' x ' + WIDTH;
 function change(n) {
   location.hash = n;
@@ -36,7 +43,7 @@ init();
 animate();
 function init() {
   container = document.getElementsByClassName( 'ocean_scene' )[0];
-  camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 3000 );
+  camera = new THREE.PerspectiveCamera( 75, ratio, 1, 3000 );
   camera.position.set( 0, 200, 350 );
   scene = new THREE.Scene();
   var sun = new THREE.DirectionalLight( 0xFFFFFF, 1.0 );
@@ -48,7 +55,7 @@ function init() {
   renderer = new THREE.WebGLRenderer();
   renderer.setClearColor( 0x000000 );
   renderer.setPixelRatio( window.devicePixelRatio );
-  renderer.setSize( window.innerWidth, window.innerHeight );
+  renderer.setSize( containerWidth, containerHeight );
   container.appendChild( renderer.domElement );
   controls = new THREE.OrbitControls( camera, renderer.domElement );
   stats = new Stats();
@@ -180,14 +187,23 @@ function smoothWater() {
   
 }
 function onWindowResize() {
-  windowHalfX = window.innerWidth / 2;
-  windowHalfY = window.innerHeight / 2;
-  camera.aspect = window.innerWidth / window.innerHeight;
+  containerWidth = document.getElementsByClassName( 'ocean_scene' )[0].offsetWidth;
+  containerHeight = (
+    (document.getElementsByClassName( 'ocean_scene' )[0].offsetHeight > 400)
+    ? document.getElementsByClassName( 'ocean_scene' )[0].offsetHeight
+    : document.getElementsByClassName( 'ocean_scene' )[0].offsetWidth / ratio
+  );
+  windowHalfX = containerWidth / 2;
+  windowHalfY = containerHeight / 2;
+  camera.aspect = containerWidth / containerHeight;
   camera.updateProjectionMatrix();
-  renderer.setSize( window.innerWidth, window.innerHeight );
+  renderer.setSize( containerWidth, containerHeight );
 }
 function setMouseCoords( x, y ) {
-  mouseCoords.set( ( x / renderer.domElement.clientWidth ) * 2 - 1, - ( y / renderer.domElement.clientHeight ) * 2 + 1 );
+  mouseCoords.set( 
+    ( x / (renderer.domElement.clientWidth + container.offsetLeft * 2 + window.scrollX) ) * 2 - 1, 
+    - ( y / (renderer.domElement.clientHeight + container.offsetTop * 2 - window.scrollY * 2) ) * 2 + 1 
+  );
   mouseMoved = true;
 }
 function onDocumentMouseMove( event ) {

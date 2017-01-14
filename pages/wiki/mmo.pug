@@ -1,0 +1,11 @@
+extends /templates/layout.pug
+
+block append title
+  | MMO | Wiki | Langenium
+
+block append page
+  .row
+    h2 MMO
+    include:markdown /universe/documentation/games/Langenium-MMO/README.md
+    h3 Storyline
+    include:markdown /universe/stories-world-building/MMO/README.md

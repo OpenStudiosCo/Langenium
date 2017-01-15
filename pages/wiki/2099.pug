@@ -1,0 +1,9 @@
+extends /templates/layout.pug
+
+block append title
+  | 2099 | Wiki | Langenium
+
+block append page
+  .row
+    h2 2099
+    include:markdown /universe/stories-world-building/Years/2099.md

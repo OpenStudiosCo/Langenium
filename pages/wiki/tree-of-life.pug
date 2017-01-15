@@ -1,0 +1,9 @@
+extends /templates/layout.pug
+
+block append title
+  | Tree of Life | Wiki | Langenium
+
+block append page
+  .row
+    h2 Tree of Life
+    include:markdown /universe/stories-world-building/Arcs/Tree of Life.md

@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>2299 | Wiki | Langenium
+    </title>
+    <link href="/vendor/Semantic-UI/dist/semantic.min.css" rel="stylesheet">
+    <link href="/dist/styles.css" rel="stylesheet">
+  </head>
+  <body>
+    <div id="fb-root"></div>
+    <div class="container">
+      <header class="row"><a class="logo" href="/" title="Langenium"><img src="/logo.png"></a>
+        <nav>
+          <ul>
+            <li><a href="/about.html">About</a></li>
+            <li><a href="/gallery">Gallery</a></li>
+            <li><a href="/games">Games</a></li>
+            <li><a href="/wiki">Wiki</a></li>
+          </ul>
+        </nav>
+        <div class="fb-like" data-href="https://www.facebook.com/Langenium/" data-layout="button_count" data-action="like" data-size="small" data-show-faces="true" data-share="false"></div>
+      </header>
+      <div class="row">
+        <h2>2299</h2><p>The year that <a href="/wiki/mmo.html">the MMO</a> is set in.</p>
+      </div>
+    </div>
+  </body>
+  <script src="/vendor/jquery.min.js"></script>
+  <script src="/vendor/wad/build/wad.min.js"></script>
+  <script src="/vendor/Semantic-UI/dist/semantic.min.js"></script>
+  <script src="/vendor/threejs/examples/js/libs/dat.gui.min.js"></script>
+  <script src="/vendor/threejs/build/three.js"></script>
+  <script src="/vendor/threejs/examples/js/libs/stats.min.js"></script>
+  <script src="/vendor/threejs/examples/js/controls/OrbitControls.js"></script>
+  <script src="/vendor/threejs/examples/js/loaders/ColladaLoader.js"></script>
+  <script src="/vendor/threejs/examples/js/SimplexNoise.js"></script>
+  <script src="/vendor/threejs/examples/js/GPUComputationRenderer.js"></script>
+  <script src="/vendor/threejs/examples/js/Mirror.js"></script>
+  <script src="/vendor/ocean/water-material.js"></script>
+  <script src="/vendor/Live2D-WebGL-SDK/lib/live2d.min.js"></script>
+  <script src="/vendor/Live2D-WebGL-SDK/framework/Live2DFramework.js"></script>
+  <script src="/vendor/Live2D-WebGL-SDK/sample/sampleApp1/src/PlatformManager.js"></script>
+  <script src="/vendor/Live2D-WebGL-SDK/sample/sampleApp1/src/LAppLive2DManager.js"></script>
+  <script src="/vendor/Live2D_ThreeJS/Live2DRender.js"></script>
+  <script id="logoWaterVertShader" type="x-shader/x-vertex">varying vec3 vNormal;
+varying vec3 vTexCoord3D;
+varying vec3 vViewPosition;
+
+uniform float time;
+
+void main() 
+{
+    vNormal = normalize( normalMatrix * normal );
+
+    vec4 mvPosition = modelMatrix * vec4( position, 1.0 );
+    vViewPosition = cameraPosition - mvPosition.xyz;
+
+    vTexCoord3D = 11.1 * ( position.xyz + vec3( -time, -time, -time ) );
+
+    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+}
+  </script>
+  <script id="logoWaterFragShader" type="x-shader/x-fragment">varying vec3 vNormal;
+varying vec3 vTexCoord3D;
+varying vec3 vViewPosition;
+
+uniform sampler2D noiseTexture;
+uniform float time;
+
+float snoise ( vec3 coord, float scale, float time_factor ) {
+    vec3 scaledCoord = coord * scale - (vNormal / time_factor + vec3(0.0, 0.0, -time / time_factor));
+
+    vec2 uvTimeShift = vec2((scaledCoord.x + scaledCoord.z) / 2.0, scaledCoord.y) + vec2( -0.7, 1.5 ) * time / time_factor * 0.015;
+    vec4 noiseGeneratorTimeShift = texture2D( noiseTexture, uvTimeShift );
+    vec2 uvNoiseTimeShift = vec2(scaledCoord.x, scaledCoord.y) + 0.5 * vec2( noiseGeneratorTimeShift.g, noiseGeneratorTimeShift.b );
+    vec4 baseColor = texture2D( noiseTexture, uvNoiseTimeShift * vec2(4.0, 4.0) );
+
+    return baseColor.b;
+}
+
+float heightMap( vec3 coord ) {
+  float n = 0.0;
+
+  n = 0.65 * abs(snoise(coord, 0.0625, 500. ));
+  n += 0.5 * abs(snoise(coord, 0.125, -500. ));
+  n += 0.125 * abs(snoise(coord, 5., -50. ));
+  n -= 0.125 * abs(snoise(coord, 100., 150. ));
+  n *= .75;
+
+  return n;
+}
+
+float limitColor( float min, float max, float channel) {
+  if (channel < min) {
+    channel = min;
+  }
+  if (channel > max) {
+    channel = max;
+  }
+  return channel;
+}
+
+vec4 colorFilter(float n) {
+
+  vec4 color = vec4( vec3( 0.01 *n, 0.25 * n, .95 * n )  , 1.0 );
+
+  color.r = limitColor(0.0, 0.05, color.r);
+  color.g = limitColor(0.015, 0.25, color.g);
+  color.b = limitColor (0.025, 0.75, color.b);
+
+  return color;
+}
+
+void main() 
+{
+    float n = heightMap( vTexCoord3D );
+
+    vec4 texColor = colorFilter( n );
+
+    // color
+    gl_FragColor = texColor;
+  
+  // normal
+
+  const float e = 0.01;
+
+  float nx = heightMap( vTexCoord3D + vec3( e, 0.0, 0.0 ) );
+  float ny = heightMap( vTexCoord3D + vec3( 0.0, e, 0.0 ) );
+  float nz = heightMap( vTexCoord3D + vec3( 0.0, 0.0, e ) );
+
+  vec3 normal = normalize( vNormal + 0.085 * vec3( n - nx, n - ny, n - nz ) / e );
+
+  // diffuse light
+
+  vec3 vLightWeighting = vec3( -0.01 );
+
+  vec4 lDirection = viewMatrix * vec4( normalize( vec3( 0.0, -1.0, 1.0 ) ), 0.0 );
+  float directionalLightWeighting = dot( normal, normalize( lDirection.xyz ) ) * 0.15 + 0.85;
+  vLightWeighting += vec3( 1.0 ) * directionalLightWeighting;
+
+  // specular light
+
+  vec3 dirHalfVector = normalize( lDirection.xyz + normalize( vViewPosition ) );
+
+  float dirDotNormalHalf = dot( normal, dirHalfVector );
+
+  float dirSpecularWeight = 0.0;
+  if ( dirDotNormalHalf >= 0.0 )
+    dirSpecularWeight = ( 1.0 - n ) * pow( dirDotNormalHalf, 15.0 );
+
+  vLightWeighting += vec3( 0.5, 0.5, 1.5 ) * dirSpecularWeight * n * 12.0;
+
+  gl_FragColor *= vec4( vLightWeighting, 1.0 ); //
+}
+  </script>
+  <script id="logoMetalVertShader" type="x-shader/x-vertex">varying vec3 vNormal;
+varying vec3 vTexCoord3D;
+varying vec3 vViewPosition;
+
+uniform float time;
+
+void main() 
+{
+    vNormal = normalize( normalMatrix * normal );
+
+    vec4 mvPosition = modelMatrix * vec4( position, 1.0 );
+    vViewPosition = cameraPosition - mvPosition.xyz;
+
+    vTexCoord3D = 15.5 * ( position.xyz + vec3( -time, -time , -time ) );
+
+    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+}
+  </script>
+  <script id="logoMetalFragShader" type="x-shader/x-fragment">varying vec3 vNormal;
+varying vec3 vTexCoord3D;
+varying vec3 vViewPosition;
+
+uniform sampler2D noiseTexture;
+uniform float time;
+
+float snoise ( vec3 coord, float scale, float time_factor ) {
+    vec3 scaledCoord = coord * scale - (vNormal / time_factor + vec3(0., 0.0, -time / time_factor));
+
+    vec2 uvTimeShift = vec2((scaledCoord.x + scaledCoord.z) / 2.0, scaledCoord.y) + vec2( -0.7, 1.5 ) * time / time_factor * 0.015;
+    vec4 noiseGeneratorTimeShift = texture2D( noiseTexture, uvTimeShift );
+    vec2 uvNoiseTimeShift = vec2(scaledCoord.x, scaledCoord.z) + 0.5 * vec2( noiseGeneratorTimeShift.g, noiseGeneratorTimeShift.b );
+    vec4 baseColor = texture2D( noiseTexture, uvNoiseTimeShift * vec2(4.0, 4.0) );
+
+    return baseColor.b;
+}
+
+float heightMap( vec3 coord ) {
+  float n = 0.0;
+
+  n = 0.0125 * abs(snoise(coord, 0.0625, 500. ));
+  n += 0.25 * abs(snoise(coord, 0.125, -500. ));
+  n += 0.125 * abs(snoise(coord, 5., -50. ));
+  return n;
+}
+
+float limitColor( float min, float max, float channel) {
+  if (channel < min) {
+    channel = min;
+  }
+  if (channel > max) {
+    channel = max;
+  }
+  return channel;
+}
+
+vec4 colorFilter(float n) {
+
+  vec4 color = vec4( vec3( 0.25 *n, 0.25 * n, 0.25 * n )  , 1.0 );
+
+  color.r = limitColor(0.1, 0.9, color.r);
+  color.g = limitColor(0.1, 0.9, color.g);
+  color.b = limitColor (0.1, 0.9, color.b);
+
+  return color;
+}
+
+void main() 
+{
+  float n = heightMap( vTexCoord3D );
+
+  vec4 texColor = colorFilter( n );
+
+  // color
+  gl_FragColor = texColor;
+  
+  // normal
+  const float e = .001;
+
+  float nx = heightMap( vTexCoord3D + vec3( e, 0.0, 0.0 ) );
+  float ny = heightMap( vTexCoord3D + vec3( 0.0, e, 0.0 ) );
+  float nz = heightMap( vTexCoord3D + vec3( 0.0, 0.0, e ) );
+
+  vec3 normal = normalize( vNormal + .085 * vec3( n - nx, n - ny, n - nz ) / e );
+
+  // diffuse light
+
+  vec3 vLightWeighting = vec3( -0.1 );
+
+  vec4 lDirection = viewMatrix * vec4( normalize( vec3( 0.0, -1.0, 1.0 ) ), 0.0 );
+  float directionalLightWeighting = dot( normal, normalize( lDirection.xyz ) ) * 0.35 + 0.65;
+  vLightWeighting += vec3( 1.0 ) * directionalLightWeighting;
+
+  // specular light
+
+  vec3 dirHalfVector = normalize( lDirection.xyz + normalize( vViewPosition ) );
+
+  float dirDotNormalHalf = dot( normal, dirHalfVector );
+
+  float dirSpecularWeight = 0.0;
+  if ( dirDotNormalHalf >= 0.0 )
+      dirSpecularWeight = ( 1.0 - n ) * pow( dirDotNormalHalf, 12.0 );
+
+  vLightWeighting += vec3( 0.75, 0.75, 0.75 ) * dirSpecularWeight * n * 22.0;
+
+  gl_FragColor *= vec4( vLightWeighting, 1.0 ); //
+}
+  </script>
+  <script id="heightmapFragmentShader" type="x-shader/x-fragment">#include <common>
+uniform vec2 mousePos;
+uniform float mouseSize;
+uniform float viscosityConstant;
+#define deltaTime ( 1.0 / 60.0 )
+#define GRAVITY_CONSTANT ( resolution.x * deltaTime * 3.0 )
+void main() {
+  vec2 cellSize = 1.0 / resolution.xy;
+  vec2 uv = gl_FragCoord.xy * cellSize;
+  // heightmapValue.x == height
+  // heightmapValue.y == velocity
+  // heightmapValue.z, heightmapValue.w not used
+  vec4 heightmapValue = texture2D( heightmap, uv );
+  // Get neighbours
+  vec4 north = texture2D( heightmap, uv + vec2( 0.0, cellSize.y ) );
+  vec4 south = texture2D( heightmap, uv + vec2( 0.0, - cellSize.y ) );
+  vec4 east = texture2D( heightmap, uv + vec2( cellSize.x, 0.0 ) );
+  vec4 west = texture2D( heightmap, uv + vec2( - cellSize.x, 0.0 ) );
+  float sump = north.x + south.x + east.x + west.x - 4.0 * heightmapValue.x;
+  float accel = sump * GRAVITY_CONSTANT;
+  // Dynamics
+  heightmapValue.y += accel;
+  heightmapValue.x += heightmapValue.y * deltaTime;
+  // Viscosity
+  heightmapValue.x += sump * viscosityConstant;
+  // Mouse influence
+  float mousePhase = clamp( length( ( uv - vec2( 0.5 ) ) * BOUNDS - vec2( mousePos.x, - mousePos.y ) ) * PI / mouseSize, 0.0, PI );
+  heightmapValue.x += cos( mousePhase ) + 1.0;
+  gl_FragColor = heightmapValue;
+}
+  </script>
+  <script id="smoothFragmentShader" type="x-shader/x-fragment">uniform sampler2D texture;
+void main() {
+    vec2 cellSize = 1.0 / resolution.xy;
+    vec2 uv = gl_FragCoord.xy * cellSize;
+    // Computes the mean of texel and 4 neighbours
+    vec4 textureValue = texture2D( texture, uv );
+    textureValue += texture2D( texture, uv + vec2( 0.0, cellSize.y ) );
+    textureValue += texture2D( texture, uv + vec2( 0.0, - cellSize.y ) );
+    textureValue += texture2D( texture, uv + vec2( cellSize.x, 0.0 ) );
+    textureValue += texture2D( texture, uv + vec2( - cellSize.x, 0.0 ) );
+    textureValue /= 5.0;
+    gl_FragColor = textureValue;
+}
+  </script>
+  <script id="waterVertexShader" type="x-shader/x-vertex">uniform sampler2D heightmap;
+#define PHONG
+varying vec3 vViewPosition;
+#ifndef FLAT_SHADED
+  varying vec3 vNormal;
+#endif
+#include <common>
+#include <uv_pars_vertex>
+#include <uv2_pars_vertex>
+#include <displacementmap_pars_vertex>
+#include <envmap_pars_vertex>
+#include <color_pars_vertex>
+#include <morphtarget_pars_vertex>
+#include <skinning_pars_vertex>
+#include <shadowmap_pars_vertex>
+#include <logdepthbuf_pars_vertex>
+#include <clipping_planes_pars_vertex>
+void main() {
+  vec2 cellSize = vec2( 1.0 / WIDTH, 1.0 / WIDTH );
+  #include <uv_vertex>
+  #include <uv2_vertex>
+  #include <color_vertex>
+  // # include <beginnormal_vertex>
+  // Compute normal from heightmap
+  vec3 objectNormal = vec3(
+    ( texture2D( heightmap, uv + vec2( - cellSize.x, 0 ) ).x - texture2D( heightmap, uv + vec2( cellSize.x, 0 ) ).x ) * WIDTH / BOUNDS,
+    ( texture2D( heightmap, uv + vec2( 0, - cellSize.y ) ).x - texture2D( heightmap, uv + vec2( 0, cellSize.y ) ).x ) * WIDTH / BOUNDS,
+    1.0 );
+  //<beginnormal_vertex>
+  #include <morphnormal_vertex>
+  #include <skinbase_vertex>
+  #include <skinnormal_vertex>
+  #include <defaultnormal_vertex>
+#ifndef FLAT_SHADED // Normal computed with derivatives when FLAT_SHADED
+  vNormal = normalize( transformedNormal );
+#endif
+  //# include <begin_vertex>
+  float heightValue = texture2D( heightmap, uv ).x;
+  vec3 transformed = vec3( position.x, position.y, heightValue );
+  //<begin_vertex>
+  #include <displacementmap_vertex>
+  #include <morphtarget_vertex>
+  #include <skinning_vertex>
+  #include <project_vertex>
+  #include <logdepthbuf_vertex>
+  #include <clipping_planes_vertex>
+  vViewPosition = - mvPosition.xyz;
+  #include <worldpos_vertex>
+  #include <envmap_vertex>
+  #include <shadowmap_vertex>
+}
+  </script>
+  <script src="/dist/L.js"></script>
+  <!-- script(src='/dist/logo.js')-->
+  <script>
+    // Facebook Like Button.
+    (function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.8";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+     
+    // Google Analytics
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+     
+    ga('create', 'UA-37159175-1', 'auto');
+    ga('send', 'pageview');
+  </script>
+</html>

@@ -187,3 +187,5 @@ pip-log.txt
 
 # Mac crap
 .DS_Store
+
+/vendor/Semantic-UI/dist

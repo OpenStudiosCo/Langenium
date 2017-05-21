@@ -1,0 +1,10 @@
+extends /templates/layout.pug
+
+block append title
+  | Lux Mundi Atlas | Wiki | Langenium
+
+block append page
+  .row
+    h2 Lux Mundi Atlas
+    include:markdown /universe/stories-world-building/Arcs/Lux Mundi Atlas.md
+    img(src='/universe/art/concept-art/Atlantis-01.png')

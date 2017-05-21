@@ -1,0 +1,15 @@
+#content ul {
+  padding: 0;
+}
+#content li {
+  display: inline-block;
+  list-style-type: none;
+  padding: 1em 1em 0;
+  vertical-align: top;
+}
+#content li {
+  border-bottom: solid 1px #222;
+  padding: 0.5em;
+  background-color: #333;
+  width: 100%;
+}

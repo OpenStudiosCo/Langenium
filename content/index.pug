@@ -11,15 +11,23 @@ block append page
     .hero 
       h1 Interactive Hero Area
     .call_to_action
-      ul.row
-        li
-          a(href='/games') Play
-        li
-          a(href='/gallery/concept-art.html') Concept Art
-        li
-          a(href='/wiki/storylines.html') Storylines
-        li
-          a(href='http://github.com/paulbrzeski/Langenium') Github
+      ul.ui.cards
+        li.ui.card.fluid
+          a.ui.black.labeled.icon.button.large(href='/games')
+            i.icon.game
+            | Play
+        li.ui.card.fluid
+          a.ui.black.labeled.icon.button.large(href='/gallery/concept-art.html') 
+            i.icon.paint.brush
+            | Concept Art
+        li.ui.card.fluid
+          a.ui.black.labeled.icon.button.large(href='/wiki/storylines.html') 
+            i.icon.write
+            | Storylines
+        li.ui.card.fluid
+          a.ui.black.labeled.icon.button.large(href='http://github.com/paulbrzeski/Langenium') 
+            i.icon.github
+            | Github
   .row
     .news
       h2 News

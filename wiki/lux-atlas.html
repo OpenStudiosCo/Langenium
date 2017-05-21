@@ -57,7 +57,7 @@ void main()
     vec4 mvPosition = modelMatrix * vec4( position, 1.0 );
     vViewPosition = cameraPosition - mvPosition.xyz;
 
-    vTexCoord3D = 11.1 * ( position.xyz + vec3( -time, -time, -time ) );
+    vTexCoord3D = .0111 * ( position.xyz + vec3( -time, -time, -time ) );
 
     gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 }
@@ -84,9 +84,9 @@ float heightMap( vec3 coord ) {
   float n = 0.0;
 
   n = 0.65 * abs(snoise(coord, 0.0625, 500. ));
-  n += 0.5 * abs(snoise(coord, 0.125, -500. ));
-  n += 0.125 * abs(snoise(coord, 5., -50. ));
-  n -= 0.125 * abs(snoise(coord, 100., 150. ));
+  n += 0.5 * abs(snoise(coord, 0.125, 500. ));
+  n += 0.125 * abs(snoise(coord, 5., 50. ));
+  n += 0.125 * abs(snoise(coord, 100., 150. ));
   n *= .75;
 
   return n;
@@ -104,7 +104,7 @@ float limitColor( float min, float max, float channel) {
 
 vec4 colorFilter(float n) {
 
-  vec4 color = vec4( vec3( 0.01 *n, 0.25 * n, .95 * n )  , 1.0 );
+  vec4 color = vec4( vec3( 0.01 * n, 0.25 * n, .95 * n )  , 1.0 );
 
   color.r = limitColor(0.0, 0.05, color.r);
   color.g = limitColor(0.015, 0.25, color.g);
@@ -124,20 +124,20 @@ void main()
   
   // normal
 
-  const float e = 0.01;
+  const float e = 0.011;
 
   float nx = heightMap( vTexCoord3D + vec3( e, 0.0, 0.0 ) );
   float ny = heightMap( vTexCoord3D + vec3( 0.0, e, 0.0 ) );
   float nz = heightMap( vTexCoord3D + vec3( 0.0, 0.0, e ) );
 
-  vec3 normal = normalize( vNormal + 0.085 * vec3( n - nx, n - ny, n - nz ) / e );
+  vec3 normal = normalize( vNormal + 0.0285 * vec3( n - nx, n - ny, n - nz ) / e );
 
   // diffuse light
 
   vec3 vLightWeighting = vec3( -0.01 );
 
-  vec4 lDirection = viewMatrix * vec4( normalize( vec3( 0.0, -1.0, 1.0 ) ), 0.0 );
-  float directionalLightWeighting = dot( normal, normalize( lDirection.xyz ) ) * 0.15 + 0.85;
+  vec4 lDirection = viewMatrix * vec4( normalize( vec3( -0.5, -2.0, 1.5 ) ), 0.0 );
+  float directionalLightWeighting = dot( normal, normalize( lDirection.xyz ) ) * 0.35 + 0.75;
   vLightWeighting += vec3( 1.0 ) * directionalLightWeighting;
 
   // specular light
@@ -148,9 +148,9 @@ void main()
 
   float dirSpecularWeight = 0.0;
   if ( dirDotNormalHalf >= 0.0 )
-    dirSpecularWeight = ( 1.0 - n ) * pow( dirDotNormalHalf, 15.0 );
+    dirSpecularWeight = ( 1.0 - n ) * pow( dirDotNormalHalf, 16.0 );
 
-  vLightWeighting += vec3( 0.5, 0.5, 1.5 ) * dirSpecularWeight * n * 12.0;
+  vLightWeighting += vec3( 0.5, 0.5, 1.5 ) * dirSpecularWeight * n * 15.0;
 
   gl_FragColor *= vec4( vLightWeighting, 1.0 ); //
 }
@@ -168,7 +168,7 @@ void main()
     vec4 mvPosition = modelMatrix * vec4( position, 1.0 );
     vViewPosition = cameraPosition - mvPosition.xyz;
 
-    vTexCoord3D = 15.5 * ( position.xyz + vec3( -time, -time , -time ) );
+    vTexCoord3D = -11.1111 * ( position.xyz + vec3( -time, -time , -time ) );
 
     gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 }
@@ -192,11 +192,10 @@ float snoise ( vec3 coord, float scale, float time_factor ) {
 }
 
 float heightMap( vec3 coord ) {
-  float n = 0.0;
-
-  n = 0.0125 * abs(snoise(coord, 0.0625, 500. ));
+  float n = 0.0125 * abs(snoise(coord, 0.0625, -15000. ));
+  n += 0.1125 * abs(snoise(coord, 5., -1500. ));
+  n += 0.125 * abs(snoise(coord, 5., -750. ));
   n += 0.25 * abs(snoise(coord, 0.125, -500. ));
-  n += 0.125 * abs(snoise(coord, 5., -50. ));
   return n;
 }
 
@@ -231,19 +230,19 @@ void main()
   gl_FragColor = texColor;
   
   // normal
-  const float e = .001;
+  const float e = .01;
 
-  float nx = heightMap( vTexCoord3D + vec3( e, 0.0, 0.0 ) );
+  float nz = heightMap( vTexCoord3D + vec3( e, 0.0, 0.0 ) );
   float ny = heightMap( vTexCoord3D + vec3( 0.0, e, 0.0 ) );
-  float nz = heightMap( vTexCoord3D + vec3( 0.0, 0.0, e ) );
+  float nx = heightMap( vTexCoord3D + vec3( 0.0, 0.0, e ) );
 
   vec3 normal = normalize( vNormal + .085 * vec3( n - nx, n - ny, n - nz ) / e );
 
   // diffuse light
 
-  vec3 vLightWeighting = vec3( -0.1 );
+  vec3 vLightWeighting = vec3( -0.111 );
 
-  vec4 lDirection = viewMatrix * vec4( normalize( vec3( 0.0, -1.0, 1.0 ) ), 0.0 );
+  vec4 lDirection = viewMatrix * vec4( normalize( vec3( 0.0, -1.0, 1.5 ) ), 0.0 );
   float directionalLightWeighting = dot( normal, normalize( lDirection.xyz ) ) * 0.35 + 0.65;
   vLightWeighting += vec3( 1.0 ) * directionalLightWeighting;
 
@@ -255,9 +254,9 @@ void main()
 
   float dirSpecularWeight = 0.0;
   if ( dirDotNormalHalf >= 0.0 )
-      dirSpecularWeight = ( 1.0 - n ) * pow( dirDotNormalHalf, 12.0 );
+      dirSpecularWeight = ( 1.0 - n ) * pow( dirDotNormalHalf, 6.0 );
 
-  vLightWeighting += vec3( 0.75, 0.75, 0.75 ) * dirSpecularWeight * n * 22.0;
+  vLightWeighting += vec3( 0.75, 0.75, 0.75 ) * dirSpecularWeight * n * 11.0;
 
   gl_FragColor *= vec4( vLightWeighting, 1.0 ); //
 }
@@ -360,7 +359,7 @@ void main() {
 }
   </script>
   <script src="/dist/L.js"></script>
-  <!-- script(src='/dist/logo.js')-->
+  <script src="/dist/logo.js"></script>
   <script>
     // Facebook Like Button.
     (function(d, s, id) {

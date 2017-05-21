@@ -17,11 +17,10 @@ float snoise ( vec3 coord, float scale, float time_factor ) {
 }
 
 float heightMap( vec3 coord ) {
-  float n = 0.0;
-
-  n = 0.0125 * abs(snoise(coord, 0.0625, 500. ));
+  float n = 0.0125 * abs(snoise(coord, 0.0625, -15000. ));
+  n += 0.1125 * abs(snoise(coord, 5., -1500. ));
+  n += 0.125 * abs(snoise(coord, 5., -750. ));
   n += 0.25 * abs(snoise(coord, 0.125, -500. ));
-  n += 0.125 * abs(snoise(coord, 5., -50. ));
   return n;
 }
 
@@ -56,19 +55,19 @@ void main()
   gl_FragColor = texColor;
   
   // normal
-  const float e = .001;
+  const float e = .01;
 
-  float nx = heightMap( vTexCoord3D + vec3( e, 0.0, 0.0 ) );
+  float nz = heightMap( vTexCoord3D + vec3( e, 0.0, 0.0 ) );
   float ny = heightMap( vTexCoord3D + vec3( 0.0, e, 0.0 ) );
-  float nz = heightMap( vTexCoord3D + vec3( 0.0, 0.0, e ) );
+  float nx = heightMap( vTexCoord3D + vec3( 0.0, 0.0, e ) );
 
   vec3 normal = normalize( vNormal + .085 * vec3( n - nx, n - ny, n - nz ) / e );
 
   // diffuse light
 
-  vec3 vLightWeighting = vec3( -0.1 );
+  vec3 vLightWeighting = vec3( -0.111 );
 
-  vec4 lDirection = viewMatrix * vec4( normalize( vec3( 0.0, -1.0, 1.0 ) ), 0.0 );
+  vec4 lDirection = viewMatrix * vec4( normalize( vec3( 0.0, -1.0, 1.5 ) ), 0.0 );
   float directionalLightWeighting = dot( normal, normalize( lDirection.xyz ) ) * 0.35 + 0.65;
   vLightWeighting += vec3( 1.0 ) * directionalLightWeighting;
 
@@ -80,9 +79,9 @@ void main()
 
   float dirSpecularWeight = 0.0;
   if ( dirDotNormalHalf >= 0.0 )
-      dirSpecularWeight = ( 1.0 - n ) * pow( dirDotNormalHalf, 12.0 );
+      dirSpecularWeight = ( 1.0 - n ) * pow( dirDotNormalHalf, 6.0 );
 
-  vLightWeighting += vec3( 0.75, 0.75, 0.75 ) * dirSpecularWeight * n * 22.0;
+  vLightWeighting += vec3( 0.75, 0.75, 0.75 ) * dirSpecularWeight * n * 11.0;
 
   gl_FragColor *= vec4( vLightWeighting, 1.0 ); //
 }

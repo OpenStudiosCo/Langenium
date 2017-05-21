@@ -1,3 +1,8 @@
+### Lots of minor fixes, the journey continues
+_21st of May 2017_
+
+I've updated THREE.JS and Semantic UI, given the site a bit of spit and polish and restored the 3D logo with an effect a bit closer to the original. Writing content in a Markdown file feels so 5 years ago now so I'm thinking of using [my Medium account](https://medium.com/@mail_59849) posts as a dev blog for this site, will need to look into their API and find a way to integrate that into my content builder process.
+
 ### Working with audio, making songs and fighting round the world!
 _25th of December 2016_
 

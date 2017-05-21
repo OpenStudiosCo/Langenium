@@ -73,11 +73,11 @@ var planeGeo = new THREE.PlaneGeometry( 6000,6000 );
 // MIRROR planes.
 var groundMirror = new THREE.Mirror( logo_renderer, logo_camera, { clipBias: 0.003, textureWidth: 600, textureHeight: 600, color: 0x777777 } );
 
-var mirrorMesh = new THREE.Mesh( planeGeo, groundMirror.material );
-mirrorMesh.add( groundMirror );
-mirrorMesh.rotateX( - Math.PI / 2 );
-mirrorMesh.position.set(0, -50,0);
-logo_scene.add( mirrorMesh );
+var logo_mirrorMesh = new THREE.Mesh( planeGeo, groundMirror.material );
+logo_mirrorMesh.add( groundMirror );
+logo_mirrorMesh.rotateX( - Math.PI / 2 );
+logo_mirrorMesh.position.set(0, -50,0);
+logo_scene.add( logo_mirrorMesh );
 
 var vignette_geo = new THREE.PlaneGeometry( 6000,6000 );
 // create a canvas element

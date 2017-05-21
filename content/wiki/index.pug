@@ -6,18 +6,32 @@ block append title
 block append page
   .row
     h2 Welcome to the Langenium Wiki
-    ul
-      li
-        h3 Games (in order of development)
-        ul
-          li
-            a(href='/wiki/epoch-exordium.html') Epoch Exordium
-          li
-            a(href='/wiki/airship-academy.html') Airship Academy
-          li
-            a(href='/wiki/mmo.html') MMO
-          li
-            a(href='/wiki/fall-of-the-elx.html') Fall of the Elx
+    .ui.stackable.cards
+      .card.inverted
+        .content
+          .header Games (in order of development)
+        .content
+          .ui.divided.items
+            .item
+              .ui.tiny.image
+                img(src='/universe/art/production/posters/Exordium Redesign-01.png')
+              .middle.aligned.content
+                a.header(href='/wiki/epoch-exordium.html') Epoch Exordium
+            .item
+              .ui.tiny.image
+                img(src='/universe/art/production/posters/Langenium Airship Academy-01.png')
+              .middle.aligned.content
+                a.header(href='/wiki/airship-academy.html') Airship Academy
+            .item
+              .ui.tiny.image
+                img(src='/universe/art/production/posters/MMO Poster-01.png')
+              .middle.aligned.content
+                a.header(href='/wiki/mmo.html') MMO
+            .item
+              .ui.tiny.image
+                img(src='/universe/art/production/posters/Langenium Fall of the Elx-01.png')
+              .middle.aligned.content
+                a.header(href='/wiki/fall-of-the-elx.html') Fall of the Elx
       li
         h3 Lore, locations and mythology
         ul

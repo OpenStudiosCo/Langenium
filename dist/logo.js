@@ -58,7 +58,7 @@ var logo_cb = function(geometry, materials) {
   }
   geometry.buffersNeedUpdate = true;
   geometry.uvsNeedUpdate = true;
-  mesh = new THREE.Mesh(geometry, new THREE.MultiMaterial(materials));
+  mesh = new THREE.Mesh(geometry, materials);
   mesh.scale.set(2000,2000,2000);
   mesh.position.set(-30,370,0);
   mesh.rotateX( Math.PI / 2 );

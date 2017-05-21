@@ -24,16 +24,32 @@
       <div id="content">
         <div class="row">
           <h2>Welcome to the Langenium Wiki</h2>
-          <ul>
-            <li>
-              <h3>Games (in order of development)</h3>
-              <ul>
-                <li><a href="/wiki/epoch-exordium.html">Epoch Exordium</a></li>
-                <li><a href="/wiki/airship-academy.html">Airship Academy</a></li>
-                <li><a href="/wiki/mmo.html">MMO</a></li>
-                <li><a href="/wiki/fall-of-the-elx.html">Fall of the Elx</a></li>
-              </ul>
-            </li>
+          <div class="ui stackable cards">
+            <div class="card inverted">
+              <div class="content">
+                <div class="header">Games (in order of development)</div>
+              </div>
+              <div class="content">
+                <div class="ui divided items">
+                  <div class="item">
+                    <div class="ui tiny image"><img src="/universe/art/production/posters/Exordium Redesign-01.png"></div>
+                    <div class="middle aligned content"><a class="header" href="/wiki/epoch-exordium.html">Epoch Exordium</a></div>
+                  </div>
+                  <div class="item">
+                    <div class="ui tiny image"><img src="/universe/art/production/posters/Langenium Airship Academy-01.png"></div>
+                    <div class="middle aligned content"><a class="header" href="/wiki/airship-academy.html">Airship Academy</a></div>
+                  </div>
+                  <div class="item">
+                    <div class="ui tiny image"><img src="/universe/art/production/posters/MMO Poster-01.png"></div>
+                    <div class="middle aligned content"><a class="header" href="/wiki/mmo.html">MMO</a></div>
+                  </div>
+                  <div class="item">
+                    <div class="ui tiny image"><img src="/universe/art/production/posters/Langenium Fall of the Elx-01.png"></div>
+                    <div class="middle aligned content"><a class="header" href="/wiki/fall-of-the-elx.html">Fall of the Elx</a></div>
+                  </div>
+                </div>
+              </div>
+            </div>
             <li>
               <h3>Lore, locations and mythology</h3>
               <ul>
@@ -126,7 +142,7 @@
                 </li>
               </ul>
             </li>
-          </ul>
+          </div>
         </div>
       </div>
     </div>
@@ -273,7 +289,7 @@ void main()
     vec4 mvPosition = modelMatrix * vec4( position, 1.0 );
     vViewPosition = cameraPosition - mvPosition.xyz;
 
-    vTexCoord3D = -11.1111 * ( position.xyz + vec3( -time, -time , -time ) );
+    vTexCoord3D = 11.1111 * ( position.xyz + vec3( -time, -time , -time ) );
 
     gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 }

@@ -41,7 +41,7 @@ var cb = function(platform_geometry, platform_materials) {
     }
   }
 
-  platform = new THREE.Mesh(platform_geometry,  new THREE.MultiMaterial(platform_materials));
+  platform = new THREE.Mesh(platform_geometry,  platform_materials);
   platform.scale.set(200,200,200);
   platform.position.set(0,-370,0);
   

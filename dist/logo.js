@@ -29,6 +29,7 @@ logo_metal_uniforms = {
   time:       { type: "f", value: 0.0 }
 };
 
+
 var logoWaterMaterial = new THREE.ShaderMaterial( 
 {
     uniforms: logo_water_uniforms,
@@ -101,6 +102,16 @@ var vignette = new THREE.Mesh(vignette_geo, material1)
 vignette.rotateX( - Math.PI / 2 );
 vignette.position.set(0,-45, 1500);
 logo_scene.add(vignette);
+
+
+logo_controls = new THREE.OrbitControls( logo_camera, logo_renderer.domElement );
+//controls.addEventListener( 'change', render ); // add this only if there is no animation loop (requestAnimationFrame)
+logo_controls.enableDamping = true;
+logo_controls.dampingFactor = 0.25;
+logo_controls.enableZoom = true;
+logo_controls.minPolarAngle = Math.PI/2;
+logo_controls.maxPolarAngle = Math.PI/2;
+
 // リサイズへの対応
 window.addEventListener('resize', function(){
     $('.logo img').css('display', 'inline-block');
@@ -126,6 +137,7 @@ var logo_render = function () {
     groundMirror.render();
   }
   logo_renderer.render( logo_scene, logo_camera );
+  logo_controls.update(); 
 };
 
 $(document).ready(function(){

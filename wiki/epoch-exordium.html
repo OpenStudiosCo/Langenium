@@ -264,8 +264,9 @@ float snoise ( vec3 coord, float scale, float time_factor ) {
 float heightMap( vec3 coord ) {
   float n = 0.0125 * abs(snoise(coord, 0.0625, -15000. ));
   n += 0.1125 * abs(snoise(coord, 5., -1500. ));
-  n += 0.125 * abs(snoise(coord, 5., -750. ));
+  n -= 0.25 * abs(snoise(coord, .001, -1750. ));
   n += 0.25 * abs(snoise(coord, 0.125, -500. ));
+  n += 0.5 * abs(snoise(coord, 0.00125, -100. ));
   return n;
 }
 
@@ -283,9 +284,9 @@ vec4 colorFilter(float n) {
 
   vec4 color = vec4( vec3( 0.25 *n, 0.25 * n, 0.25 * n )  , 1.0 );
 
-  color.r = limitColor(0.1, 0.9, color.r);
-  color.g = limitColor(0.1, 0.9, color.g);
-  color.b = limitColor (0.1, 0.9, color.b);
+  color.r = limitColor(0.15, 0.9, color.r);
+  color.g = limitColor(0.15, 0.9, color.g);
+  color.b = limitColor (0.15, 0.9, color.b);
 
   return color;
 }

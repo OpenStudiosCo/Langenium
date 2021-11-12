@@ -21,7 +21,6 @@ var director = function() {
 		useControls: true
 	};
 
-	L.scenograph.updateWindowVariables();
 	
 	return this;
 }

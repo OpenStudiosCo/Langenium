@@ -78,7 +78,7 @@ var mmo = function() {
 		mesh.frustrumCulled = false;	
 		L.scenograph.scene.add(mesh);			
 	}
-	L.scenograph.objects.loadObject('/res/models/terrain/mountain/island.js', mountain_cb);
+	L.scenograph.objects.loadObject('./res/models/terrain/mountain/island.js', mountain_cb);
 
 	var ship_cb = function(geometry, materials) {
 		for ( var i = 0; i < materials.length; i ++ ) {
@@ -115,7 +115,7 @@ var mmo = function() {
 		}
 		L.scenograph.animation_queue.push(anim_obj)
 	}
-	L.scenograph.objects.loadObject('/res/models/ships/mercenary/valiant.js', ship_cb);
+	L.scenograph.objects.loadObject('./res/models/ships/mercenary/valiant.js', ship_cb);
 	return this;
 }
 

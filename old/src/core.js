@@ -29,7 +29,7 @@ var core = function (mode) {
 					]
 				}
 			], 
-			template_url: '/src/modes/website.html'
+			template_url: './src/modes/website.html'
 		},
 		Editor: { 
 			modules: [
@@ -103,7 +103,7 @@ var core = function (mode) {
 					]
 				}
 			], 
-			template_url: '/src/modes/editor.html'
+			template_url: './src/modes/editor.html'
 		}
 	};
 
@@ -134,7 +134,7 @@ core.prototype.change_mode = function(mode) {
 }	
 
 core.prototype.load_template = function(template_url, target_element, replace_target) {
-	console.log( '\t Loading template - ( ' + template_url + ' ) ' );
+	console.log( '\t Loading template - ( ' + L.url + template_url + ' ) ' );
 	$.ajax({
 	    url: L.url + template_url,
 	    type: "GET",

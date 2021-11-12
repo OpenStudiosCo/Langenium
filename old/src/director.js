@@ -5,7 +5,7 @@
 var director = function() {
 
 	this.options = {
-		activeScene: 'MMO',
+		activeScene: 'Epoch Exordium',
 		currentScene: '',
 		hideInterface: true,
 		editMode: false,

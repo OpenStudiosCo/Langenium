@@ -1,430 +1,52 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Home | Langenium
-    </title>
-    <link href="/vendor/Semantic-UI/dist/semantic.min.css" rel="stylesheet">
-    <link href="/dist/styles.css" rel="stylesheet">
-    <link href="/dist/content.css" rel="stylesheet">
-  </head>
-  <body>
-    <div id="fb-root"></div>
-    <div class="container">
-      <header class="row">
-        <div class="logo"><img src="/logo.png"></div>
-        <nav>
-          <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="/about.html">About</a></li>
-            <li><a href="/gallery">Gallery</a></li>
-            <li><a href="/games">Games</a></li>
-            <li><a href="/wiki">Wiki</a></li>
-          </ul>
-        </nav>
-        <div class="fb-like" data-href="https://www.facebook.com/Langenium/" data-layout="button_count" data-action="like" data-size="small" data-show-faces="true" data-share="false"></div>
-      </header>
-      <div id="content">
-        <div class="row">
-          <div class="hero"> 
-            <h1>Interactive Hero Area</h1>
-          </div>
-          <div class="call_to_action">
-            <ul class="ui cards">
-              <li class="ui card fluid"><a class="ui black labeled icon button large" href="/games"><i class="icon game"></i>Play</a></li>
-              <li class="ui card fluid"><a class="ui black labeled icon button large" href="/gallery/concept-art.html"> <i class="icon paint brush"></i>Concept Art</a></li>
-              <li class="ui card fluid"><a class="ui black labeled icon button large" href="/wiki/storylines.html"> <i class="icon write"></i>Storylines</a></li>
-              <li class="ui card fluid"><a class="ui black labeled icon button large" href="http://github.com/paulbrzeski/Langenium"> <i class="icon github"></i>Github</a></li>
-            </ul>
-          </div>
-        </div>
-        <div class="row">
-          <div class="news">
-            <h2>News</h2><h3>Lots of minor fixes, the journey continues</h3>
-
-<p><em>21st of May 2017</em></p>
-
-<p>I&#39;ve updated THREE.JS and Semantic UI, given the site a bit of spit and polish and restored the 3D logo with an effect a bit closer to the original. Writing content in a Markdown file feels so 5 years ago now so I&#39;m thinking of using <a href="https://medium.com/@mail_59849">my Medium account</a> posts as a dev blog for this site, will need to look into their API and find a way to integrate that into my content builder process.</p>
-
-<h3>Working with audio, making songs and fighting round the world!</h3>
-
-<p><em>25th of December 2016</em></p>
-
-<p>I&#39;ve just started using a new library called <a href="https://github.com/rserota/wad">WAD (Web Audio DAW)</a> to synthesize audio. My original first sound demo was meant to be a Soundcloud streaming application but I&#39;m waiting for my API key to be approved so for now I&#39;m going to go with the more long term idea of sequencing music and effects in code and hopefully even generating it efficiently with code.</p>
-
-<p>The pages for the site are built and styled (mostly?). This is the first time I&#39;ve had a working <a href="/gallery">gallery</a> and it&#39;s all powered by the <a href="https://github.com/paulbrzeski/Langenium-Universe">Universe</a> repository which is fantastic.</p>
-
-<h3>THREE.JS and Live2D are up and running</h3>
-
-<p><em>18th of December 2016</em></p>
-
-<p>The biggest thing I&#39;ve wanted to achieve since first seeing the <a href="http://app2.live2d.com/a/wg/ie.html">Live2D WebGL demo</a> was to have my own manga looking characters. The Jack demo seen in the interactive hero area above is my first proof of concept. Building a new website has afforded me a clean overhead to play with new code :D I&#39;ve opted to immediately try running multiple canvases and made the logo a WebGL canvas as well.</p>
-
-<p>The next stage in development is to get the website content filled out and then styled up. It&#39;s always a bit of schlep for me as a developer.. trying to write content, come up with design and also put together a future-proofish framework for repeating this work in the future. Using <a href="https://github.com/paulbrzeski/Langenium/issues">Github Issues</a> to plan my work and track where I&#39;m up to and what I&#39;m doing has been super handy.</p>
-
-<h3>Welcome to the new Langenium website!</h3>
-
-<p><em>11th of December 2016</em></p>
-
-<p>This is a full rebuild of the site. Please visit the <a href="http://facebook.com/Langenium">Langenium Facebook Page</a> for more information.</p>
-          </div>
-          <div class="most_popular"></div>
-        </div>
-      </div>
-    </div>
-  </body>
-  <script src="/vendor/jquery.min.js"></script>
-  <script src="/vendor/wad/build/wad.min.js"></script>
-  <script src="/vendor/Semantic-UI/dist/semantic.min.js"></script>
-  <script src="/vendor/threejs/examples/js/libs/dat.gui.min.js"></script>
-  <script src="/vendor/threejs/build/three.js"></script>
-  <script src="/vendor/threejs/examples/js/libs/stats.min.js"></script>
-  <script src="/vendor/threejs/examples/js/controls/OrbitControls.js"></script>
-  <script src="/vendor/threejs/examples/js/loaders/ColladaLoader.js"></script>
-  <script src="/vendor/threejs/examples/js/SimplexNoise.js"></script>
-  <script src="/vendor/threejs/examples/js/GPUComputationRenderer.js"></script>
-  <script src="/vendor/threejs/examples/js/Mirror.js"></script>
-  <script src="/vendor/threejs/examples/js/WaterShader.js"></script>
-  <script src="/vendor/ocean/water-material.js"></script>
-  <script src="/vendor/Live2D-WebGL-SDK/lib/live2d.min.js"></script>
-  <script src="/vendor/Live2D-WebGL-SDK/framework/Live2DFramework.js"></script>
-  <script src="/vendor/Live2D-WebGL-SDK/sample/sampleApp1/src/PlatformManager.js"></script>
-  <script src="/vendor/Live2D-WebGL-SDK/sample/sampleApp1/src/LAppLive2DManager.js"></script>
-  <script src="/vendor/Live2D_ThreeJS/Live2DRender.js"></script>
-  <script id="logoWaterVertShader" type="x-shader/x-vertex">varying vec3 vNormal;
-varying vec3 vTexCoord3D;
-varying vec3 vViewPosition;
-
-uniform float time;
-
-void main() 
-{
-    vNormal = normalize( normalMatrix * normal );
-
-    vec4 mvPosition = modelMatrix * vec4( position, 1.0 );
-    vViewPosition = cameraPosition - mvPosition.xyz;
-
-    vTexCoord3D = .0111 * ( position.xyz + vec3( -time, -time, -time ) );
-
-    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-}
-  </script>
-  <script id="logoWaterFragShader" type="x-shader/x-fragment">varying vec3 vNormal;
-varying vec3 vTexCoord3D;
-varying vec3 vViewPosition;
-
-uniform sampler2D noiseTexture;
-uniform float time;
-
-float snoise ( vec3 coord, float scale, float time_factor ) {
-    vec3 scaledCoord = coord * scale - (vNormal / time_factor + vec3(0.0, 0.0, -time / time_factor));
-
-    vec2 uvTimeShift = vec2((scaledCoord.x + scaledCoord.z) / 2.0, scaledCoord.y) + vec2( -0.7, 1.5 ) * time / time_factor * 0.015;
-    vec4 noiseGeneratorTimeShift = texture2D( noiseTexture, uvTimeShift );
-    vec2 uvNoiseTimeShift = vec2(scaledCoord.x, scaledCoord.y) + 0.5 * vec2( noiseGeneratorTimeShift.g, noiseGeneratorTimeShift.b );
-    vec4 baseColor = texture2D( noiseTexture, uvNoiseTimeShift * vec2(4.0, 4.0) );
-
-    return baseColor.b;
-}
-
-float heightMap( vec3 coord ) {
-  float n = 0.0;
-
-  n = 0.65 * abs(snoise(coord, 0.0625, 500. ));
-  n += 0.5 * abs(snoise(coord, 0.125, 500. ));
-  n += 0.125 * abs(snoise(coord, 5., 50. ));
-  n += 0.125 * abs(snoise(coord, 100., 150. ));
-  n *= .75;
-
-  return n;
-}
-
-float limitColor( float min, float max, float channel) {
-  if (channel < min) {
-    channel = min;
-  }
-  if (channel > max) {
-    channel = max;
-  }
-  return channel;
-}
-
-vec4 colorFilter(float n) {
-
-  vec4 color = vec4( vec3( 0.01 * n, 0.25 * n, .95 * n )  , 1.0 );
-
-  color.r = limitColor(0.0, 0.05, color.r);
-  color.g = limitColor(0.015, 0.25, color.g);
-  color.b = limitColor (0.025, 0.75, color.b);
-
-  return color;
-}
-
-void main() 
-{
-    float n = heightMap( vTexCoord3D );
-
-    vec4 texColor = colorFilter( n );
-
-    // color
-    gl_FragColor = texColor;
-  
-  // normal
-
-  const float e = 0.011;
-
-  float nx = heightMap( vTexCoord3D + vec3( e, 0.0, 0.0 ) );
-  float ny = heightMap( vTexCoord3D + vec3( 0.0, e, 0.0 ) );
-  float nz = heightMap( vTexCoord3D + vec3( 0.0, 0.0, e ) );
-
-  vec3 normal = normalize( vNormal + 0.0285 * vec3( n - nx, n - ny, n - nz ) / e );
-
-  // diffuse light
-
-  vec3 vLightWeighting = vec3( -0.01 );
-
-  vec4 lDirection = viewMatrix * vec4( normalize( vec3( -0.5, -2.0, 1.5 ) ), 0.0 );
-  float directionalLightWeighting = dot( normal, normalize( lDirection.xyz ) ) * 0.35 + 0.75;
-  vLightWeighting += vec3( 1.0 ) * directionalLightWeighting;
-
-  // specular light
-
-  vec3 dirHalfVector = normalize( lDirection.xyz + normalize( vViewPosition ) );
-
-  float dirDotNormalHalf = dot( normal, dirHalfVector );
-
-  float dirSpecularWeight = 0.0;
-  if ( dirDotNormalHalf >= 0.0 )
-    dirSpecularWeight = ( 1.0 - n ) * pow( dirDotNormalHalf, 16.0 );
-
-  vLightWeighting += vec3( 0.5, 0.5, 1.5 ) * dirSpecularWeight * n * 15.0;
-
-  gl_FragColor *= vec4( vLightWeighting, 1.0 ); //
-}
-  </script>
-  <script id="logoMetalVertShader" type="x-shader/x-vertex">varying vec3 vNormal;
-varying vec3 vTexCoord3D;
-varying vec3 vViewPosition;
-
-uniform float time;
-
-void main() 
-{
-    vNormal = normalize( normalMatrix * normal );
-
-    vec4 mvPosition = modelMatrix * vec4( position, 1.0 );
-    vViewPosition = cameraPosition - mvPosition.xyz;
-
-    vTexCoord3D = 11.1111 * ( position.xyz + vec3( -time, -time , -time ) );
-
-    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-}
-  </script>
-  <script id="logoMetalFragShader" type="x-shader/x-fragment">varying vec3 vNormal;
-varying vec3 vTexCoord3D;
-varying vec3 vViewPosition;
-
-uniform sampler2D noiseTexture;
-uniform float time;
-
-float snoise ( vec3 coord, float scale, float time_factor ) {
-    vec3 scaledCoord = coord * scale - (vNormal / time_factor + vec3(0., 0.0, -time / time_factor));
-
-    vec2 uvTimeShift = vec2((scaledCoord.x + scaledCoord.z) / 2.0, scaledCoord.y) + vec2( -0.7, 1.5 ) * time / time_factor * 0.015;
-    vec4 noiseGeneratorTimeShift = texture2D( noiseTexture, uvTimeShift );
-    vec2 uvNoiseTimeShift = vec2(scaledCoord.x, scaledCoord.z) + 0.5 * vec2( noiseGeneratorTimeShift.g, noiseGeneratorTimeShift.b );
-    vec4 baseColor = texture2D( noiseTexture, uvNoiseTimeShift * vec2(4.0, 4.0) );
-
-    return baseColor.b;
-}
-
-float heightMap( vec3 coord ) {
-  float n = 0.0125 * abs(snoise(coord, 0.0625, -15000. ));
-  n += 0.1125 * abs(snoise(coord, 5., -1500. ));
-  n -= 0.25 * abs(snoise(coord, .001, -1750. ));
-  n += 0.25 * abs(snoise(coord, 0.125, -500. ));
-  n += 0.5 * abs(snoise(coord, 0.00125, -100. ));
-  return n;
-}
-
-float limitColor( float min, float max, float channel) {
-  if (channel < min) {
-    channel = min;
-  }
-  if (channel > max) {
-    channel = max;
-  }
-  return channel;
-}
-
-vec4 colorFilter(float n) {
-
-  vec4 color = vec4( vec3( 0.25 *n, 0.25 * n, 0.25 * n )  , 1.0 );
-
-  color.r = limitColor(0.15, 0.9, color.r);
-  color.g = limitColor(0.15, 0.9, color.g);
-  color.b = limitColor (0.15, 0.9, color.b);
-
-  return color;
-}
-
-void main() 
-{
-  float n = heightMap( vTexCoord3D );
-
-  vec4 texColor = colorFilter( n );
-
-  // color
-  gl_FragColor = texColor;
-  
-  // normal
-  const float e = .01;
-
-  float nz = heightMap( vTexCoord3D + vec3( e, 0.0, 0.0 ) );
-  float ny = heightMap( vTexCoord3D + vec3( 0.0, e, 0.0 ) );
-  float nx = heightMap( vTexCoord3D + vec3( 0.0, 0.0, e ) );
-
-  vec3 normal = normalize( vNormal + .085 * vec3( n - nx, n - ny, n - nz ) / e );
-
-  // diffuse light
-
-  vec3 vLightWeighting = vec3( -0.111 );
-
-  vec4 lDirection = viewMatrix * vec4( normalize( vec3( 0.0, -1.0, 1.5 ) ), 0.0 );
-  float directionalLightWeighting = dot( normal, normalize( lDirection.xyz ) ) * 0.35 + 0.65;
-  vLightWeighting += vec3( 1.0 ) * directionalLightWeighting;
-
-  // specular light
-
-  vec3 dirHalfVector = normalize( lDirection.xyz + normalize( vViewPosition ) );
-
-  float dirDotNormalHalf = dot( normal, dirHalfVector );
-
-  float dirSpecularWeight = 0.0;
-  if ( dirDotNormalHalf >= 0.0 )
-      dirSpecularWeight = ( 1.0 - n ) * pow( dirDotNormalHalf, 6.0 );
-
-  vLightWeighting += vec3( 0.75, 0.75, 0.75 ) * dirSpecularWeight * n * 11.0;
-
-  gl_FragColor *= vec4( vLightWeighting, 1.0 ); //
-}
-  </script>
-  <script id="heightmapFragmentShader" type="x-shader/x-fragment">#include <common>
-uniform vec2 mousePos;
-uniform float mouseSize;
-uniform float viscosityConstant;
-#define deltaTime ( 1.0 / 60.0 )
-#define GRAVITY_CONSTANT ( resolution.x * deltaTime * 3.0 )
-void main() {
-  vec2 cellSize = 1.0 / resolution.xy;
-  vec2 uv = gl_FragCoord.xy * cellSize;
-  // heightmapValue.x == height
-  // heightmapValue.y == velocity
-  // heightmapValue.z, heightmapValue.w not used
-  vec4 heightmapValue = texture2D( heightmap, uv );
-  // Get neighbours
-  vec4 north = texture2D( heightmap, uv + vec2( 0.0, cellSize.y ) );
-  vec4 south = texture2D( heightmap, uv + vec2( 0.0, - cellSize.y ) );
-  vec4 east = texture2D( heightmap, uv + vec2( cellSize.x, 0.0 ) );
-  vec4 west = texture2D( heightmap, uv + vec2( - cellSize.x, 0.0 ) );
-  float sump = north.x + south.x + east.x + west.x - 4.0 * heightmapValue.x;
-  float accel = sump * GRAVITY_CONSTANT;
-  // Dynamics
-  heightmapValue.y += accel;
-  heightmapValue.x += heightmapValue.y * deltaTime;
-  // Viscosity
-  heightmapValue.x += sump * viscosityConstant;
-  // Mouse influence
-  float mousePhase = clamp( length( ( uv - vec2( 0.5 ) ) * BOUNDS - vec2( mousePos.x, - mousePos.y ) ) * PI / mouseSize, 0.0, PI );
-  heightmapValue.x += cos( mousePhase ) + 1.0;
-  gl_FragColor = heightmapValue;
-}
-  </script>
-  <script id="smoothFragmentShader" type="x-shader/x-fragment">uniform sampler2D texture;
-void main() {
-    vec2 cellSize = 1.0 / resolution.xy;
-    vec2 uv = gl_FragCoord.xy * cellSize;
-    // Computes the mean of texel and 4 neighbours
-    vec4 textureValue = texture2D( texture, uv );
-    textureValue += texture2D( texture, uv + vec2( 0.0, cellSize.y ) );
-    textureValue += texture2D( texture, uv + vec2( 0.0, - cellSize.y ) );
-    textureValue += texture2D( texture, uv + vec2( cellSize.x, 0.0 ) );
-    textureValue += texture2D( texture, uv + vec2( - cellSize.x, 0.0 ) );
-    textureValue /= 5.0;
-    gl_FragColor = textureValue;
-}
-  </script>
-  <script id="waterVertexShader" type="x-shader/x-vertex">uniform sampler2D heightmap;
-#define PHONG
-varying vec3 vViewPosition;
-#ifndef FLAT_SHADED
-  varying vec3 vNormal;
-#endif
-#include <common>
-#include <uv_pars_vertex>
-#include <uv2_pars_vertex>
-#include <displacementmap_pars_vertex>
-#include <envmap_pars_vertex>
-#include <color_pars_vertex>
-#include <morphtarget_pars_vertex>
-#include <skinning_pars_vertex>
-#include <shadowmap_pars_vertex>
-#include <logdepthbuf_pars_vertex>
-#include <clipping_planes_pars_vertex>
-void main() {
-  vec2 cellSize = vec2( 1.0 / WIDTH, 1.0 / WIDTH );
-  #include <uv_vertex>
-  #include <uv2_vertex>
-  #include <color_vertex>
-  // # include <beginnormal_vertex>
-  // Compute normal from heightmap
-  vec3 objectNormal = vec3(
-    ( texture2D( heightmap, uv + vec2( - cellSize.x, 0 ) ).x - texture2D( heightmap, uv + vec2( cellSize.x, 0 ) ).x ) * WIDTH / BOUNDS,
-    ( texture2D( heightmap, uv + vec2( 0, - cellSize.y ) ).x - texture2D( heightmap, uv + vec2( 0, cellSize.y ) ).x ) * WIDTH / BOUNDS,
-    1.0 );
-  //<beginnormal_vertex>
-  #include <morphnormal_vertex>
-  #include <skinbase_vertex>
-  #include <skinnormal_vertex>
-  #include <defaultnormal_vertex>
-#ifndef FLAT_SHADED // Normal computed with derivatives when FLAT_SHADED
-  vNormal = normalize( transformedNormal );
-#endif
-  //# include <begin_vertex>
-  float heightValue = texture2D( heightmap, uv ).x;
-  vec3 transformed = vec3( position.x, position.y, heightValue );
-  //<begin_vertex>
-  #include <displacementmap_vertex>
-  #include <morphtarget_vertex>
-  #include <skinning_vertex>
-  #include <project_vertex>
-  #include <logdepthbuf_vertex>
-  #include <clipping_planes_vertex>
-  vViewPosition = - mvPosition.xyz;
-  #include <worldpos_vertex>
-  #include <envmap_vertex>
-  #include <shadowmap_vertex>
-}
-  </script>
-  <script src="/dist/L.js"></script>
-  <script src="/dist/logo.js"></script>
-  <script src="/dist/hero.js"></script>
-  <script>
-    // Facebook Like Button.
-    (function(d, s, id) {
-      var js, fjs = d.getElementsByTagName(s)[0];
-      if (d.getElementById(id)) return;
-      js = d.createElement(s); js.id = id;
-      js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.8";
-      fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));
-     
-    // Google Analytics
-    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-     
-    ga('create', 'UA-37159175-1', 'auto');
-    ga('send', 'pageview');
-  </script>
+	<head>
+		<title>Langenium Editor</title>
+		<link href="./src/core.css" rel="Stylesheet" />
+		<link href="./src/vendor/semantic.css" rel="Stylesheet" />
+		<link href="./src/modes/editor.css" rel="Stylesheet" />
+		<script src="./client.js"></script>
+	</head>
+	<body onload="_init('Editor');">
+		<div class="ui transparent console fitted">
+			<div class="ui small secondary inverted vertical fluid menu">
+			    <div class="item">
+			      <div class="content">
+			        <div class="header">Langenium Serverless Demo</div>
+			      </div>
+			    </div>
+			</div>
+			
+			<div class="ui fluid action mini transparent input">
+			  <input type="text" placeholder=" > ">
+			  <div class="ui button mini inverted basic" onclick="$('.console .menu').slideToggle();"><i class="hide icon"></i></div>
+			</div>
+		    
+		</div>
+		<div class="ui thin inverted vertical sidebar menu">
+			<div class="ui item">
+				<div class="ui compact fluid selection dropdown">
+					<div class="text">Active Scene</div>
+					<i class="dropdown icon"></i>
+					<div class="menu">
+						<div class="item">Choice 1</div>
+						<div class="item">Choice 2</div>
+						<div class="item">Choice 3</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="ui black tiny launch right attached button launch sidebar-button">
+			<i class="list layout icon"></i>
+		</div>
+		<!-- Google tag (gtag.js) -->
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-C63WD2JVR3"></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag(){dataLayer.push(arguments);}
+			gtag('js', new Date());
+
+			gtag('config', 'G-C63WD2JVR3');
+		</script>
+	</body>
 </html>

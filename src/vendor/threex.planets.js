@@ -2,7 +2,7 @@ var THREEx = THREEx || {}
 
 THREEx.Planets	= {}
 
-THREEx.Planets.baseURL	= '/old/res/textures/planets/'
+THREEx.Planets.baseURL	= '/res/textures/planets/'
 
 // from http://planetpixelemporium.com/
 

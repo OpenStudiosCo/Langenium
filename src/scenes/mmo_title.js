@@ -40,7 +40,7 @@ var mmo_title = function() {
 		L.scenograph.scene.add(mesh);			
 	}
 	
-	L.scenograph.objects.loadObject('/old/res/models/langenium-logo.js', logo_cb);
+	L.scenograph.objects.loadObject('/res/models/langenium-logo.js', logo_cb);
 
 	return this;
 }

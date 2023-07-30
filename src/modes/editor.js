@@ -27,7 +27,7 @@ var app = function () {
 		L.scenograph.animate();	
 	}
 
-	L.core.load_template('/old/src/modes/shaders.html', 'head', false);
+	L.core.load_template('/src/modes/shaders.html', 'head', false);
     
 	return this;
 };

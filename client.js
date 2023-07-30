@@ -11,7 +11,7 @@ function _init(mode) {
 	L.url = '//' + location.host; // output is http://prefix.langenium.com without a trailing '/'
 	L.env = _check_environment();
 
-	console.log( '%c', 'line-height: 50px; padding: 30px 120px; background:url("' + L.url + '/old/res/logo-medium.png") no-repeat left center;' );
+	console.log( '%c', 'line-height: 50px; padding: 30px 120px; background:url("' + L.url + '/res/logo-medium.png") no-repeat left center;' );
 	console.log( '[ Langenium Engine ]' );
 	console.log( '\t Version: ' + L.version );
 	console.log( '\t Environment: ' + L.env );

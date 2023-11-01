@@ -6,7 +6,7 @@ esbuild
         entryPoints: ['./src/app/main.js'],
         bundle: true,
         minify: true,
-        outdir: 'docs',
+        outdir: '../docs',
         target: 'es2018'
     })
     .catch(() => process.exit(1))

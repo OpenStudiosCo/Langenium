@@ -16,7 +16,7 @@ module.exports = function(eleventyConfig) {
     dir: {
       input:    'src/web',
       layouts:  'src/templates',
-      output:   'docs'
+      output:   '../docs'
     },
   };
 };

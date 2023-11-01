@@ -30,7 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Server shelved due to lack of funding for infrastructure
 
 ## [0.3.0] - 2014-02-25
-5ab2d332693130e8760a3a3ae95303058bc74fe1
+
 ### Changed
 - Replaced city with procedural buildings
 - Water visual and performance improvements

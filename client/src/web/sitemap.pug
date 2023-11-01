@@ -1,0 +1,20 @@
+---
+permalink: "sitemap.xml"
+dynamicPermalink: false
+eleventyExcludeFromCollections: true
+---
+
+<?xml version="1.0" encoding="utf-8"?>
+
+urlset(xmlns="http://www.sitemaps.org/schemas/sitemap/0.9")
+    each page in collections.all
+        url
+            - urlstring = 'https://openstudios.xyz' + page.url
+            loc= urlstring
+            lastmod= page.date.toISOString()
+            if page.data.changefreq || page.url == '/'
+                changefreq= page.data.changefreq
+            else
+                changefreq weekly
+            if page.data.priority
+                priority= page.data.priority

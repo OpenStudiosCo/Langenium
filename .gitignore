@@ -1,0 +1,4 @@
+# Ignore vendor folders
+node_modules
+dist
+.vscode

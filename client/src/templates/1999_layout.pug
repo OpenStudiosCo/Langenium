@@ -1,0 +1,146 @@
+#page-wrapper
+    .header_bg
+    .header(role="banner")
+        if ! isIframe
+            .h1
+                a(href='./' title='Home')
+                    img(src='/assets/images/logo-wide.png' alt='Logo')
+        else
+            .h1
+                a(title='Home')
+                    img(src='/assets/images/logo-wide.png' alt='Logo')
+    if ! isIframe
+        .menu(role="navigation")
+            ul(role="menu")
+                li(role="presentation")
+                    a(href='/about_us.html' role="menuitem") About Us
+                li(role="presentation")
+                    a(href='/services.html' role="menuitem") Services
+                li(role="presentation")
+                    a(href='/case_studies.html' role="menuitem") Case Studies
+                li(role="presentation")
+                    a(href='/portfolio.html' role="menuitem") Portfolio
+                li(role="presentation")
+                    a(href='/contact_us.html' role="menuitem") Contact Us
+        #pokematrix
+            canvas#pokematrixCanvas
+            canvas#pokematrixImage
+            a#pokematrixSign
+                img(src='./assets/exit.svg' title='Return to the office' width='300' height='85' alt='Exit sign')
+        include ../templates/exit_image.pug
+        include ../templates/exit_image_mobile.pug
+    if page.url == '/about_us.html'
+        - extra_class = ' bg_river'
+    else if page.url == '/404.html'
+        - extra_class = ' bg_river'
+    else if page.url == '/services.html'
+        - extra_class = ' bg_reverse'
+    else if page.url == '/case_studies.html'
+        - extra_class = ' bg_reverse'
+    else 
+        - extra_class = ''
+    .content_container(role="main" class=extra_class)
+        block page
+    .content_container.newsletter(role="complementary")
+        .newsletter_bg
+        .content
+            .row.center
+                .wide-column
+                    script.
+                        function newsletterSubmit(token) {
+                            var validationElm = document.getElementById("newslettervalidation");
+                            var data = document.getElementById("newsletterform");
+                            fetch(data.getAttribute('action'), {
+                                method: data.getAttribute('method'),
+                                body: new FormData(data)
+                            }).then(function (response) {
+                                if (response.status === 200) {
+                                return response.text();
+                                } else {
+                                validationElm.innerHTML = response.text();
+                                }
+                            })
+                            .then(function (data) {
+                                validationElm.innerHTML = data;
+                                if (validationElm.innerHTML.indexOf('Email sent successfully.') >= 0) {
+                                    document.getElementById("newsletterform").reset();
+                                }
+                            });
+                        }
+                    form#newsletterform(method='post' action='https://mailform.openstudios.xyz/' role="form")
+                        h3 Subscribe to our newsletter
+                        p Get all our latest insights, tips and project updates, conveniently in your inbox.
+                        table(style='width: 100%')
+                            tr
+                                td(style='width: 80%')
+                                    input(type='hidden' name='name' value='n/a')
+                                    input(type='hidden' name='message' value='Newsletter signup request')
+                                    input(type='email' name='email' placeholder='Email address')
+                                td(style='padding-left: 1rem')
+                                    button(class="g-recaptcha" 
+                                        data-sitekey="6LeiXp4nAAAAAKRxcYacR0ZhbcNjf7OMCkjolpNL" 
+                                        data-callback='newsletterSubmit' 
+                                        data-action='submit') Subscribe
+                        h3#newslettervalidation(style="color: red; font-weight: bold;")
+    .content_container.footer
+        .content
+            if ! isIframe
+                .row
+                    .narrow-column
+                        h3 About us
+                        ul(role="menu")
+                            li(role="presentation")
+                                a(href='/about_us.html' role="menuitem") Meet the team
+                            li(role="presentation")
+                                a(href='/about_us.html' role="menuitem") Our values
+                    .narrow-column
+                        h3 Services
+                        ul(role="menu")
+                            li(role="presentation")
+                                a(href='/services.html' role="menuitem") 3D Modelling and Printing
+                            li(role="presentation")
+                                a(href='/services.html' role="menuitem") Animation
+                            li(role="presentation")
+                                a(href='/services.html' role="menuitem") Game Development
+                            li(role="presentation")
+                                a(href='/services.html' role="menuitem") Graphic Design
+                            li(role="presentation")
+                                a(href='/services.html' role="menuitem") Interactive Design
+                            li(role="presentation")
+                                a(href='/services.html' role="menuitem") Marketing Design
+                            li(role="presentation")
+                                a(href='/services.html' role="menuitem") Product design
+                            li(role="presentation")
+                                a(href='/services.html' role="menuitem") Web design
+                            li(role="presentation")
+                                a(href='/services.html' role="menuitem") Web development
+                            li(role="presentation")
+                                a(href='/services.html' role="menuitem") Video production
+                    .narrow-column
+                        h3 Our work
+                        ul(role="menu")
+                            li(role="presentation")
+                                a(href='/case_studies.html' role="menuitem") Case studies
+                            li(role="presentation")
+                                a(href='/portfolio.html' role="menuitem") Portfolio
+                            li(role="presentation")
+                                a(href='/contact_us.html' role="menuitem") Contact Us
+                    .narrow-column
+                        h3 Terms
+                        ul(role="menu")
+                            li(role="presentation")
+                                a(href='/accessibility.html' role="menuitem") Accessibility
+                            li(role="presentation")
+                                a(href='/ai-copyright.html' role="menuitem") AI and Copyright Policy
+                            li(role="presentation")                
+                                a(href='/privacy.html' role="menuitem") Privacy Policy
+                        
+            .row.center
+                if ! isIframe
+                    .h1
+                        a(href='./' title='Home')
+                            img(src='/assets/images/logo-wide.png' alt='Logo')
+                else
+                    .h1
+                        a(title='Home')
+                            img(src='/assets/images/logo-wide.png' alt='Logo')

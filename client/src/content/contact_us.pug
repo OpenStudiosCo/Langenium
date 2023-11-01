@@ -1,0 +1,115 @@
+h2 Contact us
+.content.contact_page
+  .row
+    .column
+      h3 Say hello
+      p
+        | Please email us at 
+        a(href='mailto:team@openstudios.xyz') team@openstudios.xyz
+        |  or alternatively fill out
+        |             the contact form below and we will endeaver to respond to your enquiry shortly.
+      script.
+        function onSubmit(token) {
+          var validationElm = document.getElementById("validation");
+          var data = document.getElementById("mailform");
+          fetch(data.getAttribute('action'), {
+            method: data.getAttribute('method'),
+            body: new FormData(data)
+          }).then(function (response) {
+            if (response.status === 200) {
+              return response.text();
+            } else {
+              validationElm.innerHTML = response.text();
+            }
+          })
+          .then(function (data) {
+            validationElm.innerHTML = data;
+            if (validationElm.innerHTML.indexOf('Email sent successfully.') >= 0) {
+                document.getElementById("mailform").reset();
+            }
+          });
+        }
+      
+      form#mailform(method='post' action='https://mailform.openstudios.xyz/' role="form")
+        label(for='name' type='text') Your Name
+        br
+        input(type='text' name='name' placeholder='Full Name')
+        label(for='email' type='text') Email
+        br
+        input(type='email' name='email' placeholder='Email address')
+        label(for='message' type='text') Message
+        br
+        textarea(name='message' placeholder='A few words describing your enquiry.' cols='50' rows='10')
+        button(class="g-recaptcha" 
+          data-sitekey="6LeiXp4nAAAAAKRxcYacR0ZhbcNjf7OMCkjolpNL" 
+          data-callback='onSubmit' 
+          data-action='submit') Submit
+        h3#validation(style="color: red; font-weight: bold;")
+    .column
+      h3 Connect with us
+      | Find us across the web at the following destinations:
+      br
+      br
+      h4 Open Studios
+      strong ArtStation: 
+      a(href='https://www.artstation.com/openstudios') openstudios
+      br
+      strong Facebook: 
+      a(href='https://www.facebook.com/openstudiosco') openstudiosco
+      br
+      strong Instagram: 
+      a(href='https://www.instagram.com/openstudiosco/') openstudiosco
+      br
+      strong LinkedIn: 
+      a(href='https://www.linkedin.com/company/open-studios-australia/') Open Studios
+      br
+      strong Medium: 
+      a(href='https://medium.com/@open_studios') @open_studios
+      br
+      strong YouTube: 
+      a(href='https://www.youtube.com/@open-studios') @open-studios
+      br
+      br
+      h4.icon_button
+        img(src='./assets/images/garrettray.png' alt='Garrett Ray Jewellery logo')
+        div Garrett Ray Jewellery
+      strong Facebook: 
+      a(href='https://www.facebook.com/GarrettRayJewellery/') GarrettRayJewellery
+      br
+      strong Instagram: 
+      a(href='https://www.instagram.com/garrettrayjewellery/') @garrettrayjewellery
+      br
+      strong LinkedIn: 
+      a(href='https://www.linkedin.com/company/garrett-ray-jewellery/') Garrett Ray Jewellery
+      br
+      strong Website: 
+      a(href='https://grayjewellery.com.au') https://grayjewellery.com.au
+      br
+      br
+      h4.icon_button
+        img(src='./assets/images/kamigen.png' alt='Kamigen logo')
+        div
+          | Kamigen
+      strong Facebook: 
+      a(href='https://www.facebook.com/kamigenofficial/') Kamigen
+      br
+      strong Instagram: 
+      a(href='https://www.instagram.com/kamigen_comics/') @kamigen_comics
+      br
+      strong Website: 
+      a(href='https://kamigen.com') https://kamigen.com
+      br
+      br
+      h4.icon_button
+        img(src='./assets/images/paulbrzeski.png' alt='Paul Brzeski Consulting logo')
+        div
+          | Paul Brzeski
+      strong Github: 
+      a(href='https://www.github.com/paulbrzeski/') paulbrzeski
+      br
+      strong LinkedIn: 
+      a(href='https://www.linkedin.com/company/paul-brzeski/') Paul Brzeski
+      br
+      strong Website: 
+      a(href='https://paulbrzeski.com') https://paulbrzeski.com/
+      br

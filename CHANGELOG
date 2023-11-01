@@ -9,35 +9,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.6.0] - 2023-11-01
 
-TODO
+### TODO
 
-## [0.5.0] - 2019-02-15
-
+## [0.5.0] - 2014-10-03
+b94cb957a3e439f3d9f7f94852e11078a690dfb2
 ### Changed
 
-- Client rewritten from scratch to be headless
-
-## [0.4.0] - 2017-06-20
-
+## [0.4.0] - 
+18b4437b4978c2bd5c5deb6d86c67de02d359a7b
 ### Changed
 
-- Uncoupled server client
-- Static website built for Github Pages and no server
 
-## [0.3.0] - 2015-12-03
+### Added
 
-## [0.2.0] - 2015-10-06
 
-## [0.1.0] - 2015-10-06
+## [0.3.0] - 2014-02-25
+5ab2d332693130e8760a3a3ae95303058bc74fe1
+### Changed
+- Replaced city with procedural buildings
+- Water visual and performance improvements
+
+### Added
+- Level editor with MongoDB backend
+- Play as character mode
+
+## [0.2.0] - 2013-08-30
+
+### Changed
+- Performance improvements
+- Refactored server into classes
+
+### Added
+- Preloader
+- Water shader
+- Website
+
+## [0.1.0] - 2013-01-29
 
 ### Added
 - Initial technical demo
-- Water shader
-- Working server prototype
+- Proof of concept client/server gameplay
 
-[0.6.0]: https://github.com/olivierlacan/keep-a-changelog/compare/v0.0.3...v0.0.4
-[0.5.0]: https://github.com/olivierlacan/keep-a-changelog/compare/v0.0.3...v0.0.4
-[0.4.0]: https://github.com/olivierlacan/keep-a-changelog/compare/v0.0.3...v0.0.4
-[0.3.0]: https://github.com/olivierlacan/keep-a-changelog/compare/v0.0.2...v0.0.3
-[0.2.0]: https://github.com/olivierlacan/keep-a-changelog/compare/v0.0.1...v0.0.2
-[0.1.0]: https://github.com/OpenStudiosCo/Langenium/tree/8c5cdad6cd59ace048bb0c57d7ae6bfdd0e037c4
+[0.6.0]: https://github.com/OpenStudiosCo/Langenium/compare/...
+[0.5.0]: https://github.com/OpenStudiosCo/Langenium/compare/...
+[0.4.0]: https://github.com/OpenStudiosCo/Langenium/compare/5ab2d332693130e8760a3a3ae95303058bc74fe1...18b4437b4978c2bd5c5deb6d86c67de02d359a7b
+[0.3.0]: https://github.com/OpenStudiosCo/Langenium/compare/49f92cc15aeca73ba605648d5aca03ac5aa39fd6...5ab2d332693130e8760a3a3ae95303058bc74fe1
+[0.2.0]: https://github.com/OpenStudiosCo/Langenium/compare/f211712fbb4176ca7f1d413e0547c91f655aee72...49f92cc15aeca73ba605648d5aca03ac5aa39fd6
+[0.1.0]: https://github.com/OpenStudiosCo/Langenium/tree/f211712fbb4176ca7f1d413e0547c91f655aee72

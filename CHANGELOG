@@ -32,10 +32,12 @@ TODO
 
 ### Added
 - Initial technical demo
+- Water shader
+- Working server prototype
 
 [0.6.0]: https://github.com/olivierlacan/keep-a-changelog/compare/v0.0.3...v0.0.4
 [0.5.0]: https://github.com/olivierlacan/keep-a-changelog/compare/v0.0.3...v0.0.4
 [0.4.0]: https://github.com/olivierlacan/keep-a-changelog/compare/v0.0.3...v0.0.4
 [0.3.0]: https://github.com/olivierlacan/keep-a-changelog/compare/v0.0.2...v0.0.3
 [0.2.0]: https://github.com/olivierlacan/keep-a-changelog/compare/v0.0.1...v0.0.2
-[0.1.0]: https://github.com/olivierlacan/keep-a-changelog/releases/tag/v0.0.1
+[0.1.0]: https://github.com/OpenStudiosCo/Langenium/tree/8c5cdad6cd59ace048bb0c57d7ae6bfdd0e037c4

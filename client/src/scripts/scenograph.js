@@ -45,9 +45,10 @@ function _init( wait ) {
 			files: [ { path: './vendor/tween-21.0.0.umd.min.js' } ]
 		},
 		{ 
-			name: "Virtual Office",
+			// @todo: Implement scene changer
+			name: "Test Scene",
 			requires: [ 'tweakpane', 'TWEEN.js' ],
-			files: [ { path: "./main.js", callback: "window.virtual_office.init" } ]
+			files: [ { path: "./main.js", callback: "window.test_scene.init" } ]
 		}
 	];
 

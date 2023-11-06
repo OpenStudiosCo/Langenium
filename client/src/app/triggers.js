@@ -7,12 +7,12 @@
  */
 
 export function setupTriggers ( ) {
-    window.virtual_office.triggers.updateSigns = updateSigns();
+    window.test_scene.triggers.updateSigns = updateSigns();
 }
 
 export function updateTriggers ( currentTime ) {
-    for (var trigger in window.virtual_office.triggers) {
-        window.virtual_office.triggers[trigger].update(currentTime);
+    for (var trigger in window.test_scene.triggers) {
+        window.test_scene.triggers[trigger].update(currentTime);
     }
 }
 
@@ -24,38 +24,38 @@ function updateSigns ( ) {
         update: ( currentTime ) => {
             
             if (    
-                window.virtual_office.hovered &&
-                window.virtual_office.scene_objects.neon_sign &&
-                window.virtual_office.scene_objects.desk_labels && window.virtual_office.scene_objects.desk_labels.length == 4 &&
-                window.virtual_office.scene_objects.deskGroup && window.virtual_office.scene_objects.deskGroup.children.length == 12
+                window.test_scene.hovered &&
+                window.test_scene.scene_objects.neon_sign &&
+                window.test_scene.scene_objects.desk_labels && window.test_scene.scene_objects.desk_labels.length == 4 &&
+                window.test_scene.scene_objects.deskGroup && window.test_scene.scene_objects.deskGroup.children.length == 12
             ) {
                 // Run neon sign update if the TV or neon sign are being hovered.
                 if (
-                    ( window.virtual_office.hovered.name == 'neon_sign' || window.virtual_office.hovered.name == 'tv' )
+                    ( window.test_scene.hovered.name == 'neon_sign' || window.test_scene.hovered.name == 'tv' )
                 ) {
 
                     // Update emissive color to white.
-                    interpolateRgbProperty( window.virtual_office.scene_objects.neon_sign.material.emissive, 0xFFFFFF, { r: 255, g: 255, b: 255 } );
+                    interpolateRgbProperty( window.test_scene.scene_objects.neon_sign.material.emissive, 0xFFFFFF, { r: 255, g: 255, b: 255 } );
 
                     // Drop emissive intensity to half for the super bright white.
-                    window.virtual_office.scene_objects.neon_sign.material.emissiveIntensity = interpolateFloatProperty( window.virtual_office.scene_objects.neon_sign.material.emissiveIntensity, 0.5 );
+                    window.test_scene.scene_objects.neon_sign.material.emissiveIntensity = interpolateFloatProperty( window.test_scene.scene_objects.neon_sign.material.emissiveIntensity, 0.5 );
                 }
                 else {
                     // Return to original color.
-                    interpolateRgbProperty( window.virtual_office.scene_objects.neon_sign.material.emissive, 0xDA68C5, { r: 218, g: 104, b: 197 } );
+                    interpolateRgbProperty( window.test_scene.scene_objects.neon_sign.material.emissive, 0xDA68C5, { r: 218, g: 104, b: 197 } );
 
                     let targetEmissiveIntensity = Math.min(Math.max(1 + Math.sin( currentTime / 400 ), 0), 1);
 
                     // Restore emissive intensity to 1.
-                    window.virtual_office.scene_objects.neon_sign.material.emissiveIntensity = targetEmissiveIntensity;
+                    window.test_scene.scene_objects.neon_sign.material.emissiveIntensity = targetEmissiveIntensity;
 
                 }
 
                 // Update each desk and desk item as needed
-                window.virtual_office.scene_objects.deskGroup.children.forEach((desk) => {
-                    const isHovered =   window.virtual_office.hovered &&
-                                        ( window.virtual_office.hovered.name == 'screen' || window.virtual_office.hovered.name == 'desk_part' || window.virtual_office.hovered.name == 'desk_label' ) &&
-                                        (  window.virtual_office.hovered.parent.uuid == desk.uuid );
+                window.test_scene.scene_objects.deskGroup.children.forEach((desk) => {
+                    const isHovered =   window.test_scene.hovered &&
+                                        ( window.test_scene.hovered.name == 'screen' || window.test_scene.hovered.name == 'desk_part' || window.test_scene.hovered.name == 'desk_label' ) &&
+                                        (  window.test_scene.hovered.parent.uuid == desk.uuid );
 
                     desk.children.forEach((desk_item) => {
                         
@@ -81,12 +81,12 @@ function updateSigns ( ) {
 
                                 // Increase light intensity.
                                 desk_item.intensity = interpolateFloatProperty( desk_item.intensity,
-                                    window.virtual_office.fast ? window.virtual_office.settings.light.fast.desk.active : window.virtual_office.settings.light.highP.desk.active );
+                                    window.test_scene.fast ? window.test_scene.settings.light.fast.desk.active : window.test_scene.settings.light.highP.desk.active );
                             }
                             else {
                                 // Reduce light intensity.
                                 desk_item.intensity = interpolateFloatProperty( desk_item.intensity,
-                                    window.virtual_office.fast ? window.virtual_office.settings.light.fast.desk.normal : window.virtual_office.settings.light.highP.desk.normal );
+                                    window.test_scene.fast ? window.test_scene.settings.light.fast.desk.normal : window.test_scene.settings.light.highP.desk.normal );
    
                             }
                            
@@ -106,7 +106,7 @@ function updateSigns ( ) {
                                         interpolateRgbProperty( child.material.emissive, 0xFFFFFF, { r: 255, g: 255, b: 255 } );
 
                                         // Drop emissive intensity to half for the super bright white.
-                                        child.material.emissiveIntensity = interpolateFloatProperty( child.material.emissiveIntensity, window.virtual_office.fast ? 1 : 0.5 );
+                                        child.material.emissiveIntensity = interpolateFloatProperty( child.material.emissiveIntensity, window.test_scene.fast ? 1 : 0.5 );
 
                                     }
                                     else {
@@ -190,7 +190,7 @@ function thresholdRgb( currentRgb, targetRgb ) {
 }
 
 function interpolateFloat( current, target, seconds = 0.1 ) {
-    const updateSpeed = seconds * window.virtual_office.fps;
+    const updateSpeed = seconds * window.test_scene.fps;
 
     current = parseFloat( current );
     target = parseFloat( target );

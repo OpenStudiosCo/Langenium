@@ -1,4 +1,4 @@
 # Ignore vendor folders
 node_modules
-dist
+docs
 .vscode

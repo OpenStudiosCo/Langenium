@@ -141,19 +141,19 @@ window.matrix_scene = {
     // Updates the scene
     updateStage: function () {
         if (window.matrix_scene.stage == 0) {
-            if (window.virtual_office && (Date.now() - window.matrix_scene.stageStarted > 500)) {
+            if (window.test_scene && (Date.now() - window.matrix_scene.stageStarted > 500)) {
                 window.matrix_scene.stage = 1;
                 window.matrix_scene.stageStarted = Date.now();
-                for (var measure in window.virtual_office.loaders.stats) {
-                    window.matrix_scene.loaded_target += window.virtual_office.loaders.stats[measure].target;
+                for (var measure in window.test_scene.loaders.stats) {
+                    window.matrix_scene.loaded_target += window.test_scene.loaders.stats[measure].target;
                 }
 
             }
         }
         if (window.matrix_scene.stage == 1) {
             window.matrix_scene.loaded_done = 0;
-            for (var measure in window.virtual_office.loaders.stats) {
-                window.matrix_scene.loaded_done += window.virtual_office.loaders.stats[measure].loaded;
+            for (var measure in window.test_scene.loaders.stats) {
+                window.matrix_scene.loaded_done += window.test_scene.loaders.stats[measure].loaded;
             }
 
             if (
@@ -165,7 +165,7 @@ window.matrix_scene = {
         }
         if (window.matrix_scene.stage == 2) {
             if (
-                window.virtual_office.ready == true &&
+                window.test_scene.ready == true &&
                 (Date.now() - window.matrix_scene.stageStarted > 500)
             ) {
                 window.matrix_scene.stage = 3;
@@ -217,8 +217,8 @@ function downTheRabbitHole() {
         pageWrapper.remove();
 
         // Animate the camera resetting from any other position.
-        window.virtual_office.tweens.resetCameraRotation.start();
-        window.virtual_office.tweens.resetCameraPosition.start();
+        window.test_scene.tweens.resetCameraRotation.start();
+        window.test_scene.tweens.resetCameraPosition.start();
     }, 1000);
 
     webgl.style.transition = 'filter 3s 2s, opacity 4s';

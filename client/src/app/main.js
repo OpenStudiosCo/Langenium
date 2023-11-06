@@ -13,7 +13,6 @@ import { SVGLoader } from 'three/addons/loaders/SVGLoader.js';
 
 import { scaleEffects, setupEffects } from './effects.js';
 import { handleInteractions, handleViewportChange, handleExitSign } from './events.js';
-import { setupBackwall, setupDesks } from './furniture.js';
 import { setupTriggers, updateTriggers } from './triggers.js';
 import { setupTweens, updateTweens, startTweening } from './tweens.js';
 
@@ -23,7 +22,7 @@ let stats;
 let materials, darkMaterial;
 
 // Create an object to talk to the application.
-window.virtual_office = {
+window.test_scene = {
 
   /**
    * Primary scene camera
@@ -93,15 +92,15 @@ window.virtual_office = {
     texture: false,
     stats: {
       fonts: {
-        target: 5, // @todo: Check if this affects double loads, shouldn't with caching.
+        target: 0, // @todo: Check if this affects double loads, shouldn't with caching.
         loaded: 0
       },
       gtlf: {
-        target: 10, // @todo: Check if this affects double loads, shouldn't with caching.
+        target: 0, // @todo: Check if this affects double loads, shouldn't with caching.
         loaded: 0
       },
       screens: {
-        target: 5,
+        target: 0,
         loaded: 0
       },
       svg: {
@@ -266,12 +265,12 @@ window.virtual_office = {
 /**
  * Screen lookups
  */
-window.virtual_office.screen_ids =  {
-  0: window.virtual_office.screens.services,
-  1: window.virtual_office.screens.services,
-  2: window.virtual_office.screens.services,
-  3: window.virtual_office.screens.services,
-  720: window.virtual_office.screens.about_us,
+window.test_scene.screen_ids =  {
+  0: window.test_scene.screens.services,
+  1: window.test_scene.screens.services,
+  2: window.test_scene.screens.services,
+  3: window.test_scene.screens.services,
+  720: window.test_scene.screens.about_us,
 };
 
 export default async function init() {
@@ -282,7 +281,7 @@ export default async function init() {
 
   // Check if we're in debug mode.
   if (url.searchParams.has('debug')) {
-    window.virtual_office.debug = true;
+    window.test_scene.debug = true;
 
     // Start the UI.
     pane = debug_ui();
@@ -290,7 +289,7 @@ export default async function init() {
 
   // Check if we're in fast mode.
   if (url.searchParams.has('fast')) {
-    window.virtual_office.fast = true;
+    window.test_scene.fast = true;
   }
   else {
     // Run scaling
@@ -298,20 +297,20 @@ export default async function init() {
 
     if (gpuTier && gpuTier.tier && gpuTier.tier >= 3) {
       // Enable effects
-      window.virtual_office.fast = false;
+      window.test_scene.fast = false;
     }
   }
 
-  window.virtual_office.loaders.gtlf = new GLTFLoader();
-  window.virtual_office.loaders.texture =  new THREE.TextureLoader();
+  window.test_scene.loaders.gtlf = new GLTFLoader();
+  window.test_scene.loaders.texture =  new THREE.TextureLoader();
 
   // Constructive Solid Geometry (csg) Evaluator.
   csgEvaluator = new Evaluator();
   csgEvaluator.useGroups = true;
 
   // Size
-  window.virtual_office.settings.adjusted_gap = calculateAdjustedGapSize();
-  window.virtual_office.room_depth = 8 * window.virtual_office.settings.adjusted_gap;
+  window.test_scene.settings.adjusted_gap = calculateAdjustedGapSize();
+  window.test_scene.room_depth = 8 * window.test_scene.settings.adjusted_gap;
 
   // Setup renderers.
   setupRenderers();
@@ -321,40 +320,40 @@ export default async function init() {
   var height = window.innerHeight;
   var aspect = width / height;
   var fov = setCameraFOV(aspect);
-  window.virtual_office.camera = new THREE.PerspectiveCamera(fov, aspect, 1, 1000);
-  window.virtual_office.camera.aspect = width / height;
+  window.test_scene.camera = new THREE.PerspectiveCamera(fov, aspect, 1, 1000);
+  window.test_scene.camera.aspect = width / height;
   
   if (aspect < 0.88) {
-    window.virtual_office.settings.startPosZ = -5;
+    window.test_scene.settings.startPosZ = -5;
   }
-  window.virtual_office.camera.position.set(0, 10.775, window.virtual_office.settings.startPosZ + (window.virtual_office.room_depth / 2));
+  window.test_scene.camera.position.set(0, 10.775, window.test_scene.settings.startPosZ + (window.test_scene.room_depth / 2));
   
   // Reusable pointer for tracking user interaction.
-  window.virtual_office.pointer = new THREE.Vector3(); 
+  window.test_scene.pointer = new THREE.Vector3(); 
 
   // Reusable raycaster for tracking what the user tried to hit.
-  window.virtual_office.raycaster = new THREE.Raycaster();
+  window.test_scene.raycaster = new THREE.Raycaster();
 
   // Scene Setup. 
   setupScene();
 
 
-  if (window.virtual_office.debug) {
-    const helper = new THREE.CameraHelper(window.virtual_office.camera);
+  if (window.test_scene.debug) {
+    const helper = new THREE.CameraHelper(window.test_scene.camera);
 
-    window.virtual_office.scene.add(helper);
+    window.test_scene.scene.add(helper);
   }
 
   // Bloom effect materials.
   darkMaterial = new THREE.MeshBasicMaterial({ color: 'black' });
   materials = {};
 
-  window.virtual_office.controls = new OrbitControls(window.virtual_office.camera, window.virtual_office.renderers.webgl.domElement);
-  window.virtual_office.controls.enabled = window.virtual_office.debug;
-  window.virtual_office.controls.target.set(0, 10, 0);
-  window.virtual_office.controls.update();
+  window.test_scene.controls = new OrbitControls(window.test_scene.camera, window.test_scene.renderers.webgl.domElement);
+  window.test_scene.controls.enabled = window.test_scene.debug;
+  window.test_scene.controls.target.set(0, 10, 0);
+  window.test_scene.controls.update();
 
-  if (window.virtual_office.debug) {
+  if (window.test_scene.debug) {
     stats = new Stats();
     document.body.appendChild(stats.dom);
   }
@@ -371,46 +370,46 @@ export default async function init() {
     // calculate pointer position in normalized device coordinates
     // (-1 to +1) for both components
 
-    window.virtual_office.pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
-    window.virtual_office.pointer.y = - (event.clientY / window.innerHeight) * 2 + 1;
+    window.test_scene.pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+    window.test_scene.pointer.y = - (event.clientY / window.innerHeight) * 2 + 1;
 
   }
 
-  window.virtual_office.renderers.webgl.domElement.addEventListener('pointermove', onPointerMove);
+  window.test_scene.renderers.webgl.domElement.addEventListener('pointermove', onPointerMove);
 
   function onTouchStart(event) {
-    if (!window.virtual_office.selected) {
+    if (!window.test_scene.selected) {
       event.preventDefault();
 
-      window.virtual_office.pointer.x = (event.changedTouches[0].clientX / window.innerWidth) * 2 - 1;
-      window.virtual_office.pointer.y = -(event.changedTouches[0].clientY / window.innerHeight) * 2 + 1;
-      window.virtual_office.pointer.z = 1; // previously mouseDown = true
+      window.test_scene.pointer.x = (event.changedTouches[0].clientX / window.innerWidth) * 2 - 1;
+      window.test_scene.pointer.y = -(event.changedTouches[0].clientY / window.innerHeight) * 2 + 1;
+      window.test_scene.pointer.z = 1; // previously mouseDown = true
     }
   }
   function onTouchEnd(event) {
-    if (!window.virtual_office.selected) {
+    if (!window.test_scene.selected) {
       event.preventDefault();
 
-      window.virtual_office.pointer.x = (event.changedTouches[0].clientX / window.innerWidth) * 2 - 1;
-      window.virtual_office.pointer.y = -(event.changedTouches[0].clientY / window.innerHeight) * 2 + 1;
-      window.virtual_office.pointer.z = 0; // previously mouseDown = false
+      window.test_scene.pointer.x = (event.changedTouches[0].clientX / window.innerWidth) * 2 - 1;
+      window.test_scene.pointer.y = -(event.changedTouches[0].clientY / window.innerHeight) * 2 + 1;
+      window.test_scene.pointer.z = 0; // previously mouseDown = false
     }
   }
 
-  window.virtual_office.renderers.webgl.domElement.addEventListener('touchstart', onTouchStart, false);
-  window.virtual_office.renderers.webgl.domElement.addEventListener('touchend', onTouchEnd, false);
+  window.test_scene.renderers.webgl.domElement.addEventListener('touchstart', onTouchStart, false);
+  window.test_scene.renderers.webgl.domElement.addEventListener('touchend', onTouchEnd, false);
 
   function onMouseDown(event) {
-    window.virtual_office.pointer.z = 1; // previously mouseDown = true
+    window.test_scene.pointer.z = 1; // previously mouseDown = true
   }
 
   function onMouseUp(event) {
-    window.virtual_office.pointer.z = 0; // previously mouseDown = false
+    window.test_scene.pointer.z = 0; // previously mouseDown = false
   }
 
   // Attach the mouse down and up event listeners
-  window.virtual_office.renderers.webgl.domElement.addEventListener("pointerdown", onMouseDown, false);
-  window.virtual_office.renderers.webgl.domElement.addEventListener("pointerup", onMouseUp, false);
+  window.test_scene.renderers.webgl.domElement.addEventListener("pointerdown", onMouseDown, false);
+  window.test_scene.renderers.webgl.domElement.addEventListener("pointerup", onMouseUp, false);
 
 }
 
@@ -452,45 +451,36 @@ export function animate(currentTime) {
 
   requestAnimationFrame(animate);
 
-  if (window.virtual_office.started) {
+  if (window.test_scene.started) {
 
     updateTriggers(currentTime);
 
     updateTweens(currentTime);
 
-    if (!window.virtual_office.debug && window.matrix_scene.complete ) {
+    if (!window.test_scene.debug && window.matrix_scene.complete ) {
       handleInteractions( );
     }
-
-    window.virtual_office.scene_objects.desk_labels.forEach( (desk_label, index) => {
-      const phaseShift = index * (Math.PI / 2); // Adjust the phase shift as needed
-      const yOffset = Math.sin(currentTime * 0.0025 + phaseShift) * .010; // Adjust the amplitude (10 in this case)
-
-      // Update the label's position based on the calculated yOffset
-      desk_label.mesh.position.y = desk_label.originalPosition.y + yOffset;
-    } );
-
   }
 
-  if (window.virtual_office.debug) {
+  if (window.test_scene.debug) {
     stats.update();
   }
 
   // Render the composer
   if (
     // Effects loaded.
-    window.virtual_office.effects.bloomLayer.test &&
-    (window.virtual_office.effects.bloom && window.virtual_office.effects.bloom.passes && window.virtual_office.effects.bloom.passes.length > 0 ) &&
-    (window.virtual_office.effects.main && window.virtual_office.effects.main.passes && window.virtual_office.effects.main.passes.length > 0 ) &&
+    window.test_scene.effects.bloomLayer.test &&
+    (window.test_scene.effects.bloom && window.test_scene.effects.bloom.passes && window.test_scene.effects.bloom.passes.length > 0 ) &&
+    (window.test_scene.effects.main && window.test_scene.effects.main.passes && window.test_scene.effects.main.passes.length > 0 ) &&
     // Not fast mode.
-    (!window.virtual_office.fast)
+    (!window.test_scene.fast)
   ) {
-    window.virtual_office.scene.traverse(darkenNonBloomed);
-    window.virtual_office.effects.bloom.render();
-    window.virtual_office.scene.traverse(restoreMaterial);
-    window.virtual_office.effects.main.render();
+    window.test_scene.scene.traverse(darkenNonBloomed);
+    window.test_scene.effects.bloom.render();
+    window.test_scene.scene.traverse(restoreMaterial);
+    window.test_scene.effects.main.render();
   } else {
-    window.virtual_office.renderers.webgl.render(window.virtual_office.scene, window.virtual_office.camera); // Render the scene without the effects
+    window.test_scene.renderers.webgl.render(window.test_scene.scene, window.test_scene.camera); // Render the scene without the effects
   }
 
 }
@@ -525,7 +515,7 @@ function updateFPS() {
   const timeDiff = currentTime - lastTime;
   frameCount++;
   if (timeDiff >= 1000) {
-    window.virtual_office.fps = Math.round((frameCount * 1000) / timeDiff);
+    window.test_scene.fps = Math.round((frameCount * 1000) / timeDiff);
     frameCount = 0;
     lastTime = currentTime;
   }
@@ -533,7 +523,7 @@ function updateFPS() {
 
 function darkenNonBloomed(obj) {
 
-  if (obj.isMesh && window.virtual_office.effects.bloomLayer.test(obj.layers) === false) {
+  if (obj.isMesh && window.test_scene.effects.bloomLayer.test(obj.layers) === false) {
 
     materials[obj.uuid] = obj.material;
     obj.material = darkMaterial;
@@ -558,7 +548,7 @@ export function calculateAdjustedGapSize() {
   var height = window.innerHeight;
 
   // Adjust gap size based on the aspect ratio
-  var adjustedGapSize = window.virtual_office.settings.gap * window.virtual_office.settings.scale;
+  var adjustedGapSize = window.test_scene.settings.gap * window.test_scene.settings.scale;
   if (width < height) {
     adjustedGapSize *= height / width;
   }
@@ -573,7 +563,7 @@ export var doorDepth = 0.2;
 async function createDoor( ) {
   var doorParent = new THREE.Object3D();
 
-  await window.virtual_office.loaders.texture.load('./assets/models/desk-diffuse.jpg', async (doorTexture) => {
+  await window.test_scene.loaders.texture.load('./assets/models/desk-diffuse.jpg', async (doorTexture) => {
     doorTexture.wrapS = THREE.RepeatWrapping;
     doorTexture.wrapT = THREE.RepeatWrapping;
     doorTexture.repeat.set( doorWidth / 8, doorHeight / 8 );
@@ -593,7 +583,7 @@ async function createDoor( ) {
 
     const frameGroup = new THREE.Group();
     frameGroup.name = "doorFrame";
-    frameGroup.position.z = - 15 + (window.virtual_office.room_depth / 2);
+    frameGroup.position.z = - 15 + (window.test_scene.room_depth / 2);
 
     var frameWidth = 0.4;
     var frameDepth = 0.4;
@@ -628,12 +618,12 @@ async function createDoor( ) {
     rightSideFrame.position.set((doorWidth / 2) + frameWidth /2, - 5 + (doorHeight / 2) - frameWidth/2, 0);
     frameGroup.add(rightSideFrame);
 
-    window.virtual_office.scene_objects.door_frame = frameGroup;
+    window.test_scene.scene_objects.door_frame = frameGroup;
     
-    window.virtual_office.scene.add(window.virtual_office.scene_objects.door_frame);
+    window.test_scene.scene.add(window.test_scene.scene_objects.door_frame);
 
-    window.virtual_office.loaders.stats.textures.loaded ++;
-    window.virtual_office.scene.visible = true;
+    window.test_scene.loaders.stats.textures.loaded ++;
+    window.test_scene.scene.visible = true;
 
   });
 
@@ -704,19 +694,19 @@ async function createDoor( ) {
       }
 
     }
-    window.virtual_office.scene_objects.door_sign = group;
+    window.test_scene.scene_objects.door_sign = group;
 
     doorParent.add(group);
-    let backWallLogo = group.clone();
-    backWallLogo.scale.multiplyScalar(2.5);
-    backWallLogo.position.x = -6.85;
-    backWallLogo.position.y = 28.5;
-    backWallLogo.position.z = 1.5;
-    backWallLogo.name = 'backWallLogo';
+    // let backWallLogo = group.clone();
+    // backWallLogo.scale.multiplyScalar(2.5);
+    // backWallLogo.position.x = -6.85;
+    // backWallLogo.position.y = 28.5;
+    // backWallLogo.position.z = 1.5;
+    // backWallLogo.name = 'backWallLogo';
 
-    window.virtual_office.scene_objects.wallGroup.add(backWallLogo);
+    // window.test_scene.scene_objects.wallGroup.add(backWallLogo);
 
-    window.virtual_office.loaders.stats.svg.loaded ++;
+    window.test_scene.loaders.stats.svg.loaded ++;
   });
 
 
@@ -733,13 +723,13 @@ export async function createOfficeRoom() {
   });
 
   const doorBrush = new Brush(doorGeometry, transparentMaterial);
-  doorBrush.position.set(-doorWidth / 2, - 5 + (doorHeight / 2), - 15 + (window.virtual_office.room_depth / 2));
+  doorBrush.position.set(-doorWidth / 2, - 5 + (doorHeight / 2), - 15 + (window.test_scene.room_depth / 2));
   doorBrush.position.x += 4.1;
   doorBrush.updateMatrixWorld();
 
   const roomWidth = 80;
   const roomHeight = 37.5;
-  const roomGeometry = new THREE.BoxGeometry(roomWidth, roomHeight, window.virtual_office.room_depth);
+  const roomGeometry = new THREE.BoxGeometry(roomWidth, roomHeight, window.test_scene.room_depth);
 
   // Create two materials: one for the floor face and one for the other faces
   const floorMaterial = new THREE.MeshPhongMaterial({
@@ -748,20 +738,20 @@ export async function createOfficeRoom() {
   });
   floorMaterial.name = 'floor';
 
-  await window.virtual_office.loaders.texture.load('./assets/textures/EAK309.png', async (floorTexture) => {
+  await window.test_scene.loaders.texture.load('./assets/textures/EAK309.png', async (floorTexture) => {
     floorTexture.wrapS = THREE.RepeatWrapping;
     floorTexture.wrapT = THREE.RepeatWrapping;
     floorTexture.repeat.set( 8, 8 );
     floorMaterial.map = floorTexture;
     floorMaterial.needsUpdate = true;
-    window.virtual_office.loaders.stats.textures.loaded ++;
+    window.test_scene.loaders.stats.textures.loaded ++;
 
-    const geometry = new THREE.PlaneGeometry( roomWidth, roomWidth );
-    const plane = new THREE.Mesh( geometry, floorMaterial );
-    plane.position.z = window.virtual_office.room_depth / 2;
-    plane.position.y = -5.1;
-    plane.rotation.x = Math.PI / 2;
-    window.virtual_office.scene.add( plane );
+    // const geometry = new THREE.PlaneGeometry( roomWidth, roomWidth );
+    // const plane = new THREE.Mesh( geometry, floorMaterial );
+    // plane.position.z = window.test_scene.room_depth / 2;
+    // plane.position.y = -5.1;
+    // plane.rotation.x = Math.PI / 2;
+    // window.test_scene.scene.add( plane );
 
   });
 
@@ -775,41 +765,41 @@ export async function createOfficeRoom() {
   });
   ceilMaterial.name = 'ceiling';
 
-  await window.virtual_office.loaders.texture.load('./assets/textures/Ceiling_Drop_Tiles_001_height.png', async (ceilHeight) => {
+  await window.test_scene.loaders.texture.load('./assets/textures/Ceiling_Drop_Tiles_001_height.png', async (ceilHeight) => {
     ceilHeight.wrapS = THREE.RepeatWrapping;
     ceilHeight.wrapT = THREE.RepeatWrapping;
     ceilHeight.repeat.set( 4, 4 );
     ceilMaterial.displacementMap = ceilHeight;
     ceilMaterial.needsUpdate = true;
-    window.virtual_office.loaders.stats.textures.loaded ++;
+    window.test_scene.loaders.stats.textures.loaded ++;
   });
 
-  await window.virtual_office.loaders.texture.load('./assets/textures/Ceiling_Drop_Tiles_001_ambientOcclusion.jpg', async (ceilAO) => {
+  await window.test_scene.loaders.texture.load('./assets/textures/Ceiling_Drop_Tiles_001_ambientOcclusion.jpg', async (ceilAO) => {
     ceilAO.wrapS = THREE.RepeatWrapping;
     ceilAO.wrapT = THREE.RepeatWrapping;
     ceilAO.repeat.set( 4, 4 );
     ceilMaterial.aoMap = ceilAO;
     ceilMaterial.needsUpdate = true;
-    window.virtual_office.loaders.stats.textures.loaded ++;
+    window.test_scene.loaders.stats.textures.loaded ++;
   } );
 
-  await window.virtual_office.loaders.texture.load('./assets/textures/Ceiling_Drop_Tiles_001_basecolor.jpg', async (ceilTexture) => {
+  await window.test_scene.loaders.texture.load('./assets/textures/Ceiling_Drop_Tiles_001_basecolor.jpg', async (ceilTexture) => {
     ceilTexture.wrapS = THREE.RepeatWrapping;
     ceilTexture.wrapT = THREE.RepeatWrapping;
     ceilTexture.repeat.set( 4, 4 );
     ceilMaterial.map = ceilTexture;
     ceilMaterial.needsUpdate = true;
-    window.virtual_office.loaders.stats.textures.loaded ++;
+    window.test_scene.loaders.stats.textures.loaded ++;
   } );
   
 
-  await window.virtual_office.loaders.texture.load('./assets/textures/Ceiling_Drop_Tiles_001_normal.jpg', async (ceilNormal) => {
+  await window.test_scene.loaders.texture.load('./assets/textures/Ceiling_Drop_Tiles_001_normal.jpg', async (ceilNormal) => {
     ceilNormal.wrapS = THREE.RepeatWrapping;
     ceilNormal.wrapT = THREE.RepeatWrapping;
     ceilNormal.repeat.set( 4, 4 );
     ceilMaterial.normalMap = ceilNormal;
     ceilMaterial.needsUpdate = true;
-    window.virtual_office.loaders.stats.textures.loaded ++;
+    window.test_scene.loaders.stats.textures.loaded ++;
   });
 
   const backwallMaterial = new THREE.MeshStandardMaterial({
@@ -826,7 +816,7 @@ export async function createOfficeRoom() {
   const sidewallMaterial = backwallMaterial.clone();  
   sidewallMaterial.name = 'sidewall';
 
-  await window.virtual_office.loaders.texture.load('./assets/textures/brick_wall_001_displacement_4k.jpg', async ( backwallHeight ) => {
+  await window.test_scene.loaders.texture.load('./assets/textures/brick_wall_001_displacement_4k.jpg', async ( backwallHeight ) => {
     backwallHeight.wrapS = THREE.RepeatWrapping;
     backwallHeight.wrapT = THREE.RepeatWrapping;
     backwallHeight.repeat.set( roomWidth / 10, roomHeight / 10 );
@@ -835,16 +825,16 @@ export async function createOfficeRoom() {
     backwallMaterial.needsUpdate = true;
 
     const sideWallHeight = backwallHeight.clone();
-    sideWallHeight.repeat.set( window.virtual_office.room_depth / 10, roomHeight / 10  );  
+    sideWallHeight.repeat.set( window.test_scene.room_depth / 10, roomHeight / 10  );  
     sidewallMaterial.aoMap = sideWallHeight;
     sidewallMaterial.displacementMap = sideWallHeight;
 
     sidewallMaterial.needsUpdate = true;
 
-    window.virtual_office.loaders.stats.textures.loaded ++;
+    window.test_scene.loaders.stats.textures.loaded ++;
   });
 
-  await window.virtual_office.loaders.texture.load('./assets/textures/brick_wall_001_nor_gl_4k.jpg', async ( backwallNormal ) => {
+  await window.test_scene.loaders.texture.load('./assets/textures/brick_wall_001_nor_gl_4k.jpg', async ( backwallNormal ) => {
     backwallNormal.wrapS = THREE.RepeatWrapping;
     backwallNormal.wrapT = THREE.RepeatWrapping;
     backwallNormal.repeat.set( roomWidth / 10, roomHeight / 10 );
@@ -852,14 +842,14 @@ export async function createOfficeRoom() {
     backwallMaterial.needsUpdate = true;
 
     const sideWallNormal = backwallNormal.clone();
-    sideWallNormal.repeat.set( window.virtual_office.room_depth / 10, roomHeight / 10  );
+    sideWallNormal.repeat.set( window.test_scene.room_depth / 10, roomHeight / 10  );
     sidewallMaterial.normalMap = sideWallNormal;
     sidewallMaterial.needsUpdate = true;
 
-    window.virtual_office.loaders.stats.textures.loaded ++;
+    window.test_scene.loaders.stats.textures.loaded ++;
   });
 
-  await window.virtual_office.loaders.texture.load('./assets/textures/brick_wall_001_rough_4k.jpg', async ( backwallRough ) => {
+  await window.test_scene.loaders.texture.load('./assets/textures/brick_wall_001_rough_4k.jpg', async ( backwallRough ) => {
     backwallRough.wrapS = THREE.RepeatWrapping;
     backwallRough.wrapT = THREE.RepeatWrapping;
     backwallRough.repeat.set( roomWidth / 10, roomHeight / 10 );
@@ -867,11 +857,11 @@ export async function createOfficeRoom() {
     backwallMaterial.needsUpdate = true;
 
     const sideWallRough = backwallRough.clone();
-    sideWallRough.repeat.set( window.virtual_office.room_depth / 10, roomHeight / 10  );
+    sideWallRough.repeat.set( window.test_scene.room_depth / 10, roomHeight / 10  );
     sidewallMaterial.roughnessMap = sideWallRough;
     sidewallMaterial.needsUpdate = true;
 
-    window.virtual_office.loaders.stats.textures.loaded ++;
+    window.test_scene.loaders.stats.textures.loaded ++;
   
   });
 
@@ -892,7 +882,7 @@ export async function createOfficeRoom() {
 
   const roomBrush = new Brush(roomGeometry, materials);
   roomBrush.position.y = 13.75;
-  roomBrush.position.z = -15;
+  roomBrush.position.z = window.test_scene.room_depth - 15;
 
   roomBrush.updateMatrixWorld();
 
@@ -911,35 +901,35 @@ export async function createOfficeRoom() {
 async function setupScene() {
   
   // Scene container.
-  window.virtual_office.scene = new THREE.Scene();
-  window.virtual_office.scene.visible = false;
+  window.test_scene.scene = new THREE.Scene();
+  window.test_scene.scene.visible = false;
 
-  if  (! window.virtual_office.fast) {
-    window.virtual_office.renderers.webgl.shadowMap.enabled = true;
+  if  (! window.test_scene.fast) {
+    window.test_scene.renderers.webgl.shadowMap.enabled = true;
     setupEffects( );
   }
 
-  window.virtual_office.scene_objects.wallGroup = await setupBackwall( );
-  window.virtual_office.scene_objects.wallGroup.position.z = - 15 - window.virtual_office.room_depth / 2;
-  window.virtual_office.scene.add(window.virtual_office.scene_objects.wallGroup);
-  window.virtual_office.scene.add(window.virtual_office.scene_objects.tvWebGL);
+  // window.test_scene.scene_objects.wallGroup = await setupBackwall( );
+  // window.test_scene.scene_objects.wallGroup.position.z = - 15 - window.test_scene.room_depth / 2;
+  // window.test_scene.scene.add(window.test_scene.scene_objects.wallGroup);
+  // window.test_scene.scene.add(window.test_scene.scene_objects.tvWebGL);
 
 
-  window.virtual_office.scene_objects.door = await createDoor( );
-  window.virtual_office.scene_objects.door.position.set(-doorWidth / 2, - 5 + (doorHeight / 2), - 15 + (window.virtual_office.room_depth / 2));
-  window.virtual_office.scene.add(window.virtual_office.scene_objects.door);
+  window.test_scene.scene_objects.door = await createDoor( );
+  window.test_scene.scene_objects.door.position.set(-doorWidth / 2, - 5 + (doorHeight / 2), - 15 + (window.test_scene.room_depth / 2));
+  window.test_scene.scene.add(window.test_scene.scene_objects.door);
 
 
-  window.virtual_office.scene_objects.deskGroup = await setupDesks(window.virtual_office.settings.gap, window.virtual_office.settings.scale);
-  window.virtual_office.scene.add(window.virtual_office.scene_objects.deskGroup);
+  // window.test_scene.scene_objects.deskGroup = await setupDesks(window.test_scene.settings.gap, window.test_scene.settings.scale);
+  // window.test_scene.scene.add(window.test_scene.scene_objects.deskGroup);
 
   // Adjust ambient light intensity
-  window.virtual_office.scene_objects.ambientLight = new THREE.AmbientLight(window.virtual_office.fast ? 0x555555 : 0x444444); // Dim ambient light color
-  window.virtual_office.scene.add(window.virtual_office.scene_objects.ambientLight);
+  window.test_scene.scene_objects.ambientLight = new THREE.AmbientLight(window.test_scene.fast ? 0x555555 : 0x444444); // Dim ambient light color
+  window.test_scene.scene.add(window.test_scene.scene_objects.ambientLight);
 
-  window.virtual_office.scene_objects.screens_loaded = 0;
-  window.virtual_office.scene_objects.room = await createOfficeRoom( );
-  window.virtual_office.scene.add(window.virtual_office.scene_objects.room);    
+  window.test_scene.scene_objects.screens_loaded = 0;
+  window.test_scene.scene_objects.room = await createOfficeRoom( );
+  window.test_scene.scene.add(window.test_scene.scene_objects.room);
 
   // Setup triggers
   setupTriggers( );
@@ -952,17 +942,17 @@ async function setupScene() {
   // Check if we've finished loading.
   let bootWaiter = setInterval( () => {
     
-    // for ( var measure in window.virtual_office.loaders.stats ) {
-    //   if (window.virtual_office.loaders.stats[measure].loaded != window.virtual_office.loaders.stats[measure].target) {
+    // for ( var measure in window.test_scene.loaders.stats ) {
+    //   if (window.test_scene.loaders.stats[measure].loaded != window.test_scene.loaders.stats[measure].target) {
     //     loadersComplete = false;
     //   }
     // }
     if ( 
       loadersComplete &&
       // Check door sign is loaded up.
-      window.virtual_office.scene_objects.door_sign
+      window.test_scene.scene_objects.door_sign
     ) {
-      window.virtual_office.ready = true;
+      window.test_scene.ready = true;
       clearTimeout(bootWaiter);
 
       // Start tweens.
@@ -977,9 +967,9 @@ async function setupScene() {
 function setupRenderers() {
 
   // Main 3D webGL Renderer.
-  window.virtual_office.renderers.webgl = new THREE.WebGLRenderer({ antialias: window.virtual_office.fast });
-  window.virtual_office.renderers.webgl.setPixelRatio(window.devicePixelRatio);
-  window.virtual_office.renderers.webgl.setSize(window.innerWidth, window.innerHeight);
-  document.querySelector("#webgl").appendChild(window.virtual_office.renderers.webgl.domElement);
+  window.test_scene.renderers.webgl = new THREE.WebGLRenderer({ antialias: window.test_scene.fast });
+  window.test_scene.renderers.webgl.setPixelRatio(window.devicePixelRatio);
+  window.test_scene.renderers.webgl.setSize(window.innerWidth, window.innerHeight);
+  document.querySelector("#webgl").appendChild(window.test_scene.renderers.webgl.domElement);
 
 }

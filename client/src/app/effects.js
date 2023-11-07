@@ -164,6 +164,7 @@ export function setupEffects( ) {
   window.test_scene.effects.bloom.addPass( renderScene );
   window.test_scene.effects.bloom.addPass( bloomPass );
 
+  // Selectively unbloom things
   const mixPass = new ShaderPass(
     new THREE.ShaderMaterial( {
       uniforms: {

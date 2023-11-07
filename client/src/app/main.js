@@ -15,6 +15,7 @@ import { scaleEffects, setupEffects } from './effects.js';
 import { handleInteractions, handleViewportChange, handleExitSign } from './events.js';
 import { setupTriggers, updateTriggers } from './triggers.js';
 import { setupTweens, updateTweens, startTweening } from './tweens.js';
+import Sky from './sky.js'; 
 
 let csgEvaluator;
 let stats;
@@ -23,6 +24,10 @@ let materials, darkMaterial;
 
 // Create an object to talk to the application.
 window.test_scene = {
+  /**
+   * Animation queue.
+   */
+  animation_queue: [],
 
   /**
    * Primary scene camera
@@ -320,7 +325,7 @@ export default async function init() {
   var height = window.innerHeight;
   var aspect = width / height;
   var fov = setCameraFOV(aspect);
-  window.test_scene.camera = new THREE.PerspectiveCamera(fov, aspect, 1, 1000);
+  window.test_scene.camera = new THREE.PerspectiveCamera(fov, aspect, 1, window.s.scale * 2);
   window.test_scene.camera.aspect = width / height;
   
   if (aspect < 0.88) {
@@ -452,6 +457,12 @@ export function animate(currentTime) {
   requestAnimationFrame(animate);
 
   if (window.test_scene.started) {
+
+    if (window.test_scene.animation_queue.length > 0) {
+      for (var i = 0; i < window.test_scene.animation_queue.length; i++) {
+        window.test_scene.animation_queue[i](currentTime)
+      }
+    }
 
     updateTriggers(currentTime);
 
@@ -909,19 +920,15 @@ async function setupScene() {
     setupEffects( );
   }
 
-  // window.test_scene.scene_objects.wallGroup = await setupBackwall( );
-  // window.test_scene.scene_objects.wallGroup.position.z = - 15 - window.test_scene.room_depth / 2;
-  // window.test_scene.scene.add(window.test_scene.scene_objects.wallGroup);
-  // window.test_scene.scene.add(window.test_scene.scene_objects.tvWebGL);
-
-
   window.test_scene.scene_objects.door = await createDoor( );
   window.test_scene.scene_objects.door.position.set(-doorWidth / 2, - 5 + (doorHeight / 2), - 15 + (window.test_scene.room_depth / 2));
   window.test_scene.scene.add(window.test_scene.scene_objects.door);
 
 
-  // window.test_scene.scene_objects.deskGroup = await setupDesks(window.test_scene.settings.gap, window.test_scene.settings.scale);
-  // window.test_scene.scene.add(window.test_scene.scene_objects.deskGroup);
+  // Setup skybox
+	window.test_scene.scene_objects.sky = new Sky();
+  window.test_scene.scene.add(window.test_scene.scene_objects.sky.mesh);
+  window.test_scene.animation_queue.push(window.test_scene.scene_objects.sky.animate);
 
   // Adjust ambient light intensity
   window.test_scene.scene_objects.ambientLight = new THREE.AmbientLight(window.test_scene.fast ? 0x555555 : 0x444444); // Dim ambient light color

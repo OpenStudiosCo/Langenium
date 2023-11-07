@@ -29,6 +29,7 @@ function _init( wait ) {
     s.version = '0.6.0';
 	s.url = '//' + location.host;
 	s.env = _check_environment();
+	s.scale = 500000;
 
 	console.log( '[ Langenium Engine ]' );
 	console.log( '\t Version: ' + s.version );

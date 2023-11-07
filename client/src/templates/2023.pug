@@ -133,6 +133,11 @@ html(lang='en')
                 img(src='./assets/exit.svg' title='Return to the office' width='300' height='85' alt='Exit sign')
             iframe#pageOverlay
             #webgl
+            // Shaders
+            script(type='x-shader/x-vertex', id='cloudVertShader')
+                include ../shaders/cloud.vert
+            script(type='x-shader/x-vertex', id='cloudFragShader')
+                include ../shaders/cloud.frag
             script#vertexshader(type='x-shader/x-vertex').
                 varying vec2 vUv;
                 void main() {

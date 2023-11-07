@@ -11,10 +11,12 @@ import { SUBTRACTION, Brush, Evaluator } from 'three-bvh-csg';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { SVGLoader } from 'three/addons/loaders/SVGLoader.js';
 
+
 import { scaleEffects, setupEffects } from './effects.js';
 import { handleInteractions, handleViewportChange, handleExitSign } from './events.js';
 import { setupTriggers, updateTriggers } from './triggers.js';
 import { setupTweens, updateTweens, startTweening } from './tweens.js';
+import Ocean from './ocean.js'; 
 import Sky from './sky.js'; 
 
 let csgEvaluator;
@@ -454,7 +456,7 @@ export function animate(currentTime) {
 
   updateFPS();
 
-  requestAnimationFrame(animate);
+  
 
   if (window.test_scene.started) {
 
@@ -493,6 +495,8 @@ export function animate(currentTime) {
   } else {
     window.test_scene.renderers.webgl.render(window.test_scene.scene, window.test_scene.camera); // Render the scene without the effects
   }
+
+  requestAnimationFrame(animate);
 
 }
 
@@ -929,6 +933,11 @@ async function setupScene() {
 	window.test_scene.scene_objects.sky = new Sky();
   window.test_scene.scene.add(window.test_scene.scene_objects.sky.mesh);
   window.test_scene.animation_queue.push(window.test_scene.scene_objects.sky.animate);
+
+  // Setup ocean
+	window.test_scene.scene_objects.ocean = new Ocean();
+  window.test_scene.scene.add(window.test_scene.scene_objects.ocean.water);
+  window.test_scene.animation_queue.push(window.test_scene.scene_objects.ocean.animate);
 
   // Adjust ambient light intensity
   window.test_scene.scene_objects.ambientLight = new THREE.AmbientLight(window.test_scene.fast ? 0x555555 : 0x444444); // Dim ambient light color

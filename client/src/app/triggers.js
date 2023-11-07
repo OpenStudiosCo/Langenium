@@ -7,7 +7,7 @@
  */
 
 export function setupTriggers ( ) {
-    window.test_scene.triggers.updateSigns = updateSigns();
+    //window.test_scene.triggers.updateSigns = updateSigns();
 }
 
 export function updateTriggers ( currentTime ) {

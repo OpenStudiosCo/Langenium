@@ -33,15 +33,7 @@ export default class Sky {
 
     createSkyMesh() {
         let skyGeometry = new THREE.SphereGeometry( window.s.scale, 32, 64);
-        // let skyMaterials = [ 
-        //     new THREE.ShaderMaterial( {
-        //         side: THREE.DoubleSide,
-        //         uniforms: this.uniforms,
-        //         vertexShader:   document.getElementById( 'cloudVertShader'   ).textContent,
-        //         fragmentShader: document.getElementById( 'cloudFragShader' ).textContent
-        //     } ) ,
-        //     new THREE.MeshBasicMaterial( { color: 0x002244, side: THREE.DoubleSide  } )
-        // ];
+
         let skyMaterials = new THREE.ShaderMaterial( {
             side: THREE.DoubleSide,
             uniforms: this.uniforms,
@@ -49,30 +41,17 @@ export default class Sky {
             fragmentShader: document.getElementById( 'cloudFragShader' ).textContent
         } );
 
-        // var materialIndices = new Uint8Array(skyGeometry.attributes.position.count);
-
-        // for (var i = 0; i < skyGeometry.attributes.position.count; i++) {
-        //     var vertexY = skyGeometry.attributes.position.getY(i);
-
-        //     if (vertexY > -21000) {
-        //         materialIndices[i] = 0;
-        //     } else {
-        //         materialIndices[i] = 1;
-        //     }
-        // }
-
-        // skyGeometry.setAttribute('materialIndex', new THREE.BufferAttribute(materialIndices, 1));
-
+       
         let skyMesh = new THREE.Mesh(skyGeometry, skyMaterials);
         skyMesh.name = 'Skybox';
-        skyMesh.position.y = 24475;
+        skyMesh.position.y = window.s.scale * 0;
         return skyMesh;
         
     }
 
-    animate( currentTime ) {
+    animate( delta ) {
         // Iterate the sky uniforms to animate it.
-        window.test_scene.scene_objects.sky.uniforms.time.value += 0.000025 * currentTime;
+        window.test_scene.scene_objects.sky.uniforms.time.value += 0.025;
     }
     
 }

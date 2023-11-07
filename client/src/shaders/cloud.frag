@@ -44,33 +44,39 @@ float limitColor( float min, float max, float channel) {
 
 vec4 colorFilter (float n, vec3 coord) {
 
-    vec4 color = vec4( vec3( 1.75 *n, 1.75 * n, 1.75 * n )  , 1.0 );
+    vec4 color = vec4( vec3( 0, .0, 0 )  , 1.0 );
 
-    if ( n >= 0.3 ) {
-        color.r = limitColor(0.5, 0.85, color.r) ;
-        color.g = limitColor(0.5, 0.85, color.g) ;
-        color.b = limitColor (0.5, 0.85, color.b) ;
+    if (coord.y > -0.1) {
 
-    }
-    else {
-        if ( n >= 0.2 ) {
-            color.r = dot(color.r, n) / 1.5 + 0.0;
-            color.g = color.g * n / 1.5 + 0.5 - coord.y * 1.12;
-            color.b = color.b * n / 1.5 + .95 - coord.y * 1.12;
+        if ( n >= 0.3 ) {
+            color.r = limitColor(0.5, 0.85, color.r) ;
+            color.g = limitColor(0.5, 0.85, color.g) ;
+            color.b = limitColor (0.5, 0.85, color.b) ;
+
         }
         else {
-            color.r = color.r * n / 3.5 + 0.0;
-            color.g = color.g * n  / 3.5 + 0.5 - coord.y * 1.12;
-            color.b = color.b * n  / 3.5 + .95 - coord.y * 1.12;
+            if ( n >= 0.2 ) {
+                color.r = dot(color.r, n) / 1.5 + 0.0;
+                color.g = color.g * n / 1.5 + 0.5 - coord.y * 1.12;
+                color.b = color.b * n / 1.5 + .95 - coord.y * 1.12;
+            }
+            else {
+                color.r = color.r * n / 3.5 + 0.0;
+                color.g = color.g * n  / 3.5 + 0.5 - coord.y * 1.12;
+                color.b = color.b * n  / 3.5 + .95 - coord.y * 1.12;
+            }
+        }
+
+        // targetting the grey parts of the clouds
+        if (n < 1.0 && n > 0.3) {
+        
+            color.r = pow(color.r , 0.0);
+            color.g = pow(color.g  , 0.5 ) ;
+            color.b = pow(color.b , 1.0 ) ;
         }
     }
-
-    // targetting the grey parts of the clouds
-    if (n < 1.0 && n > 0.3) {
-    
-        color.r = pow(color.r , 0.0);
-        color.g = pow(color.g  , 0.5 ) ;
-        color.b = pow(color.b , 1.0 ) ;
+    else {
+        color = vec4( vec3( 0, 34, 68 )  , .65 );
     }
     return color;
 }
@@ -88,7 +94,7 @@ void main(void) {
 
     // normal
 
-     if ( n > 0.3  ) {
+     if ((vTexCoord3D.y > -0.1) && (n > 0.3 ) ) {
 
         const float e = .01;
 

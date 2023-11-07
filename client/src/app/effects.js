@@ -180,8 +180,9 @@ export function setupEffects( ) {
 
   window.test_scene.effects.main.addPass( mixPass );
 
-  const tonePass = new OutputPass(THREE.ACESFilmicToneMapping);
-  tonePass.toneMappingExposure = Math.pow(Math.PI / 3, 4.0);
-  window.test_scene.effects.main.addPass( tonePass );
+  // Colour correction.
+  // const tonePass = new OutputPass(THREE.CineonToneMapping  );
+  // tonePass.toneMappingExposure = Math.pow(Math.PI / 3, 4.0);
+  // window.test_scene.effects.main.addPass( tonePass );
 
 }

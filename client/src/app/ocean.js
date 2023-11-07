@@ -16,7 +16,7 @@ export default class Ocean {
 
     constructor() {
 
-        const waterGeometry = new THREE.PlaneGeometry( window.s.scale, window.s.scale );
+        const waterGeometry = new THREE.PlaneGeometry( window.s.scale * 2, window.s.scale * 2, 50, 50 );
 
         this.water = new Water(
             waterGeometry,
@@ -30,9 +30,9 @@ export default class Ocean {
                 } ),
                 sunDirection: new THREE.Vector3(),
                 sunColor: 0xffffff,
-                waterColor: 0x001e0f,
-                distortionScale: 3.7,
-                fog: false
+                waterColor: 0x0066DD,
+                distortionScale: 20.0,
+                side: THREE.DoubleSide
             }
         );
         this.water.rotation.x = - Math.PI / 2;

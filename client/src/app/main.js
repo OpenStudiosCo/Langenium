@@ -18,6 +18,7 @@ import { setupTriggers, updateTriggers } from './triggers.js';
 import { setupTweens, updateTweens, startTweening } from './tweens.js';
 import Ocean from './ocean.js'; 
 import Sky from './sky.js'; 
+import Ship from './ship.js'; 
 
 let csgEvaluator;
 let stats;
@@ -96,6 +97,7 @@ window.test_scene = {
    */
   loaders: {
     gltf: false,
+    object: false,
     texture: false,
     stats: {
       fonts: {
@@ -309,6 +311,7 @@ export default async function init() {
   }
 
   window.test_scene.loaders.gtlf = new GLTFLoader();
+  window.test_scene.loaders.object = new THREE.ObjectLoader();
   window.test_scene.loaders.texture =  new THREE.TextureLoader();
 
   // Constructive Solid Geometry (csg) Evaluator.
@@ -928,7 +931,6 @@ async function setupScene() {
   window.test_scene.scene_objects.door.position.set(-doorWidth / 2, - 5 + (doorHeight / 2), - 15 + (window.test_scene.room_depth / 2));
   window.test_scene.scene.add(window.test_scene.scene_objects.door);
 
-
   // Setup skybox
 	window.test_scene.scene_objects.sky = new Sky();
   window.test_scene.scene.add(window.test_scene.scene_objects.sky.mesh);
@@ -938,6 +940,12 @@ async function setupScene() {
 	window.test_scene.scene_objects.ocean = new Ocean();
   window.test_scene.scene.add(window.test_scene.scene_objects.ocean.water);
   window.test_scene.animation_queue.push(window.test_scene.scene_objects.ocean.animate);
+
+  // Setup Ship
+	window.test_scene.scene_objects.ship = new Ship();
+  await window.test_scene.scene_objects.ship.load();
+  window.test_scene.scene.add( window.test_scene.scene_objects.ship.mesh );
+  window.test_scene.animation_queue.push(window.test_scene.scene_objects.ship.animate);
 
   // Adjust ambient light intensity
   window.test_scene.scene_objects.ambientLight = new THREE.AmbientLight(window.test_scene.fast ? 0x555555 : 0x444444); // Dim ambient light color

@@ -27,6 +27,7 @@ let materials, darkMaterial;
 
 // Create an object to talk to the application.
 window.test_scene = {
+  
   /**
    * Animation queue.
    */

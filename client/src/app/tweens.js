@@ -127,6 +127,8 @@ function flickerEffect() {
     .to({ emissiveIntensity: 1 }, 0.2 * 1000)
     .onUpdate((obj) => { updateFlickering(obj) })
     .onComplete(()=>{
+      window.test_scene.tweens.shipEnterY.start();
+      window.test_scene.tweens.shipEnterZ.start();
       window.test_scene.tweens.slideBack.start();
     });
 
@@ -171,6 +173,7 @@ function enterTheOffice ( ) {
     let loader_symbols = document.getElementById('loader_symbols');
     if (loader_symbols)
       loader_symbols.style.display = 'none';
+
   });
 }
 

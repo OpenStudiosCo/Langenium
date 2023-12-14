@@ -16,11 +16,23 @@ export default class Ship {
     // Animation mixer.
     mixer;
 
-    // Ship ready for input (intro sequence finished)
+    // Aircraft ready for input (intro sequence finished)
     ready;
+
+    // Aircraft flight sim data like airspeed.
+    stats;
 
     constructor() {
         this.ready = false;
+
+        this.stats = {
+            a_speed:    0,       /* number within range from 0kt to 160kt */
+            v_speed:    0,       /* number within range from 4000ft to -4000ft */
+            heading:    0,       /* number within range from 360° to -360° */
+            altitude:   0,       /* number within range from 0ft to 99999ft */
+            horizon:    [0,0],   /* [ number within range from 40° to -40° , number within range from 30° to -30° ] */
+            turn:       [0,0],   /* [ number within range from -3°/sec to 3/sec° , number within range from -1 to 1 ] */
+        };
     }
 
     async load() {
@@ -95,47 +107,74 @@ export default class Ship {
 
         if (window.test_scene.scene_objects.ship.ready) {
 
-            var stepSize = 2.5,
+            var stepSize = .01,
                 pX = 0,
                 pY = 0,
                 pZ = 0,
                 rY = 0, 
                 tZ = 0, 
                 tY = 0,
-                radian = (Math.PI / 135);
+                radian = (Math.PI / 180);
 
             // Detect keyboard input
             if (window.test_scene.controls.keyboard.pressed("W")) {
-                tZ -= stepSize;
+                window.test_scene.scene_objects.ship.stats.a_speed -= stepSize;            
             }
-            if (window.test_scene.controls.keyboard.pressed("S")) {
-                tZ += stepSize;
+            else {
+                if (window.test_scene.controls.keyboard.pressed("S")) {
+                    window.test_scene.scene_objects.ship.stats.a_speed += stepSize;
+                }
+                else {
+                    window.test_scene.scene_objects.ship.stats.a_speed *= 0.987; //damping
+                }
             }
+
+            if (window.test_scene.controls.keyboard.pressed(" ")) {
+                window.test_scene.scene_objects.ship.stats.v_speed += stepSize * .6;
+            }
+            else {
+                if (window.test_scene.controls.keyboard.pressed("shift")) {
+                    window.test_scene.scene_objects.ship.stats.v_speed -= stepSize * .6;
+                }
+                else {
+                    window.test_scene.scene_objects.ship.stats.v_speed *= 0.987; //damping
+                }
+            }
+            
+            // Set change in Z position based on airspeed
+            if (Math.abs(window.test_scene.scene_objects.ship.stats.v_speed) > 0.01) {
+                tY = window.test_scene.scene_objects.ship.stats.v_speed;
+            }
+            
             if (window.test_scene.controls.keyboard.pressed("A")) {
                 rY += radian;
             }
             if (window.test_scene.controls.keyboard.pressed("D")) {
                 rY -= radian;
             }
-            if (window.test_scene.controls.keyboard.pressed(" ")) {
-                tY += stepSize * .6;
-            }
-            if (window.test_scene.controls.keyboard.pressed("shift")) {
-                tY -= stepSize * .6;
-            }
 
             if (rY != 0) {
                 window.test_scene.scene_objects.ship.mesh.rotation.y += rY;
-            }	
+            }
+
+            // Set change in Z position based on airspeed
+            if (Math.abs(window.test_scene.scene_objects.ship.stats.a_speed) > 0.01) {
+                tZ = window.test_scene.scene_objects.ship.stats.a_speed;
+            }
 
             let xDiff = tZ * Math.sin(window.test_scene.scene_objects.ship.mesh.rotation.y),
                 zDiff = tZ * Math.cos(window.test_scene.scene_objects.ship.mesh.rotation.y);
             
-            window.test_scene.scene_objects.ship.mesh.position.y += tY;
+            if (window.test_scene.scene_objects.ship.mesh.position.y + tY >= 0 ) {
+                window.test_scene.scene_objects.ship.mesh.position.y += tY;
+                window.test_scene.camera.position.y += tY;
+            } else {
+                window.test_scene.scene_objects.ship.stats.v_speed = 0;
+            }
             window.test_scene.scene_objects.ship.mesh.position.x += xDiff;
             window.test_scene.scene_objects.ship.mesh.position.z += zDiff;
 
-            window.test_scene.camera.position.y += tY;
+            
             window.test_scene.camera.position.x += xDiff;
             window.test_scene.camera.position.z += zDiff;
             window.test_scene.camera.updateProjectionMatrix();

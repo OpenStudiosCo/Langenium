@@ -26,12 +26,14 @@ export default class Ship {
         this.ready = false;
 
         this.stats = {
-            a_speed:    0,       /* number within range from 0kt to 160kt */
-            v_speed:    0,       /* number within range from 4000ft to -4000ft */
-            heading:    0,       /* number within range from 360° to -360° */
-            altitude:   0,       /* number within range from 0ft to 99999ft */
-            horizon:    [0,0],   /* [ number within range from 40° to -40° , number within range from 30° to -30° ] */
-            turn:       [0,0],   /* [ number within range from -3°/sec to 3/sec° , number within range from -1 to 1 ] */
+            a_speed:            0,       /* number within range from 0kt to 160kt */
+            v_speed:            0,       /* number within range from 4000ft to -4000ft */
+            last_vs_change:     0,       /* timestamp of the last change in vertical speed */
+            heading:            0,       /* number within range from 360° to -360° */
+            altitude:           0,       /* number within range from 0ft to 99999ft */
+            horizon:            [0,0],   /* [ number within range from 40° to -40° , number within range from 30° to -30° ] */
+            turn:               [0,0],   /* [ number within range from -3°/sec to 3/sec° , number within range from -1 to 1 ] */
+            last_turn_change:   0,       /* timestamp of the last change in turn degrees */
         };
     }
 
@@ -147,14 +149,22 @@ export default class Ship {
             }
             
             if (window.test_scene.controls.keyboard.pressed("A")) {
+                window.test_scene.scene_objects.ship.stats.last_turn_change = new Date();
                 rY += radian;
             }
-            if (window.test_scene.controls.keyboard.pressed("D")) {
-                rY -= radian;
+            else {
+                if (window.test_scene.controls.keyboard.pressed("D")) {
+                    window.test_scene.scene_objects.ship.stats.last_turn_change = new Date();
+                    rY -= radian;
+                }
             }
 
             if (rY != 0) {
                 window.test_scene.scene_objects.ship.mesh.rotation.y += rY;
+                window.test_scene.camera.rotation.y += rY / Math.PI;
+            }
+            else {
+                window.test_scene.camera.rotation.y *= .987;
             }
 
             // Set change in Z position based on airspeed

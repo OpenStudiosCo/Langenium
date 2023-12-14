@@ -3,7 +3,7 @@
  */
 import * as THREE from 'three';
 
-import {brightenMaterial} from './furniture.js';
+import {brightenMaterial} from './materials.js';
 
 
 export default class Ship {

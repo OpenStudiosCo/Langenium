@@ -66,12 +66,6 @@ export function setupTweens( ) {
    */  
   window.test_scene.tweens.dollyUp = dollyUp();
 
-  /**
-   * Camera pan down.
-   * Animation: Automatic, single use
-   */
-  window.test_scene.tweens.panDown = panDown( );
-
   resetReusables();
 
 }
@@ -205,7 +199,6 @@ function openDoor ( doorRotation ) {
   .to({ y: doorRotation }, 500) // Set the duration of the animation
   .onComplete(() => {
     window.test_scene.tweens.enterTheOffice.start();
-    window.test_scene.tweens.panDown.delay(500).start();
     window.test_scene.tweens.dollyUp.delay(500).start();
   })
   ;
@@ -213,21 +206,12 @@ function openDoor ( doorRotation ) {
 
 function dollyUp ( ) {
   return new TWEEN.Tween(window.test_scene.camera.position)
-  .to({ y: 18 }, 500) // Set the duration of the animation
+  .to({ y: 10.775 }, 500) // Set the duration of the animation
   .onUpdate(() => {
-    window.test_scene.camera.lookAt(window.test_scene.scene_objects.ship.mesh.position);
+    //window.test_scene.camera.lookAt(window.test_scene.scene_objects.ship.mesh.position);
     window.test_scene.camera.updateProjectionMatrix();
-  });
-}
-
-function panDown ( ) {
-  let cameraRotationX = - (Math.PI / 30) * window.test_scene.camera.aspect;
-  return new TWEEN.Tween(window.test_scene.camera.rotation)
-  .to({ x: cameraRotationX }, 500) // Set the duration of the animation
-  .onUpdate(() => {
-    window.test_scene.camera.updateProjectionMatrix();
-  });
-
+  })
+  ;
 }
 
 // Reusable

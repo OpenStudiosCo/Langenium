@@ -83,10 +83,8 @@ export default class Ship {
                 window.test_scene.scene_objects.ship.mesh.position.z = coords.x;
             })
             .onComplete(() => {
-                window.test_scene.scene_objects.ship.mesh.add(window.test_scene.camera);
-                window.test_scene.controls.startOrbit();
                 window.test_scene.scene_objects.ship.ready = true;
-                
+
             });
     }
 
@@ -134,11 +132,24 @@ export default class Ship {
                 zDiff = tZ * Math.cos(window.test_scene.scene_objects.ship.mesh.rotation.y);
             
             window.test_scene.scene_objects.ship.mesh.position.y += tY;
-
             window.test_scene.scene_objects.ship.mesh.position.x += xDiff;
             window.test_scene.scene_objects.ship.mesh.position.z += zDiff;
 
-            window.test_scene.camera.lookAt(window.test_scene.scene_objects.ship.mesh.position);
+            window.test_scene.camera.position.y += tY;
+            window.test_scene.camera.position.x += xDiff;
+            window.test_scene.camera.position.z += zDiff;
+            window.test_scene.camera.updateProjectionMatrix();
+
+            if (window.test_scene.controls.orbit) {
+            
+                window.test_scene.controls.orbit.target.set(
+                    window.test_scene.scene_objects.ship.mesh.position.x,
+                    window.test_scene.scene_objects.ship.mesh.position.y,
+                    window.test_scene.scene_objects.ship.mesh.position.z
+                );
+                window.test_scene.controls.orbit.update();
+            }
+
         }
     }
     

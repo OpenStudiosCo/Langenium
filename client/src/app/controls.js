@@ -16,12 +16,9 @@ export default class Controls {
 
     constructor() {
         this.keyboard = new KeyboardControls();
-    }
-
-    startOrbit() {
-        this.orbit = new OrbitControls(window.test_scene.camera, window.test_scene.renderers.webgl.domElement);
-        this.orbit.target.set(0,10.775,0);
-        this.orbit.update();
+        // this.orbit = new OrbitControls(window.test_scene.camera, window.test_scene.renderers.webgl.domElement);
+        // this.orbit.target.set(0,10.775,0);
+        // this.orbit.update();
     }
 
     animate() {

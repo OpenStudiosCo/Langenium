@@ -30,8 +30,8 @@ export async function handleViewportChange() {
   window.test_scene.camera.fov = setCameraFOV(window.test_scene.camera.aspect);
   if (!window.test_scene.selected &&  ! window.test_scene.moving) {
     let posZ = -20;
-    window.test_scene.camera.position.z = posZ + (window.test_scene.room_depth / 2);
-    window.test_scene.camera.rotation.x = - (Math.PI / 30) * window.test_scene.camera.aspect;
+    //window.test_scene.camera.position.z = posZ + (window.test_scene.room_depth / 2);
+    //window.test_scene.camera.rotation.x = - (Math.PI / 30) * window.test_scene.camera.aspect;
   }
   window.test_scene.camera.updateProjectionMatrix();
   

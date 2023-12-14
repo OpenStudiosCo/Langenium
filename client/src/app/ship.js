@@ -5,7 +5,6 @@ import * as THREE from 'three';
 
 import {brightenMaterial} from './materials.js';
 
-
 export default class Ship {
 
     // Ship Model (gltf)
@@ -82,12 +81,54 @@ export default class Ship {
             })
             .onComplete(() => {
                 console.log('ready');
+                window.test_scene.scene_objects.ship.mesh.add(window.test_scene.camera);
             });
     }
 
     animate( delta ) {
         if (window.test_scene.scene_objects.ship.mixer) {
             window.test_scene.scene_objects.ship.mixer.update( delta );
+        }
+
+        if (window.test_scene.scene_objects.ship.mesh) {
+
+            var stepSize = 10,
+                pX = 0,
+                pY = 0,
+                pZ = 0,
+                rY = 0, 
+                tZ = 0, 
+                tY = 0,
+                radian = (Math.PI / 135);
+
+            // Detect keyboard input
+            if (window.test_scene.controls.keyboard.pressed("W")) {
+                tZ -= stepSize;
+            }
+            if (window.test_scene.controls.keyboard.pressed("S")) {
+                tZ += stepSize;
+            }
+            if (window.test_scene.controls.keyboard.pressed("A")) {
+                rY += radian;
+            }
+            if (window.test_scene.controls.keyboard.pressed("D")) {
+                rY -= radian;
+            }
+            if (window.test_scene.controls.keyboard.pressed(" ")) {
+                tY += stepSize * .6;
+            }
+            if (window.test_scene.controls.keyboard.pressed("shift")) {
+                tY -= stepSize * .6;
+            }
+
+            if (rY != 0) {
+                window.test_scene.scene_objects.ship.mesh.rotation.y += rY;
+            }	
+
+            window.test_scene.scene_objects.ship.mesh.position.y += tY;
+
+            window.test_scene.scene_objects.ship.mesh.position.x += tZ * Math.sin(window.test_scene.scene_objects.ship.mesh.rotation.y);
+            window.test_scene.scene_objects.ship.mesh.position.z += tZ * Math.cos(window.test_scene.scene_objects.ship.mesh.rotation.y);
         }
     }
     

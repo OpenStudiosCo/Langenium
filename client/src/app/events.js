@@ -7,7 +7,6 @@ import * as THREE from 'three';
 
 import { calculateAdjustedGapSize, createOfficeRoom, setCameraFOV, doorWidth, doorDepth, doorHeight } from './main.js';
 
-import { updateDeskZ } from './materials.js';
 import { resetReusables } from './tweens.js';
 
 export async function handleViewportChange() {

@@ -9,7 +9,7 @@ eleventyExcludeFromCollections: true
 urlset(xmlns="http://www.sitemaps.org/schemas/sitemap/0.9")
     each page in collections.all
         url
-            - urlstring = 'https://openstudios.xyz' + page.url
+            - urlstring = 'https://langenium.com' + page.url
             loc= urlstring
             lastmod= page.date.toISOString()
             if page.data.changefreq || page.url == '/'

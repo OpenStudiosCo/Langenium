@@ -4,14 +4,13 @@ import * as THREE from 'three';
 
 import Stats from 'three/addons/libs/stats.module.js';
 
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-
 import { SUBTRACTION, Brush, Evaluator } from 'three-bvh-csg';
 
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { SVGLoader } from 'three/addons/loaders/SVGLoader.js';
 
 
+import Controls from './controls.js';
 import { scaleEffects, setupEffects } from './effects.js';
 import { handleInteractions, handleViewportChange, handleExitSign } from './events.js';
 import { setupTriggers, updateTriggers } from './triggers.js';
@@ -41,9 +40,7 @@ window.test_scene = {
   camera: false,
 
   /**
-   * Orbit Controls
-   * 
-   * @memberof THREE.OrbitControls
+   * Multi input controls
    */
   controls: false,
   /**
@@ -161,42 +158,6 @@ window.test_scene = {
   },
 
   /**
-   * Screens / iframe pages
-   */
-  screens: {
-    720: {
-      slug: 'about_us',
-      title: 'About Us',
-      mesh: false,
-      type: 'tv',
-    },
-		0: {
-      slug: 'case_studies',
-      title: 'Case Studies',
-      mesh: false,
-      type: 'monitor',
-    },
-		3: {
-      slug: 'contact_us',
-      title: 'Contact Us',
-      mesh: false,
-      type: 'monitor',
-    },
-		2: {
-      slug: 'portfolio',
-      title: 'Portfolio',
-      mesh: false,
-      type: 'monitor',
-    },
-		1: {
-      slug: 'services',
-      title: 'Services',
-      mesh: false,
-      type: 'monitor',
-    },
-  },
-
-  /**
    * Settings that controls the scene.
    * 
    * @memberof Object
@@ -271,18 +232,6 @@ window.test_scene = {
   tweens: {}
 };
 
-
-/**
- * Screen lookups
- */
-window.test_scene.screen_ids =  {
-  0: window.test_scene.screens.services,
-  1: window.test_scene.screens.services,
-  2: window.test_scene.screens.services,
-  3: window.test_scene.screens.services,
-  720: window.test_scene.screens.about_us,
-};
-
 export default async function init() {
 
   let pane;
@@ -348,7 +297,6 @@ export default async function init() {
   // Scene Setup. 
   setupScene();
 
-
   if (window.test_scene.debug) {
     const helper = new THREE.CameraHelper(window.test_scene.camera);
 
@@ -359,10 +307,9 @@ export default async function init() {
   darkMaterial = new THREE.MeshBasicMaterial({ color: 'black' });
   materials = {};
 
-  window.test_scene.controls = new OrbitControls(window.test_scene.camera, window.test_scene.renderers.webgl.domElement);
-  window.test_scene.controls.enabled = window.test_scene.debug;
-  window.test_scene.controls.target.set(0, 10, 0);
-  window.test_scene.controls.update();
+  window.test_scene.controls = new Controls();
+  window.addEventListener("keydown", window.test_scene.controls.keyboard.onKeyDown, false);
+  window.addEventListener("keyup", window.test_scene.controls.keyboard.onKeyUp, false);
 
   if (window.test_scene.debug) {
     stats = new Stats();

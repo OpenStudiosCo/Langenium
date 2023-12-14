@@ -49,27 +49,6 @@ export async function handleViewportChange() {
   }
   else {
     
-    // Adjust desk positions based on the aspect ratio
-    window.test_scene.scene_objects.deskGroup.children.forEach(function (mesh, i) {
-      if ( mesh.name == 'desk') {
-        updateDeskZ(mesh, mesh.deskIndex);
-
-        updateDeskZ(mesh.webGLScreen, mesh.deskIndex);
-
-        mesh.webGLScreen.position.z += .175;
-
-      }
-
-      if ( mesh.name == 'chair') {
-        updateDeskZ(mesh, mesh.deskIndex);
-      }
-    });
-    window.test_scene.scene_objects.deskGroup.children.forEach(function (mesh, i) {
-      if ( mesh.name == 'plant') {
-        mesh.position.z = window.test_scene.settings.adjusted_gap;
-      }
-    });
-
     window.test_scene.scene_objects.door.position.z = - 15 + (window.test_scene.room_depth / 2);
     window.test_scene.scene_objects.door_frame.position.z = - 15 + (window.test_scene.room_depth / 2);
   }

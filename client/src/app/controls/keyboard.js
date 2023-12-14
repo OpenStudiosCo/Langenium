@@ -52,7 +52,6 @@ export default class KeyboardControls {
         window.test_scene.controls.keyboard.modifiers['alt']	= event.altKey
         window.test_scene.controls.keyboard.modifiers['meta']	= event.metaKey
 
-        console.log(event);
     }
 
     pressed ( keyDesc ) {

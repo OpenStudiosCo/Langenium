@@ -12,7 +12,7 @@ import { SVGLoader } from 'three/addons/loaders/SVGLoader.js';
 
 import Controls from './controls.js';
 import { scaleEffects, setupEffects } from './effects.js';
-import { handleInteractions, handleViewportChange, handleExitSign } from './events.js';
+import { handleViewportChange } from './events.js';
 import { setupTriggers, updateTriggers } from './triggers.js';
 import { setupTweens, updateTweens, startTweening } from './tweens.js';
 import Ocean from './ocean.js'; 
@@ -310,6 +310,7 @@ export default async function init() {
   window.test_scene.controls = new Controls();
   window.addEventListener("keydown", window.test_scene.controls.keyboard.onKeyDown, false);
   window.addEventListener("keyup", window.test_scene.controls.keyboard.onKeyUp, false);
+  window.test_scene.animation_queue.push(window.test_scene.controls.animate);
 
   if (window.test_scene.debug) {
     stats = new Stats();
@@ -319,9 +320,6 @@ export default async function init() {
   
   window.addEventListener('orientationchange', handleViewportChange);
   window.addEventListener('resize', handleViewportChange);
-
-  document.getElementById('exitSign').addEventListener('click', handleExitSign);
-  document.getElementById('exitSign').addEventListener('touchend', handleExitSign);
 
   function onPointerMove(event) {
 
@@ -405,9 +403,7 @@ export function setCameraFOV(aspect) {
 
 export function animate(currentTime) {
 
-  updateFPS();
-
-  
+  updateFPS();  
 
   if (window.test_scene.started) {
 
@@ -420,10 +416,6 @@ export function animate(currentTime) {
     updateTriggers(currentTime);
 
     updateTweens(currentTime);
-
-    if (!window.test_scene.debug && window.matrix_scene.complete ) {
-      handleInteractions( );
-    }
   }
 
   if (window.test_scene.debug) {

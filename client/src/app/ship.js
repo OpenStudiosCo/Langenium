@@ -16,8 +16,11 @@ export default class Ship {
     // Animation mixer.
     mixer;
 
-    constructor() {
+    // Ship ready for input (intro sequence finished)
+    ready;
 
+    constructor() {
+        this.ready = false;
     }
 
     async load() {
@@ -64,7 +67,7 @@ export default class Ship {
                 window.test_scene.scene_objects.ship.mesh.position.y = coords.y;
             })
             .onComplete(() => {
-                console.log('ready');
+                //console.log('ready');
             });
     }
     shipEnterZ() {
@@ -80,8 +83,10 @@ export default class Ship {
                 window.test_scene.scene_objects.ship.mesh.position.z = coords.x;
             })
             .onComplete(() => {
-                console.log('ready');
                 window.test_scene.scene_objects.ship.mesh.add(window.test_scene.camera);
+                window.test_scene.controls.startOrbit();
+                window.test_scene.scene_objects.ship.ready = true;
+                
             });
     }
 
@@ -90,9 +95,9 @@ export default class Ship {
             window.test_scene.scene_objects.ship.mixer.update( delta );
         }
 
-        if (window.test_scene.scene_objects.ship.mesh) {
+        if (window.test_scene.scene_objects.ship.ready) {
 
-            var stepSize = 10,
+            var stepSize = 2.5,
                 pX = 0,
                 pY = 0,
                 pZ = 0,
@@ -125,10 +130,15 @@ export default class Ship {
                 window.test_scene.scene_objects.ship.mesh.rotation.y += rY;
             }	
 
+            let xDiff = tZ * Math.sin(window.test_scene.scene_objects.ship.mesh.rotation.y),
+                zDiff = tZ * Math.cos(window.test_scene.scene_objects.ship.mesh.rotation.y);
+            
             window.test_scene.scene_objects.ship.mesh.position.y += tY;
 
-            window.test_scene.scene_objects.ship.mesh.position.x += tZ * Math.sin(window.test_scene.scene_objects.ship.mesh.rotation.y);
-            window.test_scene.scene_objects.ship.mesh.position.z += tZ * Math.cos(window.test_scene.scene_objects.ship.mesh.rotation.y);
+            window.test_scene.scene_objects.ship.mesh.position.x += xDiff;
+            window.test_scene.scene_objects.ship.mesh.position.z += zDiff;
+
+            window.test_scene.camera.lookAt(window.test_scene.scene_objects.ship.mesh.position);
         }
     }
     

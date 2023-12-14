@@ -215,6 +215,7 @@ function dollyUp ( ) {
   return new TWEEN.Tween(window.test_scene.camera.position)
   .to({ y: 18 }, 500) // Set the duration of the animation
   .onUpdate(() => {
+    window.test_scene.camera.lookAt(window.test_scene.scene_objects.ship.mesh.position);
     window.test_scene.camera.updateProjectionMatrix();
   });
 }

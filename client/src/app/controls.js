@@ -10,16 +10,23 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 export default class Controls {
 
-    keyboardControls;
+    keyboard;
 
-    orbitControls;
+    orbit;
 
     constructor() {
         this.keyboard = new KeyboardControls();
+    }
 
-        this.orbitControls = new OrbitControls(window.test_scene.camera, window.test_scene.renderers.webgl.domElement);
-        this.orbitControls.target.set(0, 12, 0);
-        this.orbitControls.update();
+    startOrbit() {
+        this.orbit = new OrbitControls(window.test_scene.camera, window.test_scene.renderers.webgl.domElement);
+        this.orbit.target.set(0,10.775,0);
+        this.orbit.update();
+    }
+
+    animate() {
+        if (window.test_scene.controls.orbit)
+            window.test_scene.controls.orbit.update();
     }
 
 }

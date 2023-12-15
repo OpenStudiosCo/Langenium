@@ -247,9 +247,12 @@ export default class Ship {
                 
             }
 
-            // Set change in Z position based on airspeed
+            // Check if we have significant airspeed
             if (Math.abs(window.test_scene.scene_objects.ship.stats.a_speed) > 0.01) {
+
+                // Set change in Z position based on airspeed
                 tZ = window.test_scene.scene_objects.ship.stats.a_speed;
+
             }
 
             let xDiff = tZ * Math.sin(window.test_scene.scene_objects.ship.mesh.rotation.y),

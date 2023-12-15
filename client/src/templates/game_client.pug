@@ -3,9 +3,9 @@ html(lang='en')
     head
         meta(charset='utf-8')
         meta(name='viewport' content='width=device-width, initial-scale=1')
-        meta(name="description" content="We are Open Studios. Perth based digital production studio.")
+        meta(name="description" content=description)
 
-        title Open Studios | Perth, Western Australia
+        title= title
 
         include ./head_common.pug
 
@@ -53,11 +53,16 @@ html(lang='en')
                 margin: 0;
                 padding: 0;
             }
+            #flight_controls{
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                top: 0;
+                left: 0;
+                z-index: 1;
+            }
             #webgl {
                 opacity: 0;
-            }
-            #pageOverlay,
-            #webgl {
                 width: 100%;
                 height: 100%;
                 position: absolute;
@@ -65,55 +70,7 @@ html(lang='en')
                 left: 0;
                 display: block;
             }
-            #pageOverlay {
-                border: 0 none;
-                display: none;
-                z-index: 10000;
-            }
-            #exitSign {
-                background: black;
-                font-weight: bold;
-                color: #fff;
-                box-shadow: 0px 0px 5px 5px #00DD00;
-                text-shadow: 2.5px 2.5px 5px #999;
-                cursor: pointer;
-                display: none;
-                border: solid 1px #00DD00;
-                border-radius: 1rem;
-                padding: 0.5rem;
-                position: absolute;
-                top: 0;
-                right: 0;
-                z-index: 10001;
-                padding-top: 1.75rem;
-                padding-right: 1.75rem;
-                margin-right: -1rem;
-                margin-top: -1rem;
-            }
-            #exitSign img {
-                max-width: min(80px, 15vw);
-                height: auto;
-            }
-            #exitSign:active,
-            #exitSign:focus,
-            #exitSign:hover {
-                box-shadow: 0px 0px 7.5px 7.5px #00FF00;
-                border-color: #00FF00;
-            }
 
-            @media screen and (min-width: 640px) {
-                #exitSign {
-                    padding: 1rem;
-                    margin-top: 0rem;
-                    margin-right: 0rem;
-                    top: 2rem;
-                    right: 3rem;
-                }
-            }
-
-            #pokematrix {
-                display: none;
-            }
     body(onload="_init( 3000 );")
         noscript
             style.
@@ -121,7 +78,6 @@ html(lang='en')
                 #page-wrapper {
                     z-index: 2;
                 }
-        include ./1999_layout.pug
         #webgl-wrapper
             canvas#loader_symbols
             canvas#loader_image
@@ -129,9 +85,7 @@ html(lang='en')
                 div Loading
                 img(src='/assets/images/tail-spin.svg' alt='Loading spinner')
             include ../templates/door_image.pug
-            a#exitSign
-                img(src='./assets/exit.svg' title='Return to the office' width='300' height='85' alt='Exit sign')
-            iframe#pageOverlay
+            include ../templates/flight_controls.pug
             #webgl
             // Shaders
             script(type='x-shader/x-vertex', id='cloudVertShader')

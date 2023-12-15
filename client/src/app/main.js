@@ -1,3 +1,6 @@
+
+import Alpine from 'alpinejs';
+ 
 import { getGPUTier } from 'detect-gpu';
 
 import * as THREE from 'three';
@@ -234,7 +237,9 @@ window.test_scene = {
 
 export default async function init() {
 
-  let pane;
+  window.Alpine = Alpine;
+ 
+  Alpine.start();
 
   let url = new URL(window.location.href);
 

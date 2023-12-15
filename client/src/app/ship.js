@@ -253,6 +253,11 @@ export default class Ship {
                 // Set change in Z position based on airspeed
                 tZ = window.test_scene.scene_objects.ship.stats.a_speed;
 
+                // Update the 
+                const angle = (Math.abs(window.test_scene.scene_objects.ship.stats.a_speed) * 1.94384) * 45;
+                // Update the needle rotation
+                document.querySelector('#flight_controls #Airspeed #Needle').style.transform = `rotate(${angle}deg)`;
+
             }
 
             let xDiff = tZ * Math.sin(window.test_scene.scene_objects.ship.mesh.rotation.y),

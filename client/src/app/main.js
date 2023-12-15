@@ -1,6 +1,3 @@
-
-import Alpine from 'alpinejs';
- 
 import { getGPUTier } from 'detect-gpu';
 
 import * as THREE from 'three';
@@ -14,6 +11,8 @@ import { SVGLoader } from 'three/addons/loaders/SVGLoader.js';
 
 
 import Controls from './controls.js';
+import UI from './ui.js';
+
 import { scaleEffects, setupEffects } from './effects.js';
 import { handleViewportChange } from './events.js';
 import { setupTriggers, updateTriggers } from './triggers.js';
@@ -121,7 +120,12 @@ window.test_scene = {
         target: 9,
         loaded: 0
       }
-    }
+    },
+
+    /**
+     * UI controller
+     */
+    ui: false
   },
 
   /**
@@ -237,9 +241,7 @@ window.test_scene = {
 
 export default async function init() {
 
-  window.Alpine = Alpine;
- 
-  Alpine.start();
+  window.test_scene.ui = new UI();
 
   let url = new URL(window.location.href);
 

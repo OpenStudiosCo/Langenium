@@ -192,7 +192,7 @@ export default class Ship {
                 }
                 
                 if (Math.abs(window.test_scene.camera.rotation.x) < 1 / 8) {
-                    window.test_scene.camera.rotation.x += changingElevator / 1 / 180 ;
+                    window.test_scene.camera.rotation.x += changingElevator * radian / 10 ;
                 }
             }
             else {
@@ -229,7 +229,7 @@ export default class Ship {
 
                 window.test_scene.camera.position.x = xDiff + window.test_scene.scene_objects.ship.camera_distance * Math.sin(window.test_scene.scene_objects.ship.mesh.rotation.y);
                 window.test_scene.camera.position.z = zDiff + window.test_scene.scene_objects.ship.camera_distance * Math.cos(window.test_scene.scene_objects.ship.mesh.rotation.y);
-                window.test_scene.camera.rotation.y += rY * 1.05;
+                window.test_scene.camera.rotation.y += rY * 1.1;
 
             }
             else {

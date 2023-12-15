@@ -282,6 +282,7 @@ export default async function init() {
   var fov = setCameraFOV(aspect);
   window.test_scene.camera = new THREE.PerspectiveCamera(fov, aspect, 1, window.s.scale * 2);
   window.test_scene.camera.aspect = width / height;
+  window.test_scene.camera.rotation.order = 'YZX';
   
   if (aspect < 0.88) {
     window.test_scene.settings.startPosZ = -5;

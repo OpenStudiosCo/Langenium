@@ -123,12 +123,15 @@ export default class Ship {
             // Detect keyboard input
 
             // Forward and back
+            let changingSpeed = 0;
             if (window.test_scene.controls.keyboard.pressed("W")) {
                 window.test_scene.scene_objects.ship.stats.a_speed -= stepSize;            
+                changingSpeed = -1;
             }
             else {
                 if (window.test_scene.controls.keyboard.pressed("S")) {
                     window.test_scene.scene_objects.ship.stats.a_speed += stepSize;
+                    changingSpeed = 1;
                 }
                 else {
                     if (window.test_scene.scene_objects.ship.stats.a_speed != 0) {
@@ -168,6 +171,15 @@ export default class Ship {
                 }
             }
 
+            if (changingSpeed) { 
+                // Rock the ship forward and back when moving horizontally
+                if (Math.abs(window.test_scene.scene_objects.ship.mesh.rotation.x) < 1 / 4 ) {
+                    window.test_scene.scene_objects.ship.mesh.rotation.x += changingSpeed / 1 / 180 ;
+                }            
+
+            }
+
+
             // Set change in Z position based on airspeed
             if (Math.abs(window.test_scene.scene_objects.ship.stats.v_speed) > 0.1) {
                 tY = window.test_scene.scene_objects.ship.stats.v_speed;
@@ -175,14 +187,21 @@ export default class Ship {
 
             // Rock the ship forward and back when moving vertically
             if (changingElevator) {
-                if (Math.abs(window.test_scene.scene_objects.ship.mesh.rotation.x) < Math.PI / 4) {
-                    window.test_scene.scene_objects.ship.mesh.rotation.x += changingElevator / 1 / 60 ;
+                if (Math.abs(window.test_scene.scene_objects.ship.mesh.rotation.x) < 1 / 8) {
+                    window.test_scene.scene_objects.ship.mesh.rotation.x += changingElevator / 1 / 180 ;
+                }
+                
+                if (Math.abs(window.test_scene.camera.rotation.x) < 1 / 8) {
+                    window.test_scene.camera.rotation.x += changingElevator / 1 / 180 ;
                 }
             }
             else {
-                window.test_scene.scene_objects.ship.mesh.rotation.x *= .9;
+                window.test_scene.camera.rotation.x *= .9;
             }
 
+            if ( !changingSpeed && !changingElevator ) {
+                window.test_scene.scene_objects.ship.mesh.rotation.x *= .9;
+            }
             
             // Turning
             if (window.test_scene.controls.keyboard.pressed("A")) {
@@ -215,9 +234,9 @@ export default class Ship {
             }
             else {
                 window.test_scene.scene_objects.ship.mesh.rotation.z *= .9;
-                if (window.test_scene.camera.rotation.y.toFixed(1) != window.test_scene.scene_objects.ship.mesh.rotation.y.toFixed(1) ) {
+                if (window.test_scene.camera.rotation.y != window.test_scene.scene_objects.ship.mesh.rotation.y ) {
                     let yDiff = window.test_scene.scene_objects.ship.mesh.rotation.y - window.test_scene.camera.rotation.y;
-                    if (Math.abs(yDiff) > 0.01) {
+                    if (Math.abs(yDiff) > radian / 10) {
                         window.test_scene.camera.rotation.y += (window.test_scene.scene_objects.ship.mesh.rotation.y - window.test_scene.camera.rotation.y) * 1 / 60;
                     }
                     else {
@@ -236,7 +255,7 @@ export default class Ship {
             let xDiff = tZ * Math.sin(window.test_scene.scene_objects.ship.mesh.rotation.y),
                 zDiff = tZ * Math.cos(window.test_scene.scene_objects.ship.mesh.rotation.y);
             
-            if (window.test_scene.scene_objects.ship.mesh.position.y + tY >= 0 ) {
+            if (window.test_scene.scene_objects.ship.mesh.position.y + tY >= 1 ) {
                 window.test_scene.scene_objects.ship.mesh.position.y += tY;
                 window.test_scene.camera.position.y += tY;
             } else {

@@ -34,6 +34,7 @@ export default class Ship {
             horizon:            [0,0],   /* [ number within range from 40° to -40° , number within range from 30° to -30° ] */
             turn:               [0,0],   /* [ number within range from -3°/sec to 3/sec° , number within range from -1 to 1 ] */
             last_turn_change:   0,       /* timestamp of the last change in turn degrees */
+            camera_distance:    0        /* calculated number based on a formula */
         };
     }
 
@@ -98,7 +99,7 @@ export default class Ship {
             })
             .onComplete(() => {
                 window.test_scene.scene_objects.ship.ready = true;
-
+                window.test_scene.scene_objects.ship.camera_distance = -20 + (window.test_scene.room_depth / 2);
             });
     }
 
@@ -127,7 +128,16 @@ export default class Ship {
                     window.test_scene.scene_objects.ship.stats.a_speed += stepSize;
                 }
                 else {
-                    window.test_scene.scene_objects.ship.stats.a_speed *= 0.987; //damping
+                    if (window.test_scene.scene_objects.ship.stats.a_speed != 0) {
+
+                        if (Math.abs(window.test_scene.scene_objects.ship.stats.a_speed) > 0.01) {
+                            window.test_scene.scene_objects.ship.stats.a_speed *= 0.987; //damping
+                        }
+                        else {
+                            window.test_scene.scene_objects.ship.stats.a_speed = 0;
+                        }
+                    }
+                    
                 }
             }
 
@@ -160,11 +170,24 @@ export default class Ship {
             }
 
             if (rY != 0) {
+                if (Math.abs(window.test_scene.scene_objects.ship.mesh.rotation.z) < Math.PI / 2) {
+                    window.test_scene.scene_objects.ship.mesh.rotation.z += rY / Math.PI;
+                }
+                
                 window.test_scene.scene_objects.ship.mesh.rotation.y += rY;
-                window.test_scene.camera.rotation.y += rY / Math.PI;
+
+                const theta = Date.now() * 0.001; // Set the angular velocity for orbiting
+
+                let xDiff = window.test_scene.scene_objects.ship.mesh.position.x;
+                let zDiff = window.test_scene.scene_objects.ship.mesh.position.z;
+
+                window.test_scene.camera.position.x = xDiff + window.test_scene.scene_objects.ship.camera_distance * Math.sin(window.test_scene.scene_objects.ship.mesh.rotation.y);
+                window.test_scene.camera.position.z = zDiff + window.test_scene.scene_objects.ship.camera_distance * Math.cos(window.test_scene.scene_objects.ship.mesh.rotation.y);
+                window.test_scene.camera.lookAt(window.test_scene.scene_objects.ship.mesh.position);
+
             }
             else {
-                window.test_scene.camera.rotation.y *= .987;
+                window.test_scene.scene_objects.ship.mesh.rotation.z *= .9;
             }
 
             // Set change in Z position based on airspeed

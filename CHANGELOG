@@ -7,8 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- CREDITS file to give credit and thanks where it's due
+
 ### Changed
-- Rebuilt server from the ground up
+- Rebuilt client from a mix of forked newer code and old snapshots
+- Documentation improvements and alignment to other popular repos
 
 ## [0.5.0] - 2014-10-03
 

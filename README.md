@@ -118,7 +118,9 @@ You can also see the complete [list of contributors][contributors] who participa
 
 ## Acknowledgments
 
-TBA
+Langenium is the result of many direct and indirect contributions from talented people all over the world.
+
+For a full list please see the [credits][credits] 
 
 [//]: # (HyperLinks)
 
@@ -130,4 +132,5 @@ TBA
 
 [contributors]: https://github.com/OpenStudiosCo/Langenium/contributors
 [changelog]: https://github.com/OpenStudiosCo/Langenium/blob/master/CHANGELOG
+[credits]: https://github.com/OpenStudiosCo/Langenium/blob/master/CREDITS
 [license]: https://github.com/OpenStudiosCo/Langenium/blob/master/LICENSE

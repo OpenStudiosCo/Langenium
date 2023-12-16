@@ -11,13 +11,13 @@ style.
         align-items: flex-end;
     }
     .control {
-        margin-bottom: -11vw;
-        max-width: 10vw;
+        margin-bottom: min(-11vw, -11vh, -220px);
+        max-width: max(10vw, 10vh, 200px);
         transition: margin 700ms;
     }
 
     .control.active {
-        margin-bottom: 1vw;
+        margin-bottom: max(1vw, 1vh);
     }
 
     svg * {

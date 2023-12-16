@@ -1,0 +1,34 @@
+/**
+ * Touch Controls
+ * 
+ * Based on https://mese79.github.io/TouchControls/
+ */
+
+import TouchControls from '../../vendor/TouchControls-master/js/TouchControls';
+
+export default class Touch_Controls {
+    controls;
+
+    constructor() {
+        
+    }
+
+    activate() {
+        // Controls
+        let options = {
+            delta: 0.75, // coefficient of movement
+            moveSpeed: 0.5, // speed of movement
+            rotationSpeed: 0.002, // coefficient of rotation
+            maxPitch: 55, // max camera pitch angle
+            hitTest: true, // stop on hitting objects
+            hitTestDistance: 40 // distance to test for hit
+        }
+        this.controls = new TouchControls(
+            document.querySelector('body'),
+            window.test_scene.camera,
+            options
+        )
+        //this.controls.setPosition(0, 10.775, window.test_scene.scene_objects.ship.camera_distance)
+        this.controls.addToScene(window.test_scene.scene)
+    }
+}

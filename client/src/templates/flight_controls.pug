@@ -1,0 +1,39 @@
+style.
+    #flight_controls {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+    }
+    .control {
+        margin-bottom: min(-11vw, -11vh, -220px);
+        max-width: max(10vw, 10vh, 200px);
+        transition: margin 700ms;
+    }
+
+    .control.active {
+        margin-bottom: max(1vw, 1vh);
+    }
+
+    svg * {
+        transform-origin: 50% 50% 0;
+    }
+
+    .movement-pad {
+        z-index: 2;
+        left: 1vw !important;
+    }
+
+    .rotation-pad {
+        z-index: 2;
+        left: inherit !important;
+        right: 6vw;
+    }
+#flight_controls
+    .control
+        include ../assets/flight_controls/Airspeed.svg

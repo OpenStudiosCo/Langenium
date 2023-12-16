@@ -1,5 +1,5 @@
 style.
-    #flight_controls{
+    #flight_controls {
         width: 100%;
         height: 100%;
         position: absolute;
@@ -11,7 +11,13 @@ style.
         align-items: flex-end;
     }
     .control {
+        margin-bottom: -11vw;
         max-width: 10vw;
+        transition: margin 700ms;
+    }
+
+    .control.active {
+        margin-bottom: 1vw;
     }
 
     svg * {

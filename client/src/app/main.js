@@ -242,6 +242,7 @@ window.test_scene = {
 export default async function init() {
 
   window.test_scene.ui = new UI();
+  window.test_scene.ui.activate();
 
   let url = new URL(window.location.href);
 

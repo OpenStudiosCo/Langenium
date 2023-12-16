@@ -92,7 +92,7 @@ function _check_environment () {
 
 // Execute an arbitrary function attached to the window global s.
 function _execute(functionName, arguments, context ) {
-	// Usage: executeFunctionByName("s.scenograph.director"., window, arguments);
+	// Usage: executeFunctionByName("s.scenograph.director.init", [], window);
 	var namespaces = functionName.split(".");
 	var func = namespaces.pop();
 	for(var i = 0; i < namespaces.length; i++) {

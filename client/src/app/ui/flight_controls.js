@@ -44,7 +44,7 @@ export default class Flight_Controls {
             }
 
             // Update the angle of the needle
-            const angle = (Math.abs(window.test_scene.scene_objects.ship.stats.a_speed) * 1.94384) * 45;
+            const angle = (Math.abs(window.test_scene.scene_objects.ship.state.airSpeed) * 1.94384) * 45;
             // Update the needle rotation
             document.querySelector(window.test_scene.ui.flight_controls.containerSelector + ' #Airspeed #Needle').style.transform = `rotate(${angle}deg)`;
         }

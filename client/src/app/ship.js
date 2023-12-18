@@ -1,11 +1,18 @@
 /**
  * Ship loader
+ * 
+ * Currently hardcoded to use the Valiant aircraft.
  */
 import * as THREE from 'three';
 
 import {brightenMaterial} from './materials.js';
 
+import Valiant from '../../../game/objects/aircraft/valiant';
+
 export default class Ship {
+
+    // Camera distance.
+    camera_distance;
 
     // Ship Model (gltf)
     model;
@@ -20,24 +27,17 @@ export default class Ship {
     ready;
 
     // Aircraft flight sim data like airspeed.
-    stats;
+    state;
 
     constructor() {
+        this.camera_distance = 0;
+
         this.ready = false;
 
-        this.stats = {
-            a_speed:            0,       /* number within range from 0kt to 160kt */
-            v_speed:            0,       /* number within range from 4000ft to -4000ft */
-            last_vs_change:     0,       /* timestamp of the last change in vertical speed */
-            heading:            0,       /* number within range from 360° to -360° */
-            altitude:           0,       /* number within range from 0ft to 99999ft */
-            horizon:            [0,0],   /* [ number within range from 40° to -40° , number within range from 30° to -30° ] */
-            turn:               [0,0],   /* [ number within range from -3°/sec to 3/sec° , number within range from -1 to 1 ] */
-            last_turn_change:   0,       /* timestamp of the last change in turn degrees */
-            camera_distance:    0        /* calculated number based on a formula */
-        };
+        this.state = new Valiant();
     }
 
+    // Loads the ship model inc built-in animations
     async load() {
         
 
@@ -72,7 +72,7 @@ export default class Ship {
 
     }
 
-    /** Tween */
+    // Tween for the ship intro sequence.
     shipEnterY() {
         let coords = { y: 60 }; // Start at (0, 0)
         let target = { y: 8.5 };
@@ -86,6 +86,7 @@ export default class Ship {
                 //console.log('ready');
             });
     }
+    // Tween for the ship intro sequence.
     shipEnterZ() {
         let coords = { x: window.test_scene.room_depth }; // Start at (0, 0)
         let target = { x: 0 };
@@ -104,6 +105,12 @@ export default class Ship {
             });
     }
 
+    // Internal helper to relate user input to the ship game logic.
+    updateControls() {
+        
+    }
+
+    // Runs on the main animation loop
     animate( delta ) {
         if (window.test_scene.scene_objects.ship.mixer) {
             window.test_scene.scene_objects.ship.mixer.update( delta );
@@ -112,35 +119,33 @@ export default class Ship {
         if (window.test_scene.scene_objects.ship.ready) {
 
             var stepSize = .01,
-                pX = 0,
-                pY = 0,
-                pZ = 0,
                 rY = 0, 
                 tZ = 0, 
                 tY = 0,
                 radian = (Math.PI / 180);
 
-            // Detect keyboard input
+            // Detect keyboard input and pass it to the ship state model.
+            window.test_scene.scene_objects.ship.updateControls();
 
             // Forward and back
             let changingSpeed = 0;
             if (window.test_scene.controls.keyboard.pressed("W")) {
-                window.test_scene.scene_objects.ship.stats.a_speed -= stepSize;            
+                window.test_scene.scene_objects.ship.state.airSpeed -= stepSize;            
                 changingSpeed = -1;
             }
             else {
                 if (window.test_scene.controls.keyboard.pressed("S")) {
-                    window.test_scene.scene_objects.ship.stats.a_speed += stepSize;
+                    window.test_scene.scene_objects.ship.state.airSpeed += stepSize;
                     changingSpeed = 1;
                 }
                 else {
-                    if (window.test_scene.scene_objects.ship.stats.a_speed != 0) {
+                    if (window.test_scene.scene_objects.ship.state.airSpeed != 0) {
 
-                        if (Math.abs(window.test_scene.scene_objects.ship.stats.a_speed) > 0.1) {
-                            window.test_scene.scene_objects.ship.stats.a_speed *= 0.987; //damping
+                        if (Math.abs(window.test_scene.scene_objects.ship.state.airSpeed) > 0.1) {
+                            window.test_scene.scene_objects.ship.state.airSpeed *= 0.987; //damping
                         }
                         else {
-                            window.test_scene.scene_objects.ship.stats.a_speed = 0;
+                            window.test_scene.scene_objects.ship.state.airSpeed = 0;
                         }
                     }
                     
@@ -150,22 +155,22 @@ export default class Ship {
             // Up and down
             let changingElevator = 0;
             if (window.test_scene.controls.keyboard.pressed(" ")) {
-                window.test_scene.scene_objects.ship.stats.v_speed += stepSize;
+                window.test_scene.scene_objects.ship.state.verticalSpeed += stepSize;
                 changingElevator = 1;
             }
             else {
                 if (window.test_scene.controls.keyboard.pressed("shift")) {
-                    window.test_scene.scene_objects.ship.stats.v_speed -= stepSize;
+                    window.test_scene.scene_objects.ship.state.verticalSpeed -= stepSize;
                     changingElevator = -1;
                 }
                 else {
-                    if (window.test_scene.scene_objects.ship.stats.v_speed != 0) {
+                    if (window.test_scene.scene_objects.ship.state.verticalSpeed != 0) {
 
-                        if (Math.abs(window.test_scene.scene_objects.ship.stats.v_speed) > 0.1) {
-                            window.test_scene.scene_objects.ship.stats.v_speed *= 0.987; //damping
+                        if (Math.abs(window.test_scene.scene_objects.ship.state.verticalSpeed) > 0.1) {
+                            window.test_scene.scene_objects.ship.state.verticalSpeed *= 0.987; //damping
                         }
                         else {
-                            window.test_scene.scene_objects.ship.stats.v_speed = 0;
+                            window.test_scene.scene_objects.ship.state.verticalSpeed = 0;
                         }
                     }
                 }
@@ -181,8 +186,8 @@ export default class Ship {
 
 
             // Set change in Z position based on airspeed
-            if (Math.abs(window.test_scene.scene_objects.ship.stats.v_speed) > 0.1) {
-                tY = window.test_scene.scene_objects.ship.stats.v_speed;
+            if (Math.abs(window.test_scene.scene_objects.ship.state.verticalSpeed) > 0.1) {
+                tY = window.test_scene.scene_objects.ship.state.verticalSpeed;
             }
 
             // Rock the ship forward and back when moving vertically
@@ -205,12 +210,10 @@ export default class Ship {
             
             // Turning
             if (window.test_scene.controls.keyboard.pressed("A")) {
-                window.test_scene.scene_objects.ship.stats.last_turn_change = new Date();
-                rY += radian;
+                                rY += radian;
             }
             else {
                 if (window.test_scene.controls.keyboard.pressed("D")) {
-                    window.test_scene.scene_objects.ship.stats.last_turn_change = new Date();
                     rY -= radian;
                 }
             }
@@ -248,10 +251,10 @@ export default class Ship {
             }
 
             // Check if we have significant airspeed
-            if (Math.abs(window.test_scene.scene_objects.ship.stats.a_speed) > 0.01) {
+            if (Math.abs(window.test_scene.scene_objects.ship.state.airSpeed) > 0.01) {
 
                 // Set change in Z position based on airspeed
-                tZ = window.test_scene.scene_objects.ship.stats.a_speed;
+                tZ = window.test_scene.scene_objects.ship.state.airSpeed;
 
             }
 
@@ -262,7 +265,7 @@ export default class Ship {
                 window.test_scene.scene_objects.ship.mesh.position.y += tY;
                 window.test_scene.camera.position.y += tY;
             } else {
-                window.test_scene.scene_objects.ship.stats.v_speed = 0;
+                window.test_scene.scene_objects.ship.state.verticalSpeed = 0;
             }
             window.test_scene.scene_objects.ship.mesh.position.x += xDiff;
             window.test_scene.scene_objects.ship.mesh.position.z += zDiff;

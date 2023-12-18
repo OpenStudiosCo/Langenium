@@ -37,7 +37,7 @@ The project is split into three main folders: Client, Game and Server.
     ├── CHANGELOG
     ├── LICENSE
     ├── README.md
-    ├── client
+    ├── client                              # Eleventy / Three.js web client
     │   ├── etc
     │   ├── src
     │   ├── .eleventy.js
@@ -45,9 +45,10 @@ The project is split into three main folders: Client, Game and Server.
     │   ├── package.json
     │   ├── package-lock.json
     │   └── watch.mjs
-    ├── game
+    ├── docs                                # Web client output folder, tracked on the gh-pages branch
+    ├── game                                # Game rules and shared code used by the client and server
     │   └── TBA
-    └── server
+    └── server                              # Node.js / Express multiplayer server
         └── TBA
 
 ```

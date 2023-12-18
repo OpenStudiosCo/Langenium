@@ -105,9 +105,25 @@ export default class Ship {
             });
     }
 
-    // Internal helper to relate user input to the ship game logic.
+    // Internal helper to manage state changes of aircraft controls.
     updateControls() {
-        
+        let mappings = {
+            throttleUp:     'W',
+            throttleDown:   'S',
+            moveUp:         ' ',
+            moveDown:       'shift',
+            moveLeft:       'A',
+            moveRight:      'D',
+        }
+        for ( const [ controlName, keyMapping ] of Object.entries(mappings)) {
+            if (window.test_scene.controls.keyboard.pressed(keyMapping)) {
+                window.test_scene.scene_objects.ship.state.controls[controlName] = true;
+            }
+            else {
+                window.test_scene.scene_objects.ship.state.controls[controlName] = false;
+            }
+        }
+
     }
 
     // Runs on the main animation loop
@@ -129,12 +145,12 @@ export default class Ship {
 
             // Forward and back
             let changingSpeed = 0;
-            if (window.test_scene.controls.keyboard.pressed("W")) {
+            if (window.test_scene.scene_objects.ship.state.controls.throttleUp) {
                 window.test_scene.scene_objects.ship.state.airSpeed -= stepSize;            
                 changingSpeed = -1;
             }
             else {
-                if (window.test_scene.controls.keyboard.pressed("S")) {
+                if (window.test_scene.scene_objects.ship.state.controls.throttleDown) {
                     window.test_scene.scene_objects.ship.state.airSpeed += stepSize;
                     changingSpeed = 1;
                 }
@@ -154,12 +170,12 @@ export default class Ship {
 
             // Up and down
             let changingElevator = 0;
-            if (window.test_scene.controls.keyboard.pressed(" ")) {
+            if (window.test_scene.scene_objects.ship.state.controls.moveUp) {
                 window.test_scene.scene_objects.ship.state.verticalSpeed += stepSize;
                 changingElevator = 1;
             }
             else {
-                if (window.test_scene.controls.keyboard.pressed("shift")) {
+                if (window.test_scene.scene_objects.ship.state.controls.moveDown) {
                     window.test_scene.scene_objects.ship.state.verticalSpeed -= stepSize;
                     changingElevator = -1;
                 }
@@ -209,11 +225,11 @@ export default class Ship {
             }
             
             // Turning
-            if (window.test_scene.controls.keyboard.pressed("A")) {
+            if (window.test_scene.scene_objects.ship.state.controls.moveLeft) {
                                 rY += radian;
             }
             else {
-                if (window.test_scene.controls.keyboard.pressed("D")) {
+                if (window.test_scene.scene_objects.ship.state.controls.moveRight) {
                     rY -= radian;
                 }
             }

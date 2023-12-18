@@ -81,13 +81,6 @@ window.test_scene = {
   fast: true,
 
   /**
-   * Frames Per Second (FPS)
-   * 
-   * @memberof Integer
-   */
-  fps: 0,
-
-  /**
    * Initialise.
    */
   init: init,
@@ -223,6 +216,21 @@ window.test_scene = {
    * @memberof Boolean
    */
   started: false,
+
+  /**
+   * Custom array of game performance stats.
+   */
+  stats: {
+      /**
+     * Frames Per Second (FPS)
+     * 
+     * @memberof Integer
+     */
+    currentTime: performance.now(),
+    fps: 0,
+    frameCount: 0,
+    lastTime: performance.now(),
+  },
 
   /**
    * All scene triggers.
@@ -473,18 +481,15 @@ function mapRange(value, inMin, inMax, outMin, outMax) {
   return (value - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
 }
 
-let frameCount = 0;
-let lastTime = performance.now();
-
 function updateFPS() {
   // Calculate FPS
-  const currentTime = performance.now();
-  const timeDiff = currentTime - lastTime;
-  frameCount++;
+  window.test_scene.stats.currentTime = performance.now();
+  const timeDiff = window.test_scene.stats.currentTime -  window.test_scene.stats.lastTime;
+  window.test_scene.stats.frameCount++;
   if (timeDiff >= 1000) {
-    window.test_scene.fps = Math.round((frameCount * 1000) / timeDiff);
-    frameCount = 0;
-    lastTime = currentTime;
+    window.test_scene.stats.fps = Math.round((window.test_scene.stats.frameCount * 1000) / timeDiff);
+    window.test_scene.stats.frameCount = 0;
+    window.test_scene.stats.lastTime = window.test_scene.stats.currentTime;
   }
 }
 

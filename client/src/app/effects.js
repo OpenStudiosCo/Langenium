@@ -124,7 +124,7 @@ export function scaleEffectsRunner ( ) {
   }
   // Otherwise keep counting frames.
   else {
-    frameRates.push( window.test_scene.fps );
+    frameRates.push( window.test_scene.stats.fps );
   }
 
 }

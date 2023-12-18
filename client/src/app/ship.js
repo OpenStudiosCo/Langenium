@@ -102,6 +102,9 @@ export default class Ship {
             .onComplete(() => {
                 window.test_scene.scene_objects.ship.ready = true;
                 window.test_scene.scene_objects.ship.camera_distance = -20 + (window.test_scene.room_depth / 2);
+                window.test_scene.scene_objects.ship.state.position.x = window.test_scene.scene_objects.ship.mesh.position.x;
+                window.test_scene.scene_objects.ship.state.position.y = window.test_scene.scene_objects.ship.mesh.position.y;
+                window.test_scene.scene_objects.ship.state.position.z = window.test_scene.scene_objects.ship.mesh.position.z;
             });
     }
 
@@ -126,6 +129,14 @@ export default class Ship {
 
     }
 
+    // Update the position of the aircraft to spot determined by game logic.
+    updatePosition() {
+        window.test_scene.scene_objects.ship.mesh.position.x = window.test_scene.scene_objects.ship.state.position.x;
+        window.test_scene.scene_objects.ship.mesh.position.y = window.test_scene.scene_objects.ship.state.position.y;
+        window.test_scene.scene_objects.ship.mesh.position.z = window.test_scene.scene_objects.ship.state.position.z;
+    }
+
+
     // Runs on the main animation loop
     animate( delta ) {
         if (window.test_scene.scene_objects.ship.mixer) {
@@ -134,99 +145,58 @@ export default class Ship {
 
         if (window.test_scene.scene_objects.ship.ready) {
 
-            var stepSize = .01,
-                rY = 0, 
+            // Detect keyboard input and pass it to the ship state model.
+            window.test_scene.scene_objects.ship.updateControls();
+
+            // Update the ships state model.
+            window.test_scene.scene_objects.ship.state.move( window.test_scene.stats.currentTime - window.test_scene.stats.lastTime );
+
+            //window.test_scene.scene_objects.ship.updatePosition();
+
+            var rY = 0, 
                 tZ = 0, 
                 tY = 0,
                 radian = (Math.PI / 180);
 
-            // Detect keyboard input and pass it to the ship state model.
-            window.test_scene.scene_objects.ship.updateControls();
-
-            // Forward and back
-            let changingSpeed = 0;
-            if (window.test_scene.scene_objects.ship.state.controls.throttleUp) {
-                window.test_scene.scene_objects.ship.state.airSpeed -= stepSize;            
-                changingSpeed = -1;
-            }
-            else {
-                if (window.test_scene.scene_objects.ship.state.controls.throttleDown) {
-                    window.test_scene.scene_objects.ship.state.airSpeed += stepSize;
-                    changingSpeed = 1;
-                }
-                else {
-                    if (window.test_scene.scene_objects.ship.state.airSpeed != 0) {
-
-                        if (Math.abs(window.test_scene.scene_objects.ship.state.airSpeed) > 0.1) {
-                            window.test_scene.scene_objects.ship.state.airSpeed *= 0.987; //damping
-                        }
-                        else {
-                            window.test_scene.scene_objects.ship.state.airSpeed = 0;
-                        }
-                    }
-                    
-                }
-            }
-
-            // Up and down
-            let changingElevator = 0;
-            if (window.test_scene.scene_objects.ship.state.controls.moveUp) {
-                window.test_scene.scene_objects.ship.state.verticalSpeed += stepSize;
-                changingElevator = 1;
-            }
-            else {
-                if (window.test_scene.scene_objects.ship.state.controls.moveDown) {
-                    window.test_scene.scene_objects.ship.state.verticalSpeed -= stepSize;
-                    changingElevator = -1;
-                }
-                else {
-                    if (window.test_scene.scene_objects.ship.state.verticalSpeed != 0) {
-
-                        if (Math.abs(window.test_scene.scene_objects.ship.state.verticalSpeed) > 0.1) {
-                            window.test_scene.scene_objects.ship.state.verticalSpeed *= 0.987; //damping
-                        }
-                        else {
-                            window.test_scene.scene_objects.ship.state.verticalSpeed = 0;
-                        }
-                    }
-                }
-            }
-
-            if (changingSpeed) { 
+            
+            if (window.test_scene.scene_objects.ship.state.controls.throttleDown || window.test_scene.scene_objects.ship.state.controls.throttleUp) {
+                let pitchChange = window.test_scene.scene_objects.ship.state.controls.throttleUp ? -1 : 1;
                 // Rock the ship forward and back when moving horizontally
                 if (Math.abs(window.test_scene.scene_objects.ship.mesh.rotation.x) < 1 / 4 ) {
-                    window.test_scene.scene_objects.ship.mesh.rotation.x += changingSpeed / 1 / 180 ;
-                }            
-
+                    window.test_scene.scene_objects.ship.mesh.rotation.x += pitchChange / 1 / 180 ;
+                }
             }
 
-
-            // Set change in Z position based on airspeed
+            // Set change in Y position based on vertical speed
             if (Math.abs(window.test_scene.scene_objects.ship.state.verticalSpeed) > 0.1) {
                 tY = window.test_scene.scene_objects.ship.state.verticalSpeed;
             }
 
             // Rock the ship forward and back when moving vertically
-            if (changingElevator) {
+            if (window.test_scene.scene_objects.ship.state.controls.moveDown || window.test_scene.scene_objects.ship.state.controls.moveUp) {
+                let elevationChange = window.test_scene.scene_objects.ship.state.controls.moveDown ? -1 : 1;
                 if (Math.abs(window.test_scene.scene_objects.ship.mesh.rotation.x) < 1 / 8) {
-                    window.test_scene.scene_objects.ship.mesh.rotation.x += changingElevator / 1 / 180 ;
+                    window.test_scene.scene_objects.ship.mesh.rotation.x += elevationChange / 1 / 180 ;
                 }
                 
                 if (Math.abs(window.test_scene.camera.rotation.x) < 1 / 8) {
-                    window.test_scene.camera.rotation.x += changingElevator * radian / 10 ;
+                    window.test_scene.camera.rotation.x += elevationChange * radian / 10 ;
                 }
             }
             else {
                 window.test_scene.camera.rotation.x *= .9;
             }
 
-            if ( !changingSpeed && !changingElevator ) {
+            if (
+                !(window.test_scene.scene_objects.ship.state.controls.throttleDown || window.test_scene.scene_objects.ship.state.controls.throttleUp) &&
+                !(window.test_scene.scene_objects.ship.state.controls.moveDown || window.test_scene.scene_objects.ship.state.controls.moveUp)
+            ) {
                 window.test_scene.scene_objects.ship.mesh.rotation.x *= .9;
             }
             
             // Turning
             if (window.test_scene.scene_objects.ship.state.controls.moveLeft) {
-                                rY += radian;
+                rY += radian;
             }
             else {
                 if (window.test_scene.scene_objects.ship.state.controls.moveRight) {

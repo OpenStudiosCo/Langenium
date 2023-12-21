@@ -35,61 +35,68 @@ class BaseAircraft {
         
     }
 
-    public move( time_delta: number ): void {
-        let stepSize:           number = .01 * normaliseSpeedDelta( time_delta ),
-            rY:                 number = 0, 
-            tZ:                 number = 0, 
-            tY:                 number = 0,
-            radian:             number = (Math.PI / 180),
-            changingSpeed:      number = 0,
-            changingElevator:   number = 0;
+    /**
+     * Change aircraft velocity based on current and what buttons are pushed by the player.
+     * 
+     * @param currentVelocity
+     * @param increasePushed 
+     * @param decreasePushed 
+     */
+    private _changeVelocity(stepSize, currentVelocity, increasePushed, decreasePushed): number {
+        let newVelocity = currentVelocity;
 
-        // Forward and back
-        if (this.controls.throttleUp) {
-            this.airSpeed -= stepSize;
-            changingSpeed = -1;
+        if (increasePushed) {
+            newVelocity -= stepSize;
         }
         else {
-            if (this.controls.throttleDown) {
-                this.airSpeed += stepSize;
-                changingSpeed = 1;
+            if (decreasePushed) {
+                newVelocity += stepSize;
             }
             else {
-                if (this.airSpeed != 0) {
+                if (newVelocity != 0) {
 
-                    if (Math.abs(this.airSpeed) > 0.1) {
-                        this.airSpeed *= 0.987; //damping
+                    if (Math.abs(newVelocity) > 0.1) {
+                        newVelocity *= 0.987; //damping
                     }
                     else {
-                        this.airSpeed = 0;
+                        newVelocity = 0;
                     }
                 }
                 
             }
         }
 
-        // Up and down
-        if (this.controls.moveUp) {
-            this.verticalSpeed += stepSize;
-            changingElevator = 1;
-        }
-        else {
-            if (this.controls.moveDown) {
-                this.verticalSpeed -= stepSize;
-                changingElevator = -1;
-            }
-            else {
-                if (this.verticalSpeed != 0) {
+        return newVelocity;
+    }
 
-                    if (Math.abs(this.verticalSpeed) > 0.1) {
-                        this.verticalSpeed *= 0.987; //damping
-                    }
-                    else {
-                        this.verticalSpeed = 0;
-                    }
-                }
-            }
-        }
+    /**
+     * Move the aircraft based on velocity, direction and time delta between frames.
+     * 
+     * @param time_delta 
+     */
+    public move( time_delta: number ): void {
+        let stepSize:           number = .01 * normaliseSpeedDelta( time_delta ),
+            rY:                 number = 0, 
+            tZ:                 number = 0, 
+            tY:                 number = 0,
+            radian:             number = (Math.PI / 180),
+            changingElevator:   number = 0;
+
+        // Update Airspeed (horizontal velocity)
+        this.airSpeed = this._changeVelocity(
+            stepSize,
+            this.airSpeed,
+            this.controls.throttleUp,
+            this.controls.throttleDown
+        );
+
+        // Update Vertical Speed (velocity)
+        this.verticalSpeed = this._changeVelocity(
+            stepSize,
+            this.verticalSpeed,
+            this.controls.moveDown,     // Note: Move Down/Up is reversed by design.
+            this.controls.moveUp
+        );
     
     }
 }

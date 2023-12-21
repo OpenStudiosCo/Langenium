@@ -129,6 +129,36 @@ export default class Ship {
 
     }
 
+    updateAnimation( delta ) {
+        if (window.test_scene.scene_objects.ship.mixer) {
+            window.test_scene.scene_objects.ship.mixer.update( delta );
+        }
+
+        // Rock the ship forward and back when moving horizontally
+        if (window.test_scene.scene_objects.ship.state.controls.throttleDown || window.test_scene.scene_objects.ship.state.controls.throttleUp) {
+            let pitchChange = window.test_scene.scene_objects.ship.state.controls.throttleUp ? -1 : 1;
+            if (Math.abs(window.test_scene.scene_objects.ship.mesh.rotation.x) < 1 / 4 ) {
+                window.test_scene.scene_objects.ship.mesh.rotation.x += pitchChange / 1 / 180 ;
+            }
+        }
+
+        // Rock the ship forward and back when moving vertically
+        if (window.test_scene.scene_objects.ship.state.controls.moveDown || window.test_scene.scene_objects.ship.state.controls.moveUp) {
+            let elevationChange = window.test_scene.scene_objects.ship.state.controls.moveDown ? -1 : 1;
+            if (Math.abs(window.test_scene.scene_objects.ship.mesh.rotation.x) < 1 / 8) {
+                window.test_scene.scene_objects.ship.mesh.rotation.x += elevationChange / 1 / 180 ;
+            }
+            
+            if (Math.abs(window.test_scene.camera.rotation.x) < 1 / 8) {
+                let radian = (Math.PI / 180);
+                window.test_scene.camera.rotation.x += elevationChange * radian / 10 ;
+            }
+        }
+        else {
+            window.test_scene.camera.rotation.x *= .9;
+        }
+    }
+
     // Update the position of the aircraft to spot determined by game logic.
     updatePosition() {
         window.test_scene.scene_objects.ship.mesh.position.x = window.test_scene.scene_objects.ship.state.position.x;
@@ -139,14 +169,13 @@ export default class Ship {
 
     // Runs on the main animation loop
     animate( delta ) {
-        if (window.test_scene.scene_objects.ship.mixer) {
-            window.test_scene.scene_objects.ship.mixer.update( delta );
-        }
-
+        
         if (window.test_scene.scene_objects.ship.ready) {
 
             // Detect keyboard input and pass it to the ship state model.
             window.test_scene.scene_objects.ship.updateControls();
+
+            window.test_scene.scene_objects.ship.updateAnimation( delta );
 
             // Update the ships state model.
             window.test_scene.scene_objects.ship.state.move( window.test_scene.stats.currentTime - window.test_scene.stats.lastTime );
@@ -158,33 +187,12 @@ export default class Ship {
                 tY = 0,
                 radian = (Math.PI / 180);
 
+
             
-            if (window.test_scene.scene_objects.ship.state.controls.throttleDown || window.test_scene.scene_objects.ship.state.controls.throttleUp) {
-                let pitchChange = window.test_scene.scene_objects.ship.state.controls.throttleUp ? -1 : 1;
-                // Rock the ship forward and back when moving horizontally
-                if (Math.abs(window.test_scene.scene_objects.ship.mesh.rotation.x) < 1 / 4 ) {
-                    window.test_scene.scene_objects.ship.mesh.rotation.x += pitchChange / 1 / 180 ;
-                }
-            }
 
             // Set change in Y position based on vertical speed
             if (Math.abs(window.test_scene.scene_objects.ship.state.verticalSpeed) > 0.1) {
                 tY = window.test_scene.scene_objects.ship.state.verticalSpeed;
-            }
-
-            // Rock the ship forward and back when moving vertically
-            if (window.test_scene.scene_objects.ship.state.controls.moveDown || window.test_scene.scene_objects.ship.state.controls.moveUp) {
-                let elevationChange = window.test_scene.scene_objects.ship.state.controls.moveDown ? -1 : 1;
-                if (Math.abs(window.test_scene.scene_objects.ship.mesh.rotation.x) < 1 / 8) {
-                    window.test_scene.scene_objects.ship.mesh.rotation.x += elevationChange / 1 / 180 ;
-                }
-                
-                if (Math.abs(window.test_scene.camera.rotation.x) < 1 / 8) {
-                    window.test_scene.camera.rotation.x += elevationChange * radian / 10 ;
-                }
-            }
-            else {
-                window.test_scene.camera.rotation.x *= .9;
             }
 
             if (

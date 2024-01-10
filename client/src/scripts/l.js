@@ -49,8 +49,7 @@ function _init( wait ) {
 			files: [ { path: './vendor/tween-21.0.0.umd.min.js' } ]
 		},
 		{ 
-			// @todo: Implement scene changer
-			name: "Test Scene",
+			name: "Game Client",
 			requires: [ 'tweakpane', 'TWEEN.js' ],
 			files: [ { path: "./main.js", callback: "window.l.current_scene.init" } ]
 		}

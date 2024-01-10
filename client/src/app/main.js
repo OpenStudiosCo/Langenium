@@ -1,38 +1,46 @@
-import { getGPUTier } from 'detect-gpu';
+/**
+ * Vendor libs
+ */
+import { getGPUTier } from "detect-gpu";
+import * as THREE from "three";
+import Stats from "three/addons/libs/stats.module.js";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
-import * as THREE from 'three';
+/**
+ * Internal classes and helpers.
+ */
+import Controls from "./controls.js";
+import UI from "./ui.js";
+import { handleViewportChange } from "./events.js";
+import Multiplayer from "./multiplayer.js";
+import Scenograph from "./scenograph.js";
 
-import Stats from 'three/addons/libs/stats.module.js';
-
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-
-
-import Controls from './controls.js';
-import UI from './ui.js';
-
-import { handleViewportChange } from './events.js';
-import { updateTriggers } from './scene_assets/triggers.js';
-import { updateTweens } from './scene_assets/tweens.js';
-
-import Multiplayer from './multiplayer.js';
-import Scenograph from './scenograph.js';
-
+/**
+ * THREE.JS stats module
+ **/
 let stats;
 
+/**
+ * Scenograph controls the current scene
+ */
 let scenograph = new Scenograph();
 
-// Load up the overworld by default.
-window.l.current_scene = scenograph.load('Overworld');
+/**
+ * Load up the overworld by default.
+ */
+window.l.current_scene = scenograph.load("Overworld");
 
+/**
+ * Game client initialiser, called by window.l when it's finished loading.
+ */
 window.l.current_scene.init = async function () {
-
   window.l.current_scene.ui = new UI();
   window.l.current_scene.ui.activate();
 
   let url = new URL(window.location.href);
 
   // Check if we're in debug mode.
-  if (url.searchParams.has('debug')) {
+  if (url.searchParams.has("debug")) {
     window.l.current_scene.debug = true;
 
     // Start the UI.
@@ -40,10 +48,9 @@ window.l.current_scene.init = async function () {
   }
 
   // Check if we're in fast mode.
-  if (url.searchParams.has('fast')) {
+  if (url.searchParams.has("fast")) {
     window.l.current_scene.fast = true;
-  }
-  else {
+  } else {
     // Run scaling
     const gpuTier = await getGPUTier();
 
@@ -55,11 +62,12 @@ window.l.current_scene.init = async function () {
 
   window.l.current_scene.loaders.gtlf = new GLTFLoader();
   window.l.current_scene.loaders.object = new THREE.ObjectLoader();
-  window.l.current_scene.loaders.texture =  new THREE.TextureLoader();
+  window.l.current_scene.loaders.texture = new THREE.TextureLoader();
 
   // Size
   window.l.current_scene.settings.adjusted_gap = calculateAdjustedGapSize();
-  window.l.current_scene.room_depth = 8 * window.l.current_scene.settings.adjusted_gap;
+  window.l.current_scene.room_depth =
+    8 * window.l.current_scene.settings.adjusted_gap;
 
   // Setup renderers.
   setupRenderers();
@@ -69,23 +77,32 @@ window.l.current_scene.init = async function () {
   var height = window.innerHeight;
   var aspect = width / height;
   var fov = setCameraFOV(aspect);
-  window.l.current_scene.camera = new THREE.PerspectiveCamera(fov, aspect, 1, window.l.scale * 2);
+  window.l.current_scene.camera = new THREE.PerspectiveCamera(
+    fov,
+    aspect,
+    1,
+    window.l.scale * 2
+  );
   window.l.current_scene.camera.aspect = width / height;
-  window.l.current_scene.camera.rotation.order = 'YZX';
-  
+  window.l.current_scene.camera.rotation.order = "YZX";
+
   if (aspect < 0.88) {
     window.l.current_scene.settings.startPosZ = -5;
   }
-  window.l.current_scene.camera.position.set(0, 10.775, window.l.current_scene.settings.startPosZ + (window.l.current_scene.room_depth / 2));
-  
+  window.l.current_scene.camera.position.set(
+    0,
+    10.775,
+    window.l.current_scene.settings.startPosZ +
+      window.l.current_scene.room_depth / 2
+  );
+
   // Reusable pointer for tracking user interaction.
-  window.l.current_scene.pointer = new THREE.Vector3(); 
+  window.l.current_scene.pointer = new THREE.Vector3();
 
   // Reusable raycaster for tracking what the user tried to hit.
   window.l.current_scene.raycaster = new THREE.Raycaster();
 
-  
-  // Scene Setup. 
+  // Scene Setup.
   window.l.current_scene.setup();
 
   if (window.l.current_scene.debug) {
@@ -98,37 +115,51 @@ window.l.current_scene.init = async function () {
   window.l.current_scene.materials = {};
 
   window.l.current_scene.controls = new Controls();
-  window.addEventListener("keydown", window.l.current_scene.controls.keyboard.onKeyDown, false);
-  window.addEventListener("keyup", window.l.current_scene.controls.keyboard.onKeyUp, false);
-  window.l.current_scene.animation_queue.push(window.l.current_scene.controls.animate);
+  window.addEventListener(
+    "keydown",
+    window.l.current_scene.controls.keyboard.onKeyDown,
+    false
+  );
+  window.addEventListener(
+    "keyup",
+    window.l.current_scene.controls.keyboard.onKeyUp,
+    false
+  );
+  window.l.current_scene.animation_queue.push(
+    window.l.current_scene.controls.animate
+  );
 
   if (window.l.current_scene.debug) {
     stats = new Stats();
     document.body.appendChild(stats.dom);
   }
 
-  
-  window.addEventListener('orientationchange', handleViewportChange);
-  window.addEventListener('resize', handleViewportChange);
+  window.addEventListener("orientationchange", handleViewportChange);
+  window.addEventListener("resize", handleViewportChange);
 
   function onPointerMove(event) {
-
     // calculate pointer position in normalized device coordinates
     // (-1 to +1) for both components
 
-    window.l.current_scene.pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
-    window.l.current_scene.pointer.y = - (event.clientY / window.innerHeight) * 2 + 1;
-
+    window.l.current_scene.pointer.x =
+      (event.clientX / window.innerWidth) * 2 - 1;
+    window.l.current_scene.pointer.y =
+      -(event.clientY / window.innerHeight) * 2 + 1;
   }
 
-  window.l.current_scene.renderers.webgl.domElement.addEventListener('pointermove', onPointerMove);
+  window.l.current_scene.renderers.webgl.domElement.addEventListener(
+    "pointermove",
+    onPointerMove
+  );
 
   function onTouchStart(event) {
     if (!window.l.current_scene.selected) {
       event.preventDefault();
 
-      window.l.current_scene.pointer.x = (event.changedTouches[0].clientX / window.innerWidth) * 2 - 1;
-      window.l.current_scene.pointer.y = -(event.changedTouches[0].clientY / window.innerHeight) * 2 + 1;
+      window.l.current_scene.pointer.x =
+        (event.changedTouches[0].clientX / window.innerWidth) * 2 - 1;
+      window.l.current_scene.pointer.y =
+        -(event.changedTouches[0].clientY / window.innerHeight) * 2 + 1;
       window.l.current_scene.pointer.z = 1; // previously mouseDown = true
     }
   }
@@ -136,14 +167,24 @@ window.l.current_scene.init = async function () {
     if (!window.l.current_scene.selected) {
       event.preventDefault();
 
-      window.l.current_scene.pointer.x = (event.changedTouches[0].clientX / window.innerWidth) * 2 - 1;
-      window.l.current_scene.pointer.y = -(event.changedTouches[0].clientY / window.innerHeight) * 2 + 1;
+      window.l.current_scene.pointer.x =
+        (event.changedTouches[0].clientX / window.innerWidth) * 2 - 1;
+      window.l.current_scene.pointer.y =
+        -(event.changedTouches[0].clientY / window.innerHeight) * 2 + 1;
       window.l.current_scene.pointer.z = 0; // previously mouseDown = false
     }
   }
 
-  window.l.current_scene.renderers.webgl.domElement.addEventListener('touchstart', onTouchStart, false);
-  window.l.current_scene.renderers.webgl.domElement.addEventListener('touchend', onTouchEnd, false);
+  window.l.current_scene.renderers.webgl.domElement.addEventListener(
+    "touchstart",
+    onTouchStart,
+    false
+  );
+  window.l.current_scene.renderers.webgl.domElement.addEventListener(
+    "touchend",
+    onTouchEnd,
+    false
+  );
 
   function onMouseDown(event) {
     window.l.current_scene.pointer.z = 1; // previously mouseDown = true
@@ -154,11 +195,24 @@ window.l.current_scene.init = async function () {
   }
 
   // Attach the mouse down and up event listeners
-  window.l.current_scene.renderers.webgl.domElement.addEventListener("pointerdown", onMouseDown, false);
-  window.l.current_scene.renderers.webgl.domElement.addEventListener("pointerup", onMouseUp, false);
+  window.l.current_scene.renderers.webgl.domElement.addEventListener(
+    "pointerdown",
+    onMouseDown,
+    false
+  );
+  window.l.current_scene.renderers.webgl.domElement.addEventListener(
+    "pointerup",
+    onMouseUp,
+    false
+  );
+};
 
-}
-
+/**
+ * Set camera FOV based on desired aspect ratio
+ * 
+ * @param {Float} aspect 
+ * @returns {Float} fov
+ */
 export function setCameraFOV(aspect) {
   var fov;
 
@@ -175,15 +229,12 @@ export function setCameraFOV(aspect) {
     } else {
       if (aspect < 2.25) {
         fov = mapRange(aspect, 2, 2.25, 45, 40);
-      }
-      else {
+      } else {
         if (aspect < 3) {
           fov = mapRange(aspect, 2.25, 5, 40, 90);
-        }
-        else {
+        } else {
           fov = 90;
         }
-
       }
     }
   }
@@ -191,35 +242,46 @@ export function setCameraFOV(aspect) {
   return fov;
 }
 
-
-
+/**
+ * Old code for tweakpane UI originally intended for debugging
+ * 
+ * @todo: Refactor to drive the new game UI entirely
+ */
 function debug_ui() {
   const PARAMS = {
     factor: 123,
-    title: 'hello',
-    color: '#ff0055',
+    title: "hello",
+    color: "#ff0055",
   };
-  
+
   const pane = new Tweakpane.Pane();
-  
-  pane.addInput(PARAMS, 'factor');
-  pane.addInput(PARAMS, 'title');
-  pane.addInput(PARAMS, 'color');
+
+  pane.addInput(PARAMS, "factor");
+  pane.addInput(PARAMS, "title");
+  pane.addInput(PARAMS, "color");
 
   return pane;
 }
 
-// Function to map a value from one range to another
+/**
+ * Function to map a value from one range to another
+ */
 function mapRange(value, inMin, inMax, outMin, outMax) {
-  return (value - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
+  return ((value - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
 }
 
+/**
+ * Helper to calculate the desired gap size
+ * 
+ * Used to determine office room dimensions on different screen sizes/aspect ratios.
+ */
 export function calculateAdjustedGapSize() {
   var width = window.innerWidth;
   var height = window.innerHeight;
 
   // Adjust gap size based on the aspect ratio
-  var adjustedGapSize = window.l.current_scene.settings.gap * window.l.current_scene.settings.scale;
+  var adjustedGapSize =
+    window.l.current_scene.settings.gap * window.l.current_scene.settings.scale;
   if (width < height) {
     adjustedGapSize *= height / width;
   }
@@ -227,12 +289,20 @@ export function calculateAdjustedGapSize() {
   return adjustedGapSize;
 }
 
+/**
+ * Setup 3D webgl renderer and configure it.
+ */
 function setupRenderers() {
-
   // Main 3D webGL Renderer.
-  window.l.current_scene.renderers.webgl = new THREE.WebGLRenderer({ antialias: window.l.current_scene.fast });
+  window.l.current_scene.renderers.webgl = new THREE.WebGLRenderer({
+    antialias: window.l.current_scene.fast,
+  });
   window.l.current_scene.renderers.webgl.setPixelRatio(window.devicePixelRatio);
-  window.l.current_scene.renderers.webgl.setSize(window.innerWidth, window.innerHeight);
-  document.querySelector("#webgl").appendChild(window.l.current_scene.renderers.webgl.domElement);
-
+  window.l.current_scene.renderers.webgl.setSize(
+    window.innerWidth,
+    window.innerHeight
+  );
+  document
+    .querySelector("#webgl")
+    .appendChild(window.l.current_scene.renderers.webgl.domElement);
 }

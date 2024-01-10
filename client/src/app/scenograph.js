@@ -1,8 +1,14 @@
 /***
- * Scenograph class, controls which scene composition is being played in the game client e.g. scene objects, sky box, lighting, effects.
+ * Scenograph class
+ * 
+ * Controls which scene composition is being played in the game client
+ * 
+ * e.g. scene objects, sky box, lighting, effects.
  */
 
-// Scenes
+/**
+ * Scenes 
+ */
 import Overworld from './scenes/overworld.js';
 
 export default class Scenograph {

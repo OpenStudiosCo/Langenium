@@ -1,5 +1,19 @@
+/**
+ * Materials related helpers.
+ */
+
+/**
+ * Vendor libs
+ */
 import * as THREE from 'three';
 
+/**
+ * Brighten material helper.
+ * 
+ * @param {THREE.Maetrial} material 
+ * @param {Float} amount 
+ * @returns 
+ */
 export function brightenMaterial(material, amount) {
 
   if (material.map) {

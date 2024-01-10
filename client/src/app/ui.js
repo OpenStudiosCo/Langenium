@@ -7,6 +7,7 @@
 import Alpine from 'alpinejs';
 
 import Flight_Controls from './ui/flight_controls.js';
+import Main_Menu from './ui/main_menu.js';
  
 export default class UI {
 
@@ -34,6 +35,8 @@ export default class UI {
      * Called after construction to attach controls when the update_queue is ready.
      */
     activate() {
+        this.main_menu = new Main_Menu();
+        
         this.flight_controls = new Flight_Controls();
 
         window.l.current_scene.ui.update_queue.push({

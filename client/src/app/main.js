@@ -43,8 +43,7 @@ window.l.current_scene.init = async function () {
   if (url.searchParams.has("debug")) {
     window.l.current_scene.debug = true;
 
-    // Start the UI.
-    pane = debug_ui();
+ 
   }
 
   // Check if we're in fast mode.
@@ -242,26 +241,7 @@ export function setCameraFOV(aspect) {
   return fov;
 }
 
-/**
- * Old code for tweakpane UI originally intended for debugging
- * 
- * @todo: Refactor to drive the new game UI entirely
- */
-function debug_ui() {
-  const PARAMS = {
-    factor: 123,
-    title: "hello",
-    color: "#ff0055",
-  };
 
-  const pane = new Tweakpane.Pane();
-
-  pane.addInput(PARAMS, "factor");
-  pane.addInput(PARAMS, "title");
-  pane.addInput(PARAMS, "color");
-
-  return pane;
-}
 
 /**
  * Function to map a value from one range to another

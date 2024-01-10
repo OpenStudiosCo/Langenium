@@ -20,7 +20,7 @@ export default class Controls {
     constructor() {
         this.keyboard = new KeyboardControls();
 
-        // this.orbit = new OrbitControls(window.test_scene.camera, window.test_scene.renderers.webgl.domElement);
+        // this.orbit = new OrbitControls(window.l.current_scene.camera, window.l.current_scene.renderers.webgl.domElement);
         // this.orbit.target.set(0,10.775,0);
         // this.orbit.update();
 
@@ -28,8 +28,8 @@ export default class Controls {
     }
 
     animate() {
-        if (window.test_scene.controls.orbit)
-            window.test_scene.controls.orbit.update();
+        if (window.l.current_scene.controls.orbit)
+            window.l.current_scene.controls.orbit.update();
     }
 
 }

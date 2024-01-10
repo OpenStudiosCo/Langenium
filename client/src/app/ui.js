@@ -36,8 +36,8 @@ export default class UI {
     activate() {
         this.flight_controls = new Flight_Controls();
 
-        window.test_scene.ui.update_queue.push({
-            callback: 'window.test_scene.ui.flight_controls.update',
+        window.l.current_scene.ui.update_queue.push({
+            callback: 'window.l.current_scene.ui.flight_controls.update',
             data: []
         });
 
@@ -50,7 +50,7 @@ export default class UI {
      * Runs on setInterval
      */
     update() {
-        window.test_scene.ui.update_queue.forEach((current_update, i) => {
+        window.l.current_scene.ui.update_queue.forEach((current_update, i) => {
             _execute(current_update.callback, current_update.data, window);
         });
             

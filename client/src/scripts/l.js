@@ -1,5 +1,7 @@
 /**
- * Multi purpose scenograph for displaying "Scenes".
+ * Langenium game client.
+ * 
+ * Attached to a lowercase L on window.l
  * 
  * Components
  * - Asset Loader
@@ -23,17 +25,18 @@ function _init( wait ) {
 	window.matrix_scene.start();
 	
 	// Create the main engine accessor
-    if ( window.s ) { alert("window.s already set! Something is wrong."); return; }
-	window.s = {};
+    if ( window.l ) { alert("window.l already set! Something is wrong."); return; }
+	window.l = {};
 
-    s.version = '0.6.0';
-	s.url = '//' + location.host;
-	s.env = _check_environment();
-	s.scale = 500000;
+	l.current_scene = false;
+    l.version = '0.6.0';
+	l.url = '//' + location.host;
+	l.env = _check_environment();
+	l.scale = 500000;
 
 	console.log( '[ Langenium Engine ]' );
-	console.log( '\t Version: ' + s.version );
-	console.log( '\t Environment: ' + s.env );
+	console.log( '\t Version: ' + l.version );
+	console.log( '\t Environment: ' + l.env );
 	
 	// Default modules
 	var modules = [
@@ -49,7 +52,7 @@ function _init( wait ) {
 			// @todo: Implement scene changer
 			name: "Test Scene",
 			requires: [ 'tweakpane', 'TWEEN.js' ],
-			files: [ { path: "./main.js", callback: "window.test_scene.init" } ]
+			files: [ { path: "./main.js", callback: "window.l.current_scene.init" } ]
 		}
 	];
 
@@ -90,7 +93,7 @@ function _check_environment () {
 	
 }
 
-// Execute an arbitrary function attached to the window global s.
+// Execute an arbitrary function attached to the window global l.
 function _execute(functionName, arguments, context ) {
 	// Usage: executeFunctionByName("s.scenograph.director.init", [], window);
 	var namespaces = functionName.split(".");
@@ -203,7 +206,7 @@ function _load(name, path, callback, modules_class) {
 	var head = document.getElementsByTagName('head')[0];
 
 	// Disable cache for Dev and Staging
-	path += (s.env == 'Dev' || s.env == 'Staging') ? '?_=' + Date.now() : '';
+	path += (l.env == 'Dev' || l.env == 'Staging') ? '?_=' + Date.now() : '';
 	
 	if (path.match(/\.js/)) {
 		var script = document.createElement('script');

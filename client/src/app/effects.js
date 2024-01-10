@@ -34,7 +34,7 @@ let scalingRun;
 export function scaleEffects( ) {
   // Run scaling
   scalingRun = setInterval( () => {
-    if ( window.test_scene.effects.scaleDone ) {
+    if ( window.l.current_scene.effects.scaleDone ) {
       if ( !firstTime ) {
         clearInterval(scalingRun);
       }
@@ -65,41 +65,41 @@ export function scaleEffectsRunner ( ) {
     avgFrameRate = sum / frameRates.length;
 
     // Check if the frame rate is below the threshold
-    const isBelowThreshold = avgFrameRate < (window.test_scene.fast ? frameRateThreshold : frameRateThreshold * 0.5) ;
+    const isBelowThreshold = avgFrameRate < (window.l.current_scene.fast ? frameRateThreshold : frameRateThreshold * 0.5) ;
 
     if (isBelowThreshold) {
       console.log(avgFrameRate + " FPS too low, effects off");
       // Disable effects
-      window.test_scene.fast = true;
-      window.test_scene.renderers.webgl.shadowMap.enabled = false;
-      if (window.test_scene.effects.main && window.test_scene.effects.main.passes && window.test_scene.effects.main.passes.length > 0 ) {
-        window.test_scene.effects.main.passes.splice(0, window.test_scene.effects.main.passes.length); // Remove all passes from the  (*window.test_scene.effects.main)
+      window.l.current_scene.fast = true;
+      window.l.current_scene.renderers.webgl.shadowMap.enabled = false;
+      if (window.l.current_scene.effects.main && window.l.current_scene.effects.main.passes && window.l.current_scene.effects.main.passes.length > 0 ) {
+        window.l.current_scene.effects.main.passes.splice(0, window.l.current_scene.effects.main.passes.length); // Remove all passes from the  (*window.l.current_scene.effects.main)
       }
     }
     else {
       console.log(avgFrameRate + " FPS good, effects on");
       // Setup effects.
-      if (!window.test_scene.effects.main || ! window.test_scene.effects.main.passes || window.test_scene.effects.main.passes.length == 0 ) {
+      if (!window.l.current_scene.effects.main || ! window.l.current_scene.effects.main.passes || window.l.current_scene.effects.main.passes.length == 0 ) {
         setupEffects();
       }
       // Enable effects
-      window.test_scene.fast = false;
-      window.test_scene.renderers.webgl.shadowMap.enabled = true;
+      window.l.current_scene.fast = false;
+      window.l.current_scene.renderers.webgl.shadowMap.enabled = true;
     }
 
     // Update lights to the correct settings.
-    window.test_scene.scene_objects.ambientLight.color = new THREE.Color( window.test_scene.fast ? 0x555555 : 0x444444 );
-    window.test_scene.scene_objects.neon_sign.children[0].intensity = window.test_scene.fast ? window.test_scene.settings.light.fast.neonSign.normal : window.test_scene.settings.light.highP.neonSign.normal;
-    window.test_scene.scene.traverse((scene_object)=> {
+    window.l.current_scene.scene_objects.ambientLight.color = new THREE.Color( window.l.current_scene.fast ? 0x555555 : 0x444444 );
+    window.l.current_scene.scene_objects.neon_sign.children[0].intensity = window.l.current_scene.fast ? window.l.current_scene.settings.light.fast.neonSign.normal : window.l.current_scene.settings.light.highP.neonSign.normal;
+    window.l.current_scene.scene.traverse((scene_object)=> {
       if (scene_object.name =='ceilLightActual') {
-        scene_object.intensity = window.test_scene.fast ? window.test_scene.settings.light.fast.desk.normal : window.test_scene.settings.light.highP.desk.normal;
+        scene_object.intensity = window.l.current_scene.fast ? window.l.current_scene.settings.light.fast.desk.normal : window.l.current_scene.settings.light.highP.desk.normal;
       }
       if (scene_object.name =='deskMesh') {
         scene_object.traverse( function ( child ) {
 
           if ( child.isMesh ) {
     
-            let amount = window.test_scene.fast ? 3 : 1.5;
+            let amount = window.l.current_scene.fast ? 3 : 1.5;
             child.material = child.original_material.clone();
             brightenMaterial( child.material, amount);
           }
@@ -108,7 +108,7 @@ export function scaleEffectsRunner ( ) {
       }
     });
 
-    window.test_scene.effects.scaleDone = true;
+    window.l.current_scene.effects.scaleDone = true;
 
     // Enqueue a secondary scaler just in case the first one failed.
     if ( firstTime ) {
@@ -116,7 +116,7 @@ export function scaleEffectsRunner ( ) {
         avgFrameRate = 0;
         frameRates = [];
         delayTimer = 0;
-        window.test_scene.effects.scaleDone = false;
+        window.l.current_scene.effects.scaleDone = false;
         firstTime = false;
       }, 5000)
     }
@@ -124,7 +124,7 @@ export function scaleEffectsRunner ( ) {
   }
   // Otherwise keep counting frames.
   else {
-    frameRates.push( window.test_scene.stats.fps );
+    frameRates.push( window.l.current_scene.stats.fps );
   }
 
 }
@@ -132,44 +132,44 @@ export function scaleEffectsRunner ( ) {
 // Sets up the effects
 export function setupEffects( ) {
   // Apply Unreal Bloom post-processing effect
-  var renderScene = new RenderPass(  window.test_scene.scene, window.test_scene.camera);
+  var renderScene = new RenderPass(  window.l.current_scene.scene, window.l.current_scene.camera);
 
-  window.test_scene.effects.main = new EffectComposer(window.test_scene.renderers.webgl);
-  window.test_scene.effects.main.setSize(window.innerWidth, window.innerHeight);
-  window.test_scene.effects.main.addPass(renderScene);
+  window.l.current_scene.effects.main = new EffectComposer(window.l.current_scene.renderers.webgl);
+  window.l.current_scene.effects.main.setSize(window.innerWidth, window.innerHeight);
+  window.l.current_scene.effects.main.addPass(renderScene);
 
-  window.test_scene.renderers.webgl.shadowMap.enabled = true;
-  window.test_scene.renderers.webgl.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
+  window.l.current_scene.renderers.webgl.shadowMap.enabled = true;
+  window.l.current_scene.renderers.webgl.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
 
-  const ssaoPass = new SSAOPass( window.test_scene.scene, window.test_scene.camera, window.innerWidth, window.innerHeight );
+  const ssaoPass = new SSAOPass( window.l.current_scene.scene, window.l.current_scene.camera, window.innerWidth, window.innerHeight );
   ssaoPass.kernelRadius = 20;
   ssaoPass.output = SSAOPass.OUTPUT.Beauty;
-  window.test_scene.effects.main.addPass( ssaoPass );
+  window.l.current_scene.effects.main.addPass( ssaoPass );
 
-  const ssaaPass = new SSAARenderPass ( window.test_scene.scene, window.test_scene.camera );
+  const ssaaPass = new SSAARenderPass ( window.l.current_scene.scene, window.l.current_scene.camera );
   ssaaPass.sampleLevel = 1;
-  window.test_scene.effects.main.addPass( ssaaPass );
+  window.l.current_scene.effects.main.addPass( ssaaPass );
     
-  window.test_scene.effects.bloomLayer = new THREE.Layers();
-  window.test_scene.effects.bloomLayer.set( 1 );
+  window.l.current_scene.effects.bloomLayer = new THREE.Layers();
+  window.l.current_scene.effects.bloomLayer.set( 1 );
 
   const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
   bloomPass.threshold = 0.15;
   bloomPass.strength = .85;
   bloomPass.radius = 0.85;
 
-  window.test_scene.effects.bloom = new EffectComposer( window.test_scene.renderers.webgl );
-  window.test_scene.effects.bloom.setSize(window.innerWidth, window.innerHeight);
-  window.test_scene.effects.bloom.renderToScreen = false;
-  window.test_scene.effects.bloom.addPass( renderScene );
-  window.test_scene.effects.bloom.addPass( bloomPass );
+  window.l.current_scene.effects.bloom = new EffectComposer( window.l.current_scene.renderers.webgl );
+  window.l.current_scene.effects.bloom.setSize(window.innerWidth, window.innerHeight);
+  window.l.current_scene.effects.bloom.renderToScreen = false;
+  window.l.current_scene.effects.bloom.addPass( renderScene );
+  window.l.current_scene.effects.bloom.addPass( bloomPass );
 
   // Selectively unbloom things
   const mixPass = new ShaderPass(
     new THREE.ShaderMaterial( {
       uniforms: {
         baseTexture: { value: null },
-        bloomTexture: { value: window.test_scene.effects.bloom.renderTarget2.texture }
+        bloomTexture: { value: window.l.current_scene.effects.bloom.renderTarget2.texture }
       },
       vertexShader: document.getElementById( 'vertexshader' ).textContent,
       fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
@@ -178,11 +178,11 @@ export function setupEffects( ) {
   );
   mixPass.needsSwap = true;
 
-  window.test_scene.effects.main.addPass( mixPass );
+  window.l.current_scene.effects.main.addPass( mixPass );
 
   // Colour correction.
   // const tonePass = new OutputPass(THREE.CineonToneMapping  );
   // tonePass.toneMappingExposure = Math.pow(Math.PI / 3, 4.0);
-  // window.test_scene.effects.main.addPass( tonePass );
+  // window.l.current_scene.effects.main.addPass( tonePass );
 
 }

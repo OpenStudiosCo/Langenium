@@ -5,7 +5,7 @@
  * - Add weight and wind resistance
  */
 
-import { normaliseSpeedDelta } from '../../helpers';
+import { normaliseSpeedDelta } from '../../../helpers';
 
 class BaseAircraft {
     public airSpeed:        number                              = 0;

@@ -7,7 +7,7 @@ import * as THREE from 'three';
 
 import {brightenMaterial} from './materials.js';
 
-import Valiant from '../../../game/objects/aircraft/valiant';
+import Valiant from '../../../game/src/objects/aircraft/valiant';
 
 export default class Ship {
 

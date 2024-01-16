@@ -30,21 +30,28 @@ export default class UI {
     }
 
     /**
-     * Activate
+     * Activate Flight Controls
      * 
-     * Called after construction to attach controls when the update_queue is ready.
+     * Adds itself to the ui classes update queue.
      */
-    activate() {
-        this.main_menu = new Main_Menu();
-        
-        this.flight_controls = new Flight_Controls();
+    show_flight_controls() {        
+        window.l.current_scene.ui.flight_controls = new Flight_Controls();
 
         window.l.current_scene.ui.update_queue.push({
             callback: 'window.l.current_scene.ui.flight_controls.update',
             data: []
         });
 
-        this.updater = setInterval( this.update, 1 / 60);
+        window.l.current_scene.ui.updater = setInterval( this.update, 1 / 60);
+    }
+
+    /**
+     * Activate Main Menu
+     * 
+     * Called during game client boot up
+     */
+    show_main_menu() {
+        window.l.current_scene.ui.main_menu = new Main_Menu();
     }
 
     /**

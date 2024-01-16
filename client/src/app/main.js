@@ -35,7 +35,6 @@ window.l.current_scene = scenograph.load("Overworld");
  */
 window.l.current_scene.init = async function () {
   window.l.current_scene.ui = new UI();
-  window.l.current_scene.ui.activate();
 
   let url = new URL(window.location.href);
 
@@ -113,26 +112,9 @@ window.l.current_scene.init = async function () {
   // Bloom effect materials.
   window.l.current_scene.materials = {};
 
+  // Activate controls
   window.l.current_scene.controls = new Controls();
-  window.addEventListener(
-    "keydown",
-    window.l.current_scene.controls.keyboard.onKeyDown,
-    false
-  );
-  window.addEventListener(
-    "keyup",
-    window.l.current_scene.controls.keyboard.onKeyUp,
-    false
-  );
-  window.l.current_scene.animation_queue.push(
-    window.l.current_scene.controls.animate
-  );
-
-  if (window.l.current_scene.debug) {
-    stats = new Stats();
-    document.body.appendChild(stats.dom);
-  }
-
+  
   window.addEventListener("orientationchange", handleViewportChange);
   window.addEventListener("resize", handleViewportChange);
 

@@ -39,8 +39,10 @@ export default class Flight_Controls {
         // Check if the main aircraft is loaded and ready
         if (window.l.current_scene.scene_objects.ship && window.l.current_scene.scene_objects.ship.ready) {
 
-            if ( !window.l.current_scene.ui.flight_controls.activated ) {
-                window.l.current_scene.ui.flight_controls.activate();            
+            if ( window.l.current_scene.settings.game_controls ) {
+                if ( !window.l.current_scene.ui.flight_controls.activated ) {
+                    window.l.current_scene.ui.flight_controls.activate();            
+                }
             }
 
             // Update the angle of the needle

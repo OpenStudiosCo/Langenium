@@ -15,6 +15,7 @@ import * as THREE from "three";
 export function startTweening() {
   setTimeout(() => {
     window.l.current_scene.started = true;
+
     let loadingSign = document.getElementById("loadingSign");
     if (loadingSign) {
       loadingSign.style.display = "none";
@@ -284,7 +285,10 @@ function dollyUp() {
     .onUpdate(() => {
       //window.l.current_scene.camera.lookAt(window.l.current_scene.scene_objects.ship.mesh.position);
       window.l.current_scene.camera.updateProjectionMatrix();
-    });
+    })
+    .onComplete(() => {
+      window.l.current_scene.ui.show_main_menu();
+    })
 }
 
 /**

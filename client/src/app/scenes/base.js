@@ -140,6 +140,7 @@ export default class SceneBase {
        */
       this.settings = {
         adjusted_gap: false, // calculated value
+        game_controls: false, // show in-game control overlays.
         gap: 1.3, // depth(z axis) gap between desks
         light: {
           fast: {

@@ -11,12 +11,14 @@ style.
         align-items: flex-end;
     }
     .control {
+        display: none;
         margin-bottom: min(-11vw, -11vh, -220px);
         max-width: max(10vw, 10vh, 200px);
-        transition: margin 700ms;
+        transition: display 700ms, margin 700ms;
     }
 
     .control.active {
+        display: block;
         margin-bottom: max(1vw, 1vh);
     }
 

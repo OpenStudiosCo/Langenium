@@ -172,8 +172,10 @@ export default class Ship {
         
         if (window.l.current_scene.scene_objects.ship.ready) {
 
-            // Detect keyboard input and pass it to the ship state model.
-            window.l.current_scene.scene_objects.ship.updateControls();
+            if ( window.l.current_scene.settings.game_controls ) {
+                // Detect keyboard input and pass it to the ship state model.
+                window.l.current_scene.scene_objects.ship.updateControls();
+            }
 
             window.l.current_scene.scene_objects.ship.updateAnimation( delta );
 

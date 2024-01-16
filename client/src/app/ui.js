@@ -30,19 +30,33 @@ export default class UI {
     }
 
     /**
-     * Activate Flight Controls
+     * Activate Flight Instruments
      * 
      * Adds itself to the ui classes update queue.
      */
     show_flight_instruments() {        
         window.l.current_scene.ui.flight_instruments = new Flight_Instruments();
+        document.querySelector(window.l.current_scene.ui.flight_instruments.containerSelector + ' .control').classList.add('active');
 
         window.l.current_scene.ui.update_queue.push({
             callback: 'window.l.current_scene.ui.flight_instruments.update',
             data: []
         });
 
-        window.l.current_scene.ui.updater = setInterval( this.update, 1 / 60);
+        
+    }
+
+    /**
+     * Deactivate Flight Instruments
+     */
+    hide_flight_instruments() {
+        document.querySelector(window.l.current_scene.ui.flight_instruments.containerSelector + ' .control').classList.remove('active');
+        window.l.current_scene.ui.flight_instruments = false;
+
+        // @todo: Remove specific updates instead of purging the whole queue.
+        window.l.current_scene.ui.update_queue = [];
+
+        
     }
 
     /**
@@ -52,6 +66,8 @@ export default class UI {
      */
     show_main_menu() {
         window.l.current_scene.ui.main_menu = new Main_Menu();
+
+        window.l.current_scene.ui.updater = setInterval( this.update, 1 / 60);
     }
 
     /**

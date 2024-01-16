@@ -17,8 +17,9 @@ export default class Main_Menu {
             hidden: true
         });
         exit_game.on('click', () => {
-            console.log('Exit to Main Menu launched');
+            console.log('Exit to Main Menu, closing game session');
             window.l.current_scene.controls.deactivate()
+            window.l.current_scene.ui.hide_flight_instruments();
 
             // Show game mode buttons.
             single_player.hidden = false;

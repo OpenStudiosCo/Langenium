@@ -20,7 +20,7 @@ export default class Flight_Instruments {
 
     activate() {
         window.l.current_scene.ui.flight_instruments.activated = true;
-        document.querySelector(window.l.current_scene.ui.flight_instruments.containerSelector + ' .control').classList.add('active');
+        
         
         // @todo fix touch control issues
         //window.l.current_scene.controls.touch.activate();

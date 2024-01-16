@@ -6,13 +6,13 @@
 
 import Alpine from 'alpinejs';
 
-import Flight_Controls from './ui/flight_controls.js';
+import Flight_Instruments from './ui/flight_instruments.js';
 import Main_Menu from './ui/main_menu.js';
  
 export default class UI {
 
     // Custom class for controlling flight control UI
-    flight_controls;
+    flight_instruments;
 
     // Array of callbacks and data for updating UI
     update_queue;
@@ -34,11 +34,11 @@ export default class UI {
      * 
      * Adds itself to the ui classes update queue.
      */
-    show_flight_controls() {        
-        window.l.current_scene.ui.flight_controls = new Flight_Controls();
+    show_flight_instruments() {        
+        window.l.current_scene.ui.flight_instruments = new Flight_Instruments();
 
         window.l.current_scene.ui.update_queue.push({
-            callback: 'window.l.current_scene.ui.flight_controls.update',
+            callback: 'window.l.current_scene.ui.flight_instruments.update',
             data: []
         });
 

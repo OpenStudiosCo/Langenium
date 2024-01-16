@@ -12,11 +12,36 @@ export default class Main_Menu {
         });
 
         
+        const exit_game = this.pane.addButton({
+            title: 'Exit to Main Menu',
+            hidden: true
+        });
+        exit_game.on('click', () => {
+            console.log('Exit to Main Menu launched');
+            window.l.current_scene.controls.deactivate()
+
+            // Show game mode buttons.
+            single_player.hidden = false;
+            multi_player.hidden = false;
+
+            // Hide game exit button to return to main menu.
+            exit_game.hidden = true;
+        });
+
         const single_player = this.pane.addButton({
             title: 'Single Player',
         });
         single_player.on('click', () => {
             console.log('Single player launched');
+            window.l.current_scene.controls.activate()
+            window.l.current_scene.ui.show_flight_instruments()
+
+            // Hide game mode buttons.
+            single_player.hidden = true;
+            multi_player.hidden = true;
+
+            // Show game exit button to return to main menu.
+            exit_game.hidden = false;
         });
 
         const multi_player = this.pane.addButton({

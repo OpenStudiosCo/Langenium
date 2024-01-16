@@ -52,6 +52,8 @@ export default class Controls {
     }
 
     deactivate() {
+        // Indicate that game controls are inactive.
+        window.l.current_scene.settings.game_controls = false;
         
         window.removeEventListener(
             "keydown",
@@ -74,7 +76,7 @@ export default class Controls {
         // }
 
         window.l.current_scene.controls.keyboard = false;
-        window.l.current_scene.controls.touch = new false;
+        window.l.current_scene.controls.touch = false;
     }
 
     animate() {

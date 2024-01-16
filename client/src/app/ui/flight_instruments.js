@@ -1,8 +1,8 @@
 /**
- * Controls flight control UI elements
+ * Controls flight instrument UI elements
  */
 
-export default class Flight_Controls {
+export default class Flight_Instruments {
 
     activated;
 
@@ -14,13 +14,13 @@ export default class Flight_Controls {
 
         this.activated = false;
 
-        this.containerSelector = '#flight_controls';
+        this.containerSelector = '#flight_instruments';
 
     }
 
     activate() {
-        window.l.current_scene.ui.flight_controls.activated = true;
-        document.querySelector(window.l.current_scene.ui.flight_controls.containerSelector + ' .control').classList.add('active');
+        window.l.current_scene.ui.flight_instruments.activated = true;
+        document.querySelector(window.l.current_scene.ui.flight_instruments.containerSelector + ' .control').classList.add('active');
         
         // @todo fix touch control issues
         //window.l.current_scene.controls.touch.activate();
@@ -40,15 +40,15 @@ export default class Flight_Controls {
         if (window.l.current_scene.scene_objects.ship && window.l.current_scene.scene_objects.ship.ready) {
 
             if ( window.l.current_scene.settings.game_controls ) {
-                if ( !window.l.current_scene.ui.flight_controls.activated ) {
-                    window.l.current_scene.ui.flight_controls.activate();            
+                if ( !window.l.current_scene.ui.flight_instruments.activated ) {
+                    window.l.current_scene.ui.flight_instruments.activate();            
                 }
             }
 
             // Update the angle of the needle
             const angle = (Math.abs(window.l.current_scene.scene_objects.ship.state.airSpeed) * 1.94384) * 45;
             // Update the needle rotation
-            document.querySelector(window.l.current_scene.ui.flight_controls.containerSelector + ' #Airspeed #Needle').style.transform = `rotate(${angle}deg)`;
+            document.querySelector(window.l.current_scene.ui.flight_instruments.containerSelector + ' #Airspeed #Needle').style.transform = `rotate(${angle}deg)`;
         }
         
     }

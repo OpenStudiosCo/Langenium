@@ -28,12 +28,18 @@ function _init( wait ) {
     if ( window.l ) { alert("window.l already set! Something is wrong."); return; }
 	window.l = {};
 
+	// Game settings
 	l.current_scene = false;
-    l.version = '0.6.0';
+	l.multiplayer = false;
+	l.scale = 500000;
+	l.scenograph = false;
+
+	// Engine settings
+	l.version = '0.6.0';
 	l.url = '//' + location.host;
 	l.env = _check_environment();
-	l.scale = 500000;
-
+	
+	// Browser console output.
 	console.log( '[ Langenium Engine ]' );
 	console.log( '\t Version: ' + l.version );
 	console.log( '\t Environment: ' + l.env );
@@ -56,7 +62,7 @@ function _init( wait ) {
 	];
 
 	setTimeout( () => {
-		_load_modules( modules, "s" );
+		_load_modules( modules, "l" );
 	} , wait);
 	
 }

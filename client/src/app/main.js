@@ -20,15 +20,21 @@ import Scenograph from "./scenograph.js";
  **/
 let stats;
 
+
+/**
+ * Multiplayer allows connecting to server.
+ */
+window.l.multiplayer = new Multiplayer();
+
 /**
  * Scenograph controls the current scene
  */
-let scenograph = new Scenograph();
+window.l.scenograph = new Scenograph();
 
 /**
  * Load up the overworld by default.
  */
-window.l.current_scene = scenograph.load("Overworld");
+window.l.current_scene = window.l.scenograph.load("Overworld");
 
 /**
  * Game client initialiser, called by window.l when it's finished loading.

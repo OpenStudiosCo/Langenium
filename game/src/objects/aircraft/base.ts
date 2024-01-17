@@ -7,7 +7,7 @@
 
 import { normaliseSpeedDelta } from '../../../helpers';
 
-class BaseAircraft {
+export default class BaseAircraft {
     public airSpeed:        number                              = 0;
     public verticalSpeed:   number                              = 0;
     public heading:         number                              = 0;
@@ -100,5 +100,3 @@ class BaseAircraft {
     
     }
 }
-
-export default BaseAircraft;

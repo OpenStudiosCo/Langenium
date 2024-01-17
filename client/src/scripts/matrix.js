@@ -47,11 +47,11 @@ window.matrix_scene = {
      *  - 2 Buy time to fill the matrix (if it loaded from cache / too fast)
      *  - 3 Enter the matrix - start
      */
-    stage: 0,
+    stage: 2,
     /**
      * Timestamp when the current stage began.
      */
-    stageStarted: 0,
+    stageStarted: 2,
     /**
      * Stage specific variables.
      */
@@ -158,7 +158,7 @@ window.matrix_scene = {
     // Updates the scene
     updateStage: function () {
         if ( window.matrix_scene.stage == 0 ) {
-            if ( window.l.current_scene && ( Date.now() - window.matrix_scene.stageStarted > 500) ) {
+            if ( window.l.current_scene && ( Date.now() - window.matrix_scene.stageStarted > 100) ) {
                 window.matrix_scene.stage = 1;
                 window.matrix_scene.stageStarted = Date.now();
                 for ( var measure in window.l.current_scene.loaders.stats ) {
@@ -181,7 +181,7 @@ window.matrix_scene = {
             }
 
             if (
-                window.matrix_scene.loaded_done == window.matrix_scene.loaded_target && ( Date.now() - window.matrix_scene.stageStarted > 500)
+                window.matrix_scene.loaded_done == window.matrix_scene.loaded_target && ( Date.now() - window.matrix_scene.stageStarted > 100)
             ) {
                 window.matrix_scene.stage = 2;
                 window.matrix_scene.stageStarted = Date.now();
@@ -190,7 +190,7 @@ window.matrix_scene = {
         if ( window.matrix_scene.stage == 2 ) {
             if (
                 window.l.current_scene.ready == true &&
-                ( Date.now() - window.matrix_scene.stageStarted > 500)
+                ( Date.now() - window.matrix_scene.stageStarted > 100)
             ) {
                 window.matrix_scene.stage = 3;
                 window.matrix_scene.stageStarted = Date.now();

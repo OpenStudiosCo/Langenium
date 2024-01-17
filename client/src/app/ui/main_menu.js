@@ -50,6 +50,8 @@ export default class Main_Menu {
         });
         multi_player.on('click', () => {
             console.log('Multi player launched');
+
+            window.l.multiplayer.connect('https://bastion:8090')
         });
 
         const settings = this.pane.addButton({

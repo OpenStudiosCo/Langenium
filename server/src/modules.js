@@ -19,6 +19,7 @@ module.exports = class Modules {
         let modules = {
             fs: require('fs'),
             express: require('express'),
+            merge: require('deepmerge'),
             app: false,
             settings: false,
             webServer: false
@@ -31,6 +32,10 @@ module.exports = class Modules {
                 cert: modules.fs.readFileSync('../client/etc/ssl-cert-snakeoil.pem')
             }
         };
+
+        modules.addClock = (obj, callback) => {
+            obj.clock = setInterval( function(){ callback(obj); }, 1000 / 66);
+        }
 
         modules.app = modules.express();
         modules.webServer = require('https').createServer(modules.settings.ssl_files, modules.app);

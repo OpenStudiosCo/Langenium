@@ -44,11 +44,14 @@ window.l.current_scene.init = async function () {
 
   let url = new URL(window.location.href);
 
+  // Check if we should skip the logo title sequence.
+  if (url.searchParams.has("skipintro")) {
+    window.l.current_scene.skipintro = true;
+  }
+
   // Check if we're in debug mode.
   if (url.searchParams.has("debug")) {
     window.l.current_scene.debug = true;
-
- 
   }
 
   // Check if we're in fast mode.

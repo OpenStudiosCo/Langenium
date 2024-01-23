@@ -77,7 +77,7 @@ export default class Ship {
         let coords = { y: 60 }; // Start at (0, 0)
         let target = { y: 8.5 };
         return new TWEEN.Tween(coords, false) // Create a new tween that modifies 'coords'.
-            .to(target, 2000) // Move to (300, 200) in 1 second.
+            .to(target, window.l.current_scene.skipintro ? 0 : 2000) // Move to (300, 200) in 1 second.
             .easing(TWEEN.Easing.Circular.Out) // Use an easing function to make the animation smooth.
             .onUpdate(() => {
                 window.l.current_scene.scene_objects.ship.mesh.position.y = coords.y;
@@ -91,8 +91,8 @@ export default class Ship {
         let coords = { x: window.l.current_scene.room_depth }; // Start at (0, 0)
         let target = { x: 0 };
         return new TWEEN.Tween(coords, false) // Create a new tween that modifies 'coords'.
-            .delay(1000)
-            .to(target, 2000) // Move to (300, 200) in 1 second.
+            .delay(window.l.current_scene.skipintro ? 0 : 1000)
+            .to(target, window.l.current_scene.skipintro ? 0 : 2000) // Move to (300, 200) in 1 second.
             .easing(TWEEN.Easing.Circular.Out) // Use an easing function to make the animation smooth.
             .onUpdate(() => {
                 // Called after tween.js updates 'coords'.

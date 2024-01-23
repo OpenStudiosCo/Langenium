@@ -188,6 +188,11 @@ export default class SceneBase {
       this.selected = false;
 
       /**
+       * Skip the intro sequence for this scene.
+       */
+      this.skipintro = false;
+
+      /**
        * If the main sequence has begun.
        * 
        * @memberof Boolean

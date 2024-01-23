@@ -40,7 +40,7 @@ export function startTweening() {
         }
       }
     }
-  }, 250);
+  }, window.l.current_scene.skipintro ? 0 : 250);
 }
 
 /**
@@ -133,43 +133,43 @@ function flickerEffect() {
   // Chain the tweens to create the flickering effect
   window.l.current_scene.tweens.doorSignFlickerA = new TWEEN.Tween(dummy)
     .easing(TWEEN.Easing.Quadratic.Out)
-    .to({ emissiveIntensity: 0.8 }, duration * 1000) // Start at 0 intensity
+    .to({ emissiveIntensity: 0.8 }, window.l.current_scene.skipintro ? 0 : duration * 1000) // Start at 0 intensity
     .onUpdate((obj) => {
       updateFlickering(obj);
     });
   window.l.current_scene.tweens.doorSignFlickerB = new TWEEN.Tween(dummy)
     .delay(duration * 1000)
-    .to({ emissiveIntensity: 0 }, 0.1 * 1000)
+    .to({ emissiveIntensity: 0 }, window.l.current_scene.skipintro ? 0 : 0.1 * 1000)
     .onUpdate((obj) => {
       updateFlickering(obj);
     });
   window.l.current_scene.tweens.doorSignFlickerC = new TWEEN.Tween(dummy)
     .delay((duration + 0.1) * 1000)
     .easing(TWEEN.Easing.Quadratic.Out)
-    .to({ emissiveIntensity: 0.4 }, 0.2 * 1000)
+    .to({ emissiveIntensity: 0.4 }, window.l.current_scene.skipintro ? 0 : 0.2 * 1000)
     .onUpdate((obj) => {
       updateFlickering(obj);
     });
   window.l.current_scene.tweens.doorSignFlickerD = new TWEEN.Tween(dummy)
     .delay((duration + 0.1 + 0.2) * 1000)
-    .to({ emissiveIntensity: 0 }, 0.1 * 1000)
+    .to({ emissiveIntensity: 0 }, window.l.current_scene.skipintro ? 0 : 0.1 * 1000)
     .onUpdate((obj) => {
       updateFlickering(obj);
     });
   window.l.current_scene.tweens.doorSignFlickerE = new TWEEN.Tween(dummy)
     .easing(TWEEN.Easing.Quadratic.Out)
-    .to({ emissiveIntensity: 0.4 }, 0.2 * 1000)
+    .to({ emissiveIntensity: 0.4 }, window.l.current_scene.skipintro ? 0 : 0.2 * 1000)
     .onUpdate((obj) => {
       updateFlickering(obj);
     });
   window.l.current_scene.tweens.doorSignFlickerF = new TWEEN.Tween(dummy)
-    .to({ emissiveIntensity: 0 }, 0.1 * 1000)
+    .to({ emissiveIntensity: 0 }, window.l.current_scene.skipintro ? 0 : 0.1 * 1000)
     .onUpdate((obj) => {
       updateFlickering(obj);
     });
   window.l.current_scene.tweens.doorSignFlickerG = new TWEEN.Tween(dummy)
     .easing(TWEEN.Easing.Quadratic.Out)
-    .to({ emissiveIntensity: 1 }, 0.2 * 1000)
+    .to({ emissiveIntensity: 1 }, window.l.current_scene.skipintro ? 0 : 0.2 * 1000)
     .onUpdate((obj) => {
       updateFlickering(obj);
     })
@@ -208,7 +208,7 @@ function enterTheOffice() {
   let coords = { x: 15 + window.l.current_scene.room_depth / 2 }; // Start at (0, 0)
   let targetZ = -20 + window.l.current_scene.room_depth / 2;
   return new TWEEN.Tween(coords, false) // Create a new tween that modifies 'coords'.
-    .to({ x: targetZ }, 1000) // Move to (300, 200) in 1 second.
+    .to({ x: targetZ }, window.l.current_scene.skipintro ? 0 : 1000) // Move to (300, 200) in 1 second.
     .easing(TWEEN.Easing.Quadratic.InOut) // Use an easing function to make the animation smooth.
     .onUpdate(() => {
       // Called after tween.js updates 'coords'.
@@ -245,7 +245,7 @@ function slideBack() {
   }; // Start at (0, 0)
   let targetZ = 15 + window.l.current_scene.room_depth / 2;
   return new TWEEN.Tween(coords, false) // Create a new tween that modifies 'coords'.
-    .to({ x: targetZ }, 1000) // Move to (300, 200) in 1 second.
+    .to({ x: targetZ }, window.l.current_scene.skipintro ? 0 : 1000) // Move to (300, 200) in 1 second.
     .easing(TWEEN.Easing.Quadratic.InOut) // Use an easing function to make the animation smooth.
     .onUpdate(() => {
       // Called after tween.js updates 'coords'.
@@ -269,7 +269,7 @@ function slideBack() {
  */
 function openDoor(doorRotation) {
   return new TWEEN.Tween(window.l.current_scene.scene_objects.door.rotation)
-    .to({ y: doorRotation }, 500) // Set the duration of the animation
+    .to({ y: doorRotation }, window.l.current_scene.skipintro ? 0 : 500) // Set the duration of the animation
     .onComplete(() => {
       window.l.current_scene.tweens.enterTheOffice.start();
       window.l.current_scene.tweens.dollyUp.delay(500).start();
@@ -281,7 +281,7 @@ function openDoor(doorRotation) {
  */
 function dollyUp() {
   return new TWEEN.Tween(window.l.current_scene.camera.position)
-    .to({ y: 10.775 }, 500) // Set the duration of the animation
+    .to({ y: 10.775 }, window.l.current_scene.skipintro ? 0 : 500) // Set the duration of the animation
     .onUpdate(() => {
       //window.l.current_scene.camera.lookAt(window.l.current_scene.scene_objects.ship.mesh.position);
       window.l.current_scene.camera.updateProjectionMatrix();
@@ -358,7 +358,7 @@ function rotateCamera() {
  */
 function resetCameraPosition(cameraDefaultPosition) {
   return new TWEEN.Tween(window.l.current_scene.camera.position)
-    .to(cameraDefaultPosition, 1000)
+    .to(cameraDefaultPosition, window.l.current_scene.skipintro ? 0 : 1000)
     .easing(TWEEN.Easing.Quadratic.InOut) // Use desired easing function
     .onUpdate(() => {
       window.l.current_scene.camera.updateProjectionMatrix();
@@ -373,7 +373,7 @@ function resetCameraPosition(cameraDefaultPosition) {
  */
 function resetCameraRotation(cameraDefaultRotation) {
   return new TWEEN.Tween(window.l.current_scene.camera.rotation)
-    .to(cameraDefaultRotation, 1000)
+    .to(cameraDefaultRotation, window.l.current_scene.skipintro ? 0 : 1000)
     .easing(TWEEN.Easing.Quadratic.InOut) // Use desired easing function
     .onUpdate(() => {
       window.l.current_scene.camera.updateProjectionMatrix();

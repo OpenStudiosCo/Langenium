@@ -59,9 +59,6 @@ export default class Overworld extends SceneBase {
       updateTweens(currentTime);
     }
 
-    if (window.l.current_scene.debug) {
-      stats.update();
-    }
 
     // Render the composer
     if (

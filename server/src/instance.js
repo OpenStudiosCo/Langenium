@@ -87,8 +87,6 @@ module.exports = class Instance {
 
         });
 
-        console.log('hi');
-
     }
 
     client_setup = function (user, socket, instance_obj) {
@@ -286,6 +284,7 @@ module.exports = class Instance {
             if (instance_found == false) {
                 modules.models.game.scene.model.find({ _id: users[0].scene_id }, function (err, scenes) {
                     modules.controllers.game.scene.instance.create(scenes[0], function (index) {
+                        console.log(modules.addClock);
                         modules.addClock(instance.collection[index], instance.update);
                         console.log(modules.controllers.game.scene.instance.collection[index])
                     });
@@ -313,6 +312,8 @@ module.exports = class Instance {
         )
 
         this.active_scenes.push( newActiveScene );
+
+        callback( this.active_scenes.length - 1 );
 
     };
 };

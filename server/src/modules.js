@@ -51,12 +51,17 @@ module.exports = class Modules {
             res.send('<h1>Nothing to see here folks!</h1>');
         });
 
-        modules.io.on('connection', (socket) => {
-            console.log('user connected');
-            socket.on('disconnect', function () {
-                console.log('user disconnected');
-            });
-        })
+        // This should go into some kind of utility class... it applies to both admin and game.. maybe website? 
+        var pong = function(socket, data) {
+            var time = new Date().getTime(); 
+            var latency = time - data.time;
+            socket.emit("ping", { time: new Date().getTime(), latency: latency });
+        }
+
+        modules.io.on('connection', function(socket) {
+            socket.emit('ping', { time: new Date().getTime(), latency: 0 });
+            socket.on('pong', function (data) { pong(socket, data) });
+        });
 
         modules.webServer.listen(modules.settings.port, function () {
             console.log(`Listening on port ${modules.settings.port}`);

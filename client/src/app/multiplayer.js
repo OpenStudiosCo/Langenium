@@ -1,11 +1,14 @@
 /***
  * Multiplayer code for connecting to Langenium server instances.
+ * 
+ * Connects to the servers public socket.io JS script.
  */
 
 export default class Multiplayer {
     constructor() {
         this.connected = false;
         this.serverLocation = false;
+        this.latency = 0;
     }
 
     connect( serverLocation ) {
@@ -21,5 +24,10 @@ export default class Multiplayer {
 
     start() {
         const socket = io(window.l.multiplayer.serverLocation);
+        socket.on("ping", function(data){
+            window.l.multiplayer.latency = data.latency;
+        
+            socket.emit("pong", data);
+        });
     }
 }

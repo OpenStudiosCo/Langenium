@@ -45,10 +45,6 @@ export default class Controls {
             window.l.current_scene.controls.animate
         );
 
-        if (window.l.current_scene.debug) {
-            stats = new Stats();
-            document.body.appendChild(stats.dom);
-        }
     }
 
     deactivate() {

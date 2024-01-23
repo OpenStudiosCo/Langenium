@@ -3,7 +3,6 @@
  */
 import { getGPUTier } from "detect-gpu";
 import * as THREE from "three";
-import Stats from "three/addons/libs/stats.module.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
 /**
@@ -14,12 +13,6 @@ import UI from "./ui.js";
 import { handleViewportChange } from "./events.js";
 import Multiplayer from "./multiplayer.js";
 import Scenograph from "./scenograph.js";
-
-/**
- * THREE.JS stats module
- **/
-let stats;
-
 
 /**
  * Multiplayer allows connecting to server.
@@ -111,12 +104,6 @@ window.l.current_scene.init = async function () {
 
   // Scene Setup.
   window.l.current_scene.setup();
-
-  if (window.l.current_scene.debug) {
-    const helper = new THREE.CameraHelper(window.l.current_scene.camera);
-
-    window.l.current_scene.scene.add(helper);
-  }
 
   // Bloom effect materials.
   window.l.current_scene.materials = {};

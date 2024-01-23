@@ -20,14 +20,13 @@ server.start = () => {
     description: 'The main outdoor scene',
     environment: 'outdoor'
   };
-  this.instance.create(defaultOverworldScene, function(index) {
+  this.instance.create(defaultOverworldScene, (index) => {
     this.modules.addClock(
-      this.instance.active_scene[index],
+      this.instance.active_scenes[index],
       this.instance.update
     );
   });
 
-  console.log(this.instance);
 }
 
 server.start();

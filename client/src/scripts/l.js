@@ -47,16 +47,12 @@ function _init( wait ) {
 	// Default modules
 	var modules = [
 		{
-			name: "tweakpane",
-			files: [ { path: './vendor/tweakpane-3.1.10.min.js' } ]
-		},
-		{
 			name: "TWEEN.js",
 			files: [ { path: './vendor/tween-21.0.0.umd.min.js' } ]
 		},
 		{ 
 			name: "Game Client",
-			requires: [ 'tweakpane', 'TWEEN.js' ],
+			requires: [ 'TWEEN.js' ],
 			files: [ { path: "./main.js", callback: "window.l.current_scene.init" } ]
 		}
 	];

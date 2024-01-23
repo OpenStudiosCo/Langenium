@@ -1,17 +1,19 @@
 /**
  * Main menu
  */
+
+import {Pane} from 'tweakpane';
+
 export default class Main_Menu {
     constructor() {
         /**
          * Tweakpane Pane UI
          */
-        this.pane = new Tweakpane.Pane({
+        this.pane = new Pane({
             title: "Langenium v" + window.l.version,
             expanded: true
         });
 
-        
         const exit_game = this.pane.addButton({
             title: 'Exit to Main Menu',
             hidden: true
@@ -25,6 +27,9 @@ export default class Main_Menu {
             single_player.hidden = false;
             multi_player.hidden = false;
 
+            // Hide latency stats
+            latency.hidden = true;
+
             // Hide game exit button to return to main menu.
             exit_game.hidden = true;
         });
@@ -34,8 +39,8 @@ export default class Main_Menu {
         });
         single_player.on('click', () => {
             console.log('Single player launched');
-            window.l.current_scene.controls.activate()
-            window.l.current_scene.ui.show_flight_instruments()
+            window.l.current_scene.controls.activate();
+            window.l.current_scene.ui.show_flight_instruments();
 
             // Hide game mode buttons.
             single_player.hidden = true;
@@ -50,8 +55,28 @@ export default class Main_Menu {
         });
         multi_player.on('click', () => {
             console.log('Multi player launched');
+            window.l.current_scene.controls.activate();
+            window.l.current_scene.ui.show_flight_instruments();
+
+            // Hide game mode buttons.
+            single_player.hidden = true;
+            multi_player.hidden = true;
+
+            // Show game exit button to return to main menu.
+            exit_game.hidden = false;
+
+            // Show latency.
+            latency.hidden = !window.l.current_scene.debug ;
 
             window.l.multiplayer.connect('https://bastion:8090')
+
+        });
+
+        const latency = this.pane.addBinding(window.l.multiplayer, 'latency', {
+            hidden: true,
+            readonly: true,
+            view: 'graph',
+            interval: 200
         });
 
         const settings = this.pane.addButton({
@@ -66,6 +91,15 @@ export default class Main_Menu {
         });
         help.on('click', () => {
             console.log('Help launched');
+        });
+
+        const fps = this.pane.addBinding(window.l.current_scene.stats, 'fps', {
+            hidden: !window.l.current_scene.debug,
+            readonly: true,
+            view: 'graph',
+            interval: 200,
+            min: 0,
+            max: 60
         });
 
         return this.pane;

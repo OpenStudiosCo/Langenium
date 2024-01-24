@@ -28,6 +28,9 @@ export default class Multiplayer {
         _load_modules([remote_script], 'l');
     }
 
+    /**
+     * Start the socket.io session and bind handlers.
+     */
     start() {
         window.l.multiplayer.socket = io(window.l.multiplayer.serverLocation);
 
@@ -48,11 +51,17 @@ export default class Multiplayer {
         });
     }
 
+    /**
+     * Disconnect the multiplayer.
+     */
     disconnect() {
         window.l.multiplayer.connected = false;
         window.l.multiplayer.socket.close();
     }
 
+    /**
+     * Add a new remote player to the client session.
+     */
     async add_player(data) {
         let newShip = new Ship();
         await newShip.load();
@@ -72,12 +81,14 @@ export default class Multiplayer {
         
     }
 
+    /**
+     * Remove a disconnected remote player from the client session.
+     */
     async remove_player(data) {
         window.l.current_scene.scene_objects.ships.forEach( ( ship ) => {
             if (ship.socket_id == data.socket_id) {
                 window.l.current_scene.scene.remove(ship.mesh);
             }
         });
-        console.log(data);
     }
 }

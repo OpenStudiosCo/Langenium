@@ -7,7 +7,11 @@
 /**
  * Setup Globals
  */
-const { Server } = require("socket.io");
+import { Server } from 'socket.io';
+import fs from 'fs';
+import express from 'express';
+import deepmerge from 'deepmerge';
+import https from 'https';
 
 /**
  * Setup server modules
@@ -17,9 +21,9 @@ const { Server } = require("socket.io");
 module.exports = class Modules {
     constructor() {
         let modules = {
-            fs: require('fs'),
-            express: require('express'),
-            merge: require('deepmerge'),
+            fs: fs,
+            express: express,
+            merge: deepmerge,
             app: false,
             settings: false,
             webServer: false
@@ -34,11 +38,11 @@ module.exports = class Modules {
         };
 
         modules.addClock = (obj, callback) => {
-            obj.clock = setInterval( function(){ callback(obj); }, 1000 / 66);
+            obj.clock = setInterval(function () { callback(obj); }, 1000 / 66);
         }
 
         modules.app = modules.express();
-        modules.webServer = require('https').createServer(modules.settings.ssl_files, modules.app);
+        modules.webServer = https.createServer(modules.settings.ssl_files, modules.app);
 
         modules.io = new Server(modules.webServer, {
             cors: {
@@ -49,18 +53,6 @@ module.exports = class Modules {
 
         modules.app.get('/', function (req, res) {
             res.send('<h1>Nothing to see here folks!</h1>');
-        });
-
-        // This should go into some kind of utility class... it applies to both admin and game.. maybe website? 
-        var pong = function(socket, data) {
-            var time = new Date().getTime(); 
-            var latency = time - data.time;
-            socket.emit("ping", { time: new Date().getTime(), latency: latency });
-        }
-
-        modules.io.on('connection', function(socket) {
-            socket.emit('ping', { time: new Date().getTime(), latency: 0 });
-            socket.on('pong', function (data) { pong(socket, data) });
         });
 
         modules.webServer.listen(modules.settings.port, function () {

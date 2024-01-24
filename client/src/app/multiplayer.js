@@ -7,8 +7,8 @@
 export default class Multiplayer {
     constructor() {
         this.connected = false;
-        this.serverLocation = false;
         this.latency = 0;
+        this.serverLocation = false;
         this.socket = false;
     }
 
@@ -25,6 +25,9 @@ export default class Multiplayer {
 
     start() {
         window.l.multiplayer.socket = io(window.l.multiplayer.serverLocation);
+
+        window.l.multiplayer.connected = true;
+
         window.l.multiplayer.socket.on("ping", (data) => {
             window.l.multiplayer.latency = data.latency;
         
@@ -37,6 +40,7 @@ export default class Multiplayer {
     }
 
     disconnect() {
+        window.l.multiplayer.connected = false;
         window.l.multiplayer.socket.close();
     }
 }

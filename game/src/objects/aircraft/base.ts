@@ -14,6 +14,7 @@ export default class BaseAircraft {
     public altitude:        number                              = 0;
     public horizon:         [number, number]                    = [0, 0];
     public position:        { x: number; y: number; z: number } = { x: 0, y: 0, z: 0 };
+    public rotation:        { x: number; y: number; z: number } = { x: 0, y: 0, z: 0 };
 
     public controls: {
         throttleUp: boolean;
@@ -74,7 +75,7 @@ export default class BaseAircraft {
      * 
      * @param time_delta 
      */
-    public move( time_delta: number ): void {
+    public move( time_delta: number ): object {
         let stepSize:           number = .01 * normaliseSpeedDelta( time_delta ),
             rY:                 number = 0, 
             tZ:                 number = 0, 
@@ -97,6 +98,32 @@ export default class BaseAircraft {
             this.controls.moveDown,     // Note: Move Down/Up is reversed by design.
             this.controls.moveUp
         );
+
+         // Check the vertical speed exceeds minimum threshold for change in vertical position
+         if (Math.abs(this.verticalSpeed) > 0.1) {
+            tY = this.verticalSpeed;
+        }
+
+        // Turning
+        if (this.controls.moveLeft) {
+            rY += radian;
+        }
+        else {
+            if (this.controls.moveRight) {
+                rY -= radian;
+            }
+        }
+
+        // Check if we have significant airspeed
+        if (Math.abs(this.airSpeed) > 0.01) {
+
+            // Set change in Z position based on airspeed
+            tZ = this.airSpeed;
+
+        }
+
+        return [ rY, tY, tZ ];
     
     }
+
 }

@@ -26,6 +26,8 @@ server.start = () => {
 
     socket.on('disconnect', () => { this.instance.remove_player(socket) } );
 
+    socket.on('input', (data) => { this.instance.input(socket, data); } );
+
     // @todo: Unhardcode the instance ID when others are setup
     this.instance.subscribe( socket, this.instance.active_scenes[0] );
   });

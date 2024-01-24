@@ -61,32 +61,40 @@ module.exports = class Instance {
         // Prepare the log of processed changes to send to the client for this update tick.
         let processed_changes = [];
 
-        /**
-         * Process the active scenes update queue.
-         */
-        active_scene.update_queue.forEach(function (update, index) {
-
-            let _complete = function (processed_change) {
-                processed_changes.push(processed_change);
-                active_scene.update_queue.splice(index, 1);
-            };
-
-            modules.controllers.game.objects[update.obj_class][update.type](active_scene.delta, update, _complete)
+        // Move all ships
+        active_scene.objects.ships.forEach((ship) => {
+            ship.move( active_scene.delta );
 
         });
 
-        /**
-         * Process the active scenes animation queue.
-         */
-        active_scene.animation_queue.forEach(function (update, index) {
+        // /**
+        //  * Process the active scenes update queue.
+        //  */
+        // active_scene.update_queue.forEach(function (update, index) {
 
-            let _complete = function (processed_change) {
-                processed_changes.push(processed_change);
-            };
+        //     let _complete = function (processed_change) {
+        //         processed_changes.push(processed_change);
+        //         active_scene.update_queue.splice(index, 1);
+        //     };
 
-            modules.controllers.game.objects[update.obj_class][update.type](active_scene.delta, update, _complete)
 
-        });
+
+        //     modules.controllers.game.objects[update.obj_class][update.type](active_scene.delta, update, _complete)
+
+        // });
+
+        // /**
+        //  * Process the active scenes animation queue.
+        //  */
+        // active_scene.animation_queue.forEach(function (update, index) {
+
+        //     let _complete = function (processed_change) {
+        //         processed_changes.push(processed_change);
+        //     };
+
+        //     modules.controllers.game.objects[update.obj_class][update.type](active_scene.delta, update, _complete)
+
+        // });
 
     }
 
@@ -190,7 +198,7 @@ module.exports = class Instance {
         this.client_sessions.forEach( (session, session_index) => {
             if (session.sessionId == socket.id) {
                 this.active_scenes.forEach((instance_obj) => {
-                    console.log(session);
+
                     if (instance_obj.scene_id.toString() == session.instance_id.toString()) {
                         socket.broadcast.to('game:scene:instance:' + instance_obj.scene_id.toString()).emit('logout', { socket_id: socket.id });
                         this.client_sessions.splice(session_index, 1);
@@ -218,22 +226,23 @@ module.exports = class Instance {
     }
 
     input = function (socket, data) {
-        instance.client_sessions.forEach(function (session) {
+        this.client_sessions.forEach( (session) => {
             if (session.sessionId == socket.id) {
-                instance.collection.forEach(function (instance_obj) {
-                    if (instance_obj._id.toString() == session.instance_id.toString()) {
+                this.active_scenes.forEach( (instance_obj) => {
+                    if (instance_obj.scene_id.toString() == session.instance_id.toString()) {
                         if (session.mode == 'ship') {
                             instance_obj.objects.ships.forEach(function (ship) {
                                 if (ship.socket_id == session.sessionId) {
-                                    instance_obj.update_queue.push(new modules.models.game.scene.instance.update.model({
-                                        object: ship,
-                                        _id: session.user._id,
-                                        socket_id: socket.id,
-                                        obj_class: "ships",
-                                        type: "move_ship",
-                                        details: data,
-                                        username: session.user.username
-                                    }));
+                                    ship.controls = data;
+                                    // instance_obj.update_queue.push({
+                                    //     object: ship,
+                                    //     _id: session.user._id,
+                                    //     socket_id: socket.id,
+                                    //     obj_class: "ships",
+                                    //     type: "move_ship",
+                                    //     details: data,
+                                    //     username: session.user.username
+                                    // });
                                 }
                             });
 
@@ -253,6 +262,8 @@ module.exports = class Instance {
         socket.join('game:scene:instance:' + instance_obj.scene_id.toString());
 
         this.add_player(socket, { user: socket.id, username: 'New Player' }, instance_obj)
+
+        console.log(this.client_sessions);
 
     };
 

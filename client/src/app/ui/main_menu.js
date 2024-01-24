@@ -33,7 +33,10 @@ export default class Main_Menu {
             // Hide game exit button to return to main menu.
             exit_game.hidden = true;
 
-            window.l.multiplayer.disconnect();
+            if (window.l.multiplayer.connected) {
+                window.l.multiplayer.disconnect();
+            }
+
         });
 
         const single_player = this.pane.addButton({

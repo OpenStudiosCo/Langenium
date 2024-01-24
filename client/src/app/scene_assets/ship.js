@@ -175,28 +175,20 @@ export default class Ship {
             if ( window.l.current_scene.settings.game_controls ) {
                 // Detect keyboard input and pass it to the ship state model.
                 window.l.current_scene.scene_objects.ship.updateControls();
+
+                if ( window.l.multiplayer.connected ) {
+                    window.l.multiplayer.socket.emit('input', window.l.current_scene.scene_objects.ship.state.controls);
+                }
             }
 
             window.l.current_scene.scene_objects.ship.updateAnimation( delta );
 
             // Update the ships state model.
-            window.l.current_scene.scene_objects.ship.state.move( window.l.current_scene.stats.currentTime - window.l.current_scene.stats.lastTime );
+            let [rY, tY, tZ] = window.l.current_scene.scene_objects.ship.state.move( window.l.current_scene.stats.currentTime - window.l.current_scene.stats.lastTime );
 
-            //window.l.current_scene.scene_objects.ship.updatePosition();
-
-            var rY = 0, 
-                tZ = 0, 
-                tY = 0,
-                radian = (Math.PI / 180);
-
-
-            
-
-            // Set change in Y position based on vertical speed
-            if (Math.abs(window.l.current_scene.scene_objects.ship.state.verticalSpeed) > 0.1) {
-                tY = window.l.current_scene.scene_objects.ship.state.verticalSpeed;
-            }
-
+            var radian = (Math.PI / 180);
+          
+            // Animate the ship's rotation in the game client based on controls.
             if (
                 !(window.l.current_scene.scene_objects.ship.state.controls.throttleDown || window.l.current_scene.scene_objects.ship.state.controls.throttleUp) &&
                 !(window.l.current_scene.scene_objects.ship.state.controls.moveDown || window.l.current_scene.scene_objects.ship.state.controls.moveUp)
@@ -204,16 +196,6 @@ export default class Ship {
                 window.l.current_scene.scene_objects.ship.mesh.rotation.x *= .9;
             }
             
-            // Turning
-            if (window.l.current_scene.scene_objects.ship.state.controls.moveLeft) {
-                rY += radian;
-            }
-            else {
-                if (window.l.current_scene.scene_objects.ship.state.controls.moveRight) {
-                    rY -= radian;
-                }
-            }
-
             if (rY != 0) {
                 if (Math.abs(window.l.current_scene.scene_objects.ship.mesh.rotation.z) < Math.PI / 4) {
                     window.l.current_scene.scene_objects.ship.mesh.rotation.z += rY / Math.PI;
@@ -244,14 +226,6 @@ export default class Ship {
                     
                 }
                 
-            }
-
-            // Check if we have significant airspeed
-            if (Math.abs(window.l.current_scene.scene_objects.ship.state.airSpeed) > 0.01) {
-
-                // Set change in Z position based on airspeed
-                tZ = window.l.current_scene.scene_objects.ship.state.airSpeed;
-
             }
 
             let xDiff = tZ * Math.sin(window.l.current_scene.scene_objects.ship.mesh.rotation.y),

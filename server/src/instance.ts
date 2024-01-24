@@ -39,11 +39,7 @@ module.exports = class Instance {
                 environment: [],
                 players: [],
                 ships: []
-            },
-            // Update queue processes new changes and is purged every update().
-            update_queue: [],
-            // Animation queue processes ongoing scene changes every update().
-            animation_queue: [],
+            }
         };
 
         modules = modules_object;
@@ -58,95 +54,66 @@ module.exports = class Instance {
         active_scene.delta = (new_time - active_scene.last_time);
         active_scene.last_time = new_time;
 
-        // Prepare the log of processed changes to send to the client for this update tick.
-        let processed_changes = [];
-
         // Move all ships
         active_scene.objects.ships.forEach((ship) => {
             ship.move( active_scene.delta );
-            
+
+            modules.io.sockets.in('game:scene:instance:'+active_scene.scene_id.toString()).emit('move_ship', ship);
         });
 
-        // /**
-        //  * Process the active scenes update queue.
-        //  */
-        // active_scene.update_queue.forEach(function (update, index) {
-
-        //     let _complete = function (processed_change) {
-        //         processed_changes.push(processed_change);
-        //         active_scene.update_queue.splice(index, 1);
-        //     };
-
-
-
-        //     modules.controllers.game.objects[update.obj_class][update.type](active_scene.delta, update, _complete)
-
-        // });
-
-        // /**
-        //  * Process the active scenes animation queue.
-        //  */
-        // active_scene.animation_queue.forEach(function (update, index) {
-
-        //     let _complete = function (processed_change) {
-        //         processed_changes.push(processed_change);
-        //     };
-
-        //     modules.controllers.game.objects[update.obj_class][update.type](active_scene.delta, update, _complete)
-
-        // });
-
+        
     }
 
-    client_setup = function (user, socket, active_scene) {
-        console.log('Player connected');
+    // @todo: Restore old code for loading the rest of the game level, or remove.
+    // client_setup = function (user, socket, active_scene) {
+    //     console.log('Player connected');
 
-        // socket.emit('load_scene', {
-        //     objects: active_scene.objects
-        // });
-        // var mesh_callback = function (instance_array_object, objects) {
-        //     var instruction = modules.models.game.client.message.load_object.model({
-        //         _id: instance_array_object._id,
-        //         category: instance_array_object.category,
-        //         url: objects[0].details.url,
-        //         status: 'Saved',
-        //         details: {
-        //             object_id: objects[0]._id,
-        //             name: objects[0].name,
-        //             type: objects[0].type,
-        //             sub_type: objects[0].sub_type
-        //         },
-        //         position: {
-        //             x: instance_array_object.category == 'ships' ? user.position.x : instance_array_object.position.x,
-        //             y: instance_array_object.category == 'ships' ? user.position.y : instance_array_object.position.y,
-        //             z: instance_array_object.category == 'ships' ? user.position.z : instance_array_object.position.z
-        //         },
-        //         rotation: {
-        //             x: instance_array_object.category == 'ships' ? user.rotation.x : instance_array_object.rotation.x,
-        //             y: instance_array_object.category == 'ships' ? user.rotation.y : instance_array_object.rotation.y,
-        //             z: instance_array_object.category == 'ships' ? user.rotation.z : instance_array_object.rotation.z,
-        //         },
-        //         scale: {
-        //             x: instance_array_object.scale ? instance_array_object.scale.x : objects[0].details.scale.x,
-        //             y: instance_array_object.scale ? instance_array_object.scale.y : objects[0].details.scale.y,
-        //             z: instance_array_object.scale ? instance_array_object.scale.z : objects[0].details.scale.z
-        //         }
-        //     });
-        //     if (instance_array_object.category == 'ships') {
-        //         instance.client_sessions.forEach(function (session, index) {
-        //             if (instance_array_object.socket_id == session.sessionId) {
-        //                 instruction.socket_id = session.sessionId;
-        //                 socket.broadcast.to('game:scene:instance:' + instance_obj.scene_id.toString()).emit('load_object', instruction);
-        //             }
-        //             console.log(modules.controllers.game.scene.instance.collection[0].objects.ships.length)
-        //             if (session.sessionId == socket.id) {
-        //             }
-        //         });
-        //     }
-        //     socket.emit('load_object', instruction);
-        // };
+    //     // socket.emit('load_scene', {
+    //     //     objects: active_scene.objects
+    //     // });
+    //     // var mesh_callback = function (instance_array_object, objects) {
+    //     //     var instruction = modules.models.game.client.message.load_object.model({
+    //     //         _id: instance_array_object._id,
+    //     //         category: instance_array_object.category,
+    //     //         url: objects[0].details.url,
+    //     //         status: 'Saved',
+    //     //         details: {
+    //     //             object_id: objects[0]._id,
+    //     //             name: objects[0].name,
+    //     //             type: objects[0].type,
+    //     //             sub_type: objects[0].sub_type
+    //     //         },
+    //     //         position: {
+    //     //             x: instance_array_object.category == 'ships' ? user.position.x : instance_array_object.position.x,
+    //     //             y: instance_array_object.category == 'ships' ? user.position.y : instance_array_object.position.y,
+    //     //             z: instance_array_object.category == 'ships' ? user.position.z : instance_array_object.position.z
+    //     //         },
+    //     //         rotation: {
+    //     //             x: instance_array_object.category == 'ships' ? user.rotation.x : instance_array_object.rotation.x,
+    //     //             y: instance_array_object.category == 'ships' ? user.rotation.y : instance_array_object.rotation.y,
+    //     //             z: instance_array_object.category == 'ships' ? user.rotation.z : instance_array_object.rotation.z,
+    //     //         },
+    //     //         scale: {
+    //     //             x: instance_array_object.scale ? instance_array_object.scale.x : objects[0].details.scale.x,
+    //     //             y: instance_array_object.scale ? instance_array_object.scale.y : objects[0].details.scale.y,
+    //     //             z: instance_array_object.scale ? instance_array_object.scale.z : objects[0].details.scale.z
+    //     //         }
+    //     //     });
+    //     //     if (instance_array_object.category == 'ships') {
+    //     //         instance.client_sessions.forEach(function (session, index) {
+    //     //             if (instance_array_object.socket_id == session.sessionId) {
+    //     //                 instruction.socket_id = session.sessionId;
+    //     //                 socket.broadcast.to('game:scene:instance:' + instance_obj.scene_id.toString()).emit('load_object', instruction);
+    //     //             }
+    //     //             console.log(modules.controllers.game.scene.instance.collection[0].objects.ships.length)
+    //     //             if (session.sessionId == socket.id) {
+    //     //             }
+    //     //         });
+    //     //     }
+    //     //     socket.emit('load_object', instruction);
+    //     // };
 
-    }
+    // }
 
     add_player = function (socket, user, instance_obj) {
         // Defaulting to first character and ship for now... this will have it's own mechanisms later
@@ -239,15 +206,6 @@ module.exports = class Instance {
                             instance_obj.objects.ships.forEach(function (ship) {
                                 if (ship.socket_id == session.sessionId) {
                                     ship.controls = data;
-                                    // instance_obj.update_queue.push({
-                                    //     object: ship,
-                                    //     _id: session.user._id,
-                                    //     socket_id: socket.id,
-                                    //     obj_class: "ships",
-                                    //     type: "move_ship",
-                                    //     details: data,
-                                    //     username: session.user.username
-                                    // });
                                 }
                             });
 

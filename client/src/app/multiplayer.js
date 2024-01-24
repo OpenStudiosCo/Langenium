@@ -46,6 +46,10 @@ export default class Multiplayer {
             await window.l.multiplayer.add_player(data);
         });
 
+        window.l.multiplayer.socket.on('move_ship', async ( data ) => {
+            await window.l.multiplayer.move_ship(data);
+        });
+
         window.l.multiplayer.socket.on('remove_player', async ( data ) => {
             await window.l.multiplayer.remove_player(data);
         });
@@ -58,6 +62,10 @@ export default class Multiplayer {
         window.l.multiplayer.connected = false;
         window.l.multiplayer.socket.close();
     }
+
+    /**
+     * Move a ship based on server calculations.
+     */
 
     /**
      * Add a new remote player to the client session.
@@ -90,5 +98,48 @@ export default class Multiplayer {
                 window.l.current_scene.scene.remove(ship.mesh);
             }
         });
+    }
+
+    /**
+     * Move a ship
+     */
+    move_ship(data) {
+        if (data.socket_id == window.l.multiplayer.socket.id) {
+            // Update stored ship state, don't punch out as functions aren't transmitted.
+            window.l.current_scene.scene_objects.ship.state.airSpeed = data.airSpeed;
+            window.l.current_scene.scene_objects.ship.state.altitude = data.altitude;
+            window.l.current_scene.scene_objects.ship.state.heading = data.heading;
+            window.l.current_scene.scene_objects.ship.state.horizon = data.horizon;
+            window.l.current_scene.scene_objects.ship.state.position.x = data.position.x;
+            window.l.current_scene.scene_objects.ship.state.position.y = data.position.y;
+            window.l.current_scene.scene_objects.ship.state.position.z = data.position.z;
+            window.l.current_scene.scene_objects.ship.state.rotation = data.rotation;
+            window.l.current_scene.scene_objects.ship.state.verticalSpeed = data.verticalSpeed;
+        }
+        else {
+            window.l.current_scene.scene_objects.ships.forEach( ( ship ) => {
+
+                if (ship.socket_id == data.socket_id) {
+                    // Update stored ship state, don't punch out as functions aren't transmitted.
+                    ship.state.airSpeed = data.airSpeed;
+                    ship.state.altitude = data.altitude;
+                    ship.state.heading = data.heading;
+                    ship.state.horizon = data.horizon;
+                    ship.state.position.x = data.position.x;
+                    ship.state.position.y = data.position.y;
+                    ship.state.position.z = data.position.z;
+                    ship.state.rotation = data.rotation;
+                    ship.state.verticalSpeed = data.verticalSpeed;
+
+                    ship.mesh.position.x = data.position.x;
+                    ship.mesh.position.y = data.position.y;
+                    ship.mesh.position.z = data.position.z;
+                    ship.mesh.rotation.x = data.rotation.x;
+                    ship.mesh.rotation.y = data.rotation.y;
+                    ship.mesh.rotation.z = data.rotation.z;
+                }
+            });
+        }
+        //console.log(data);
     }
 }

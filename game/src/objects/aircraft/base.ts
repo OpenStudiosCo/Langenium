@@ -13,7 +13,7 @@ export default class BaseAircraft {
     public heading:         number                              = 0;
     public altitude:        number                              = 0;
     public horizon:         [number, number]                    = [0, 0];
-    public position:        { x: number; y: number; z: number } = { x: 0, y: 0, z: 0 };
+    public position:        { x: number; y: number; z: number } = { x: 0, y: 8.5, z: 0 };
     public rotation:        { x: number; y: number; z: number } = { x: 0, y: 0, z: 0 };
 
     public controls: {

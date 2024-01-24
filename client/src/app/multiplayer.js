@@ -9,6 +9,7 @@ export default class Multiplayer {
         this.connected = false;
         this.serverLocation = false;
         this.latency = 0;
+        this.socket = false;
     }
 
     connect( serverLocation ) {
@@ -23,11 +24,19 @@ export default class Multiplayer {
     }
 
     start() {
-        const socket = io(window.l.multiplayer.serverLocation);
-        socket.on("ping", function(data){
+        window.l.multiplayer.socket = io(window.l.multiplayer.serverLocation);
+        window.l.multiplayer.socket.on("ping", (data) => {
             window.l.multiplayer.latency = data.latency;
         
-            socket.emit("pong", data);
+            window.l.multiplayer.socket.emit("pong", data);
         });
+
+        window.l.multiplayer.socket.on('load_scene', ( instance_obj ) => {
+            console.log(instance_obj);
+        });
+    }
+
+    disconnect() {
+        window.l.multiplayer.socket.close();
     }
 }

@@ -92,7 +92,6 @@ module.exports = class Instance {
 
     client_setup = function (user, socket, active_scene) {
         console.log('Player connected');
-        console.log(active_scene);
         socket.emit('load_scene', {
             objects: active_scene.objects
         });
@@ -155,7 +154,7 @@ module.exports = class Instance {
             sessionId: socket.id,
             mode: instance_obj.environment == 'indoor' ? 'character' : 'ship',
             socket: socket,
-            instance_id: instance_obj._id, // note: this is not the scene ID
+            instance_id: instance_obj.scene_id, // note: this is not the scene ID
             username: user.username
         });
 
@@ -176,8 +175,6 @@ module.exports = class Instance {
         }
         else {
 
-            console.log(Valiant);
-
             // @todo: Look up ship type.
             let ship = new Valiant();
             ship.socket_id = socket.id;
@@ -189,11 +186,12 @@ module.exports = class Instance {
         }
     }
 
-    remove_player = function (socket) {
-        this.client_sessions.forEach(function (session, session_index) {
+    remove_player = (socket) => {
+        this.client_sessions.forEach( (session, session_index) => {
             if (session.sessionId == socket.id) {
-                this.collection.forEach(function (instance_obj) {
-                    if (instance_obj._id.toString() == session.instance_id.toString()) {
+                this.active_scenes.forEach((instance_obj) => {
+                    console.log(session);
+                    if (instance_obj.scene_id.toString() == session.instance_id.toString()) {
                         socket.broadcast.to('game:scene:instance:' + instance_obj.scene_id.toString()).emit('logout', { socket_id: socket.id });
                         this.client_sessions.splice(session_index, 1);
                         if (session.mode == 'character') {

@@ -160,12 +160,15 @@ export default class Ship {
     }
 
     // Update the position of the aircraft to spot determined by game logic.
-    updatePosition() {
+    updateMesh() {
         window.l.current_scene.scene_objects.ship.mesh.position.x = window.l.current_scene.scene_objects.ship.state.position.x;
         window.l.current_scene.scene_objects.ship.mesh.position.y = window.l.current_scene.scene_objects.ship.state.position.y;
         window.l.current_scene.scene_objects.ship.mesh.position.z = window.l.current_scene.scene_objects.ship.state.position.z;
-    }
 
+        window.l.current_scene.scene_objects.ship.mesh.rotation.x = window.l.current_scene.scene_objects.ship.state.rotation.x;
+        window.l.current_scene.scene_objects.ship.mesh.rotation.y = window.l.current_scene.scene_objects.ship.state.rotation.y;
+        window.l.current_scene.scene_objects.ship.mesh.rotation.z = window.l.current_scene.scene_objects.ship.state.rotation.z;
+    }
 
     // Runs on the main animation loop
     animate( delta ) {
@@ -185,25 +188,11 @@ export default class Ship {
 
             // Update the ships state model.
             let [rY, tY, tZ] = window.l.current_scene.scene_objects.ship.state.move( window.l.current_scene.stats.currentTime - window.l.current_scene.stats.lastTime );
+            window.l.current_scene.scene_objects.ship.updateMesh();
 
             var radian = (Math.PI / 180);
           
-            // Animate the ship's rotation in the game client based on controls.
-            if (
-                !(window.l.current_scene.scene_objects.ship.state.controls.throttleDown || window.l.current_scene.scene_objects.ship.state.controls.throttleUp) &&
-                !(window.l.current_scene.scene_objects.ship.state.controls.moveDown || window.l.current_scene.scene_objects.ship.state.controls.moveUp)
-            ) {
-                window.l.current_scene.scene_objects.ship.mesh.rotation.x *= .9;
-            }
-            
             if (rY != 0) {
-                if (Math.abs(window.l.current_scene.scene_objects.ship.mesh.rotation.z) < Math.PI / 4) {
-                    window.l.current_scene.scene_objects.ship.mesh.rotation.z += rY / Math.PI;
-                }
-                
-                window.l.current_scene.scene_objects.ship.mesh.rotation.y += rY;
-
-                const theta = Date.now() * 0.001; // Set the angular velocity for orbiting
 
                 let xDiff = window.l.current_scene.scene_objects.ship.mesh.position.x;
                 let zDiff = window.l.current_scene.scene_objects.ship.mesh.position.z;
@@ -214,7 +203,6 @@ export default class Ship {
 
             }
             else {
-                window.l.current_scene.scene_objects.ship.mesh.rotation.z *= .9;
                 if (window.l.current_scene.camera.rotation.y != window.l.current_scene.scene_objects.ship.mesh.rotation.y ) {
                     let yDiff = window.l.current_scene.scene_objects.ship.mesh.rotation.y - window.l.current_scene.camera.rotation.y;
                     if (Math.abs(yDiff) > radian / 10) {
@@ -232,30 +220,26 @@ export default class Ship {
                 zDiff = tZ * Math.cos(window.l.current_scene.scene_objects.ship.mesh.rotation.y);
             
             if (window.l.current_scene.scene_objects.ship.mesh.position.y + tY >= 1 ) {
-                window.l.current_scene.scene_objects.ship.mesh.position.y += tY;
                 window.l.current_scene.camera.position.y += tY;
-            } else {
-                window.l.current_scene.scene_objects.ship.state.verticalSpeed = 0;
             }
-            window.l.current_scene.scene_objects.ship.mesh.position.x += xDiff;
-            window.l.current_scene.scene_objects.ship.mesh.position.z += zDiff;
-
             
             window.l.current_scene.camera.position.x += xDiff;
             window.l.current_scene.camera.position.z += zDiff;
             window.l.current_scene.camera.updateProjectionMatrix();
 
-            if (window.l.current_scene.controls.orbit) {
+            // if (window.l.current_scene.controls.orbit) {
             
-                window.l.current_scene.controls.orbit.target.set(
-                    window.l.current_scene.scene_objects.ship.mesh.position.x,
-                    window.l.current_scene.scene_objects.ship.mesh.position.y,
-                    window.l.current_scene.scene_objects.ship.mesh.position.z
-                );
-                window.l.current_scene.controls.orbit.update();
-            }
+            //     window.l.current_scene.controls.orbit.target.set(
+            //         window.l.current_scene.scene_objects.ship.mesh.position.x,
+            //         window.l.current_scene.scene_objects.ship.mesh.position.y,
+            //         window.l.current_scene.scene_objects.ship.mesh.position.z
+            //     );
+            //     window.l.current_scene.controls.orbit.update();
+            // }
 
         }
     }
+
+    
     
 }

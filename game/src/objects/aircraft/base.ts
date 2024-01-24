@@ -80,8 +80,7 @@ export default class BaseAircraft {
             rY:                 number = 0, 
             tZ:                 number = 0, 
             tY:                 number = 0,
-            radian:             number = (Math.PI / 180),
-            changingElevator:   number = 0;
+            radian:             number = (Math.PI / 180);
 
         // Update Airspeed (horizontal velocity)
         this.airSpeed = this._changeVelocity(
@@ -100,7 +99,7 @@ export default class BaseAircraft {
         );
 
          // Check the vertical speed exceeds minimum threshold for change in vertical position
-         if (Math.abs(this.verticalSpeed) > 0.1) {
+         if (Math.abs(this.verticalSpeed) > 0.01) {
             tY = this.verticalSpeed;
         }
 
@@ -121,6 +120,38 @@ export default class BaseAircraft {
             tZ = this.airSpeed;
 
         }
+
+        // Animate the ship's rotation in the game client based on controls.
+        if (
+            !(this.controls.throttleDown || this.controls.throttleUp) &&
+            !(this.controls.moveDown || this.controls.moveUp)
+        ) {
+            this.rotation.x *= .9;
+        }
+        
+        if (rY != 0) {
+            if (Math.abs(this.rotation.z) < Math.PI / 4) {
+                this.rotation.z += rY / Math.PI;
+            }
+
+            this.rotation.y += rY;
+        }
+        else {
+            this.rotation.z *= .9;
+        }
+
+        let xDiff = tZ * Math.sin(this.rotation.y),
+            zDiff = tZ * Math.cos(this.rotation.y);
+        
+        // "1" is the floor limit as it's the ocean surface and the camera clips through the water any lower.
+        if (this.position.y + tY >= 0 ) {
+            this.position.y += tY;
+        } else {
+            this.verticalSpeed = 0;
+        }
+
+        this.position.x += xDiff;
+        this.position.z += zDiff;
 
         return [ rY, tY, tZ ];
     

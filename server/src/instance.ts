@@ -64,7 +64,7 @@ module.exports = class Instance {
         // Move all ships
         active_scene.objects.ships.forEach((ship) => {
             ship.move( active_scene.delta );
-
+            
         });
 
         // /**

@@ -100,10 +100,10 @@ module.exports = class Instance {
 
     client_setup = function (user, socket, active_scene) {
         console.log('Player connected');
-        socket.emit('load_scene', {
-            objects: active_scene.objects
-        });
 
+        // socket.emit('load_scene', {
+        //     objects: active_scene.objects
+        // });
         // var mesh_callback = function (instance_array_object, objects) {
         //     var instruction = modules.models.game.client.message.load_object.model({
         //         _id: instance_array_object._id,
@@ -132,7 +132,6 @@ module.exports = class Instance {
         //             z: instance_array_object.scale ? instance_array_object.scale.z : objects[0].details.scale.z
         //         }
         //     });
-
         //     if (instance_array_object.category == 'ships') {
         //         instance.client_sessions.forEach(function (session, index) {
         //             if (instance_array_object.socket_id == session.sessionId) {
@@ -141,21 +140,21 @@ module.exports = class Instance {
         //             }
         //             console.log(modules.controllers.game.scene.instance.collection[0].objects.ships.length)
         //             if (session.sessionId == socket.id) {
-
         //             }
-
         //         });
         //     }
-
         //     socket.emit('load_object', instruction);
-
-
         // };
 
     }
 
     add_player = function (socket, user, instance_obj) {
         // Defaulting to first character and ship for now... this will have it's own mechanisms later
+
+        // Load all existing players into the new players session.
+        this.client_sessions.forEach( (client_session) => {
+            socket.emit('add_player', { socket_id: client_session.socket.id });
+        });
 
         this.client_sessions.push({
             user: user,
@@ -189,9 +188,15 @@ module.exports = class Instance {
             ship.username = user.username;
 
             instance_obj.objects.ships.push(ship);
-            this.client_setup(user, socket, instance_obj);
+
+            // @todo: Restore old code for loading the rest of the game level, or remove.
+            //this.client_setup(user, socket, instance_obj);
         
         }
+
+        socket.broadcast.to('game:scene:instance:' + instance_obj.scene_id.toString()).emit('add_player', { socket_id: socket.id });
+
+        
     }
 
     remove_player = (socket) => {
@@ -200,7 +205,7 @@ module.exports = class Instance {
                 this.active_scenes.forEach((instance_obj) => {
 
                     if (instance_obj.scene_id.toString() == session.instance_id.toString()) {
-                        socket.broadcast.to('game:scene:instance:' + instance_obj.scene_id.toString()).emit('logout', { socket_id: socket.id });
+                        socket.broadcast.to('game:scene:instance:' + instance_obj.scene_id.toString()).emit('remove_player', { socket_id: socket.id });
                         this.client_sessions.splice(session_index, 1);
                         if (session.mode == 'character') {
                             instance_obj.objects.characters.forEach(function (character, character_index) {
@@ -262,8 +267,6 @@ module.exports = class Instance {
         socket.join('game:scene:instance:' + instance_obj.scene_id.toString());
 
         this.add_player(socket, { user: socket.id, username: 'New Player' }, instance_obj)
-
-        console.log(this.client_sessions);
 
     };
 

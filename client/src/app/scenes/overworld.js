@@ -38,6 +38,8 @@ import {
 export default class Overworld extends SceneBase {
   constructor() {
     super();
+
+    this.scene_objects.ships = [];
   }
 
   animate(currentTime) {

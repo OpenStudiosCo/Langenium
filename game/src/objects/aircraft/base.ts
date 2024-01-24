@@ -144,7 +144,7 @@ export default class BaseAircraft {
             zDiff = tZ * Math.cos(this.rotation.y);
         
         // "1" is the floor limit as it's the ocean surface and the camera clips through the water any lower.
-        if (this.position.y + tY >= 0 ) {
+        if (this.position.y + tY >= 1 ) {
             this.position.y += tY;
         } else {
             this.verticalSpeed = 0;

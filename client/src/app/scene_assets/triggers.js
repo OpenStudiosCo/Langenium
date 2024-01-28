@@ -7,11 +7,11 @@
  */
 
 export function setupTriggers ( ) {
-    //window.test_scene.triggers.updateSigns = updateSigns();
+    //window.l.current_scene.triggers.updateSigns = updateSigns();
 }
 
 export function updateTriggers ( currentTime ) {
-    for (var trigger in window.test_scene.triggers) {
-        window.test_scene.triggers[trigger].update(currentTime);
+    for (var trigger in window.l.current_scene.triggers) {
+        window.l.current_scene.triggers[trigger].update(currentTime);
     }
 }

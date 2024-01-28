@@ -1,5 +1,5 @@
 style.
-    #flight_controls {
+    #flight_instruments {
         width: 100%;
         height: 100%;
         position: absolute;
@@ -11,12 +11,14 @@ style.
         align-items: flex-end;
     }
     .control {
+        display: none;
         margin-bottom: min(-11vw, -11vh, -220px);
         max-width: max(10vw, 10vh, 200px);
-        transition: margin 700ms;
+        transition: display 700ms, margin 700ms;
     }
 
     .control.active {
+        display: block;
         margin-bottom: max(1vw, 1vh);
     }
 
@@ -34,6 +36,6 @@ style.
         left: inherit !important;
         right: 6vw;
     }
-#flight_controls
+#flight_instruments
     .control
-        include ../assets/flight_controls/Airspeed.svg
+        include ../assets/flight_instruments/Airspeed.svg

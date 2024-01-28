@@ -6,6 +6,14 @@
  * 
  */
 
+// Check if we should skip the loading animation.
+let url = new URL(window.location.href);
+let skipintro = false;
+
+if (url.searchParams.has("skipintro")) {
+    skipintro = true;
+}
+
 const charArr = ['モ', 'エ', 'ヤ', 'キ', 'オ', 'カ', '7', 'ケ', 'サ', 'ス', 'z', '1', '5', '2', 'ヨ', 'タ', 'ワ', '4', 'ネ', 'ヌ', 'ナ', '9', '8', 'ヒ', '0', 'ホ', 'ア', '3', 'ウ', ' ', 'セ', '¦', ':', '"', '꞊', 'ミ', 'ラ', 'リ', '╌', 'ツ', 'テ', 'ニ', 'ハ', 'ソ', '▪', '—', '<', '>', '0', '|', '+', '*', 'コ', 'シ', 'マ', 'ム', 'メ'];
 
 const backgroundImage = new Image();
@@ -47,22 +55,22 @@ window.matrix_scene = {
      *  - 2 Buy time to fill the matrix (if it loaded from cache / too fast)
      *  - 3 Enter the matrix - start
      */
-    stage: 0,
+    stage: 2,
     /**
      * Timestamp when the current stage began.
      */
-    stageStarted: 0,
+    stageStarted: 2,
     /**
      * Stage specific variables.
      */
     // Stage 0
-    elapsed: 0, 
+    elapsed: 0,
     // Stage 1
-    loaded_done: 0, 
+    loaded_done: 0,
     loaded_target: 0,
     // Stage 2
-    transition_total: 1500, // in milliseconds
-    
+    transition_total: skipintro ? 0 : 1500, // in milliseconds
+
     // Animates the scene
     animate: function (currentTime) {
         const elapsedSinceLast = currentTime - window.matrix_scene.lastTime;
@@ -73,7 +81,7 @@ window.matrix_scene = {
 
         ctx.font = fontSize + 'pt monospace';
 
-        if ( window.matrix_scene.stage == 0 ) {
+        if (window.matrix_scene.stage == 0) {
             ctx.fillStyle = '#0001';
             ctx.fillRect(0, 0, w, h);
             // @todo: implement the intro sequence here - column reduce?
@@ -82,20 +90,20 @@ window.matrix_scene = {
 
                 window.matrix_scene.drawSymbol(y, ind);
 
-                if ( largeScreen ) {
+                if (largeScreen) {
                     window.matrix_scene.elapsed += Math.PI * 10;
                 }
                 else {
                     window.matrix_scene.elapsed += Math.PI;
                 }
-                
-                
+
+
                 if ((y > 1 + randomInt(1, window.matrix_scene.elapsed))) ypos[ind] = 0;
                 else ypos[ind] = y + fontSize;
 
             });
         }
-        if ( window.matrix_scene.stage == 1 ) {
+        if (window.matrix_scene.stage == 1) {
             ctx.fillStyle = "rgba(0,0,0,0.001)";
             ctx.fillRect(0, 0, w, h);
             ypos.forEach((y, ind) => {
@@ -104,51 +112,51 @@ window.matrix_scene = {
                 if (y > 1 + randomInt(1, 2000 * window.matrix_scene.loaded_done)) ypos[ind] = 0;
                 else ypos[ind] = y + fontSize;
 
-            });           
-            
+            });
+
         }
-        if ( window.matrix_scene.stage == 2 ) {
+        if (window.matrix_scene.stage == 2) {
             ctx.fillStyle = "rgba(0,0,0,0.001)";
             ctx.fillRect(0, 0, w, h);
 
             ypos.forEach((y, ind) => {
                 window.matrix_scene.drawSymbol(y, ind);
 
-                if ( canvas.width * canvas.height < 2000000 ) {
+                if (canvas.width * canvas.height < 2000000) {
                     window.matrix_scene.elapsed += Math.PI * 10;
                 }
                 else {
                     window.matrix_scene.elapsed += Math.PI;
                 }
-                
+
                 if ((y > 1 + randomInt(1, window.matrix_scene.elapsed))) ypos[ind] = 0;
                 else ypos[ind] = y + fontSize;
 
             });
 
         }
-        if ( window.matrix_scene.stage == 3 ) {
+        if (window.matrix_scene.stage == 3) {
             ypos.forEach((y, ind) => {
                 window.matrix_scene.drawSymbol(y, ind);
-                
-                if ( canvas.width * canvas.height < 2000000 ) {
+
+                if (canvas.width * canvas.height < 2000000) {
                     window.matrix_scene.elapsed += Math.PI * 10;
                 }
                 else {
                     window.matrix_scene.elapsed += Math.PI;
                 }
-                
+
                 if ((y > 1 + randomInt(1, window.matrix_scene.elapsed))) ypos[ind] = 0;
                 else ypos[ind] = y + fontSize;
 
             });
         }
 
-        if ( ! window.matrix_scene.complete ) {
-            requestAnimationFrame( window.matrix_scene.animate );
+        if (!window.matrix_scene.complete) {
+            requestAnimationFrame(window.matrix_scene.animate);
         }
     },
-    drawSymbol: function( y, ind ) {
+    drawSymbol: function (y, ind) {
         const text = charArr[randomInt(0, charArr.length - 1)].toUpperCase();
         const x = ind * fontSize * 1.5;
 
@@ -157,40 +165,44 @@ window.matrix_scene = {
     },
     // Updates the scene
     updateStage: function () {
-        if ( window.matrix_scene.stage == 0 ) {
-            if ( window.test_scene && ( Date.now() - window.matrix_scene.stageStarted > 500) ) {
+        if (window.matrix_scene.stage == 0) {
+            if (skipintro || (window.l.current_scene && (Date.now() - window.matrix_scene.stageStarted > 100))) {
                 window.matrix_scene.stage = 1;
                 window.matrix_scene.stageStarted = Date.now();
-                for ( var measure in window.test_scene.loaders.stats ) {
-                    window.matrix_scene.loaded_target += window.test_scene.loaders.stats[measure].target;
+                for (var measure in window.l.current_scene.loaders.stats) {
+                    window.matrix_scene.loaded_target += window.l.current_scene.loaders.stats[measure].target;
                 }
 
                 const pageWrapper = document.getElementById('page-wrapper');
-                if(pageWrapper) {
+                if (pageWrapper) {
                     pageWrapper.style.opacity = 1;
                     pageWrapper.style.transition = 'opacity 1s';
                     pageWrapper.style.opacity = 0;
                 }
-                
+
             }
         }
-        if ( window.matrix_scene.stage == 1 ) {
+        if (window.matrix_scene.stage == 1) {
             window.matrix_scene.loaded_done = 0;
-            for ( var measure in window.test_scene.loaders.stats ) {
-                window.matrix_scene.loaded_done += window.test_scene.loaders.stats[measure].loaded;
+            for (var measure in window.l.current_scene.loaders.stats) {
+                window.matrix_scene.loaded_done += window.l.current_scene.loaders.stats[measure].loaded;
             }
 
             if (
-                window.matrix_scene.loaded_done == window.matrix_scene.loaded_target && ( Date.now() - window.matrix_scene.stageStarted > 500)
+                skipintro || 
+                window.matrix_scene.loaded_done == window.matrix_scene.loaded_target && (Date.now() - window.matrix_scene.stageStarted > 100)
             ) {
                 window.matrix_scene.stage = 2;
                 window.matrix_scene.stageStarted = Date.now();
             }
         }
-        if ( window.matrix_scene.stage == 2 ) {
+        if (window.matrix_scene.stage == 2) {
             if (
-                window.test_scene.ready == true &&
-                ( Date.now() - window.matrix_scene.stageStarted > 500)
+                (skipintro && window.l.current_scene.ready == true) || 
+                (
+                    window.l.current_scene.ready == true &&
+                    (Date.now() - window.matrix_scene.stageStarted > 100)
+                )
             ) {
                 window.matrix_scene.stage = 3;
                 window.matrix_scene.stageStarted = Date.now();
@@ -199,13 +211,14 @@ window.matrix_scene = {
 
                 canvas.style.transform = "scale(5)";
                 canvas.style.filter = "blur(5px)";
-               
+
                 webgl.style.filter = "saturate(1)";
                 webgl.style.opacity = 1;
             }
         }
-        if ( window.matrix_scene.stage == 3 ) {
+        if (window.matrix_scene.stage == 3) {
             if (
+                skipintro || 
                 (Date.now() - window.matrix_scene.stageStarted) > window.matrix_scene.transition_total
             ) {
                 clearInterval(window.matrix_scene.interval);
@@ -217,15 +230,15 @@ window.matrix_scene = {
     start: function () {
         ctx.fillStyle = '#0001';
         ctx.fillRect(0, 0, w, h);
-        
+
         window.addEventListener('orientationchange', handleViewportChange);
         window.addEventListener('resize', handleViewportChange);
-        
+
         // Hide body element scrollbars as the 3D viewport takes over.
         document.querySelector("body").style.overflow = 'hidden';
         window.matrix_scene.stageStarted = Date.now();
-        window.matrix_scene.interval = setInterval( window.matrix_scene.updateStage, 100);
-        requestAnimationFrame( window.matrix_scene.animate );
+        window.matrix_scene.interval = setInterval(window.matrix_scene.updateStage, 100);
+        requestAnimationFrame(window.matrix_scene.animate);
     }
 };
 

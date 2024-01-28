@@ -17,7 +17,7 @@ export default class Sky {
     constructor() {
 
         // todo: Make this reusable.
-        this.noiseTexture2 = window.test_scene.loaders.texture.load( './assets/textures/noise2.jpg' );
+        this.noiseTexture2 = window.l.current_scene.loaders.texture.load( './assets/textures/noise2.jpg' );
 	    this.noiseTexture2.wrapS = this.noiseTexture2.wrapT = THREE.RepeatWrapping;
         
         // Setup uniforms for the sky.
@@ -32,7 +32,7 @@ export default class Sky {
     }
 
     createSkyMesh() {
-        let skyGeometry = new THREE.SphereGeometry( window.s.scale, 32, 64);
+        let skyGeometry = new THREE.SphereGeometry( window.l.scale, 32, 64);
 
         let skyMaterials = new THREE.ShaderMaterial( {
             side: THREE.DoubleSide,
@@ -44,14 +44,14 @@ export default class Sky {
        
         let skyMesh = new THREE.Mesh(skyGeometry, skyMaterials);
         skyMesh.name = 'Skybox';
-        skyMesh.position.y = window.s.scale * 0;
+        skyMesh.position.y = window.l.scale * 0;
         return skyMesh;
         
     }
 
     animate( delta ) {
         // Iterate the sky uniforms to animate it.
-        window.test_scene.scene_objects.sky.uniforms.time.value += 0.025;
+        window.l.current_scene.scene_objects.sky.uniforms.time.value += 0.025;
     }
     
 }

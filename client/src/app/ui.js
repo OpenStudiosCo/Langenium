@@ -6,12 +6,13 @@
 
 import Alpine from 'alpinejs';
 
-import Flight_Controls from './ui/flight_controls.js';
+import Flight_Instruments from './ui/flight_instruments.js';
+import Main_Menu from './ui/main_menu.js';
  
 export default class UI {
 
     // Custom class for controlling flight control UI
-    flight_controls;
+    flight_instruments;
 
     // Array of callbacks and data for updating UI
     update_queue;
@@ -29,19 +30,44 @@ export default class UI {
     }
 
     /**
-     * Activate
+     * Activate Flight Instruments
      * 
-     * Called after construction to attach controls when the update_queue is ready.
+     * Adds itself to the ui classes update queue.
      */
-    activate() {
-        this.flight_controls = new Flight_Controls();
+    show_flight_instruments() {        
+        window.l.current_scene.ui.flight_instruments = new Flight_Instruments();
+        document.querySelector(window.l.current_scene.ui.flight_instruments.containerSelector + ' .control').classList.add('active');
 
-        window.test_scene.ui.update_queue.push({
-            callback: 'window.test_scene.ui.flight_controls.update',
+        window.l.current_scene.ui.update_queue.push({
+            callback: 'window.l.current_scene.ui.flight_instruments.update',
             data: []
         });
 
-        this.updater = setInterval( this.update, 1 / 60);
+        
+    }
+
+    /**
+     * Deactivate Flight Instruments
+     */
+    hide_flight_instruments() {
+        document.querySelector(window.l.current_scene.ui.flight_instruments.containerSelector + ' .control').classList.remove('active');
+        window.l.current_scene.ui.flight_instruments = false;
+
+        // @todo: Remove specific updates instead of purging the whole queue.
+        window.l.current_scene.ui.update_queue = [];
+
+        
+    }
+
+    /**
+     * Activate Main Menu
+     * 
+     * Called during game client boot up
+     */
+    show_main_menu() {
+        window.l.current_scene.ui.main_menu = new Main_Menu();
+
+        window.l.current_scene.ui.updater = setInterval( this.update, 1 / 60);
     }
 
     /**
@@ -50,7 +76,7 @@ export default class UI {
      * Runs on setInterval
      */
     update() {
-        window.test_scene.ui.update_queue.forEach((current_update, i) => {
+        window.l.current_scene.ui.update_queue.forEach((current_update, i) => {
             _execute(current_update.callback, current_update.data, window);
         });
             

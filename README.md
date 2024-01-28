@@ -34,24 +34,23 @@ The project is split into three main folders: Client, Game and Server.
 - /server contains the Express based server engine
 
 ```
-	Langenium
-	├── .gitignore
+    Langenium
+    ├── .gitignore
     ├── CHANGELOG
     ├── LICENSE
     ├── README.md
-	├── client
-	│   ├── etc
-	│   ├── src
+    ├── client
+    │   ├── etc
+    │   ├── src
     │   ├── .eleventy.js
     │   ├── build.mjs
     │   ├── package.json
-	│   ├── package-lock.json
-	│   └── watch.mjs
+    │   ├── package-lock.json
+    │   └── watch.mjs
     ├── game
-	│   └── TBA
-	└── server
-		└── TBA
-
+    │   └── TBA
+    └── server
+        └── TBA
 ```
 
 ### Tools Required
@@ -74,7 +73,7 @@ All installation steps go here.
     1. Change directory to /client
     2. Install npm packages
     3. Run either `npm run build` to compile once or `npm run dev` to compile, start a web server and watch for changes.
-  
+
 * Game
     * TBA
 
@@ -98,7 +97,7 @@ TBA
 
 ## Contributing
 
-We'd love to have your helping hand on `Langenium`! 
+We'd love to have your helping hand on `Langenium`!
 
 ## Versioning
 
@@ -110,7 +109,7 @@ See the [changelog][changelog] for an overview of Langenium's history.
 * [GitHub]
 * [LinkedIn]
 
-You can also see the complete [list of contributors][contributors] who participated in this project.
+You can also see the complete list of [contributors][contributors] who participated in this project.
 
 ## License
 
@@ -120,7 +119,7 @@ You can also see the complete [list of contributors][contributors] who participa
 
 Langenium is the result of many direct and indirect contributions from talented people all over the world.
 
-For a full list please see the [credits][credits] 
+For a full list please see the [credits][credits]
 
 [//]: # (HyperLinks)
 
@@ -131,6 +130,6 @@ For a full list please see the [credits][credits]
 [LinkedIn]: https://www.linkedin.com/in/paul-b-23620b209/
 
 [contributors]: https://github.com/OpenStudiosCo/Langenium/contributors
-[changelog]: https://github.com/OpenStudiosCo/Langenium/blob/master/CHANGELOG
-[credits]: https://github.com/OpenStudiosCo/Langenium/blob/master/CREDITS
+[changelog]: https://github.com/OpenStudiosCo/Langenium/blob/master/CHANGELOG.md
+[credits]: https://github.com/OpenStudiosCo/Langenium/blob/master/CREDITS.md
 [license]: https://github.com/OpenStudiosCo/Langenium/blob/master/LICENSE

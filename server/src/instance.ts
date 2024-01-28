@@ -54,14 +54,24 @@ module.exports = class Instance {
         active_scene.delta = (new_time - active_scene.last_time);
         active_scene.last_time = new_time;
 
+        let processed_changes = [];
+
         // Move all ships
         active_scene.objects.ships.forEach((ship) => {
             ship.move( active_scene.delta );
 
-            modules.io.sockets.in('game:scene:instance:'+active_scene.scene_id.toString()).emit('move_ship', ship);
+            if (ship.changing != false) {
+                ship.changing = false;
+            }
+
+            processed_changes.push({
+                type: 'move_ship',
+                data: ship
+            });
         });
 
-        
+        modules.io.sockets.in('game:scene:instance:'+active_scene.scene_id.toString()).emit('update', processed_changes);
+
     }
 
     // @todo: Restore old code for loading the rest of the game level, or remove.

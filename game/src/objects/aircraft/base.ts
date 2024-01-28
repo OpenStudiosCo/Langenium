@@ -17,6 +17,7 @@ export default class BaseAircraft {
     public rotation:        { x: number; y: number; z: number } = { x: 0, y: 0, z: 0 };
 
     public controls: {
+        changing: boolean,
         throttleUp: boolean;
         throttleDown: boolean;
         moveUp: boolean;
@@ -24,6 +25,7 @@ export default class BaseAircraft {
         moveLeft: boolean;
         moveRight: boolean;
     } = {
+        changing: false,
         throttleUp: false,
         throttleDown: false,
         moveUp: false,

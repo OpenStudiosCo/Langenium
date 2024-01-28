@@ -46,8 +46,14 @@ export default class Multiplayer {
             await window.l.multiplayer.add_player(data);
         });
 
-        window.l.multiplayer.socket.on('move_ship', async ( data ) => {
-            await window.l.multiplayer.move_ship(data);
+        window.l.multiplayer.socket.on('update', async ( processed_changes ) => {
+            console.log(processed_changes)
+            await processed_changes.forEach(async (update) => {
+                if (update.type == 'move_ship') {
+                    await window.l.multiplayer.move_ship(update.data);
+                }
+            });
+            
         });
 
         window.l.multiplayer.socket.on('remove_player', async ( data ) => {

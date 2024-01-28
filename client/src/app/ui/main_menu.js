@@ -73,7 +73,7 @@ export default class Main_Menu {
             // Show latency.
             latency.hidden = !window.l.current_scene.debug ;
 
-            window.l.multiplayer.connect('https://test.langenium.com:42069')
+            window.l.multiplayer.connect('//test.langenium.com:42069')
 
         });
 

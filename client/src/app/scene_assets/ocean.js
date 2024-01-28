@@ -16,7 +16,7 @@ export default class Ocean {
 
     constructor() {
 
-        const waterGeometry = new THREE.PlaneGeometry( window.s.scale * 2, window.s.scale * 2, 50, 50 );
+        const waterGeometry = new THREE.PlaneGeometry( window.l.scale * 2, window.l.scale * 2, 50, 50 );
 
         this.water = new Water(
             waterGeometry,
@@ -41,7 +41,7 @@ export default class Ocean {
 
     animate( delta ) {
         // Iterate the sky uniforms to animate it.
-        window.test_scene.scene_objects.ocean.water.material.uniforms.time.value += 1.0 / 60;
+        window.l.current_scene.scene_objects.ocean.water.material.uniforms.time.value += 1.0 / 60;
     }
     
 }

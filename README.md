@@ -11,14 +11,12 @@ Visit the [official website](https://langenium.com) to learn more or clone this 
 
 ## Table of Contents
 - [Getting Started](#getting-started)
-	- [Tools Required](#tools-required)
-	- [Installation](#installation)
-- [Development](#development)
-    - [Part 1: Heading](#part-1-heading)
-	  - [Step 1: Subheading](#step-1-subheading)
-	  - [Step 2: Subheading](#step-2-subheading)
-	- [Part 2: Heading](#part-2-heading)
-- [Usage](#usage)
+    - [Tools Required](#tools-required)
+    - [Installation](#installation)
+- [Features and functionality](#features-and-functionality)
+    - [Client](#client)
+    - [Game](#game)
+    - [Server](#server)
 - [Deployment](#deployment)
 - [Contributing](#contributing)
 - [Versioning](#versioning)
@@ -39,7 +37,7 @@ The project is split into three main folders: Client, Game and Server.
     ├── CHANGELOG
     ├── LICENSE
     ├── README.md
-    ├── client
+    ├── client                              # Eleventy / Three.js web client
     │   ├── etc
     │   ├── src
     │   ├── .eleventy.js
@@ -47,9 +45,10 @@ The project is split into three main folders: Client, Game and Server.
     │   ├── package.json
     │   ├── package-lock.json
     │   └── watch.mjs
-    ├── game
+    ├── docs                                # Web client output folder, tracked on the gh-pages branch
+    ├── game                                # Game rules and shared code used by the client and server
     │   └── TBA
-    └── server
+    └── server                              # Node.js / Express multiplayer server
         └── TBA
 ```
 

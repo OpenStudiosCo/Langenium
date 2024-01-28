@@ -62,6 +62,9 @@ html(lang='en')
                 left: 0;
                 display: block;
             }
+            .tp-dfwv {
+                z-index: 1;
+            }
 
     body(onload="_init( 3000 );")
         noscript
@@ -77,7 +80,7 @@ html(lang='en')
                 div Loading
                 img(src='/assets/images/tail-spin.svg' alt='Loading spinner')
             include ../templates/door_image.pug
-            include ../templates/flight_controls.pug
+            include ../templates/flight_instruments.pug
             #webgl
             // Shaders
             script(type='x-shader/x-vertex', id='cloudVertShader')
@@ -103,7 +106,7 @@ html(lang='en')
                 }
             
             script
-                include ../scripts/scenograph.js
+                include ../scripts/l.js
             script
                 include ../scripts/matrix.js
             script.

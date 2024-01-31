@@ -4,6 +4,7 @@
   "description": "Backend server for facilitating multiplayer sessions of Langenium.",
   "main": "server.js",
   "scripts": {
+    "preinstall": "npm install -g pm2",
     "dev": "npx tsx watch server",
     "start": "npx tsx server"
   },

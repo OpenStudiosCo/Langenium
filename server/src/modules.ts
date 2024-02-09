@@ -30,10 +30,10 @@ module.exports = class Modules {
         }
 
         modules.settings = {
-            port: process.env.PORT || 8090,
+            port: process.env.IOPORT || 8090,
             ssl_files: {
-                key: modules.fs.readFileSync('../client/etc/ssl-cert-snakeoil.key'),
-                cert: modules.fs.readFileSync('../client/etc/ssl-cert-snakeoil.pem')
+                key: modules.fs.readFileSync(process.env.SSL_KEY),
+                cert: modules.fs.readFileSync(process.env.SSL_CERT)
             }
         };
 

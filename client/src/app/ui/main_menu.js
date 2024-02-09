@@ -73,7 +73,9 @@ export default class Main_Menu {
             // Show latency.
             latency.hidden = !window.l.current_scene.debug ;
 
-            window.l.multiplayer.connect('//test.langenium.com:42069')
+            let serverLocation = window.l.env =='Dev' ? 'lcl.langenium.com:8090' : 'test.langenium.com:42069' ;
+
+            window.l.multiplayer.connect('//' + serverLocation);
 
         });
 

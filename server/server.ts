@@ -4,6 +4,8 @@
  * Version: 6
  */
 
+import 'dotenv/config';
+
 import Modules from './src/modules';
 import Instance from './src/instance';
 

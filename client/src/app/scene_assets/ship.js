@@ -118,14 +118,17 @@ export default class Ship {
             moveLeft:       'A',
             moveRight:      'D',
         }
+        let changing = false;
         for ( const [ controlName, keyMapping ] of Object.entries(mappings)) {
             if (window.l.current_scene.controls.keyboard.pressed(keyMapping)) {
                 window.l.current_scene.scene_objects.ship.state.controls[controlName] = true;
+                changing = true;
             }
             else {
                 window.l.current_scene.scene_objects.ship.state.controls[controlName] = false;
             }
         }
+        window.l.current_scene.scene_objects.ship.state.controls.changing = changing;
 
     }
 
@@ -205,7 +208,7 @@ export default class Ship {
             else {
                 if (window.l.current_scene.camera.rotation.y != window.l.current_scene.scene_objects.ship.mesh.rotation.y ) {
                     let yDiff = window.l.current_scene.scene_objects.ship.mesh.rotation.y - window.l.current_scene.camera.rotation.y;
-                    if (Math.abs(yDiff) > radian / 10) {
+                    if (Math.abs(yDiff) > radian / 100) {
                         window.l.current_scene.camera.rotation.y += (window.l.current_scene.scene_objects.ship.mesh.rotation.y - window.l.current_scene.camera.rotation.y) * 1 / 60;
                     }
                     else {

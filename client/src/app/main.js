@@ -253,7 +253,12 @@ export function calculateAdjustedGapSize() {
 function setupRenderers() {
   // Main 3D webGL Renderer.
   window.l.current_scene.renderers.webgl = new THREE.WebGLRenderer({
-    antialias: window.l.current_scene.fast,
+    powerPreference: "high-performance",
+    antialias: false,
+    stencil: false,
+
+    // disabled to prevent transparency issues on fast mode
+    // depth: false
   });
   window.l.current_scene.renderers.webgl.setPixelRatio(window.devicePixelRatio);
   window.l.current_scene.renderers.webgl.setSize(

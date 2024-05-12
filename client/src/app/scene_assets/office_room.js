@@ -108,7 +108,7 @@ export async function createDoor( ) {
             const geometry = new THREE.ShapeGeometry(shape);
             const mesh = new THREE.Mesh(geometry, material);
             mesh.renderOrder = renderOrder++;
-            mesh.layers.enable(1);
+            mesh.layers.set(11);
   
             group.add(mesh);
           }
@@ -131,7 +131,7 @@ export async function createDoor( ) {
   
               const mesh = new THREE.Mesh(geometry, material);
               mesh.renderOrder = renderOrder++;
-              mesh.layers.enable(1);
+              mesh.layers.set(11);
   
               group.add(mesh);
   
@@ -345,7 +345,7 @@ csgEvaluator = new Evaluator();
 csgEvaluator.useGroups = true;
 csgEvaluator.evaluate(roomBrush, doorBrush, SUBTRACTION, result);
 result.receiveShadow = true;
-result.layers.enable(1);
+result.layers.set(11);
 
 return result;
 }

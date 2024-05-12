@@ -31,14 +31,9 @@ export default class SceneBase {
       /**
        * Effects composers and their layers.
        * 
-       * @memberof Object { THREE.EffectsComposer , THREE.Layer }
+       * @memberof Object { postprocessing.EffectComposer }
        */
-      this.effects = {
-        main: false,
-        bloom: false,
-        bloomLayer: false,
-        scaleDone: false
-      };
+      this.effects = false;
 
       /**
        * Exit sign.

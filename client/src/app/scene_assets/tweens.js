@@ -211,6 +211,19 @@ function enterTheOffice() {
     .to({ x: targetZ }, window.l.current_scene.skipintro ? 0 : 1000) // Move to (300, 200) in 1 second.
     .easing(TWEEN.Easing.Quadratic.InOut) // Use an easing function to make the animation smooth.
     .onUpdate(() => {
+      // Turn off bloom from the other scene.
+      window.l.current_scene.effects.passes.forEach(( effectPass ) => {
+        if ( effectPass.name =='EffectPass' ) {
+          effectPass.effects.forEach( ( effect ) => {
+            if ( effect.name == 'BloomEffect' ) {
+              console.log( );
+              effect.blendMode.setOpacity( Math.min( (coords.x / targetZ) - 1, 1 ));
+            }
+          } );
+        }
+
+      });
+
       // Called after tween.js updates 'coords'.
       // Move 'box' to the position described by 'coords' with a CSS translation.
       window.l.current_scene.camera.position.z = coords.x;
@@ -248,6 +261,7 @@ function slideBack() {
     .to({ x: targetZ }, window.l.current_scene.skipintro ? 0 : 1000) // Move to (300, 200) in 1 second.
     .easing(TWEEN.Easing.Quadratic.InOut) // Use an easing function to make the animation smooth.
     .onUpdate(() => {
+      
       // Called after tween.js updates 'coords'.
       // Move 'box' to the position described by 'coords' with a CSS translation.
       window.l.current_scene.camera.position.z = coords.x;

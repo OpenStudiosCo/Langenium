@@ -84,7 +84,6 @@ export function setupEffects( ) {
       radius : 0.85,
       resolutionScale: 1
   });
-  bloom.blendMode.opacity = 0.1;
 
   bloom.inverted = true;
 
@@ -94,7 +93,7 @@ export function setupEffects( ) {
   });
 
   const toneMappingEffect = new ToneMappingEffect({
-    mode: ToneMappingMode.ACES_FILMIC,
+    mode: ToneMappingMode.REINHARD2_ADAPTIVE,
     resolution: 256,
     whitePoint: 16.0,
     middleGrey: 0.6,
@@ -114,8 +113,8 @@ export function setupEffects( ) {
     console.log("WebGL 2 not supported, falling back to naive depth downsampling");
 
   }
-  //composer.addPass(new EffectPass(window.l.current_scene.camera, ssao, smaa, bloom, toneMappingEffect, textureEffect));
-  composer.addPass(new EffectPass(window.l.current_scene.camera, bloom));
   
+  composer.addPass(new EffectPass(window.l.current_scene.camera, ssao, smaa, textureEffect, bloom, toneMappingEffect));
+    
   window.l.current_scene.effects = composer;
 }

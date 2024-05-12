@@ -130,6 +130,7 @@ export default class Overworld extends SceneBase {
     window.l.current_scene.scene_objects.ambientLight = new THREE.AmbientLight(
       window.l.current_scene.fast ? 0x555555 : 0x444444
     ); // Dim ambient light color
+    window.l.current_scene.scene_objects.ambientLight.intensity = Math.PI;
     window.l.current_scene.scene.add(
       window.l.current_scene.scene_objects.ambientLight
     );

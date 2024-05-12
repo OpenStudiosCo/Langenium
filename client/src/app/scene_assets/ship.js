@@ -98,8 +98,26 @@ export default class Ship {
                 // Called after tween.js updates 'coords'.
                 // Move 'box' to the position described by 'coords' with a CSS translation.
                 window.l.current_scene.scene_objects.ship.mesh.position.z = coords.x;
+
+                
+
             })
             .onComplete(() => {
+
+                // Turn off bloom from the other scene.
+                window.l.current_scene.effects.passes.forEach(( effectPass ) => {
+                    if ( effectPass.name =='EffectPass' ) {
+                        effectPass.effects.forEach( ( effect ) => {
+                            if ( effect.name == 'BloomEffect' ) {
+                                console.log(effect);
+                                effect.blendMode.setOpacity(0);
+                            }
+                        } );
+                    }
+
+                });
+
+                // Set the ship as ready.
                 window.l.current_scene.scene_objects.ship.ready = true;
                 window.l.current_scene.scene_objects.ship.camera_distance = -20 + (window.l.current_scene.room_depth / 2);
                 window.l.current_scene.scene_objects.ship.state.position.x = window.l.current_scene.scene_objects.ship.mesh.position.x;

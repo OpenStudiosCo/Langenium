@@ -65,25 +65,13 @@ export default class Overworld extends SceneBase {
     // Render the composer
     if (
       // Effects loaded.
-      window.l.current_scene.effects.bloomLayer.test &&
-      window.l.current_scene.effects.bloom &&
-      window.l.current_scene.effects.bloom.passes &&
-      window.l.current_scene.effects.bloom.passes.length > 0 &&
-      window.l.current_scene.effects.main &&
-      window.l.current_scene.effects.main.passes &&
-      window.l.current_scene.effects.main.passes.length > 0 &&
+      (window.l.current_scene.effects.passes && window.l.current_scene.effects.passes.length > 0) &&
       // Not fast mode.
-      !window.l.current_scene.fast
+      (!window.l.current_scene.fast)
     ) {
-      window.l.current_scene.scene.traverse(darkenNonBloomed);
-      window.l.current_scene.effects.bloom.render();
-      window.l.current_scene.scene.traverse(restoreMaterial);
-      window.l.current_scene.effects.main.render();
+      window.l.current_scene.effects.render();
     } else {
-      window.l.current_scene.renderers.webgl.render(
-        window.l.current_scene.scene,
-        window.l.current_scene.camera
-      ); // Render the scene without the effects
+      window.l.current_scene.renderers.webgl.render(window.l.current_scene.scene, window.l.current_scene.camera); // Render the scene without the effects
     }
 
     requestAnimationFrame(window.l.current_scene.animate);
@@ -98,6 +86,9 @@ export default class Overworld extends SceneBase {
       window.l.current_scene.renderers.webgl.shadowMap.enabled = true;
       setupEffects();
     }
+
+    // Enable the effects layer, default of 11 for postprocessing bloom
+    window.l.current_scene.camera.layers.enable(11);
 
     window.l.current_scene.scene_objects.door = await createDoor();
     window.l.current_scene.scene_objects.door.position.set(
@@ -139,6 +130,7 @@ export default class Overworld extends SceneBase {
     window.l.current_scene.scene_objects.ambientLight = new THREE.AmbientLight(
       window.l.current_scene.fast ? 0x555555 : 0x444444
     ); // Dim ambient light color
+    window.l.current_scene.scene_objects.ambientLight.intensity = Math.PI;
     window.l.current_scene.scene.add(
       window.l.current_scene.scene_objects.ambientLight
     );
@@ -193,25 +185,5 @@ function updateFPS() {
     window.l.current_scene.stats.frameCount = 0;
     window.l.current_scene.stats.lastTime =
       window.l.current_scene.stats.currentTime;
-  }
-}
-let darkMaterial = new THREE.MeshBasicMaterial({
-  color: "black",
-});
-
-function darkenNonBloomed(obj) {
-  if (
-    obj.isMesh &&
-    window.l.current_scene.effects.bloomLayer.test(obj.layers) === false
-  ) {
-    window.l.current_scene.materials[obj.uuid] = obj.material;
-    obj.material = darkMaterial;
-  }
-}
-
-function restoreMaterial(obj) {
-  if (window.l.current_scene.materials[obj.uuid]) {
-    obj.material = window.l.current_scene.materials[obj.uuid];
-    delete window.l.current_scene.materials[obj.uuid];
   }
 }

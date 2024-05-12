@@ -115,6 +115,6 @@ export function setupEffects( ) {
   }
   
   composer.addPass(new EffectPass(window.l.current_scene.camera, ssao, smaa, textureEffect, bloom, toneMappingEffect));
-    
   window.l.current_scene.effects = composer;
+
 }

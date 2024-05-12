@@ -95,11 +95,10 @@ export default class Ship {
             .to(target, window.l.current_scene.skipintro ? 0 : 2000) // Move to (300, 200) in 1 second.
             .easing(TWEEN.Easing.Circular.Out) // Use an easing function to make the animation smooth.
             .onUpdate(() => {
+
                 // Called after tween.js updates 'coords'.
                 // Move 'box' to the position described by 'coords' with a CSS translation.
                 window.l.current_scene.scene_objects.ship.mesh.position.z = coords.x;
-
-                
 
             })
             .onComplete(() => {
@@ -109,7 +108,6 @@ export default class Ship {
                     if ( effectPass.name =='EffectPass' ) {
                         effectPass.effects.forEach( ( effect ) => {
                             if ( effect.name == 'BloomEffect' ) {
-                                console.log(effect);
                                 effect.blendMode.setOpacity(0);
                             }
                         } );

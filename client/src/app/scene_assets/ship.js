@@ -104,16 +104,18 @@ export default class Ship {
             .onComplete(() => {
 
                 // Turn off bloom from the other scene.
-                window.l.current_scene.effects.passes.forEach(( effectPass ) => {
-                    if ( effectPass.name =='EffectPass' ) {
-                        effectPass.effects.forEach( ( effect ) => {
-                            if ( effect.name == 'BloomEffect' ) {
-                                effect.blendMode.setOpacity(0);
-                            }
-                        } );
-                    }
+                if (window.l.current_scene.effects && window.l.current_scene.effects.passes.length > 0) {
+                    window.l.current_scene.effects.passes.forEach(( effectPass ) => {
+                        if ( effectPass.name =='EffectPass' ) {
+                            effectPass.effects.forEach( ( effect ) => {
+                                if ( effect.name == 'BloomEffect' ) {
+                                    effect.blendMode.setOpacity(0);
+                                }
+                            } );
+                        }
 
-                });
+                    });
+                }
 
                 // Set the ship as ready.
                 window.l.current_scene.scene_objects.ship.ready = true;

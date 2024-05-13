@@ -138,7 +138,7 @@ export default class Ship {
         }
         let changing = false;
         for ( const [ controlName, keyMapping ] of Object.entries(mappings)) {
-            if (window.l.current_scene.controls.keyboard.pressed(keyMapping)) {
+            if (window.l.controls.keyboard.pressed(keyMapping)) {
                 window.l.current_scene.scene_objects.ship.state.controls[controlName] = true;
                 changing = true;
             }
@@ -248,14 +248,14 @@ export default class Ship {
             window.l.current_scene.camera.position.z += zDiff;
             window.l.current_scene.camera.updateProjectionMatrix();
 
-            // if (window.l.current_scene.controls.orbit) {
+            // if (window.l.controls.orbit) {
             
-            //     window.l.current_scene.controls.orbit.target.set(
+            //     window.l.controls.orbit.target.set(
             //         window.l.current_scene.scene_objects.ship.mesh.position.x,
             //         window.l.current_scene.scene_objects.ship.mesh.position.y,
             //         window.l.current_scene.scene_objects.ship.mesh.position.z
             //     );
-            //     window.l.current_scene.controls.orbit.update();
+            //     window.l.controls.orbit.update();
             // }
 
         }

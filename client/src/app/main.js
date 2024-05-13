@@ -109,7 +109,7 @@ window.l.current_scene.init = async function () {
   window.l.current_scene.materials = {};
 
   // Activate controls
-  window.l.current_scene.controls = new Controls();
+  window.l.controls = new Controls();
   
   window.addEventListener("orientationchange", handleViewportChange);
   window.addEventListener("resize", handleViewportChange);

@@ -23,17 +23,17 @@ export default class Flight_Instruments {
         
         
         // @todo fix touch control issues
-        //window.l.current_scene.controls.touch.activate();
-        // let fpsBody = window.l.current_scene.controls.touch.controls.fpsBody;
-        // window.l.current_scene.controls.touch.controls.fpsBody = window.l.current_scene.scene_objects.ship.mesh;
+        //window.l.controls.touch.activate();
+        // let fpsBody = window.l.controls.touch.controls.fpsBody;
+        // window.l.controls.touch.controls.fpsBody = window.l.current_scene.scene_objects.ship.mesh;
         // window.l.current_scene.scene_objects.ship.mesh.add(fpsBody);
     }
 
     // Updater, runs on setInterval
     update() {
 
-        if (window.l.current_scene.controls.touch &&window.l.current_scene.controls.touch.controls) {
-            window.l.current_scene.controls.touch.controls.update();
+        if (window.l.controls.touch &&window.l.controls.touch.controls) {
+            window.l.controls.touch.controls.update();
         }
 
         // Check if the main aircraft is loaded and ready

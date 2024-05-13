@@ -10,10 +10,6 @@ export default class Touch_Controls {
     controls;
 
     constructor() {
-        
-    }
-
-    activate() {
         // Controls
         let options = {
             delta: 0.75, // coefficient of movement
@@ -27,13 +23,24 @@ export default class Touch_Controls {
             document.querySelector('body'),
             window.l.current_scene.camera,
             options
-        )
+        );
+        this.controls.movementPad.padElement.style.display = 'none';
+        this.controls.rotationPad.padElement.style.display = 'none';
+        
         //this.controls.setPosition(0, 10.775, window.l.current_scene.scene_objects.ship.camera_distance)
         this.controls.addToScene(window.l.current_scene.scene)
     }
 
+    activate() {
+        this.controls.enabled = true;
+        window.l.controls.touch.controls.movementPad.padElement.style.display = '';
+        window.l.controls.touch.controls.rotationPad.padElement.style.display = '';
+    }
+
     deactivate() {
-        window.l.current_scene.scene.remove(this.controls.fpsBody);
-        this.controls = false;
+        //window.l.current_scene.scene.remove(this.controls.fpsBody);
+        this.controls.enabled = false;
+        window.l.controls.touch.controls.movementPad.padElement.style.display = 'none';
+        window.l.controls.touch.controls.rotationPad.padElement.style.display = 'none';
     }
 }

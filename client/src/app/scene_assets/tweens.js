@@ -212,17 +212,19 @@ function enterTheOffice() {
     .easing(TWEEN.Easing.Quadratic.InOut) // Use an easing function to make the animation smooth.
     .onUpdate(() => {
       // Turn off bloom from the other scene.
-      window.l.current_scene.effects.passes.forEach(( effectPass ) => {
-        if ( effectPass.name =='EffectPass' ) {
-          effectPass.effects.forEach( ( effect ) => {
-            if ( effect.name == 'BloomEffect' ) {
-              console.log( );
-              effect.blendMode.setOpacity( Math.min( (coords.x / targetZ) - 1, 1 ));
-            }
-          } );
-        }
+      if (window.l.current_scene.effects && window.l.current_scene.effects.passes.length > 0) {
+        window.l.current_scene.effects.passes.forEach(( effectPass ) => {
+          if ( effectPass.name =='EffectPass' ) {
+            effectPass.effects.forEach( ( effect ) => {
+              if ( effect.name == 'BloomEffect' ) {
+                console.log( );
+                effect.blendMode.setOpacity( Math.min( (coords.x / targetZ) - 1, 1 ));
+              }
+            } );
+          }
 
-      });
+        });
+      }
 
       // Called after tween.js updates 'coords'.
       // Move 'box' to the position described by 'coords' with a CSS translation.

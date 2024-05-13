@@ -31,6 +31,8 @@ export default class Controls {
         // this.orbit.update();
 
         window.l.current_scene.controls.touch = new TouchControls();
+        window.l.current_scene.controls.touch.activate();
+
         window.addEventListener(
             "keydown",
             window.l.current_scene.controls.keyboard.onKeyDown,
@@ -50,6 +52,8 @@ export default class Controls {
     deactivate() {
         // Indicate that game controls are inactive.
         window.l.current_scene.settings.game_controls = false;
+
+        window.l.current_scene.controls.touch.deactivate();
         
         window.removeEventListener(
             "keydown",

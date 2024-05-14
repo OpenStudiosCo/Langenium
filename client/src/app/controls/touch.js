@@ -4,9 +4,9 @@
  * Based on https://mese79.github.io/TouchControls/
  */
 
-import TouchControls from './touch/TouchControls';
+import TouchControlUI from './touch/TouchControlUI';
 
-export default class Touch_Controls {
+export default class TouchControls {
     controls;
 
     constructor() {
@@ -16,19 +16,15 @@ export default class Touch_Controls {
             moveSpeed: 0.005, // speed of movement
             rotationSpeed: 0.005, // coefficient of rotation
             maxPitch: 55, // max camera pitch angle
-            hitTest: true, // stop on hitting objects
-            hitTestDistance: 40 // distance to test for hit
         }
-        this.controls = new TouchControls(
+        this.controls = new TouchControlUI(
             document.querySelector('body'),
             window.l.current_scene.camera,
             options
         );
         this.controls.movementPad.padElement.style.display = 'none';
         this.controls.rotationPad.padElement.style.display = 'none';
-        
-        //this.controls.setPosition(0, 10.775, window.l.current_scene.scene_objects.ship.camera_distance)
-        this.controls.addToScene(window.l.current_scene.scene)
+
     }
 
     activate() {

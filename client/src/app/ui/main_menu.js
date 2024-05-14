@@ -17,6 +17,7 @@ export default class Main_Menu {
         if ( window.l.current_scene.debug ) {
             const debugging = this.pane.addFolder({
                 title: 'Debugging',
+                expanded: false,
             });
 
             const stats = debugging.addFolder({
@@ -39,7 +40,7 @@ export default class Main_Menu {
             });
 
             const shipState = debugging.addFolder({
-                title: 'Ship State',
+                title: 'Ship Controls State',
             });
 
             shipState.addBinding(window.l.current_scene.scene_objects.ship.state.controls, 'throttleUp', {

@@ -4,7 +4,7 @@
  * Based on https://mese79.github.io/TouchControls/
  */
 
-import TouchControls from '../../vendor/TouchControls-master/js/TouchControls';
+import TouchControls from './touch/TouchControls';
 
 export default class Touch_Controls {
     controls;

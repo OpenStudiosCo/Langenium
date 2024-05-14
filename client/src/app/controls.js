@@ -21,7 +21,6 @@ export default class Controls {
 
         // this.orbit = new OrbitControls(window.l.current_scene.camera, window.l.current_scene.renderers.webgl.domElement);
         // this.orbit.target.set(0,10.775,0);
-        // this.orbit.update();
 
         this.touch = new TouchControls();
 

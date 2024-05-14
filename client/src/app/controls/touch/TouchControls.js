@@ -3,6 +3,10 @@ import * as utils from './utils.js'
 import RotationPad from './RotationPad.js'
 import MovementPad from './MovementPad.js'
 
+/**
+ * Adapted from https://github.com/mese79/TouchControls
+ */
+
 
 class TouchControls {
     rotationPad

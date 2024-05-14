@@ -13,7 +13,7 @@ export default class Touch_Controls {
         // Controls
         let options = {
             delta: 0.75, // coefficient of movement
-            moveSpeed: 0.5, // speed of movement
+            moveSpeed: 0.005, // speed of movement
             rotationSpeed: 0.005, // coefficient of rotation
             maxPitch: 55, // max camera pitch angle
             hitTest: true, // stop on hitting objects
@@ -29,7 +29,6 @@ export default class Touch_Controls {
         
         //this.controls.setPosition(0, 10.775, window.l.current_scene.scene_objects.ship.camera_distance)
         this.controls.addToScene(window.l.current_scene.scene)
-
     }
 
     activate() {

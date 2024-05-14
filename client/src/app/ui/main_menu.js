@@ -140,8 +140,6 @@ export default class Main_Menu {
 
         });
 
-        
-
         const settings = this.pane.addButton({
             title: 'Settings',
         });
@@ -155,15 +153,6 @@ export default class Main_Menu {
         help.on('click', () => {
             console.log('Help launched');
         });
-
-        
-
-        
-
-
-        
-
-        
 
         return this.pane;
     }

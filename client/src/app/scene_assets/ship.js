@@ -148,12 +148,20 @@ export default class Ship {
 
                 // Check if any touchpad controls are being pressed
                 if (
+                    window.l.controls.touch.controls.moveUp ||
+                    window.l.controls.touch.controls.moveDown ||
                     window.l.controls.touch.controls.moveForward ||
                     window.l.controls.touch.controls.moveBackward ||
                     window.l.controls.touch.controls.moveLeft ||
                     window.l.controls.touch.controls.moveRight
                 ) {
                     changing = true;
+                    if ( window.l.controls.touch.controls.moveUp ) {
+                        window.l.current_scene.scene_objects.ship.state.controls.moveUp = true;
+                    }
+                    if ( window.l.controls.touch.controls.moveDown ) {
+                        window.l.current_scene.scene_objects.ship.state.controls.moveDown = true;
+                    }
                     if ( window.l.controls.touch.controls.moveForward ) {
                         window.l.current_scene.scene_objects.ship.state.controls.throttleUp = true;
                     }

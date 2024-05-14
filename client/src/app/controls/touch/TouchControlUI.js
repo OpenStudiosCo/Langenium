@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import * as utils from './utils.js'
 import RotationPad from './RotationPad.js'
 import MovementPad from './MovementPad.js'
+import SliderStick from './SliderStick.js'
 
 /**
  * Adapted from https://github.com/mese79/TouchControls
@@ -11,6 +12,7 @@ import MovementPad from './MovementPad.js'
 class TouchControlUI {
     rotationPad
     movementPad
+    sliderStick
     container
     config
     fpsBody
@@ -20,6 +22,8 @@ class TouchControlUI {
     #cameraHolder
     #maxPitch
     #isRightMouseDown = false
+    moveUp = false
+    moveDown = false
     moveForward = false
     moveBackward = false
     moveLeft = false
@@ -50,6 +54,27 @@ class TouchControlUI {
         this.rotationPad.padElement.addEventListener('YawPitch', (event) =>{
             let rotation = this.#calculateCameraRotation(event.detail.deltaX, event.detail.deltaY)
             this.setRotation(rotation.rx, rotation.ry)
+        })
+
+        // Creating rotation pad
+        this.sliderStick = new SliderStick(container)
+        this.sliderStick.padElement.addEventListener('move', (event) => {
+
+            if (event.detail.deltaY == event.detail.middle) {
+                this.moveUp = this.moveDown = false
+            } else {
+                if (event.detail.deltaY > event.detail.middle) {
+                    this.moveUp = true
+                    this.moveDown = false
+                }
+                else if (event.detail.deltaY < event.detail.middle) {
+                    this.moveUp = false
+                    this.moveDown = true
+                }
+            }
+        })
+        this.sliderStick.padElement.addEventListener('stopMove', (event) => {
+            this.moveUp = this.moveDown = false
         })
 
         // Creating movement pad

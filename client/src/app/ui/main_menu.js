@@ -80,6 +80,14 @@ export default class Main_Menu {
                 readonly: true,
                 interval: 200
             })
+            touchControlStats.addBinding(window.l.controls.touch.controls, 'moveUp', {
+                readonly: true,
+                interval: 200
+            })
+            touchControlStats.addBinding(window.l.controls.touch.controls, 'moveDown', {
+                readonly: true,
+                interval: 200
+            })
         }
 
         const exit_game = this.pane.addButton({

@@ -24,6 +24,7 @@ export default class TouchControls {
         );
         this.controls.movementPad.padElement.style.display = 'none';
         this.controls.rotationPad.padElement.style.display = 'none';
+        this.controls.sliderStick.padElement.style.display = 'none';
 
     }
 
@@ -31,12 +32,13 @@ export default class TouchControls {
         this.controls.enabled = true;
         window.l.controls.touch.controls.movementPad.padElement.style.display = '';
         window.l.controls.touch.controls.rotationPad.padElement.style.display = '';
+        window.l.controls.touch.controls.sliderStick.padElement.style.display = '';
     }
 
     deactivate() {
-        //window.l.current_scene.scene.remove(this.controls.fpsBody);
         this.controls.enabled = false;
         window.l.controls.touch.controls.movementPad.padElement.style.display = 'none';
         window.l.controls.touch.controls.rotationPad.padElement.style.display = 'none';
+        window.l.controls.touch.controls.sliderStick.padElement.style.display = 'none';
     }
 }

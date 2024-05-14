@@ -143,7 +143,32 @@ export default class Ship {
                 changing = true;
             }
             else {
-                window.l.current_scene.scene_objects.ship.state.controls[controlName] = false;
+                // Check if any touchpad controls are being pressed before defaulting control to off.
+                if (
+                    window.l.controls.touch.controls.moveForward ||
+                    window.l.controls.touch.controls.moveBack ||
+                    window.l.controls.touch.controls.moveLeft ||
+                    window.l.controls.touch.controls.moveRight
+                ) {
+                    changing = true;
+                    if ( window.l.controls.touch.controls.moveForward ) {
+                        window.l.current_scene.scene_objects.ship.state.controls.throttleUp = true;
+                    }
+                    if ( window.l.controls.touch.controls.moveBack ) {
+                        window.l.current_scene.scene_objects.ship.state.controls.throttleDown = true;
+                    }
+                    if ( window.l.controls.touch.controls.moveLeft ) {
+                        window.l.current_scene.scene_objects.ship.state.controls.moveLeft = true;
+                    }
+                    if ( window.l.controls.touch.controls.moveRight ) {
+                        window.l.current_scene.scene_objects.ship.state.controls.moveRight = true;
+                    }
+                }
+
+                else {
+                    window.l.current_scene.scene_objects.ship.state.controls[controlName] = false;
+                }
+                
             }
         }
         window.l.current_scene.scene_objects.ship.state.controls.changing = changing;

@@ -23,10 +23,10 @@ class TouchControls {
     #cameraHolder
     #maxPitch
     #isRightMouseDown = false
-    #moveForward = false
-    #moveBackward = false
-    #moveLeft = false
-    #moveRight = false
+    moveForward = false
+    moveBackward = false
+    moveLeft = false
+    moveRight = false
     #moveForwardLocked = false
     #moveBackwardLocked = false
     #moveLeftLocked = false
@@ -73,35 +73,35 @@ class TouchControls {
 
             if (event.detail.deltaY == event.detail.middle) {
                 this.#ztouch = 1
-                this.#moveForward = this.#moveBackward = false
+                this.moveForward = this.moveBackward = false
             } else {
                 if (event.detail.deltaY > event.detail.middle) {
-                    this.#moveForward = true
-                    this.#moveBackward = false
+                    this.moveForward = true
+                    this.moveBackward = false
                 }
                 else if (event.detail.deltaY < event.detail.middle) {
-                    this.#moveForward = false
-                    this.#moveBackward = true
+                    this.moveForward = false
+                    this.moveBackward = true
                 }
             }
 
             if (event.detail.deltaX == event.detail.middle) {
                 this.#xtouch = 1
-                this.#moveRight = this.#moveLeft = false
+                this.moveRight = this.moveLeft = false
             } else {
                 if (event.detail.deltaX < event.detail.middle) {
-                    this.#moveRight = true
-                    this.#moveLeft = false
+                    this.moveRight = true
+                    this.moveLeft = false
                 }
                 else if (event.detail.deltaX > event.detail.middle) {
-                    this.#moveRight = false
-                    this.#moveLeft = true
+                    this.moveRight = false
+                    this.moveLeft = true
                 }
             }
         })
         this.movementPad.padElement.addEventListener('stopMove', (event) => {
             this.#ztouch = this.#xtouch = 1
-            this.#moveForward = this.#moveBackward = this.#moveLeft = this.#moveRight = false
+            this.moveForward = this.moveBackward = this.moveLeft = this.moveRight = false
         })
 
         this.container.addEventListener('contextmenu', (event) => {event.preventDefault()})
@@ -160,22 +160,22 @@ class TouchControls {
         switch (e.keyCode) {
             case 38: // up
             case 87: // w
-                this.#moveForward = true
+                this.moveForward = true
                 break
 
             case 37: // left
             case 65: // a
-                this.#moveLeft = true
+                this.moveLeft = true
                 break
 
             case 40: // down
             case 83: // s
-                this.#moveBackward = true
+                this.moveBackward = true
                 break
 
             case 39: // right
             case 68: // d
-                this.#moveRight = true
+                this.moveRight = true
                 break
         }
     }
@@ -184,22 +184,22 @@ class TouchControls {
         switch (e.keyCode) {
             case 38: // up
             case 87: // w
-                this.#moveForward = false
+                this.moveForward = false
                 break
 
             case 37: // left
             case 65: // a
-                this.#moveLeft = false
+                this.moveLeft = false
                 break
 
             case 40: // down
             case 83: // a
-                this.#moveBackward = false
+                this.moveBackward = false
                 break
 
             case 39: // right
             case 68: // d
-                this.#moveRight = false
+                this.moveRight = false
                 break
 
         }
@@ -259,16 +259,16 @@ class TouchControls {
         this.#velocity.x += (-1 * this.#velocity.x) * this.config.delta
         this.#velocity.z += (-1 * this.#velocity.z) * this.config.delta
 
-        if (this.#moveForward && !this.#moveForwardLocked) {
+        if (this.moveForward && !this.#moveForwardLocked) {
             this.#velocity.z -= this.#ztouch * this.config.moveSpeed * this.config.delta
         }
-        if (this.#moveBackward && !this.#moveBackwardLocked) {
+        if (this.moveBackward && !this.#moveBackwardLocked) {
             this.#velocity.z += this.#ztouch * this.config.moveSpeed * this.config.delta
         }
-        if (this.#moveLeft && !this.#moveLeftLocked){
+        if (this.moveLeft && !this.#moveLeftLocked){
             this.#velocity.x -= this.#xtouch * this.config.moveSpeed * this.config.delta
         }
-        if (this.#moveRight && !this.#moveRightLocked){
+        if (this.moveRight && !this.#moveRightLocked){
             this.#velocity.x += this.#xtouch * this.config.moveSpeed * this.config.delta
         }
 
@@ -335,19 +335,19 @@ class TouchControls {
     }
 
     isMoveLeft() {
-        return this.#moveLeft
+        return this.moveLeft
     }
 
     isMoveRight() {
-        return this.#moveRight
+        return this.moveRight
     }
 
     isMoveForward() {
-        return this.#moveForward
+        return this.moveForward
     }
 
     isMoveBackward() {
-        return this.#moveBackward
+        return this.moveBackward
     }
 
     lockMoveForward(isLocked) {

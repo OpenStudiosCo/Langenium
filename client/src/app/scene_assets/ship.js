@@ -164,7 +164,11 @@ export default class Ship {
         }
 
         // Rock the ship forward and back when moving vertically
-        if (window.l.current_scene.scene_objects.ship.state.controls.moveDown || window.l.current_scene.scene_objects.ship.state.controls.moveUp) {
+        if (
+            window.l.current_scene.scene_objects.ship.state.controls.moveDown
+            ||
+            window.l.current_scene.scene_objects.ship.state.controls.moveUp
+        ) {
             let elevationChange = window.l.current_scene.scene_objects.ship.state.controls.moveDown ? -1 : 1;
             if (Math.abs(window.l.current_scene.scene_objects.ship.mesh.rotation.x) < 1 / 8) {
                 window.l.current_scene.scene_objects.ship.mesh.rotation.x += elevationChange / 1 / 180 ;
@@ -176,7 +180,8 @@ export default class Ship {
             }
         }
         else {
-            window.l.current_scene.camera.rotation.x *= .9;
+            if ( ! window.l.controls.touch.controls.rotationPad.mouseDown )
+                window.l.current_scene.camera.rotation.x *= .9;
         }
     }
 
@@ -224,9 +229,21 @@ export default class Ship {
 
             }
             else {
-                if (window.l.current_scene.camera.rotation.y != window.l.current_scene.scene_objects.ship.mesh.rotation.y ) {
+
+                // Check there is y difference and the rotation pad isn't being pressed.                   
+                if (
+                    window.l.current_scene.camera.rotation.y != window.l.current_scene.scene_objects.ship.mesh.rotation.y &&
+                    ! window.l.controls.touch.controls.rotationPad.mouseDown
+                ) {
+
+                    // Get the difference in y rotation betwen the camera and ship
                     let yDiff = window.l.current_scene.scene_objects.ship.mesh.rotation.y - window.l.current_scene.camera.rotation.y;
-                    if (Math.abs(yDiff) > radian / 100) {
+
+                    // Check the y difference is larger than 1/100th of a radian
+                    if (
+                        Math.abs(yDiff) > radian / 100 
+                    ) {
+                        // Add 1/60th of the difference in rotation, as FPS currently capped to 60.
                         window.l.current_scene.camera.rotation.y += (window.l.current_scene.scene_objects.ship.mesh.rotation.y - window.l.current_scene.camera.rotation.y) * 1 / 60;
                     }
                     else {

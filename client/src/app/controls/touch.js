@@ -29,6 +29,7 @@ export default class Touch_Controls {
         
         //this.controls.setPosition(0, 10.775, window.l.current_scene.scene_objects.ship.camera_distance)
         this.controls.addToScene(window.l.current_scene.scene)
+
     }
 
     activate() {

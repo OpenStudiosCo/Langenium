@@ -388,11 +388,16 @@ class TouchControls {
     
     setRotation(x, y) {
         // let camHolder = this.#fpsBody.getObjectByName('cameraHolder')
+        // if (x !== null)
+        // this.#cameraHolder.rotation.x = x
+
+        // if (y !== null)
+        //     this.fpsBody.rotation.y = y
         if (x !== null)
-        this.#cameraHolder.rotation.x = x
+            window.l.current_scene.camera.rotation.x += x
 
         if (y !== null)
-            this.fpsBody.rotation.y = y
+            window.l.current_scene.camera.rotation.y += y
     }
 
     getHitObjects() {

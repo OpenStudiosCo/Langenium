@@ -18,10 +18,6 @@ export default class SceneBase {
       this.camera = false;
 
       /**
-       * Multi input controls
-       */
-      this.controls = false;
-      /**
        * Debug mode.
        * 
        * @memberof Boolean

@@ -21,6 +21,7 @@ export default class Ocean {
         this.water = new Water(
             waterGeometry,
             {
+                clipBias: 0.003,
                 textureWidth: 512,
                 textureHeight: 512,
                 waterNormals: new THREE.TextureLoader().load( './assets/textures/waternormals.jpg', function ( texture ) {

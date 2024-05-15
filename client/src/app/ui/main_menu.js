@@ -14,21 +14,94 @@ export default class Main_Menu {
             expanded: true
         });
 
+        if ( window.l.current_scene.debug ) {
+            const debugging = this.pane.addFolder({
+                title: 'Debugging',
+                expanded: false,
+            });
+
+            const stats = debugging.addFolder({
+                title: 'Stats',
+                expanded: false,
+            });
+
+            stats.addBinding(window.l.current_scene.stats, 'fps', {
+                readonly: true,
+                view: 'graph',
+                interval: 200,
+                min: 0,
+                max: 60
+            });
+
+            const latency = stats.addBinding(window.l.multiplayer, 'latency', {
+                readonly: true,
+                view: 'graph',
+                interval: 200
+            });
+
+            const shipState = debugging.addFolder({
+                title: 'Ship Controls State',
+            });
+
+            shipState.addBinding(window.l.current_scene.scene_objects.ship.state.controls, 'throttleUp', {
+                readonly: true,
+                interval: 200
+            })
+            shipState.addBinding(window.l.current_scene.scene_objects.ship.state.controls, 'throttleDown', {
+                readonly: true,
+                interval: 200
+            })
+            shipState.addBinding(window.l.current_scene.scene_objects.ship.state.controls, 'moveLeft', {
+                readonly: true,
+                interval: 200
+            })
+            shipState.addBinding(window.l.current_scene.scene_objects.ship.state.controls, 'moveRight', {
+                readonly: true,
+                interval: 200
+            })
+    
+            const touchControlStats = debugging.addFolder({
+                title: 'Touch Controls State',
+            });
+    
+            touchControlStats.addBinding(window.l.controls.touch.controls, 'moveForward', {
+                readonly: true,
+                interval: 200
+            })
+            touchControlStats.addBinding(window.l.controls.touch.controls, 'moveBackward', {
+                readonly: true,
+                interval: 200
+            })
+            touchControlStats.addBinding(window.l.controls.touch.controls, 'moveLeft', {
+                readonly: true,
+                interval: 200
+            })
+            touchControlStats.addBinding(window.l.controls.touch.controls, 'moveRight', {
+                readonly: true,
+                interval: 200
+            })
+            touchControlStats.addBinding(window.l.controls.touch.controls, 'moveUp', {
+                readonly: true,
+                interval: 200
+            })
+            touchControlStats.addBinding(window.l.controls.touch.controls, 'moveDown', {
+                readonly: true,
+                interval: 200
+            })
+        }
+
         const exit_game = this.pane.addButton({
             title: 'Exit to Main Menu',
             hidden: true
         });
         exit_game.on('click', () => {
             console.log('Exit to Main Menu, closing game session');
-            window.l.current_scene.controls.deactivate()
+            window.l.controls.deactivate()
             window.l.current_scene.ui.hide_flight_instruments();
 
             // Show game mode buttons.
             single_player.hidden = false;
             multi_player.hidden = false;
-
-            // Hide latency stats
-            latency.hidden = true;
 
             // Hide game exit button to return to main menu.
             exit_game.hidden = true;
@@ -44,7 +117,7 @@ export default class Main_Menu {
         });
         single_player.on('click', () => {
             console.log('Single player launched');
-            window.l.current_scene.controls.activate();
+            window.l.controls.activate();
             window.l.current_scene.ui.show_flight_instruments();
 
             // Hide game mode buttons.
@@ -60,7 +133,7 @@ export default class Main_Menu {
         });
         multi_player.on('click', () => {
             console.log('Multi player launched');
-            window.l.current_scene.controls.activate();
+            window.l.controls.activate();
             window.l.current_scene.ui.show_flight_instruments();
 
             // Hide game mode buttons.
@@ -70,20 +143,10 @@ export default class Main_Menu {
             // Show game exit button to return to main menu.
             exit_game.hidden = false;
 
-            // Show latency.
-            latency.hidden = !window.l.current_scene.debug ;
-
             let serverLocation = window.l.env =='Dev' ? 'lcl.langenium.com:8090' : 'test.langenium.com:42069' ;
 
             window.l.multiplayer.connect('//' + serverLocation);
 
-        });
-
-        const latency = this.pane.addBinding(window.l.multiplayer, 'latency', {
-            hidden: true,
-            readonly: true,
-            view: 'graph',
-            interval: 200
         });
 
         const settings = this.pane.addButton({
@@ -98,15 +161,6 @@ export default class Main_Menu {
         });
         help.on('click', () => {
             console.log('Help launched');
-        });
-
-        const fps = this.pane.addBinding(window.l.current_scene.stats, 'fps', {
-            hidden: !window.l.current_scene.debug,
-            readonly: true,
-            view: 'graph',
-            interval: 200,
-            min: 0,
-            max: 60
         });
 
         return this.pane;

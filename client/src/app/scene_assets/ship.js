@@ -138,12 +138,44 @@ export default class Ship {
         }
         let changing = false;
         for ( const [ controlName, keyMapping ] of Object.entries(mappings)) {
-            if (window.l.current_scene.controls.keyboard.pressed(keyMapping)) {
+            if (window.l.controls.keyboard.pressed(keyMapping)) {
                 window.l.current_scene.scene_objects.ship.state.controls[controlName] = true;
                 changing = true;
             }
             else {
+
                 window.l.current_scene.scene_objects.ship.state.controls[controlName] = false;
+
+                // Check if any touchpad controls are being pressed
+                if (
+                    window.l.controls.touch.controls.moveUp ||
+                    window.l.controls.touch.controls.moveDown ||
+                    window.l.controls.touch.controls.moveForward ||
+                    window.l.controls.touch.controls.moveBackward ||
+                    window.l.controls.touch.controls.moveLeft ||
+                    window.l.controls.touch.controls.moveRight
+                ) {
+                    changing = true;
+                    if ( window.l.controls.touch.controls.moveUp ) {
+                        window.l.current_scene.scene_objects.ship.state.controls.moveUp = true;
+                    }
+                    if ( window.l.controls.touch.controls.moveDown ) {
+                        window.l.current_scene.scene_objects.ship.state.controls.moveDown = true;
+                    }
+                    if ( window.l.controls.touch.controls.moveForward ) {
+                        window.l.current_scene.scene_objects.ship.state.controls.throttleUp = true;
+                    }
+                    if ( window.l.controls.touch.controls.moveBackward ) {
+                        window.l.current_scene.scene_objects.ship.state.controls.throttleDown = true;
+                    }
+                    if ( window.l.controls.touch.controls.moveLeft ) {
+                        window.l.current_scene.scene_objects.ship.state.controls.moveLeft = true;
+                    }
+                    if ( window.l.controls.touch.controls.moveRight ) {
+                        window.l.current_scene.scene_objects.ship.state.controls.moveRight = true;
+                    }
+                }
+                
             }
         }
         window.l.current_scene.scene_objects.ship.state.controls.changing = changing;
@@ -164,7 +196,11 @@ export default class Ship {
         }
 
         // Rock the ship forward and back when moving vertically
-        if (window.l.current_scene.scene_objects.ship.state.controls.moveDown || window.l.current_scene.scene_objects.ship.state.controls.moveUp) {
+        if (
+            window.l.current_scene.scene_objects.ship.state.controls.moveDown
+            ||
+            window.l.current_scene.scene_objects.ship.state.controls.moveUp
+        ) {
             let elevationChange = window.l.current_scene.scene_objects.ship.state.controls.moveDown ? -1 : 1;
             if (Math.abs(window.l.current_scene.scene_objects.ship.mesh.rotation.x) < 1 / 8) {
                 window.l.current_scene.scene_objects.ship.mesh.rotation.x += elevationChange / 1 / 180 ;
@@ -176,7 +212,8 @@ export default class Ship {
             }
         }
         else {
-            window.l.current_scene.camera.rotation.x *= .9;
+            if ( ! window.l.controls.touch.controls.rotationPad.mouseDown )
+                window.l.current_scene.camera.rotation.x *= .9;
         }
     }
 
@@ -224,9 +261,21 @@ export default class Ship {
 
             }
             else {
-                if (window.l.current_scene.camera.rotation.y != window.l.current_scene.scene_objects.ship.mesh.rotation.y ) {
+
+                // Check there is y difference and the rotation pad isn't being pressed.                   
+                if (
+                    window.l.current_scene.camera.rotation.y != window.l.current_scene.scene_objects.ship.mesh.rotation.y &&
+                    ! window.l.controls.touch.controls.rotationPad.mouseDown
+                ) {
+
+                    // Get the difference in y rotation betwen the camera and ship
                     let yDiff = window.l.current_scene.scene_objects.ship.mesh.rotation.y - window.l.current_scene.camera.rotation.y;
-                    if (Math.abs(yDiff) > radian / 100) {
+
+                    // Check the y difference is larger than 1/100th of a radian
+                    if (
+                        Math.abs(yDiff) > radian / 100 
+                    ) {
+                        // Add 1/60th of the difference in rotation, as FPS currently capped to 60.
                         window.l.current_scene.camera.rotation.y += (window.l.current_scene.scene_objects.ship.mesh.rotation.y - window.l.current_scene.camera.rotation.y) * 1 / 60;
                     }
                     else {
@@ -248,14 +297,14 @@ export default class Ship {
             window.l.current_scene.camera.position.z += zDiff;
             window.l.current_scene.camera.updateProjectionMatrix();
 
-            // if (window.l.current_scene.controls.orbit) {
+            // if (window.l.controls.orbit) {
             
-            //     window.l.current_scene.controls.orbit.target.set(
+            //     window.l.controls.orbit.target.set(
             //         window.l.current_scene.scene_objects.ship.mesh.position.x,
             //         window.l.current_scene.scene_objects.ship.mesh.position.y,
             //         window.l.current_scene.scene_objects.ship.mesh.position.z
             //     );
-            //     window.l.current_scene.controls.orbit.update();
+            //     window.l.controls.orbit.update();
             // }
 
         }

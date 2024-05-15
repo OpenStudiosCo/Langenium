@@ -47,7 +47,6 @@ export default class Multiplayer {
         });
 
         window.l.multiplayer.socket.on('update', async ( processed_changes ) => {
-            console.log(processed_changes)
             await processed_changes.forEach(async (update) => {
                 if (update.type == 'move_ship') {
                     await window.l.multiplayer.move_ship(update.data);

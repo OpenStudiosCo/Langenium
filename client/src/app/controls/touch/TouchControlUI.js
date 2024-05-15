@@ -21,7 +21,6 @@ class TouchControlUI {
     #rotationMatrices
     #cameraHolder
     #maxPitch
-    #isRightMouseDown = false
     moveUp = false
     moveDown = false
     moveForward = false
@@ -42,10 +41,9 @@ class TouchControlUI {
         this.#maxPitch = this.config.maxPitch * Math.PI / 180
         this.mouse = new THREE.Vector2()
 
+        // @todo: Remove these old object3D's, left in to allow to calculate rotation
         this.#cameraHolder = new THREE.Object3D()
         this.#cameraHolder.name = 'cameraHolder'
-        //this.#cameraHolder.add(camera)
-
         this.fpsBody = new THREE.Object3D()
         this.fpsBody.add(this.#cameraHolder)
 
@@ -58,7 +56,7 @@ class TouchControlUI {
 
         // Creating rotation pad
         this.sliderStick = new SliderStick(container)
-        this.sliderStick.padElement.addEventListener('move', (event) => {
+        this.sliderStick.stickElement.addEventListener('move', (event) => {
 
             if (event.detail.deltaY == event.detail.middle) {
                 this.moveUp = this.moveDown = false
@@ -73,7 +71,7 @@ class TouchControlUI {
                 }
             }
         })
-        this.sliderStick.padElement.addEventListener('stopMove', (event) => {
+        this.sliderStick.stickElement.addEventListener('stopMove', (event) => {
             this.moveUp = this.moveDown = false
         })
 
@@ -127,51 +125,7 @@ class TouchControlUI {
             this.moveForward = this.moveBackward = this.moveLeft = this.moveRight = false
         })
 
-        this.container.addEventListener('contextmenu', (event) => {event.preventDefault()})
-        this.container.addEventListener('mousedown', (event) => this.onMouseDown(event))
-        this.container.addEventListener('mouseup', (event) => this.onMouseUp(event))
-
-        document.addEventListener('mousemove', (event) => this.onMouseMove(event))
-        document.addEventListener('mouseout', (event) => this.onMouseOut(event))
-
         this.#prepareRotationMatrices()
-    }
-
-    //
-    // Events
-    //
-    onMouseDown(event) {
-        if (this.enabled && event.button === 2) {
-            this.#isRightMouseDown = true
-            event.preventDefault()
-            event.stopPropagation()
-        }
-    }
-
-    onMouseUp(event) {
-        if (this.enabled && event.button === 2) {
-            this.#isRightMouseDown = false
-        }
-    }
-
-    onMouseMove(event) {
-        this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1
-        this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1
-
-        if (!this.enabled || !this.#isRightMouseDown)
-            return
-
-        let movementX = event.movementX || 0
-        let movementY = event.movementY || 0
-        let rotation = this.#calculateCameraRotation(-1 * movementX, -1 * movementY)
-
-        // console.log(this.mouse, '\n', movementX, rotation)
-        this.setRotation(rotation.rx, rotation.ry)
-    }
-
-    onMouseOut(e) {
-        this.#isRightMouseDown = false
-        // this.stopMouseMoving()
     }
 
     //

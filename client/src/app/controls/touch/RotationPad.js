@@ -38,12 +38,12 @@ class RotationPad {
             this.update(event.pageX, event.pageY)
         })
 
-        document.addEventListener('mouseup', () => {
+        this.padElement.addEventListener('mouseup', () => {
             this.mouseDown = false
             this.resetHandlePosition()
         })
 
-        document.addEventListener('mousemove', (event) => {
+        this.padElement.addEventListener('mousemove', (event) => {
             if (!this.mouseDown)
                 return
             this.update(event.pageX, event.pageY)
@@ -63,10 +63,10 @@ class RotationPad {
             this.mouseDown = false
             this.resetHandlePosition()
         }
-        document.addEventListener('touchend', touchEnd)
-        document.addEventListener('touchcancel', touchEnd)
+        this.padElement.addEventListener('touchend', touchEnd)
+        this.padElement.addEventListener('touchcancel', touchEnd)
 
-        document.addEventListener('touchmove', (event) => {
+        this.padElement.addEventListener('touchmove', (event) => {
             if (!this.mouseDown)
                 return
             this.update(event.touches[0].pageX, event.touches[0].pageY)

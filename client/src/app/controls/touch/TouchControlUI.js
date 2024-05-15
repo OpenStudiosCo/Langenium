@@ -81,7 +81,15 @@ class TouchControlUI {
         this.movementPad = new MovementPad(container)
         this.movementPad.padElement.addEventListener('move', (event) => {
 
-            if (event.detail.deltaY == event.detail.middle) {
+            let yOffset = 0;
+            if (Math.abs(event.detail.deltaX) > 1) {
+                yOffset = 1.2;
+            }
+
+            if (
+                event.detail.deltaY == event.detail.middle ||
+                Math.abs(event.detail.deltaY) < yOffset
+            ) {
                 this.moveForward = this.moveBackward = false
             } else {
                 if (event.detail.deltaY > event.detail.middle) {
@@ -94,7 +102,15 @@ class TouchControlUI {
                 }
             }
 
-            if (event.detail.deltaX == event.detail.middle) {
+            let xOffset = 0;
+            if (Math.abs(event.detail.deltaY) > 1) {
+                xOffset = 1.2;
+            }
+
+            if (
+                event.detail.deltaX == event.detail.middle ||
+                Math.abs(event.detail.deltaX) < xOffset
+            ) {
                 this.moveRight = this.moveLeft = false
             } else {
                 if (event.detail.deltaX < event.detail.middle) {

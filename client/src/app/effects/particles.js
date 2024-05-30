@@ -56,8 +56,8 @@ function createShipThruster (ship, scale, position) {
 	// create the particle system
 	var plasma = new THREE.Points(geometry, pMaterial);	
 	plasma.sortParticles = true;
-	plasma.max_z = position.z;
-	plasma.min_z = position.z - .025;
+	plasma.max_z = 0;
+	plasma.min_z = .025;
 	plasma.position.x = position.x;
 	plasma.position.y = position.y;
 	plasma.position.z = position.z;
@@ -71,55 +71,39 @@ function createShipThruster (ship, scale, position) {
 };
 
 function animateShipThrusters (delta) {
-	// window.l.current_scene.effects.particles.shipThrusters.forEach(function(plasma, index){
-	// 	plasma.sortParticles = true;
+	window.l.current_scene.effects.particles.shipThrusters.forEach(function(plasma, index){
+		const velocity = plasma.ship.state.airSpeed;
+		plasma.sortParticles = true;
 
-    //     const positions = plasma.geometry.attributes.position;
-    //     const initialPositions = plasma.geometry.attributes.initialPosition;
-    //     const count = positions.count;
+        const positions = plasma.geometry.getAttribute('position');
+        const initialPositions = plasma.geometry.getAttribute('initialPosition');
+        const count = positions.count;
 
-    //     for ( let i = 0; i < count; i ++ ) {
-	// 		if (i != 0) {
-	// 			const pz = positions.getZ( i );
-	// 			const iz = initialPositions.getZ( i );
-	// 			let dz = Math.abs( pz - iz );
+        for ( let i = 0; i < count; i ++ ) {
+			if (i != 0) {
+				const pz = positions.getZ( i );
+				const iz = initialPositions.getZ( i );
+				
+				let dz = Math.abs( pz - iz );
+				if (dz > plasma.min_z * velocity && dz < plasma.max_z * velocity) {
+					dz -= Math.sin(i * delta) * .6321 * velocity;
+				}
+				else {
+					dz = plasma.max_z - .05 * velocity;
+				}
 
-	// 			if (dz > plasma.min_z * velocity && particle.z < plasma.max_z * velocity) {
-	// 				dz -= Math.sin(i * delta) * .06321 * velocity;
-	// 			}
-	// 			else {
-	// 				dz = plasma.max_z - .005 * velocity;
-	// 			}
+				let sputter = Math.min(- velocity / 100, 0.01);
 
-	// 			positions[i * 3 + 2] = dz;
-	// 		}
+				positions.array[i * 3 ] = Math.sin(i) * 0.01 + Math.random() * (sputter * -2) + sputter;
+				positions.array[i * 3 + 1] = Math.cos(i) * 0.01 + Math.random() * (sputter * -2) + sputter;
+				positions.array[i * 3 + 2] = dz;
+				
+			}
 
-    //     }
+        }
 
-
-	// 	// plasma.geometry.vertices.forEach(function(particle,i){
-	// 	// 	if (i != 0) {
-	// 	// 		if (particle.z > plasma.min_z * velocity && particle.z < plasma.max_z * velocity) {
-	// 	// 			particle.z -= Math.sin(i * delta) * .06321 * velocity;
-	// 	// 		}
-	// 	// 		else {
-	// 	// 			particle.z = plasma.max_z - .005 * velocity;
-	// 	// 		}
-	// 	// 	}
-	// 	// });
-	// 	// plasma.geometry.__dirtyVertices = true;
-
-    //     // loop over vectors and animate around sphere
-    //     // for (let i = 0; i < plasma.vertices.length; i++) {
-    //     //     const vector = plasma.vertices[i]
-    //     //     vector.applyAxisAngle(vector.rotationAxis, vector.rotationSpeed)
-    
-    //     //     ps[i * 3] = vector.x
-    //     //     ps[i * 3 + 1] = vector.y
-    //     //     ps[i * 3 + 2] = vector.z
-    //     // }
-    
-    //     plasma.geometry.attributes.position.needsUpdate = true
+		plasma.geometry.setAttribute('position', positions);
+		positions.needsUpdate = true
 	
-	// });
+	});
 };

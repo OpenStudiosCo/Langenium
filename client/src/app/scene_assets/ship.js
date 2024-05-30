@@ -70,7 +70,7 @@ export default class Ship {
         window.l.current_scene.tweens.shipEnterY = this.shipEnterY();
         window.l.current_scene.tweens.shipEnterZ = this.shipEnterZ();
 
-        window.l.current_scene.effects.particles.createShipThruster(this, 2.5, { x: 0, y: 1.2, z: 2 });
+        window.l.current_scene.effects.particles.createShipThruster(this, 1.5, { x: 0, y: 1.2, z: 1.6 });
 
     }
 

@@ -212,8 +212,8 @@ function enterTheOffice() {
     .easing(TWEEN.Easing.Quadratic.InOut) // Use an easing function to make the animation smooth.
     .onUpdate(() => {
       // Turn off bloom from the other scene.
-      if (window.l.current_scene.effects && window.l.current_scene.effects.passes.length > 0) {
-        window.l.current_scene.effects.passes.forEach(( effectPass ) => {
+      if (window.l.current_scene.effects.postprocessing && window.l.current_scene.effects.postprocessing.passes.length > 0) {
+        window.l.current_scene.effects.postprocessing.passes.forEach(( effectPass ) => {
           if ( effectPass.name =='EffectPass' ) {
             effectPass.effects.forEach( ( effect ) => {
               if ( effect.name == 'BloomEffect' ) {

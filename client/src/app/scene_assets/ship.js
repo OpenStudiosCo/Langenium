@@ -70,6 +70,8 @@ export default class Ship {
         window.l.current_scene.tweens.shipEnterY = this.shipEnterY();
         window.l.current_scene.tweens.shipEnterZ = this.shipEnterZ();
 
+        window.l.current_scene.effects.particles.createShipThruster(this, 2.5, { x: 0, y: 1.2, z: 2 });
+
     }
 
     // Tween for the ship intro sequence.
@@ -104,8 +106,8 @@ export default class Ship {
             .onComplete(() => {
 
                 // Turn off bloom from the other scene.
-                if (window.l.current_scene.effects && window.l.current_scene.effects.passes.length > 0) {
-                    window.l.current_scene.effects.passes.forEach(( effectPass ) => {
+                if (window.l.current_scene.effects.postprocessing && window.l.current_scene.effects.postprocessing.passes.length > 0) {
+                    window.l.current_scene.effects.postprocessing.passes.forEach(( effectPass ) => {
                         if ( effectPass.name =='EffectPass' ) {
                             effectPass.effects.forEach( ( effect ) => {
                                 if ( effect.name == 'BloomEffect' ) {

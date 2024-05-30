@@ -19,8 +19,8 @@ export async function handleViewportChange() {
 
   window.l.current_scene.renderers.webgl.setSize(width, height);
   
-  if (window.l.current_scene.effects && window.l.current_scene.effects.passes.length > 0)
-    window.l.current_scene.effects.setSize(width, height);
+  if (window.l.current_scene.effects.postprocessing && window.l.current_scene.effects.postprocessing.passes.length > 0)
+    window.l.current_scene.effects.postprocessing.setSize(width, height);
 
 
   window.l.current_scene.camera.aspect = width / height;

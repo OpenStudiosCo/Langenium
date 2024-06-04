@@ -41,7 +41,7 @@ export default class Ship {
     async load() {
         
 
-        this.model = await window.l.current_scene.loaders.gtlf.loadAsync( './assets/models/mercenary3.glb');
+        this.model = await window.l.current_scene.loaders.gtlf.loadAsync( './assets/models/mercenary4.glb');
 
         let amount = window.l.current_scene.fast ? 5 : 2.5;
 
@@ -63,6 +63,84 @@ export default class Ship {
         this.mesh.position.z = window.l.current_scene.room_depth;
         this.mesh.rotation.order = 'YXZ';
 
+        let video = document.getElementById( 'thruster' );
+        video.play();
+        video.addEventListener( 'play', function () {
+
+            //this.currentTime = 3;
+
+        } );
+
+
+        const geometry = new THREE.ConeGeometry( 0.3, .3, 8 ); 
+        
+        let texture = new THREE.VideoTexture( video );
+        texture.colorSpace = THREE.SRGBColorSpace;
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = THREE.RepeatWrapping;
+        texture.repeat.set( 1, 8 );
+        texture.rotation = - Math.PI / 2;
+
+        const parameters = { map: texture, transparent: true };
+
+        let material = new THREE.MeshBasicMaterial( parameters );
+
+        material.blending = THREE.CustomBlending;
+        material.blendSrc = THREE.SrcAlphaFactor;
+        material.blendDst = THREE.OneFactor ;
+        material.blendEquation = THREE.AddEquation;
+
+        //const cone = new THREE.Mesh(geometry, material );
+        window.cone = new THREE.Mesh(geometry, material );
+
+        cone.rotation.x = Math.PI / 2;
+        cone.position.y = 1.2;
+        cone.position.z = 1.45;
+
+        this.mesh.add(cone);
+
+        let cone2 = cone.clone();
+        cone2.rotation.y = Math.PI / 4;
+        cone2.scale.set(1, 6, 1);
+        cone2.position.z = 1.5;
+
+        this.mesh.add(cone2);
+
+        const cylinder_geometry = new THREE.CylinderGeometry( 0.15, 0.15, 0.75, 16 );
+        cylinder_geometry.openEnded = true;
+        
+        let cylinder_texture = new THREE.VideoTexture( video );
+        cylinder_texture.colorSpace = THREE.SRGBColorSpace;
+        cylinder_texture.wrapS = THREE.RepeatWrapping;
+        cylinder_texture.wrapT = THREE.RepeatWrapping;
+        cylinder_texture.repeat.set( 1, 4 );
+
+        cylinder_texture.rotation = - Math.PI / 2;
+
+        const cylinder_material = material.clone();
+        cylinder_material.map = cylinder_texture;
+
+        //const cylinder = new THREE.Mesh( cylinder_geometry,
+        window.cylinder = new THREE.Mesh( cylinder_geometry,
+            [
+                cylinder_material,
+                new THREE.MeshBasicMaterial( { visible: false } ), 
+                new THREE.MeshBasicMaterial( { visible: false } )
+                 
+            ] );
+
+        cylinder.rotation.x = Math.PI / 2;
+        cylinder.position.y = 1.2;
+        cylinder.position.z = 1.5;
+
+        this.mesh.add( cylinder );
+
+        const cylinder2 = cylinder.clone();
+        cylinder2.rotation.y = Math.PI / 4;
+        cylinder2.scale.set( 1.5, 1, 1.5);
+
+        this.mesh.add( cylinder2 );
+
         this.mixer = new THREE.AnimationMixer( this.mesh );
         this.mixer.clipAction( this.model.animations[ 0 ] ).play();
         this.mixer.clipAction( this.model.animations[ 1 ] ).play();
@@ -70,7 +148,7 @@ export default class Ship {
         window.l.current_scene.tweens.shipEnterY = this.shipEnterY();
         window.l.current_scene.tweens.shipEnterZ = this.shipEnterZ();
 
-        window.l.current_scene.effects.particles.createShipThruster(this, 1.5, { x: 0, y: 1.2, z: 1.6 });
+        //window.l.current_scene.effects.particles.createShipThruster(this, 1.5, { x: 0, y: 1.2, z: 1.6 });
 
     }
 
@@ -121,7 +199,7 @@ export default class Ship {
 
                 // Set the ship as ready.
                 window.l.current_scene.scene_objects.ship.ready = true;
-                window.l.current_scene.scene_objects.ship.camera_distance = -20 + (window.l.current_scene.room_depth / 2);
+                window.l.current_scene.scene_objects.ship.camera_distance = -10;// -20 + (window.l.current_scene.room_depth / 2);
                 window.l.current_scene.scene_objects.ship.state.position.x = window.l.current_scene.scene_objects.ship.mesh.position.x;
                 window.l.current_scene.scene_objects.ship.state.position.y = window.l.current_scene.scene_objects.ship.mesh.position.y;
                 window.l.current_scene.scene_objects.ship.state.position.z = window.l.current_scene.scene_objects.ship.mesh.position.z;
@@ -260,7 +338,7 @@ export default class Ship {
                 window.l.current_scene.camera.position.x = xDiff + window.l.current_scene.scene_objects.ship.camera_distance * Math.sin(window.l.current_scene.scene_objects.ship.mesh.rotation.y);
                 window.l.current_scene.camera.position.z = zDiff + window.l.current_scene.scene_objects.ship.camera_distance * Math.cos(window.l.current_scene.scene_objects.ship.mesh.rotation.y);
                 window.l.current_scene.camera.rotation.y += rY * 1.1;
-
+                
             }
             else {
 
@@ -295,8 +373,17 @@ export default class Ship {
                 window.l.current_scene.camera.position.y += tY;
             }
             
-            window.l.current_scene.camera.position.x += xDiff;
-            window.l.current_scene.camera.position.z += zDiff;
+            // @todo: Uncomment these to release locked camera for thruster effects work
+            // window.l.current_scene.camera.position.x += xDiff;
+            // window.l.current_scene.camera.position.z += zDiff;
+            
+            // @todo delete these overrides
+            window.l.current_scene.camera.position.x = -10+ window.l.current_scene.scene_objects.ship.mesh.position.x;
+            window.l.current_scene.camera.position.z = window.l.current_scene.scene_objects.ship.mesh.position.z;
+            window.l.current_scene.camera.position.y = 5 + window.l.current_scene.scene_objects.ship.mesh.position.y;
+            
+
+            window.l.current_scene.camera.lookAt(window.l.current_scene.scene_objects.ship.mesh.position);
             window.l.current_scene.camera.updateProjectionMatrix();
 
             // if (window.l.controls.orbit) {

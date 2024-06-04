@@ -21,7 +21,7 @@ function createShipThruster (ship, scale, position) {
     const pMaterial =
 		  new THREE.PointsMaterial({
 			map: window.l.current_scene.loaders.texture.load("/assets/textures/ember.png?nocache", assignSRGB),
-			size: .65 * scale,
+			size: .35 * scale,
 			blending: THREE.AdditiveBlending,
 			opacity: 0.9,
 			transparent: true,

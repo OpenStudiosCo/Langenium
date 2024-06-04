@@ -118,7 +118,7 @@ export default class Ship {
 
         material.blending = THREE.CustomBlending;
         material.blendSrc = THREE.SrcAlphaFactor;
-        material.blendDst = THREE.OneMinusSrcAlphaFactor ;
+        material.blendDst = THREE.OneFactor ;
         material.blendEquation = THREE.Multi;
 
         // Nest material in an array so it only paints the first face of the cylinder.
@@ -456,8 +456,9 @@ export default class Ship {
             // }
 
             // Update ship thruster
-            window.l.current_scene.scene_objects.ship.animateThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.rearConeBurner, 1 );
-            window.l.current_scene.scene_objects.ship.animateThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.centralConeBurner, 2 );
+            window.l.current_scene.scene_objects.ship.animateThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.centralConeBurner, 1 );
+
+            window.l.current_scene.scene_objects.ship.animateThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.outerCylBurner, 1 );
  
             window.l.current_scene.scene_objects.ship.thruster.videoElement.playbackRate = 0.25 + Math.abs(window.l.current_scene.scene_objects.ship.state.airSpeed);
 

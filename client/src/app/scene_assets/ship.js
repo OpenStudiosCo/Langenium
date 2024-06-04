@@ -29,6 +29,9 @@ export default class Ship {
     // Aircraft flight sim data like airspeed.
     state;
 
+    // Object containing elements that drive the ships thruster.
+    thruster;
+
     constructor() {
         this.camera_distance = 0;
 
@@ -63,83 +66,7 @@ export default class Ship {
         this.mesh.position.z = window.l.current_scene.room_depth;
         this.mesh.rotation.order = 'YXZ';
 
-        let video = document.getElementById( 'thruster' );
-        video.play();
-        video.addEventListener( 'play', function () {
-
-            //this.currentTime = 3;
-
-        } );
-
-
-        const geometry = new THREE.ConeGeometry( 0.3, .3, 8 ); 
-        
-        let texture = new THREE.VideoTexture( video );
-        texture.colorSpace = THREE.SRGBColorSpace;
-        texture.wrapS = THREE.RepeatWrapping;
-        texture.wrapT = THREE.RepeatWrapping;
-        texture.repeat.set( 1, 8 );
-        texture.rotation = - Math.PI / 2;
-
-        const parameters = { map: texture, transparent: true };
-
-        let material = new THREE.MeshBasicMaterial( parameters );
-
-        material.blending = THREE.CustomBlending;
-        material.blendSrc = THREE.SrcAlphaFactor;
-        material.blendDst = THREE.OneFactor ;
-        material.blendEquation = THREE.AddEquation;
-
-        //const cone = new THREE.Mesh(geometry, material );
-        window.cone = new THREE.Mesh(geometry, material );
-
-        cone.rotation.x = Math.PI / 2;
-        cone.position.y = 1.2;
-        cone.position.z = 1.45;
-
-        this.mesh.add(cone);
-
-        let cone2 = cone.clone();
-        cone2.rotation.y = Math.PI / 4;
-        cone2.scale.set(1, 6, 1);
-        cone2.position.z = 1.5;
-
-        this.mesh.add(cone2);
-
-        const cylinder_geometry = new THREE.CylinderGeometry( 0.15, 0.15, 0.75, 16 );
-        cylinder_geometry.openEnded = true;
-        
-        let cylinder_texture = new THREE.VideoTexture( video );
-        cylinder_texture.colorSpace = THREE.SRGBColorSpace;
-        cylinder_texture.wrapS = THREE.RepeatWrapping;
-        cylinder_texture.wrapT = THREE.RepeatWrapping;
-        cylinder_texture.repeat.set( 1, 4 );
-
-        cylinder_texture.rotation = - Math.PI / 2;
-
-        const cylinder_material = material.clone();
-        cylinder_material.map = cylinder_texture;
-
-        //const cylinder = new THREE.Mesh( cylinder_geometry,
-        window.cylinder = new THREE.Mesh( cylinder_geometry,
-            [
-                cylinder_material,
-                new THREE.MeshBasicMaterial( { visible: false } ), 
-                new THREE.MeshBasicMaterial( { visible: false } )
-                 
-            ] );
-
-        cylinder.rotation.x = Math.PI / 2;
-        cylinder.position.y = 1.2;
-        cylinder.position.z = 1.5;
-
-        this.mesh.add( cylinder );
-
-        const cylinder2 = cylinder.clone();
-        cylinder2.rotation.y = Math.PI / 4;
-        cylinder2.scale.set( 1.5, 1, 1.5);
-
-        this.mesh.add( cylinder2 );
+        this.createThruster();
 
         this.mixer = new THREE.AnimationMixer( this.mesh );
         this.mixer.clipAction( this.model.animations[ 0 ] ).play();
@@ -150,6 +77,138 @@ export default class Ship {
 
         //window.l.current_scene.effects.particles.createShipThruster(this, 1.5, { x: 0, y: 1.2, z: 1.6 });
 
+    }
+
+    createThrusterMesh( options ) {
+        let geometry = false,
+            texture = false,
+            material = false,    
+            mesh = false;
+
+        switch(options.geometry) {
+            case 'cone':
+                geometry = new THREE.ConeGeometry(
+                    options.radius,
+                    options.height,
+                    options.radialSegments,
+                );
+                break;
+            
+            case 'cylinder':
+                geometry = new THREE.CylinderGeometry(
+                    options.radius, // radiusTop
+                    options.radius, // radiusBottom
+                    options.height,
+                    options.radialSegments,
+                );
+                geometry.openEnded = true;
+                break;
+        }
+
+        texture = new THREE.VideoTexture( this.thruster.videoElement );
+        texture.colorSpace = THREE.SRGBColorSpace;
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = THREE.RepeatWrapping;
+        texture.repeat.set( 1, options.texture_repeat );
+        texture.rotation = - Math.PI / 2;
+
+        const parameters = { map: texture, transparent: true };
+
+        material = new THREE.MeshBasicMaterial( parameters );
+
+        material.blending = THREE.CustomBlending;
+        material.blendSrc = THREE.SrcAlphaFactor;
+        material.blendDst = THREE.OneMinusSrcAlphaFactor ;
+        material.blendEquation = THREE.Multi;
+
+        // Nest material in an array so it only paints the first face of the cylinder.
+        if ( options.geometry == 'cylinder' ) {
+            material = [
+                material,
+                new THREE.MeshBasicMaterial( { visible: false } ), 
+                new THREE.MeshBasicMaterial( { visible: false } )
+            ];
+        }
+
+        mesh = new THREE.Mesh( geometry, material );
+
+        return mesh;
+    }
+
+    // Uses a video texture to create a jet engine afterburner effect
+    createThruster() {
+        this.thruster = {
+            container: new THREE.Object3D(),
+            containerPosition: {
+                x: 0,
+                y: 1.2,
+                z: 1.5
+            },
+            rearConeBurner: false,
+            centralConeBurner: false,
+            innerCylBurner: false,
+            outerCylBurner: false,
+            videoElement: false,
+        };
+
+        // Setup the thruster container which will contain the other meshes.
+        this.thruster.container.rotation.x = Math.PI / 2;
+        this.thruster.container.position.set(
+            this.thruster.containerPosition.x,
+            this.thruster.containerPosition.y,
+            this.thruster.containerPosition.z,
+        );
+
+        // Instantiate the video element for reuse
+        this.thruster.videoElement = document.getElementById( 'thruster' );
+        this.thruster.videoElement.play();
+        this.thruster.videoElement.playbackRate = 0.25;
+
+        // Setup rear cone burner.
+        this.thruster.rearConeBurner = this.createThrusterMesh({
+            geometry: 'cone',
+            radius: 0.3,
+            height: 0.3,
+            radialSegments: 8,
+            texture_repeat: 8,
+        });
+        this.thruster.rearConeBurner.position.z = - 0.05;
+        this.thruster.container.add( this.thruster.rearConeBurner );
+
+        // Setup central cone burner.
+        this.thruster.centralConeBurner = this.createThrusterMesh({
+            geometry: 'cone',
+            radius: 0.3,
+            height: 2,
+            radialSegments: 8,
+            texture_repeat: 8,
+        });
+        this.thruster.centralConeBurner.rotation.y = Math.PI / 4;
+        this.thruster.container.add( this.thruster.centralConeBurner );
+
+        // Setup the inner cylinder burner
+        this.thruster.innerCylBurner = this.createThrusterMesh({
+            geometry: 'cylinder',
+            radius: 0.15,
+            height: 0.75,
+            radialSegments: 16,
+            texture_repeat: 4,
+        });
+        this.thruster.container.add( this.thruster.innerCylBurner );
+
+        // Setup the outer cylinder burner
+        this.thruster.outerCylBurner = this.createThrusterMesh({
+            geometry: 'cylinder',
+            radius: 0.25,
+            height: 0.75,
+            radialSegments: 16,
+            texture_repeat: 8,
+        });
+        this.thruster.outerCylBurner.rotation.y = Math.PI / 4;
+        this.thruster.container.add( this.thruster.outerCylBurner );
+
+        // Add the thruster container to the mesh.
+        this.mesh.add(this.thruster.container);
     }
 
     // Tween for the ship intro sequence.
@@ -380,7 +439,7 @@ export default class Ship {
             // @todo delete these overrides
             window.l.current_scene.camera.position.x = -10+ window.l.current_scene.scene_objects.ship.mesh.position.x;
             window.l.current_scene.camera.position.z = window.l.current_scene.scene_objects.ship.mesh.position.z;
-            window.l.current_scene.camera.position.y = 5 + window.l.current_scene.scene_objects.ship.mesh.position.y;
+            window.l.current_scene.camera.position.y = 1.5 + window.l.current_scene.scene_objects.ship.mesh.position.y;
             
 
             window.l.current_scene.camera.lookAt(window.l.current_scene.scene_objects.ship.mesh.position);
@@ -396,7 +455,18 @@ export default class Ship {
             //     window.l.controls.orbit.update();
             // }
 
+            // Update ship thruster
+            window.l.current_scene.scene_objects.ship.animateThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.rearConeBurner, 1 );
+            window.l.current_scene.scene_objects.ship.animateThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.centralConeBurner, 2 );
+ 
+            window.l.current_scene.scene_objects.ship.thruster.videoElement.playbackRate = 0.25 + Math.abs(window.l.current_scene.scene_objects.ship.state.airSpeed);
+
         }
+    }
+
+    animateThruster( airSpeed, burnerMesh, ratio ) {
+        burnerMesh.scale.y = 1 + Math.abs( airSpeed ) * ratio;
+        burnerMesh.position.y = Math.abs( airSpeed ) * ratio * 0.5;
     }
 
     

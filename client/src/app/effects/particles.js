@@ -23,9 +23,9 @@ function createShipThruster (ship, scale, position) {
 			map: window.l.current_scene.loaders.texture.load("/assets/textures/ember.png?nocache", assignSRGB),
 			size: .35 * scale,
 			blending: THREE.AdditiveBlending,
-			opacity: 0.9,
+			opacity: 0.15,
 			transparent: true,
-			alphaTest: 0.3
+			alphaTest: 0.1
 		  });
     
 
@@ -86,7 +86,7 @@ function animateShipThrusters (delta) {
 				
 				let dz = Math.abs( pz - iz );
 				if (dz > plasma.min_z * velocity && dz < plasma.max_z * velocity) {
-					dz -= Math.sin(i * delta) * .6321 * velocity;
+					dz -= Math.sin(i * delta) * .321 * velocity;
 				}
 				else {
 					dz = plasma.max_z - .05 * velocity;
@@ -96,8 +96,7 @@ function animateShipThrusters (delta) {
 
 				positions.array[i * 3 ] = Math.sin(i) * 0.01 + Math.random() * (sputter * -2) + sputter;
 				positions.array[i * 3 + 1] = Math.cos(i) * 0.01 + Math.random() * (sputter * -2) + sputter;
-				positions.array[i * 3 + 2] = dz;
-				
+				positions.array[i * 3 + 2] = dz + Math.random() * (5 * sputter * -2) + 5 * sputter;
 			}
 
         }

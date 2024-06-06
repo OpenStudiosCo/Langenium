@@ -75,7 +75,7 @@ export default class Ship {
         window.l.current_scene.tweens.shipEnterY = this.shipEnterY();
         window.l.current_scene.tweens.shipEnterZ = this.shipEnterZ();
 
-        //window.l.current_scene.effects.particles.createShipThruster(this, 1.5, { x: 0, y: 1.2, z: 1.6 });
+        window.l.current_scene.effects.particles.createShipThruster(this, 1.5, { x: 0, y: 1.2, z: 1.5 });
 
     }
 
@@ -258,7 +258,7 @@ export default class Ship {
 
                 // Set the ship as ready.
                 window.l.current_scene.scene_objects.ship.ready = true;
-                window.l.current_scene.scene_objects.ship.camera_distance = -20 + (window.l.current_scene.room_depth / 2);
+                window.l.current_scene.scene_objects.ship.camera_distance = -30 + (window.l.current_scene.room_depth / 2);
                 window.l.current_scene.scene_objects.ship.state.position.x = window.l.current_scene.scene_objects.ship.mesh.position.x;
                 window.l.current_scene.scene_objects.ship.state.position.y = window.l.current_scene.scene_objects.ship.mesh.position.y;
                 window.l.current_scene.scene_objects.ship.state.position.z = window.l.current_scene.scene_objects.ship.mesh.position.z;
@@ -450,8 +450,9 @@ export default class Ship {
             // Update ship thruster
             window.l.current_scene.scene_objects.ship.animateThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.centralConeBurner, 1.5 );
             window.l.current_scene.scene_objects.ship.animateThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.outerCylBurner, 1.5 );
- 
-            window.l.current_scene.scene_objects.ship.thruster.videoElement.playbackRate = 0.25 + Math.abs(window.l.current_scene.scene_objects.ship.state.airSpeed);
+            
+            // Limit playback rate to 5x as large values freak out the browser.
+            window.l.current_scene.scene_objects.ship.thruster.videoElement.playbackRate = Math.min( 5, 0.25 + Math.abs(window.l.current_scene.scene_objects.ship.state.airSpeed) );
 
         }
     }

@@ -258,7 +258,7 @@ export default class Ship {
 
                 // Set the ship as ready.
                 window.l.current_scene.scene_objects.ship.ready = true;
-                window.l.current_scene.scene_objects.ship.camera_distance = -10;// -20 + (window.l.current_scene.room_depth / 2);
+                window.l.current_scene.scene_objects.ship.camera_distance = -20 + (window.l.current_scene.room_depth / 2);
                 window.l.current_scene.scene_objects.ship.state.position.x = window.l.current_scene.scene_objects.ship.mesh.position.x;
                 window.l.current_scene.scene_objects.ship.state.position.y = window.l.current_scene.scene_objects.ship.mesh.position.y;
                 window.l.current_scene.scene_objects.ship.state.position.z = window.l.current_scene.scene_objects.ship.mesh.position.z;
@@ -432,17 +432,9 @@ export default class Ship {
                 window.l.current_scene.camera.position.y += tY;
             }
             
-            // @todo: Uncomment these to release locked camera for thruster effects work
-            // window.l.current_scene.camera.position.x += xDiff;
-            // window.l.current_scene.camera.position.z += zDiff;
+            window.l.current_scene.camera.position.x += xDiff;
+            window.l.current_scene.camera.position.z += zDiff;
             
-            // @todo delete these overrides
-            window.l.current_scene.camera.position.x = -10+ window.l.current_scene.scene_objects.ship.mesh.position.x;
-            window.l.current_scene.camera.position.z = window.l.current_scene.scene_objects.ship.mesh.position.z;
-            window.l.current_scene.camera.position.y = 1.5 + window.l.current_scene.scene_objects.ship.mesh.position.y;
-            
-
-            window.l.current_scene.camera.lookAt(window.l.current_scene.scene_objects.ship.mesh.position);
             window.l.current_scene.camera.updateProjectionMatrix();
 
             // if (window.l.controls.orbit) {
@@ -456,9 +448,8 @@ export default class Ship {
             // }
 
             // Update ship thruster
-            window.l.current_scene.scene_objects.ship.animateThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.centralConeBurner, 0.5 );
-
-            window.l.current_scene.scene_objects.ship.animateThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.outerCylBurner, 0.5 );
+            window.l.current_scene.scene_objects.ship.animateThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.centralConeBurner, 1.5 );
+            window.l.current_scene.scene_objects.ship.animateThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.outerCylBurner, 1.5 );
  
             window.l.current_scene.scene_objects.ship.thruster.videoElement.playbackRate = 0.25 + Math.abs(window.l.current_scene.scene_objects.ship.state.airSpeed);
 

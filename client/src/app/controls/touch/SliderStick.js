@@ -1,9 +1,9 @@
 import * as utils from './utils.js'
 
 
-class MovementPad {
+class SliderStick {
     container
-    padElement
+    stickElement
     region
     handle
     eventRepeatTimeout
@@ -14,15 +14,15 @@ class MovementPad {
 
     constructor(container) {
         this.container = container
-        this.padElement = document.createElement('div')
-        this.padElement.classList.add('movement-pad')
+        this.stickElement = document.createElement('div')
+        this.stickElement.classList.add('slider-stick')
         this.region = document.createElement('div')
         this.region.classList.add('region')
         this.handle = document.createElement('div')
         this.handle.classList.add('handle')
         this.region.appendChild(this.handle)
-        this.padElement.append(this.region)
-        this.container.append(this.padElement)
+        this.stickElement.append(this.region)
+        this.container.append(this.stickElement)
 
         // Aligning pad:
         let canvas = container.getElementsByTagName('canvas')[0]
@@ -38,12 +38,12 @@ class MovementPad {
             this.update(event.pageX, event.pageY)
         })
 
-        document.addEventListener('mouseup', () => {
+        this.stickElement.addEventListener('mouseup', () => {
             this.mouseDown = false
             this.resetHandlePosition()
         })
 
-        document.addEventListener('mousemove', (event) => {
+        this.stickElement.addEventListener('mousemove', (event) => {
             if (!this.mouseDown)
                 return
             this.update(event.pageX, event.pageY)
@@ -63,10 +63,10 @@ class MovementPad {
             this.mouseDown = false
             this.resetHandlePosition()
         }
-        document.addEventListener('touchend', touchEnd)
-        document.addEventListener('touchcancel', touchEnd)
+        this.stickElement.addEventListener('touchend', touchEnd)
+        this.stickElement.addEventListener('touchcancel', touchEnd)
 
-        document.addEventListener('touchmove', (event) => {
+        this.stickElement.addEventListener('touchmove', (event) => {
             if (!this.mouseDown)
                 return
             this.update(event.touches[0].pageX, event.touches[0].pageY)
@@ -75,10 +75,10 @@ class MovementPad {
         this.resetHandlePosition()
     }
 
-    alignAndConfigPad(canvas) {
-        this.padElement.style.top = canvas.height + this.container.getBoundingClientRect().top
-                                    - this.region.offsetHeight - 10 + 'px'
-        this.padElement.style.left = '20px'
+    alignAndConfigPad(canvas){
+        this.stickElement.style.top = canvas.height + this.container.getBoundingClientRect().top
+                                    - this.region.offsetHeight - 175 + 'px'
+        this.stickElement.style.left = canvas.offsetWidth - this.region.offsetWidth - 20 + 'px'
 
         this.regionData.width = this.region.offsetWidth
         this.regionData.height = this.region.offsetHeight
@@ -89,13 +89,13 @@ class MovementPad {
         this.regionData.offset = utils.getOffset(this.region)
         this.regionData.radius = this.regionData.width / 2
         this.regionData.centerX = this.regionData.position.left + this.regionData.radius
-        this.regionData.centerY = this.regionData.position.top + this.regionData.radius
+        this.regionData.centerY = this.regionData.position.top + (this.regionData.height / 2)
 
         this.handleData.width = this.handle.offsetWidth
         this.handleData.height = this.handle.offsetHeight
-        this.handleData.radius = this.handleData.width / 2
+        this.handleData.radius = this.handleData.height / 2
 
-        this.regionData.radius = this.regionData.width / 2 - this.handleData.radius
+        this.regionData.radius = this.regionData.height / 2 - this.handleData.height
     }
 
     update(pageX, pageY) {
@@ -135,7 +135,7 @@ class MovementPad {
 
         if (!this.mouseDown) {
             const stopEvent = new Event('stopMove', {bubbles: false})
-            this.padElement.dispatchEvent(stopEvent)
+            this.stickElement.dispatchEvent(stopEvent)
             return
         }
 
@@ -151,20 +151,15 @@ class MovementPad {
                 'middle': middle
             }
         })
-        this.padElement.dispatchEvent(moveEvent)
+        this.stickElement.dispatchEvent(moveEvent)
     }
 
     resetHandlePosition() {
         this.handle.style.top = this.regionData.centerY - this.handleData.radius + 'px'
         this.handle.style.left = this.regionData.centerX - this.handleData.radius + 'px'
         this.handle.style.opacity = 0.1
-        // this.handle.animate({
-        //     top: this.regionData.centerY - this.handleData.radius,
-        //     left: this.regionData.centerX - this.handleData.radius,
-        //     opacity: 0.1
-        // }, "fast")
     }
 }
 
 
-export default MovementPad
+export default SliderStick

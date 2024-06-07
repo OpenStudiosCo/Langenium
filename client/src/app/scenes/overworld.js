@@ -65,11 +65,11 @@ export default class Overworld extends SceneBase {
     // Render the composer
     if (
       // Effects loaded.
-      (window.l.current_scene.effects.passes && window.l.current_scene.effects.passes.length > 0) &&
+      (window.l.current_scene.effects.postprocessing.passes && window.l.current_scene.effects.postprocessing.passes.length > 0) &&
       // Not fast mode.
       (!window.l.current_scene.fast)
     ) {
-      window.l.current_scene.effects.render();
+      window.l.current_scene.effects.postprocessing.render();
     } else {
       window.l.current_scene.renderers.webgl.render(window.l.current_scene.scene, window.l.current_scene.camera); // Render the scene without the effects
     }
@@ -82,10 +82,7 @@ export default class Overworld extends SceneBase {
     window.l.current_scene.scene = new THREE.Scene();
     window.l.current_scene.scene.visible = false;
 
-    if (!window.l.current_scene.fast) {
-      window.l.current_scene.renderers.webgl.shadowMap.enabled = true;
-      setupEffects();
-    }
+    setupEffects();
 
     // Enable the effects layer, default of 11 for postprocessing bloom
     window.l.current_scene.camera.layers.enable(11);

@@ -18,10 +18,6 @@ export default class SceneBase {
       this.camera = false;
 
       /**
-       * Multi input controls
-       */
-      this.controls = false;
-      /**
        * Debug mode.
        * 
        * @memberof Boolean
@@ -33,7 +29,10 @@ export default class SceneBase {
        * 
        * @memberof Object { postprocessing.EffectComposer }
        */
-      this.effects = false;
+      this.effects = {
+        particles: false,
+        postprocessing: false
+      };
 
       /**
        * Exit sign.

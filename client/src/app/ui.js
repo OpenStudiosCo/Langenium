@@ -14,6 +14,9 @@ export default class UI {
     // Custom class for controlling flight control UI
     flight_instruments;
 
+    // Control the menu pane, needed by touch controls which activate later.
+    main_menu;
+
     // Array of callbacks and data for updating UI
     update_queue;
     

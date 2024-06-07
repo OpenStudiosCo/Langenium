@@ -31,11 +31,11 @@ export default class KeyboardControls {
     }
 
     onKeyDown ( event ) {
-        window.l.current_scene.controls.keyboard.onKeyChange ( event );
+        window.l.controls.keyboard.onKeyChange ( event );
     }
     
     onKeyUp ( event ) {
-        window.l.current_scene.controls.keyboard.onKeyChange ( event );
+        window.l.controls.keyboard.onKeyChange ( event );
     }
 
     onKeyChange ( event ) {
@@ -45,12 +45,12 @@ export default class KeyboardControls {
         // update this.keyCodes
         var keyCode		= event.keyCode
         var pressed		= event.type === 'keydown' ? true : false
-        window.l.current_scene.controls.keyboard.keyCodes[keyCode]	= pressed
+        window.l.controls.keyboard.keyCodes[keyCode]	= pressed
         // update this.modifiers
-        window.l.current_scene.controls.keyboard.modifiers['shift']	= event.shiftKey
-        window.l.current_scene.controls.keyboard.modifiers['ctrl']	= event.ctrlKey
-        window.l.current_scene.controls.keyboard.modifiers['alt']	= event.altKey
-        window.l.current_scene.controls.keyboard.modifiers['meta']	= event.metaKey
+        window.l.controls.keyboard.modifiers['shift']	= event.shiftKey
+        window.l.controls.keyboard.modifiers['ctrl']	= event.ctrlKey
+        window.l.controls.keyboard.modifiers['alt']	= event.altKey
+        window.l.controls.keyboard.modifiers['meta']	= event.metaKey
 
     }
 
@@ -61,11 +61,11 @@ export default class KeyboardControls {
             var key		= keys[i]
             var pressed	= false
             if( MODIFIERS.indexOf( key ) !== -1 ){
-                pressed	= window.l.current_scene.controls.keyboard.modifiers[key];
+                pressed	= window.l.controls.keyboard.modifiers[key];
             }else if( Object.keys(ALIAS).indexOf( key ) != -1 ){
-                pressed	= window.l.current_scene.controls.keyboard.keyCodes[ ALIAS[key] ];
+                pressed	= window.l.controls.keyboard.keyCodes[ ALIAS[key] ];
             }else {
-                pressed	= window.l.current_scene.controls.keyboard.keyCodes[key.toUpperCase().charCodeAt(0)]
+                pressed	= window.l.controls.keyboard.keyCodes[key.toUpperCase().charCodeAt(0)]
             }
             if( !pressed)	return false;
         };

@@ -17,32 +17,32 @@ export default class Controls {
     touch;
 
     constructor() {
-        
+        this.keyboard = new KeyboardControls();
+
+        // this.orbit = new OrbitControls(window.l.current_scene.camera, window.l.current_scene.renderers.webgl.domElement);
+        // this.orbit.target.set(0,10.775,0);
+
+        this.touch = new TouchControls();
+
     }
 
     activate() {
         // Indicate that game controls are active.
         window.l.current_scene.settings.game_controls = true;
+        window.l.controls.touch.activate();
 
-        window.l.current_scene.controls.keyboard = new KeyboardControls();
-
-        // this.orbit = new OrbitControls(window.l.current_scene.camera, window.l.current_scene.renderers.webgl.domElement);
-        // this.orbit.target.set(0,10.775,0);
-        // this.orbit.update();
-
-        window.l.current_scene.controls.touch = new TouchControls();
         window.addEventListener(
             "keydown",
-            window.l.current_scene.controls.keyboard.onKeyDown,
+            window.l.controls.keyboard.onKeyDown,
             false
         );
         window.addEventListener(
             "keyup",
-            window.l.current_scene.controls.keyboard.onKeyUp,
+            window.l.controls.keyboard.onKeyUp,
             false
         );
         window.l.current_scene.animation_queue.push(
-            window.l.current_scene.controls.animate
+            window.l.controls.animate
         );
 
     }
@@ -50,19 +50,21 @@ export default class Controls {
     deactivate() {
         // Indicate that game controls are inactive.
         window.l.current_scene.settings.game_controls = false;
+
+        window.l.controls.touch.deactivate();
         
         window.removeEventListener(
             "keydown",
-            window.l.current_scene.controls.keyboard.onKeyDown
+            window.l.controls.keyboard.onKeyDown
         );
         window.removeEventListener(
             "keyup",
-            window.l.current_scene.controls.keyboard.onKeyUp
+            window.l.controls.keyboard.onKeyUp
         );
 
         // Remove this item from the scene controls from the main animation queue.
         window.l.current_scene.animation_queue.filter(
-            animation_queue_update => animation_queue_update !== window.l.current_scene.controls.animate
+            animation_queue_update => animation_queue_update !== window.l.controls.animate
         );
 
         // @todo Test and uncomment.
@@ -71,12 +73,10 @@ export default class Controls {
         //     stats.dom.remove();
         // }
 
-        window.l.current_scene.controls.keyboard = false;
-        window.l.current_scene.controls.touch = false;
     }
 
     animate() {
-        if (window.l.current_scene.controls.orbit)
-            window.l.current_scene.controls.orbit.update();
+        if (window.l.controls.orbit)
+            window.l.controls.orbit.update();
     }
 }

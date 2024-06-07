@@ -29,6 +29,9 @@ export default class Ship {
     // Aircraft flight sim data like airspeed.
     state;
 
+    // Object containing elements that drive the ships thruster.
+    thruster;
+
     constructor() {
         this.camera_distance = 0;
 
@@ -41,7 +44,7 @@ export default class Ship {
     async load() {
         
 
-        this.model = await window.l.current_scene.loaders.gtlf.loadAsync( './assets/models/mercenary3.glb');
+        this.model = await window.l.current_scene.loaders.gtlf.loadAsync( './assets/models/mercenary4.glb');
 
         let amount = window.l.current_scene.fast ? 5 : 2.5;
 
@@ -63,6 +66,8 @@ export default class Ship {
         this.mesh.position.z = window.l.current_scene.room_depth;
         this.mesh.rotation.order = 'YXZ';
 
+        this.createThruster();
+
         this.mixer = new THREE.AnimationMixer( this.mesh );
         this.mixer.clipAction( this.model.animations[ 0 ] ).play();
         this.mixer.clipAction( this.model.animations[ 1 ] ).play();
@@ -70,6 +75,140 @@ export default class Ship {
         window.l.current_scene.tweens.shipEnterY = this.shipEnterY();
         window.l.current_scene.tweens.shipEnterZ = this.shipEnterZ();
 
+        window.l.current_scene.effects.particles.createShipThruster(this, 1.5, { x: 0, y: 1.2, z: 1.5 });
+
+    }
+
+    createThrusterMesh( options ) {
+        let geometry = false,
+            texture = false,
+            material = false,    
+            mesh = false;
+
+        switch(options.geometry) {
+            case 'cone':
+                geometry = new THREE.ConeGeometry(
+                    options.radius,
+                    options.height,
+                    options.radialSegments,
+                );
+                break;
+            
+            case 'cylinder':
+                geometry = new THREE.CylinderGeometry(
+                    options.radius, // radiusTop
+                    options.radius, // radiusBottom
+                    options.height,
+                    options.radialSegments,
+                );
+                geometry.openEnded = true;
+                break;
+        }
+
+        texture = new THREE.VideoTexture( this.thruster.videoElement );
+        texture.colorSpace = THREE.SRGBColorSpace;
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = THREE.RepeatWrapping;
+        texture.repeat.set( 1, options.texture_repeat );
+        texture.rotation = - Math.PI / 2;
+
+        const parameters = { map: texture, transparent: true };
+
+        material = new THREE.MeshBasicMaterial( parameters );
+
+        material.blending = THREE.CustomBlending;
+        material.blendSrc = THREE.SrcAlphaFactor;
+        material.blendDst = THREE.OneFactor ;
+        material.blendEquation = THREE.Multi;
+
+        // Nest material in an array so it only paints the first face of the cylinder.
+        if ( options.geometry == 'cylinder' ) {
+            material = [
+                material,
+                new THREE.MeshBasicMaterial( { visible: false } ), 
+                new THREE.MeshBasicMaterial( { visible: false } )
+            ];
+        }
+
+        mesh = new THREE.Mesh( geometry, material );
+
+        return mesh;
+    }
+
+    // Uses a video texture to create a jet engine afterburner effect
+    createThruster() {
+        this.thruster = {
+            container: new THREE.Object3D(),
+            containerPosition: {
+                x: 0,
+                y: 1.2,
+                z: 1.5
+            },
+            rearConeBurner: false,
+            centralConeBurner: false,
+            innerCylBurner: false,
+            outerCylBurner: false,
+            videoElement: false,
+        };
+
+        // Setup the thruster container which will contain the other meshes.
+        this.thruster.container.rotation.x = Math.PI / 2;
+        this.thruster.container.position.set(
+            this.thruster.containerPosition.x,
+            this.thruster.containerPosition.y,
+            this.thruster.containerPosition.z,
+        );
+
+        // Instantiate the video element for reuse
+        this.thruster.videoElement = document.getElementById( 'thruster' );
+        this.thruster.videoElement.play();
+        this.thruster.videoElement.playbackRate = 0.25;
+
+        // Setup rear cone burner.
+        this.thruster.rearConeBurner = this.createThrusterMesh({
+            geometry: 'cone',
+            radius: 0.3,
+            height: 0.3,
+            radialSegments: 8,
+            texture_repeat: 8,
+        });
+        this.thruster.rearConeBurner.position.z = - 0.05;
+        this.thruster.container.add( this.thruster.rearConeBurner );
+
+        // Setup central cone burner.
+        this.thruster.centralConeBurner = this.createThrusterMesh({
+            geometry: 'cone',
+            radius: 0.3,
+            height: 2,
+            radialSegments: 8,
+            texture_repeat: 8,
+        });
+        this.thruster.centralConeBurner.rotation.y = Math.PI / 4;
+        this.thruster.container.add( this.thruster.centralConeBurner );
+
+        // Setup the inner cylinder burner
+        this.thruster.innerCylBurner = this.createThrusterMesh({
+            geometry: 'cylinder',
+            radius: 0.15,
+            height: 0.75,
+            radialSegments: 16,
+            texture_repeat: 4,
+        });
+        this.thruster.container.add( this.thruster.innerCylBurner );
+
+        // Setup the outer cylinder burner
+        this.thruster.outerCylBurner = this.createThrusterMesh({
+            geometry: 'cylinder',
+            radius: 0.25,
+            height: 0.75,
+            radialSegments: 16,
+            texture_repeat: 8,
+        });
+        this.thruster.outerCylBurner.rotation.y = Math.PI / 4;
+        this.thruster.container.add( this.thruster.outerCylBurner );
+
+        // Add the thruster container to the mesh.
+        this.mesh.add(this.thruster.container);
     }
 
     // Tween for the ship intro sequence.
@@ -104,8 +243,8 @@ export default class Ship {
             .onComplete(() => {
 
                 // Turn off bloom from the other scene.
-                if (window.l.current_scene.effects && window.l.current_scene.effects.passes.length > 0) {
-                    window.l.current_scene.effects.passes.forEach(( effectPass ) => {
+                if (window.l.current_scene.effects.postprocessing && window.l.current_scene.effects.postprocessing.passes.length > 0) {
+                    window.l.current_scene.effects.postprocessing.passes.forEach(( effectPass ) => {
                         if ( effectPass.name =='EffectPass' ) {
                             effectPass.effects.forEach( ( effect ) => {
                                 if ( effect.name == 'BloomEffect' ) {
@@ -119,7 +258,7 @@ export default class Ship {
 
                 // Set the ship as ready.
                 window.l.current_scene.scene_objects.ship.ready = true;
-                window.l.current_scene.scene_objects.ship.camera_distance = -20 + (window.l.current_scene.room_depth / 2);
+                window.l.current_scene.scene_objects.ship.camera_distance = -30 + (window.l.current_scene.room_depth / 2);
                 window.l.current_scene.scene_objects.ship.state.position.x = window.l.current_scene.scene_objects.ship.mesh.position.x;
                 window.l.current_scene.scene_objects.ship.state.position.y = window.l.current_scene.scene_objects.ship.mesh.position.y;
                 window.l.current_scene.scene_objects.ship.state.position.z = window.l.current_scene.scene_objects.ship.mesh.position.z;
@@ -257,8 +396,8 @@ export default class Ship {
 
                 window.l.current_scene.camera.position.x = xDiff + window.l.current_scene.scene_objects.ship.camera_distance * Math.sin(window.l.current_scene.scene_objects.ship.mesh.rotation.y);
                 window.l.current_scene.camera.position.z = zDiff + window.l.current_scene.scene_objects.ship.camera_distance * Math.cos(window.l.current_scene.scene_objects.ship.mesh.rotation.y);
-                window.l.current_scene.camera.rotation.y += rY * 1.1;
-
+                window.l.current_scene.camera.rotation.y += rY * .9;
+                
             }
             else {
 
@@ -295,6 +434,7 @@ export default class Ship {
             
             window.l.current_scene.camera.position.x += xDiff;
             window.l.current_scene.camera.position.z += zDiff;
+            
             window.l.current_scene.camera.updateProjectionMatrix();
 
             // if (window.l.controls.orbit) {
@@ -307,7 +447,19 @@ export default class Ship {
             //     window.l.controls.orbit.update();
             // }
 
+            // Update ship thruster
+            window.l.current_scene.scene_objects.ship.animateThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.centralConeBurner, 1.5 );
+            window.l.current_scene.scene_objects.ship.animateThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.outerCylBurner, 1.5 );
+            
+            // Limit playback rate to 5x as large values freak out the browser.
+            window.l.current_scene.scene_objects.ship.thruster.videoElement.playbackRate = Math.min( 5, 0.25 + Math.abs(window.l.current_scene.scene_objects.ship.state.airSpeed) );
+
         }
+    }
+
+    animateThruster( airSpeed, burnerMesh, ratio ) {
+        burnerMesh.scale.y = 1 + Math.abs( airSpeed ) * ratio;
+        burnerMesh.position.y = Math.abs( airSpeed ) * ratio * 0.5;
     }
 
     

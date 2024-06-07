@@ -206,14 +206,14 @@ function flickerEffect() {
  */
 function enterTheOffice() {
   let coords = { x: 15 + window.l.current_scene.room_depth / 2 }; // Start at (0, 0)
-  let targetZ = -20 + window.l.current_scene.room_depth / 2;
+  let targetZ = -30 + window.l.current_scene.room_depth / 2;
   return new TWEEN.Tween(coords, false) // Create a new tween that modifies 'coords'.
     .to({ x: targetZ }, window.l.current_scene.skipintro ? 0 : 1000) // Move to (300, 200) in 1 second.
     .easing(TWEEN.Easing.Quadratic.InOut) // Use an easing function to make the animation smooth.
     .onUpdate(() => {
       // Turn off bloom from the other scene.
-      if (window.l.current_scene.effects && window.l.current_scene.effects.passes.length > 0) {
-        window.l.current_scene.effects.passes.forEach(( effectPass ) => {
+      if (window.l.current_scene.effects.postprocessing && window.l.current_scene.effects.postprocessing.passes.length > 0) {
+        window.l.current_scene.effects.postprocessing.passes.forEach(( effectPass ) => {
           if ( effectPass.name =='EffectPass' ) {
             effectPass.effects.forEach( ( effect ) => {
               if ( effect.name == 'BloomEffect' ) {

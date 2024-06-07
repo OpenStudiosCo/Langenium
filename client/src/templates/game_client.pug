@@ -76,6 +76,8 @@ html(lang='en')
         #webgl-wrapper
             canvas#loader_symbols
             canvas#loader_image
+            video#thruster( autoplay="true" muted="muted" loop crossOrigin="anonymous" playsinline style="display:none")
+                source( src="/assets/textures/thruster.mp4" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"')
             h1#loadingSign
                 div Loading
                 img(src='/assets/images/tail-spin.svg' alt='Loading spinner')

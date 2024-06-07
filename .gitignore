@@ -1,6 +1,6 @@
 # Ignore vendor folders
 node_modules
-docs
+#docs
 .vscode
 
 # SSH keys

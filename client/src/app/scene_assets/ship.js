@@ -396,7 +396,7 @@ export default class Ship {
 
                 window.l.current_scene.camera.position.x = xDiff + window.l.current_scene.scene_objects.ship.camera_distance * Math.sin(window.l.current_scene.scene_objects.ship.mesh.rotation.y);
                 window.l.current_scene.camera.position.z = zDiff + window.l.current_scene.scene_objects.ship.camera_distance * Math.cos(window.l.current_scene.scene_objects.ship.mesh.rotation.y);
-                window.l.current_scene.camera.rotation.y += rY * 1.1;
+                window.l.current_scene.camera.rotation.y += rY * .9;
                 
             }
             else {

@@ -5,6 +5,8 @@
  */
 import * as THREE from 'three';
 
+import { TrailRenderer } from '../../vendor/TrailRenderer.js';
+
 import {brightenMaterial} from '../materials.js';
 
 import Valiant from '../../../../game/src/objects/aircraft/valiant';
@@ -31,6 +33,9 @@ export default class Ship {
 
     // Object containing elements that drive the ships thruster.
     thruster;
+
+    // TrailRenderer effect showing a trailing effect on the thruster.
+    trail;
 
     constructor() {
         this.camera_distance = 0;
@@ -75,8 +80,56 @@ export default class Ship {
         window.l.current_scene.tweens.shipEnterY = this.shipEnterY();
         window.l.current_scene.tweens.shipEnterZ = this.shipEnterZ();
 
-        window.l.current_scene.effects.particles.createShipThruster(this, 1.5, { x: 0, y: 1.2, z: 1.5 });
+        //window.l.current_scene.effects.particles.createShipThruster(this, 1.5, { x: 0, y: 1.2, z: 1.5 });
 
+        // specify points to create planar trail-head geometry
+        const trailHeadGeometry = this.createTrailCircle();
+
+        // create the trail renderer object
+        this.trail = new TrailRenderer( window.l.current_scene.scene, false );
+
+        // set how often a new trail node will be added and existing nodes will be updated
+        this.trail.setAdvanceFrequency(60);
+
+        // create material for the trail renderer
+        const trailMaterial = TrailRenderer.createBaseMaterial();
+
+        trailMaterial.depthWrite = true;
+
+        trailMaterial.side = THREE.DoubleSide;
+
+        trailMaterial.uniforms.headColor.value.set( 255 / 255 , 212 / 255, 148/255, .8 ); // RGBA.
+        trailMaterial.uniforms.tailColor.value.set( 132 / 255, 42 /255, 36 / 255, .0 ); // RGBA.
+
+        // specify length of trail
+        const trailLength = 10;
+
+        const trailContainer = new THREE.Object3D();
+        trailContainer.position.set(0,1.25,1.15);
+        this.mesh.add(trailContainer);
+
+        // initialize the trail
+        this.trail.initialize( trailMaterial, trailLength, false, 0, trailHeadGeometry, trailContainer );
+
+        // activate the trail
+        this.trail.activate();
+
+    }
+
+    createTrailCircle() {
+        let circlePoints = [];
+        const twoPI = Math.PI * 2;
+        let index = 0;
+        const scale = .25;
+        const inc = twoPI / 32.0;
+
+        for (let i = 0; i <= twoPI + inc; i+= inc)  {
+            const vector = new THREE.Vector3();
+            vector.set(Math.cos(i) * scale, Math.sin(i) * scale, 0);
+            circlePoints[ index ] = vector;
+            index++;
+        }
+        return circlePoints;
     }
 
     createThrusterMesh( options ) {
@@ -119,7 +172,7 @@ export default class Ship {
         material.blending = THREE.CustomBlending;
         material.blendSrc = THREE.SrcAlphaFactor;
         material.blendDst = THREE.OneFactor ;
-        material.blendEquation = THREE.Multi;
+        material.blendEquation = THREE.AddEquation;
 
         // Nest material in an array so it only paints the first face of the cylinder.
         if ( options.geometry == 'cylinder' ) {
@@ -353,6 +406,10 @@ export default class Ship {
         else {
             if ( ! window.l.controls.touch.controls.rotationPad.mouseDown )
                 window.l.current_scene.camera.rotation.x *= .9;
+        }
+
+        if (this.trail) {
+            this.trail.update();
         }
     }
 

@@ -8,6 +8,7 @@ import SceneBase from "./base";
  * Scene assets
  */
 import Ocean from "../scene_assets/ocean";
+import Platform from "../scene_assets/platform";
 import Sky from "../scene_assets/sky";
 import Ship from "../scene_assets/ship";
 
@@ -121,6 +122,19 @@ export default class Overworld extends SceneBase {
     );
     window.l.current_scene.animation_queue.push(
       window.l.current_scene.scene_objects.ship.animate
+    );
+
+    // Setup Platform
+    window.l.current_scene.scene_objects.platform = new Platform();
+    await window.l.current_scene.scene_objects.platform.load();
+    window.l.current_scene.scene_objects.platform.mesh.position.z = -5000;
+    window.l.current_scene.scene_objects.platform.mesh.position.x = -2500;
+    window.l.current_scene.scene_objects.platform.mesh.rotation.y = - Math.PI / 4;
+    window.l.current_scene.scene.add(
+      window.l.current_scene.scene_objects.platform.mesh
+    );
+    window.l.current_scene.animation_queue.push(
+      window.l.current_scene.scene_objects.platform.animate
     );
 
     // Adjust ambient light intensity

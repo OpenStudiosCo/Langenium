@@ -64,7 +64,7 @@ export default class BaseAircraft {
 
                 // Check if the change puts us over the max.
                 let tempVelocity = newVelocity + stepDecrease;
-                if (Math.abs(decreaseMax) >= Math.abs(tempVelocity))
+                if (Math.abs(decreaseMax) >= tempVelocity)
                     newVelocity = tempVelocity;
             }
             else {
@@ -72,7 +72,7 @@ export default class BaseAircraft {
 
                     if (Math.abs(newVelocity) > 0.1) {
                         // Ease out the velocity exponentially to simulate drag
-                        newVelocity *= easeOutExpo( dragFactor );
+                        newVelocity *= dragFactor;
                     }
                     else {
                         newVelocity = 0;
@@ -97,21 +97,16 @@ export default class BaseAircraft {
             tY:                 number = 0,
             radian:             number = (Math.PI / 180);
 
-        function calculateStep(currentVelocity, changeMax) {
-            let ratio = Math.abs(currentVelocity) / changeMax;
-            return easeInOutExpo( 1 - ratio );
-        }
-
         // Update Airspeed (horizontal velocity)
         this.airSpeed = this._changeVelocity(
-            stepSize * calculateStep(this.airSpeed, this.maxForward),
-            stepSize * calculateStep(this.airSpeed, this.maxBackward),
+            stepSize * easeInOutExpo( 1 - ( Math.abs ( this.airSpeed ) / this.maxForward ) ),
+            stepSize,
             this.airSpeed,
             this.controls.throttleUp,
             this.controls.throttleDown,
             this.maxForward,
             this.maxBackward,
-            0.987
+            easeOutExpo( 0.987 )
         );
 
         // Update Vertical Speed (velocity)
@@ -123,7 +118,7 @@ export default class BaseAircraft {
             this.controls.moveUp,
             this.maxDown,
             this.maxUp,
-            0.321
+            easeInQuad( 0.321 )
         );
 
          // Check the vertical speed exceeds minimum threshold for change in vertical position

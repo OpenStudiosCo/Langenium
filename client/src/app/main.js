@@ -29,6 +29,28 @@ window.l.scenograph = new Scenograph();
  */
 window.l.current_scene = window.l.scenograph.load("Overworld");
 
+window.l.select_box = function( object ) {
+  // Remove any existing select boxes
+  if (window.l.current_scene.scene_objects.select_box) {
+    window.l.current_scene.scene.remove(window.l.current_scene.scene_objects.select_box);
+    delete window.l.current_scene.scene_objects.select_box;
+  }
+
+  const box = new THREE.BoxHelper( object, 0xffff00 );
+  window.l.current_scene.scene_objects.select_box = box;
+  window.l.current_scene.scene.add(window.l.current_scene.scene_objects.select_box);
+
+  window.l.current_scene.animation_queue.push(
+    window.l.select_box_update
+  );
+}
+
+window.l.select_box_update = function () {
+  window.l.current_scene.scene_objects.select_box.position.copy( window.l.current_scene.scene_objects.select_box.object.position );
+  window.l.current_scene.scene_objects.select_box.rotation.copy( window.l.current_scene.scene_objects.select_box.object.rotation );
+  window.l.current_scene.scene_objects.select_box.update();
+}
+
 /**
  * Game client initialiser, called by window.l when it's finished loading.
  */

@@ -89,6 +89,10 @@ html(lang='en')
                 include ../shaders/cloud.vert
             script(type='x-shader/x-vertex', id='cloudFragShader')
                 include ../shaders/cloud.frag
+            script(type='x-shader/x-vertex', id='proceduralMetalVertShader')
+                include ../shaders/proceduralMetal.vert
+            script(type='x-shader/x-vertex', id='proceduralMetalFragShader')
+                include ../shaders/proceduralMetal.frag
             script#vertexshader(type='x-shader/x-vertex').
                 varying vec2 vUv;
                 void main() {

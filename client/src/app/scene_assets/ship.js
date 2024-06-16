@@ -7,7 +7,7 @@ import * as THREE from 'three';
 
 import { TrailRenderer } from '../../vendor/TrailRenderer.js';
 
-import {brightenMaterial} from '../materials.js';
+import {brightenMaterial, proceduralMetalMaterial} from '../materials.js';
 
 import Valiant from '../../../../game/src/objects/aircraft/valiant';
 
@@ -15,6 +15,9 @@ export default class Ship {
 
     // Camera distance.
     camera_distance;
+
+    // Default camera distance.
+    default_camera_distance;
 
     // Ship Model (gltf)
     model;
@@ -38,6 +41,7 @@ export default class Ship {
     trail;
 
     constructor() {
+        this.default_camera_distance = -50; // -40 normally
         this.camera_distance = 0;
 
         this.ready = false;
@@ -61,7 +65,15 @@ export default class Ship {
 
                 child.original_material = child.material.clone();
 
-                brightenMaterial(child.material, amount);
+                if (child.name != 'Fuselage') {
+                    child.material = proceduralMetalMaterial({
+                        scale: 2.8
+                    });
+
+                }
+                else {
+                    brightenMaterial(child.material, amount);
+                }
 
             }
     
@@ -311,7 +323,7 @@ export default class Ship {
 
                 // Set the ship as ready.
                 window.l.current_scene.scene_objects.ship.ready = true;
-                window.l.current_scene.scene_objects.ship.camera_distance = -30 + (window.l.current_scene.room_depth / 2);
+                window.l.current_scene.scene_objects.ship.camera_distance = window.l.current_scene.scene_objects.ship.default_camera_distance + (window.l.current_scene.room_depth / 2);
                 window.l.current_scene.scene_objects.ship.state.position.x = window.l.current_scene.scene_objects.ship.mesh.position.x;
                 window.l.current_scene.scene_objects.ship.state.position.y = window.l.current_scene.scene_objects.ship.mesh.position.y;
                 window.l.current_scene.scene_objects.ship.state.position.z = window.l.current_scene.scene_objects.ship.mesh.position.z;

@@ -34,3 +34,17 @@ export function brightenMaterial(material, amount) {
 
   return material;
 }
+
+export function proceduralMetalMaterial(settings) {
+
+  let material = new THREE.ShaderMaterial( {
+    vertexShader:   document.getElementById( 'proceduralMetalVertShader'   ).textContent,
+    fragmentShader: document.getElementById( 'proceduralMetalFragShader' ).textContent,
+    uniforms: {
+      scale: { value: settings.scale || 5.0 }
+    }
+  } );
+
+  return material;
+
+}

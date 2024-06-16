@@ -206,7 +206,7 @@ function flickerEffect() {
  */
 function enterTheOffice() {
   let coords = { x: 15 + window.l.current_scene.room_depth / 2 }; // Start at (0, 0)
-  let targetZ = -30 + window.l.current_scene.room_depth / 2;
+  let targetZ = window.l.current_scene.scene_objects.ship.default_camera_distance + window.l.current_scene.room_depth / 2;
   return new TWEEN.Tween(coords, false) // Create a new tween that modifies 'coords'.
     .to({ x: targetZ }, window.l.current_scene.skipintro ? 0 : 1000) // Move to (300, 200) in 1 second.
     .easing(TWEEN.Easing.Quadratic.InOut) // Use an easing function to make the animation smooth.

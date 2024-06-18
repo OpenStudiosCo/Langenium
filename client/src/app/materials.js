@@ -37,6 +37,12 @@ export function brightenMaterial(material, amount) {
 
 export function proceduralMetalMaterial(settings) {
 
+  const gradientGLSL = document.getElementById( 'gradientGLSL' ).textContent;
+  const voronoiGLSL = document.getElementById( 'voronoiGLSL' ).textContent;
+  
+  THREE.ShaderChunk['gradient'] = gradientGLSL;
+  THREE.ShaderChunk['voronoi'] = voronoiGLSL;
+
   let material = new THREE.ShaderMaterial( {
     vertexShader:   document.getElementById( 'proceduralMetalVertShader'   ).textContent,
     fragmentShader: document.getElementById( 'proceduralMetalFragShader' ).textContent,

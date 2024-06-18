@@ -85,13 +85,17 @@ html(lang='en')
             include ../templates/flight_instruments.pug
             #webgl
             // Shaders
+            script(type='x-shader/x-vertex', id='gradientGLSL')
+                include ../shaders/common/gradient.glsl
+            script(type='x-shader/x-vertex', id='voronoiGLSL')
+                include ../shaders/common/voronoi.glsl
             script(type='x-shader/x-vertex', id='cloudVertShader')
                 include ../shaders/cloud.vert
-            script(type='x-shader/x-vertex', id='cloudFragShader')
+            script(type='x-shader/x-fragment', id='cloudFragShader')
                 include ../shaders/cloud.frag
             script(type='x-shader/x-vertex', id='proceduralMetalVertShader')
                 include ../shaders/proceduralMetal.vert
-            script(type='x-shader/x-vertex', id='proceduralMetalFragShader')
+            script(type='x-shader/x-fragment', id='proceduralMetalFragShader')
                 include ../shaders/proceduralMetal.frag
             script#vertexshader(type='x-shader/x-vertex').
                 varying vec2 vUv;

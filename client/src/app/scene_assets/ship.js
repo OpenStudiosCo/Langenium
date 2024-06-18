@@ -69,7 +69,7 @@ export default class Ship {
 
                     child.material = proceduralMetalMaterial({
                         uniforms: {
-                            scale:      { value: 1.4 },  // Scale
+                            scale:      { value: 0.7 },  // Scale
                             roughness:  { value: 0.5 },  // Roughness
                             lacunarity: { value: 2.0 },  // Lacunarity
                             randomness: { value: 1.0 },   // Randomness

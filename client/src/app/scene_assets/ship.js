@@ -75,10 +75,10 @@ export default class Ship {
 
                     child.material = proceduralMetalMaterial({
                         uniforms: {
-                            scale:      { value: scale },  // Scale
-                            roughness:  { value: 0.5 },  // Roughness
-                            lacunarity: { value: 2.0 },  // Lacunarity
-                            randomness: { value: 1.0 },   // Randomness
+                            scale:      { value: scale },                       // Scale
+                            lacunarity: { value: 2.0 },                         // Lacunarity
+                            randomness: { value: 1.0 },                         // Randomness
+                            emitColour: { value: new THREE.Color( 0xFF0000 )}   // Emission colour
                         }
                     });
 

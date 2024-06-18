@@ -25,7 +25,8 @@ vec4 voronoi(vec3 coord) {
     vec3 cellPosition = floor(coord);
     vec3 localPosition = coord - cellPosition;
 
-    float minDistance = 8.0f;
+    float minDistance = 3.402823466e+38;  // max value
+;
     vec3 targetOffset = vec3(0);
     vec3 targetPosition = vec3(0);
     vec4 result = vec4(0.0); // Initialize result as vec4 to store color and displacement

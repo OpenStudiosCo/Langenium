@@ -3,6 +3,7 @@ varying vec3 vNormal;
 varying vec3 vViewPosition;
 
 uniform sampler2D noiseTexture;
+uniform vec3 emitColour;
 
 uniform float randomness; 
 varying vec3 vUv;       
@@ -43,8 +44,8 @@ void main() {
     );
 
     vec3 emissionColor = getGradient(
-        vec4( 0., 0., 0., 0.61 ),
-        vec4( 1., 0., 0., 0.63 ),
+        vec4( 0.02, 0.02, 0.02, 0.61 ),
+        vec4( emitColour, 0.63 ),
         voronoiValue.a
     );
     

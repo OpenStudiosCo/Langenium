@@ -3,7 +3,6 @@ varying vec3 vNormal;
 varying vec3 vViewPosition;
 
 uniform float scale;      // Scale to adjust the size of the Voronoi cells
-uniform float roughness;  // Roughness affects the smoothness of the Voronoi texture
 uniform float lacunarity; // Lacunarity controls the gap between frequencies
 uniform float randomness; // Lacunarity controls the gap between frequencies
 varying vec3 vUv;         // Varying variable to voronoi value to the fragment shader

@@ -1,18 +1,12 @@
-uniform float scale;      // Scale to adjust the size of the Voronoi cells
-uniform float roughness;  // Roughness affects the smoothness of the Voronoi texture
-uniform float lacunarity; // Lacunarity controls the gap between frequencies
 uniform float randomness; 
-varying vec3 vUv;
-varying float displacement;
-varying vec3 vColor;         // Varying variable to pass color value to the fragment shader
+varying vec3 vUv;       
 
 #include <gradient> // Include the gradient functions
 #include <voronoi> // Include the voronoi functions
 
 void main() {
 
-    vec3 uvScaled = vUv * scale * lacunarity;   
-    vec4 voronoiValue = voronoi(uvScaled); // Get the distance from Voronoi function
+    vec4 voronoiValue = voronoi(vUv); // Get the distance from Voronoi function
 
     vec3 baseColor = getGradient(
         vec4( .02, .02, .02, 0.41 ),
@@ -28,5 +22,8 @@ void main() {
     );
     
     gl_FragColor = vec4(baseColor, 1.0) + vec4(emissionColor, 1.0);
-    //gl_FragColor = vec4(vColor, 1.0);
+
+    //vec3 color = mix(vVoronoiColor.rgb, voronoiValue.rgb, 0.5);
+    // gl_FragColor = vec4(vVoronoiColor.rgb, 1.0);
+    // gl_FragColor = vec4(voronoiValue.rgb, 1.0);
 }

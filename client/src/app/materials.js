@@ -40,10 +40,11 @@ export function proceduralMetalMaterial(settings) {
   let material = new THREE.ShaderMaterial( {
     vertexShader:   document.getElementById( 'proceduralMetalVertShader'   ).textContent,
     fragmentShader: document.getElementById( 'proceduralMetalFragShader' ).textContent,
-    uniforms: {
-      scale: { value: settings.scale || 5.0 }
-    }
+    uniforms: settings.uniforms
   } );
+
+  material.metalness = 0.9;
+  material.roughess = 0.1;
 
   return material;
 

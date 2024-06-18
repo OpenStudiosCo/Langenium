@@ -66,8 +66,14 @@ export default class Ship {
                 child.original_material = child.material.clone();
 
                 if (child.name != 'Fuselage') {
+
                     child.material = proceduralMetalMaterial({
-                        scale: 2.8
+                        uniforms: {
+                            scale:      { value: 1.4 },  // Scale
+                            roughness:  { value: 0.5 },  // Roughness
+                            lacunarity: { value: 2.0 },  // Lacunarity
+                            randomness: { value: 1.0 },   // Randomness
+                        }
                     });
 
                 }
@@ -517,11 +523,15 @@ export default class Ship {
             // }
 
             // Update ship thruster
-            window.l.current_scene.scene_objects.ship.animateThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.centralConeBurner, 1.5 );
-            window.l.current_scene.scene_objects.ship.animateThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.outerCylBurner, 1.5 );
+            window.l.current_scene.scene_objects.ship.animateThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.centralConeBurner, .5 );
+            window.l.current_scene.scene_objects.ship.animateThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.outerCylBurner, .5 );
             
             // Limit playback rate to 5x as large values freak out the browser.
             window.l.current_scene.scene_objects.ship.thruster.videoElement.playbackRate = Math.min( 5, 0.25 + Math.abs(window.l.current_scene.scene_objects.ship.state.airSpeed) );
+
+
+            // Fix the trail being too far behind.
+            window.l.current_scene.scene_objects.ship.trail.targetObject.position.z = 1.15 - Math.abs( window.l.current_scene.scene_objects.ship.state.airSpeed );
 
         }
     }

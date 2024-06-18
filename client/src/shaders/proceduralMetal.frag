@@ -27,6 +27,6 @@ void main() {
         voronoiValue.a
     );
     
-    //gl_FragColor = vec4(baseColor, 1.0) + vec4(emissionColor, 1.0);
-    gl_FragColor = vec4(vColor, 1.0);
+    gl_FragColor = vec4(baseColor, 1.0) + vec4(emissionColor, 1.0);
+    //gl_FragColor = vec4(vColor, 1.0);
 }

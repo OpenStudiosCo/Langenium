@@ -16,15 +16,20 @@ void main() {
     // Calculate Voronoi value for displacement and color
     vec4 voronoiResult = voronoi(uvScaled);
     
-    // Calculate displacement
-    displacement = (voronoiResult.a - 0.5) * 0.2;
-    
-    // Displace the vertex along its normal
-    vec3 displacedPosition = position + normal * displacement;
+    // // Calculate displacement
+    // if ( voronoiResult.r < 0.5 && voronoiResult.g < 0.5 && voronoiResult.b < 0.5  ) {
+    //     voronoiResult.rgb *= vec3(-1.0); //(voronoiResult.a) ;
+    // }
 
-    // Pass color value to fragment shader
+    // float displacementScale = .2;
+
+    // // Displace the vertex along its normal
+    // vec3 displacedPosition = position + normal * voronoiResult.rgb * displacementScale;
+
+    // // Pass color value to fragment shader
     vColor = voronoiResult.rgb;
 
     // Standard transformations
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+
 }

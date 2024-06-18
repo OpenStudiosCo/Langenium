@@ -41,7 +41,7 @@ export default class Ship {
     trail;
 
     constructor() {
-        this.default_camera_distance = -50; // -40 normally
+        this.default_camera_distance = window.innerWidth < window.innerHeight ? -80 : -40;
         this.camera_distance = 0;
 
         this.ready = false;

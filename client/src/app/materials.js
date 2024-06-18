@@ -43,6 +43,13 @@ export function proceduralMetalMaterial(settings) {
   THREE.ShaderChunk['gradient'] = gradientGLSL;
   THREE.ShaderChunk['voronoi'] = voronoiGLSL;
 
+
+  // @todo: Move into a common helper / in memory store.
+  let noiseTexture2 = window.l.current_scene.loaders.texture.load( './assets/textures/noise2.jpg' );
+  noiseTexture2.wrapS = noiseTexture2.wrapT = THREE.RepeatWrapping;
+
+  settings.uniforms.noiseTexture = noiseTexture2;
+
   let material = new THREE.ShaderMaterial( {
     vertexShader:   document.getElementById( 'proceduralMetalVertShader'   ).textContent,
     fragmentShader: document.getElementById( 'proceduralMetalFragShader' ).textContent,

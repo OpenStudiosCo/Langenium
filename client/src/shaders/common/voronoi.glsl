@@ -8,7 +8,6 @@ vec3 Hash_3D_to_3D(vec3 k){
     return vec3(fract(sin(st) * 2304.2002));
 }
 
-
 //Chebyshev Distance 
 float Checyshev3D(vec3 p){
     return max(max(abs(p.x),abs(p.y)),abs(p.z));

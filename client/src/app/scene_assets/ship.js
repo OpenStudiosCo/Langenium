@@ -65,11 +65,17 @@ export default class Ship {
 
                 child.original_material = child.material.clone();
 
+                let scale = 0.7;
+
+                if (child.name == 'Chassis') {
+                    scale = 1.05;
+                }
+
                 if (child.name != 'Fuselage') {
 
                     child.material = proceduralMetalMaterial({
                         uniforms: {
-                            scale:      { value: 0.7 },  // Scale
+                            scale:      { value: scale },  // Scale
                             roughness:  { value: 0.5 },  // Roughness
                             lacunarity: { value: 2.0 },  // Lacunarity
                             randomness: { value: 1.0 },   // Randomness

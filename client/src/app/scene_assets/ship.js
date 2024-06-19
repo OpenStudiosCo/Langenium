@@ -127,7 +127,7 @@ export default class Ship {
         trailMaterial.uniforms.tailColor.value.set( 132 / 255, 42 /255, 36 / 255, .0 ); // RGBA.
 
         // specify length of trail
-        const trailLength = 10;
+        const trailLength = 5;
 
         const trailContainer = new THREE.Object3D();
         trailContainer.position.set(0,1.25,this.trail_position_z);
@@ -191,7 +191,6 @@ export default class Ship {
         texture.rotation = - Math.PI / 2;
 
         const parameters = {
-            alphaTest: 0.1,
             depthWrite: false,
             map: texture,
             transparent: true,
@@ -251,7 +250,7 @@ export default class Ship {
         this.thruster.rearConeBurner = this.createThrusterMesh({
             geometry: 'cone',
             radius: 0.3,
-            height: 0.3,
+            height: 0.6,
             radialSegments: 8,
             texture_repeat: 8,
         });
@@ -262,7 +261,7 @@ export default class Ship {
         this.thruster.centralConeBurner = this.createThrusterMesh({
             geometry: 'cone',
             radius: 0.3,
-            height: 1,
+            height: 2,
             radialSegments: 8,
             texture_repeat: 8,
         });
@@ -273,7 +272,7 @@ export default class Ship {
         this.thruster.innerCylBurner = this.createThrusterMesh({
             geometry: 'cylinder',
             radius: 0.15,
-            height: 0.5,
+            height: 0.75,
             radialSegments: 16,
             texture_repeat: 4,
         });
@@ -283,7 +282,7 @@ export default class Ship {
         this.thruster.outerCylBurner = this.createThrusterMesh({
             geometry: 'cylinder',
             radius: 0.25,
-            height: 0.5,
+            height: 0.75,
             radialSegments: 16,
             texture_repeat: 8,
         });

@@ -42,6 +42,7 @@ export default class Ship {
 
     constructor() {
         this.default_camera_distance = window.innerWidth < window.innerHeight ? -80 : -40;
+        this.trail_position_y = 1.2;
         this.trail_position_z = 1.5;
         this.camera_distance = 0;
 
@@ -123,6 +124,8 @@ export default class Ship {
 
         trailMaterial.side = THREE.DoubleSide;
 
+        trailMaterial.transparent = true;
+
         trailMaterial.uniforms.headColor.value.set( 255 / 255 , 212 / 255, 148/255, .8 ); // RGBA.
         trailMaterial.uniforms.tailColor.value.set( 132 / 255, 42 /255, 36 / 255, .0 ); // RGBA.
 
@@ -130,7 +133,7 @@ export default class Ship {
         const trailLength = 5;
 
         const trailContainer = new THREE.Object3D();
-        trailContainer.position.set(0,1.25,this.trail_position_z);
+        trailContainer.position.set(0,this.trail_position_y,this.trail_position_z);
         this.mesh.add(trailContainer);
 
         // initialize the trail
@@ -535,18 +538,33 @@ export default class Ship {
                 window.l.controls.orbit.update();
             }
 
-            // Update ship thruster
-            window.l.current_scene.scene_objects.ship.animateThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.centralConeBurner, .5 );
-            window.l.current_scene.scene_objects.ship.animateThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.outerCylBurner, .5 );
-            
-            // Limit playback rate to 5x as large values freak out the browser.
-            window.l.current_scene.scene_objects.ship.thruster.videoElement.playbackRate = Math.min( 5, 0.25 + Math.abs(window.l.current_scene.scene_objects.ship.state.airSpeed) );
-
 
             // Fix the trail being too far behind.
-            let trailOffset = window.l.current_scene.scene_objects.ship.trail_position_z - Math.abs( window.l.current_scene.scene_objects.ship.state.airSpeed );
+            let trailOffset = 0;
+
+            // Only offset the trail effect if we are going forward.
+            if ( window.l.current_scene.scene_objects.ship.state.airSpeed < 0 ) {
+
+                // Update ship thruster
+                window.l.current_scene.scene_objects.ship.animateThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.centralConeBurner, .5 );
+                window.l.current_scene.scene_objects.ship.animateThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.outerCylBurner, .5 );
+
+                // Limit playback rate to 5x as large values freak out the browser.
+                window.l.current_scene.scene_objects.ship.thruster.videoElement.playbackRate = Math.min( 5, 0.25 + Math.abs(window.l.current_scene.scene_objects.ship.state.airSpeed) );
+
+                trailOffset += window.l.current_scene.scene_objects.ship.trail_position_z - Math.abs( window.l.current_scene.scene_objects.ship.state.airSpeed );
+
+                window.l.current_scene.scene_objects.ship.trail.mesh.material.uniforms.headColor.value.set( 255 / 255 , 212 / 255, 148/255, .8 ); // RGBA.
+            }
+            else {
+                window.l.current_scene.scene_objects.ship.trail.mesh.material.uniforms.headColor.value.set( 255 / 255 , 212 / 255, 148/255, 0 ); // RGBA.
+            }
+
+            // Shift the trail effect backward if we are going up or down so it doesn't clip into the aircraft.
             trailOffset += Math.abs(window.l.current_scene.scene_objects.ship.state.verticalSpeed) / 2;
-            window.l.current_scene.scene_objects.ship.trail.targetObject.position.y = 1.25 + window.l.current_scene.scene_objects.ship.state.verticalSpeed;
+
+            // Update the trail position based on above calculations.
+            window.l.current_scene.scene_objects.ship.trail.targetObject.position.y = window.l.current_scene.scene_objects.ship.trail_position_y + window.l.current_scene.scene_objects.ship.state.verticalSpeed;
             window.l.current_scene.scene_objects.ship.trail.targetObject.position.z = trailOffset;
 
         }

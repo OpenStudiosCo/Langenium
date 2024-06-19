@@ -19,9 +19,6 @@ export default class Controls {
     constructor() {
         this.keyboard = new KeyboardControls();
 
-        this.orbit = new OrbitControls(window.l.current_scene.camera, window.l.current_scene.renderers.webgl.domElement);
-        this.orbit.target.set(0,10.775,0);
-
         this.touch = new TouchControls();
 
     }
@@ -33,6 +30,9 @@ export default class Controls {
         if ( window.l.controls.touch ) {
             window.l.controls.touch.activate();
         }
+
+        window.l.controls.orbit = new OrbitControls(window.l.current_scene.camera, window.l.current_scene.renderers.webgl.domElement);
+        window.l.controls.orbit.target.set(0,10.775,0);
 
         window.addEventListener(
             "keydown",

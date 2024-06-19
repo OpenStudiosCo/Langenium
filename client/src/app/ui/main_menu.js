@@ -132,35 +132,38 @@ export default class Main_Menu {
                 readonly: true,
                 interval: 200
             })
+
+            if ( window.l.controls.touch ) {
     
-            const touchControlStats = debugging.addFolder({
-                title: 'Touch Controls State',
-            });
-    
-            touchControlStats.addBinding(window.l.controls.touch.controls, 'moveForward', {
-                readonly: true,
-                interval: 200
-            })
-            touchControlStats.addBinding(window.l.controls.touch.controls, 'moveBackward', {
-                readonly: true,
-                interval: 200
-            })
-            touchControlStats.addBinding(window.l.controls.touch.controls, 'moveLeft', {
-                readonly: true,
-                interval: 200
-            })
-            touchControlStats.addBinding(window.l.controls.touch.controls, 'moveRight', {
-                readonly: true,
-                interval: 200
-            })
-            touchControlStats.addBinding(window.l.controls.touch.controls, 'moveUp', {
-                readonly: true,
-                interval: 200
-            })
-            touchControlStats.addBinding(window.l.controls.touch.controls, 'moveDown', {
-                readonly: true,
-                interval: 200
-            })
+                const touchControlStats = debugging.addFolder({
+                    title: 'Touch Controls State',
+                });
+        
+                touchControlStats.addBinding(window.l.controls.touch.controls, 'moveForward', {
+                    readonly: true,
+                    interval: 200
+                })
+                touchControlStats.addBinding(window.l.controls.touch.controls, 'moveBackward', {
+                    readonly: true,
+                    interval: 200
+                })
+                touchControlStats.addBinding(window.l.controls.touch.controls, 'moveLeft', {
+                    readonly: true,
+                    interval: 200
+                })
+                touchControlStats.addBinding(window.l.controls.touch.controls, 'moveRight', {
+                    readonly: true,
+                    interval: 200
+                })
+                touchControlStats.addBinding(window.l.controls.touch.controls, 'moveUp', {
+                    readonly: true,
+                    interval: 200
+                })
+                touchControlStats.addBinding(window.l.controls.touch.controls, 'moveDown', {
+                    readonly: true,
+                    interval: 200
+                })
+            }
         }
 
         return this.pane;

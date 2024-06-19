@@ -19,8 +19,8 @@ export default class Controls {
     constructor() {
         this.keyboard = new KeyboardControls();
 
-        // this.orbit = new OrbitControls(window.l.current_scene.camera, window.l.current_scene.renderers.webgl.domElement);
-        // this.orbit.target.set(0,10.775,0);
+        this.orbit = new OrbitControls(window.l.current_scene.camera, window.l.current_scene.renderers.webgl.domElement);
+        this.orbit.target.set(0,10.775,0);
 
         this.touch = new TouchControls();
 
@@ -29,7 +29,10 @@ export default class Controls {
     activate() {
         // Indicate that game controls are active.
         window.l.current_scene.settings.game_controls = true;
-        window.l.controls.touch.activate();
+
+        if ( window.l.controls.touch ) {
+            window.l.controls.touch.activate();
+        }
 
         window.addEventListener(
             "keydown",
@@ -51,7 +54,9 @@ export default class Controls {
         // Indicate that game controls are inactive.
         window.l.current_scene.settings.game_controls = false;
 
-        window.l.controls.touch.deactivate();
+        if ( window.l.controls.touch ) {
+            window.l.controls.touch.deactivate();
+        }
         
         window.removeEventListener(
             "keydown",

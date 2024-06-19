@@ -42,6 +42,7 @@ export default class Ship {
 
     constructor() {
         this.default_camera_distance = window.innerWidth < window.innerHeight ? -80 : -40;
+        this.trail_position_z = 1.5;
         this.camera_distance = 0;
 
         this.ready = false;
@@ -129,7 +130,7 @@ export default class Ship {
         const trailLength = 10;
 
         const trailContainer = new THREE.Object3D();
-        trailContainer.position.set(0,1.25,1.15);
+        trailContainer.position.set(0,1.25,this.trail_position_z);
         this.mesh.add(trailContainer);
 
         // initialize the trail
@@ -189,7 +190,12 @@ export default class Ship {
         texture.repeat.set( 1, options.texture_repeat );
         texture.rotation = - Math.PI / 2;
 
-        const parameters = { map: texture, transparent: true };
+        const parameters = {
+            alphaTest: 0.1,
+            depthWrite: false,
+            map: texture,
+            transparent: true,
+        };
 
         material = new THREE.MeshBasicMaterial( parameters );
 
@@ -256,7 +262,7 @@ export default class Ship {
         this.thruster.centralConeBurner = this.createThrusterMesh({
             geometry: 'cone',
             radius: 0.3,
-            height: 2,
+            height: 1,
             radialSegments: 8,
             texture_repeat: 8,
         });
@@ -267,7 +273,7 @@ export default class Ship {
         this.thruster.innerCylBurner = this.createThrusterMesh({
             geometry: 'cylinder',
             radius: 0.15,
-            height: 0.75,
+            height: 0.5,
             radialSegments: 16,
             texture_repeat: 4,
         });
@@ -277,7 +283,7 @@ export default class Ship {
         this.thruster.outerCylBurner = this.createThrusterMesh({
             geometry: 'cylinder',
             radius: 0.25,
-            height: 0.75,
+            height: 0.5,
             radialSegments: 16,
             texture_repeat: 8,
         });
@@ -362,36 +368,38 @@ export default class Ship {
 
                 window.l.current_scene.scene_objects.ship.state.controls[controlName] = false;
 
-                // Check if any touchpad controls are being pressed
-                if (
-                    window.l.controls.touch.controls.moveUp ||
-                    window.l.controls.touch.controls.moveDown ||
-                    window.l.controls.touch.controls.moveForward ||
-                    window.l.controls.touch.controls.moveBackward ||
-                    window.l.controls.touch.controls.moveLeft ||
-                    window.l.controls.touch.controls.moveRight
-                ) {
-                    changing = true;
-                    if ( window.l.controls.touch.controls.moveUp ) {
-                        window.l.current_scene.scene_objects.ship.state.controls.moveUp = true;
+                if ( window.l.controls.touch ) {
+                    // Check if any touchpad controls are being pressed
+                    if (
+                        window.l.controls.touch.controls.moveUp ||
+                        window.l.controls.touch.controls.moveDown ||
+                        window.l.controls.touch.controls.moveForward ||
+                        window.l.controls.touch.controls.moveBackward ||
+                        window.l.controls.touch.controls.moveLeft ||
+                        window.l.controls.touch.controls.moveRight
+                    ) {
+                        changing = true;
+                        if ( window.l.controls.touch.controls.moveUp ) {
+                            window.l.current_scene.scene_objects.ship.state.controls.moveUp = true;
+                        }
+                        if ( window.l.controls.touch.controls.moveDown ) {
+                            window.l.current_scene.scene_objects.ship.state.controls.moveDown = true;
+                        }
+                        if ( window.l.controls.touch.controls.moveForward ) {
+                            window.l.current_scene.scene_objects.ship.state.controls.throttleUp = true;
+                        }
+                        if ( window.l.controls.touch.controls.moveBackward ) {
+                            window.l.current_scene.scene_objects.ship.state.controls.throttleDown = true;
+                        }
+                        if ( window.l.controls.touch.controls.moveLeft ) {
+                            window.l.current_scene.scene_objects.ship.state.controls.moveLeft = true;
+                        }
+                        if ( window.l.controls.touch.controls.moveRight ) {
+                            window.l.current_scene.scene_objects.ship.state.controls.moveRight = true;
+                        }
                     }
-                    if ( window.l.controls.touch.controls.moveDown ) {
-                        window.l.current_scene.scene_objects.ship.state.controls.moveDown = true;
-                    }
-                    if ( window.l.controls.touch.controls.moveForward ) {
-                        window.l.current_scene.scene_objects.ship.state.controls.throttleUp = true;
-                    }
-                    if ( window.l.controls.touch.controls.moveBackward ) {
-                        window.l.current_scene.scene_objects.ship.state.controls.throttleDown = true;
-                    }
-                    if ( window.l.controls.touch.controls.moveLeft ) {
-                        window.l.current_scene.scene_objects.ship.state.controls.moveLeft = true;
-                    }
-                    if ( window.l.controls.touch.controls.moveRight ) {
-                        window.l.current_scene.scene_objects.ship.state.controls.moveRight = true;
-                    }
+                    
                 }
-                
             }
         }
         window.l.current_scene.scene_objects.ship.state.controls.changing = changing;
@@ -407,7 +415,7 @@ export default class Ship {
         if (window.l.current_scene.scene_objects.ship.state.controls.throttleDown || window.l.current_scene.scene_objects.ship.state.controls.throttleUp) {
             let pitchChange = window.l.current_scene.scene_objects.ship.state.controls.throttleUp ? -1 : 1;
             if (Math.abs(window.l.current_scene.scene_objects.ship.mesh.rotation.x) < 1 / 4 ) {
-                window.l.current_scene.scene_objects.ship.mesh.rotation.x += pitchChange / 1 / 180 ;
+                window.l.current_scene.scene_objects.ship.mesh.rotation.x += pitchChange / 10 / 180 ;
             }
         }
 
@@ -419,7 +427,7 @@ export default class Ship {
         ) {
             let elevationChange = window.l.current_scene.scene_objects.ship.state.controls.moveDown ? -1 : 1;
             if (Math.abs(window.l.current_scene.scene_objects.ship.mesh.rotation.x) < 1 / 8) {
-                window.l.current_scene.scene_objects.ship.mesh.rotation.x += elevationChange / 1 / 180 ;
+                window.l.current_scene.scene_objects.ship.mesh.rotation.x += elevationChange / 10 / 180 ;
             }
             
             if (Math.abs(window.l.current_scene.camera.rotation.x) < 1 / 8) {
@@ -428,7 +436,7 @@ export default class Ship {
             }
         }
         else {
-            if ( ! window.l.controls.touch.controls.rotationPad.mouseDown )
+            if ( window.l.controls.touch && ! window.l.controls.touch.controls.rotationPad.mouseDown )
                 window.l.current_scene.camera.rotation.x *= .9;
         }
 
@@ -485,7 +493,7 @@ export default class Ship {
                 // Check there is y difference and the rotation pad isn't being pressed.                   
                 if (
                     window.l.current_scene.camera.rotation.y != window.l.current_scene.scene_objects.ship.mesh.rotation.y &&
-                    ! window.l.controls.touch.controls.rotationPad.mouseDown
+                    ( window.l.controls.touch && ! window.l.controls.touch.controls.rotationPad.mouseDown )
                 ) {
 
                     // Get the difference in y rotation betwen the camera and ship
@@ -518,15 +526,15 @@ export default class Ship {
             
             window.l.current_scene.camera.updateProjectionMatrix();
 
-            // if (window.l.controls.orbit) {
+            if (window.l.controls.orbit) {
             
-            //     window.l.controls.orbit.target.set(
-            //         window.l.current_scene.scene_objects.ship.mesh.position.x,
-            //         window.l.current_scene.scene_objects.ship.mesh.position.y,
-            //         window.l.current_scene.scene_objects.ship.mesh.position.z
-            //     );
-            //     window.l.controls.orbit.update();
-            // }
+                window.l.controls.orbit.target.set(
+                    window.l.current_scene.scene_objects.ship.mesh.position.x,
+                    window.l.current_scene.scene_objects.ship.mesh.position.y,
+                    window.l.current_scene.scene_objects.ship.mesh.position.z
+                );
+                window.l.controls.orbit.update();
+            }
 
             // Update ship thruster
             window.l.current_scene.scene_objects.ship.animateThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.centralConeBurner, .5 );
@@ -537,7 +545,10 @@ export default class Ship {
 
 
             // Fix the trail being too far behind.
-            window.l.current_scene.scene_objects.ship.trail.targetObject.position.z = 1.15 - Math.abs( window.l.current_scene.scene_objects.ship.state.airSpeed );
+            let trailOffset = window.l.current_scene.scene_objects.ship.trail_position_z - Math.abs( window.l.current_scene.scene_objects.ship.state.airSpeed );
+            trailOffset += Math.abs(window.l.current_scene.scene_objects.ship.state.verticalSpeed) / 2;
+            window.l.current_scene.scene_objects.ship.trail.targetObject.position.y = 1.25 + window.l.current_scene.scene_objects.ship.state.verticalSpeed;
+            window.l.current_scene.scene_objects.ship.trail.targetObject.position.z = trailOffset;
 
         }
     }

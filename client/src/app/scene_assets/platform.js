@@ -34,8 +34,20 @@ export default class Platform {
                 child.original_material = child.material.clone();
 
                 if ( child.material.name == 'Dark-Glass' ) {
-                    child.material = new THREE.MeshStandardMaterial( { color: 0x9999ff, flatShading: true, metalness: 0.5, roughness: 0 } );
-                    brightenMaterial(child.material, amount);
+                
+                    child.material = proceduralMetalMaterial({
+                        uniforms: {
+                            scale:              { value: 55.55 },                                       // Scale
+                            lacunarity:         { value: 2.0 },                                         // Lacunarity
+                            randomness:         { value: 0.01 },                                        // Randomness
+                            diffuseColour1:     { value: new THREE.Vector4( 0.25, 0.25, 0.25, 0.40) },  // Diffuse gradient colour 1
+                            diffuseColour2:     { value: new THREE.Vector4( 0.5, 0.5, 0.65, 0.43) },    // Diffuse gradient colour 2
+                            diffuseColour3:     { value: new THREE.Vector4( 0.25, 0.25, 0.25, 0.44) },  // Diffuse gradient colour 3
+                            emitColour1:        { value: new THREE.Vector4( 0.25, 0.25, 0.25, 0.61) },  // Emission gradient colour 1
+                            emitColour2:        { value: new THREE.Vector4( 1.0, 0.0, 0.0, 0.63) },     // Emission gradient colour 2
+                        }
+                    });
+                    
                 } 
                 if ( child.material.name == 'Red-Metal' ) {
                     child.material = new THREE.MeshStandardMaterial( { color: 0xAA0000, metalness: 0.1, roughness: 0.8 } );
@@ -49,10 +61,14 @@ export default class Platform {
                 if ( child.material.name == 'Light-Metal' ) {
                     child.material = proceduralMetalMaterial({
                         uniforms: {
-                            scale:      { value: 5.55 },   // Scale
-                            lacunarity: { value: 2.0 },   // Lacunarity
-                            randomness: { value: 0.0 },   // Randomness
-                            emitColour: { value: new THREE.Color( 0x333333 )}   // Emission colour
+                            scale:              { value: 5.55 },                                        // Scale
+                            lacunarity:         { value: 2.0 },                                         // Lacunarity
+                            randomness:         { value: 0.333 },                                       // Randomness
+                            diffuseColour1:     { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.40) },  // Diffuse gradient colour 1
+                            diffuseColour2:     { value: new THREE.Vector4( 0.5, 0.5, 0.5, 0.43) },     // Diffuse gradient colour 2
+                            diffuseColour3:     { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.44) },  // Diffuse gradient colour 3
+                            emitColour1:        { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.61) },  // Emission gradient colour 1
+                            emitColour2:        { value: new THREE.Vector4( 0.3, 0.3, 0.3, 0.63) },     // Emission gradient colour 2
                         }
                     });
                 }

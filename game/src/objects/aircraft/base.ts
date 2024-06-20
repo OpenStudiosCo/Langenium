@@ -10,7 +10,7 @@ import { normaliseSpeedDelta, easeOutExpo, easeInQuad, easeInOutExpo } from '../
 export default class BaseAircraft {
     public airSpeed:        number                              = 0;
     public verticalSpeed:   number                              = 0;
-    public maxForward:      number                              = 3.7;    // Reading as 200 knots on the airspeed instrument, may not be correct.
+    public maxForward:      number                              = 3.7 * 5;    // Reading as 200 knots on the airspeed instrument, may not be correct.
     public maxBackward:     number                              = 0.5;
     public maxUp:           number                              = .4;
     public maxDown:         number                              = .4;  // gravity?
@@ -91,7 +91,7 @@ export default class BaseAircraft {
      * @param time_delta 
      */
     public move( time_delta: number ): object {
-        let stepSize:           number = .01 * normaliseSpeedDelta( time_delta ),
+        let stepSize:           number = .05 * normaliseSpeedDelta( time_delta ),
             rY:                 number = 0, 
             tZ:                 number = 0, 
             tY:                 number = 0,

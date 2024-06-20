@@ -3,7 +3,11 @@ varying vec3 vNormal;
 varying vec3 vViewPosition;
 
 uniform sampler2D noiseTexture;
-uniform vec3 emitColour;
+uniform vec4 diffuseColour1;
+uniform vec4 diffuseColour2;
+uniform vec4 diffuseColour3;
+uniform vec4 emitColour1;
+uniform vec4 emitColour2;
 
 uniform float randomness; 
 varying vec3 vUv;       
@@ -37,15 +41,15 @@ void main() {
     vec4 voronoiValue = voronoi(vUv); // Get the distance from Voronoi function
 
     vec3 baseColor = getGradient(
-        vec4( vec3(0.02), 0.40 ),
-        vec4( vec3(0.5), 0.43 ),
-        vec4( vec3(0.02), 0.44 ),
+        diffuseColour1,
+        diffuseColour2,
+        diffuseColour3,
         voronoiValue.a
     );
 
     vec3 emissionColor = getGradient(
-        vec4( vec3(0.02), 0.61 ),
-        vec4( emitColour, 0.63 ),
+        emitColour1,
+        emitColour2,
         voronoiValue.a
     );
     
@@ -56,6 +60,9 @@ void main() {
 
     gl_FragColor = mix(vec4(baseColor, 1.0), vec4(emissionColor, 1.0), 0.5);
 
+    // gl_FragColor = vec4( voronoiValue.rgb,;
+
+    // @todo: Implement a switch so this is off on fast mode / low power gpus
     if ((baseColor.r > 0.05 ) ) {
 
         float n = gray;

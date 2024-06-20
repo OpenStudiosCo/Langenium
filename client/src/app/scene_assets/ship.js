@@ -77,10 +77,14 @@ export default class Ship {
 
                     child.material = proceduralMetalMaterial({
                         uniforms: {
-                            scale:      { value: scale },                       // Scale
-                            lacunarity: { value: 2.0 },                         // Lacunarity
-                            randomness: { value: 1.0 },                         // Randomness
-                            emitColour: { value: new THREE.Color( 0xFF0000 )}   // Emission colour
+                            scale:              { value: scale },                       // Scale
+                            lacunarity:         { value: 2.0 },                         // Lacunarity
+                            randomness:         { value: 1.0 },                         // Randomness
+                            diffuseColour1:     { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.40) },  // Diffuse gradient colour 1
+                            diffuseColour2:     { value: new THREE.Vector4( 0.5, 0.5, 0.5, 0.43) },     // Diffuse gradient colour 2
+                            diffuseColour3:     { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.44) },  // Diffuse gradient colour 3
+                            emitColour1:        { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.61) },  // Emission gradient colour 1
+                            emitColour2:        { value: new THREE.Vector4( 1.0, 0.0, 0.0, 0.63) },     // Emission gradient colour 2
                         }
                     });
 

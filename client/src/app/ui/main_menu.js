@@ -90,7 +90,7 @@ export default class Main_Menu {
         if ( window.l.current_scene.debug ) {
             const debugging = this.pane.addFolder({
                 title: 'Debugging',
-                expanded: false,
+                expanded: true,
             });
 
             const stats = debugging.addFolder({
@@ -114,6 +114,7 @@ export default class Main_Menu {
 
             const shipState = debugging.addFolder({
                 title: 'Ship Controls State',
+                expanded: false,
             });
 
             shipState.addBinding(window.l.current_scene.scene_objects.ship.state.controls, 'throttleUp', {
@@ -137,6 +138,7 @@ export default class Main_Menu {
     
                 const touchControlStats = debugging.addFolder({
                     title: 'Touch Controls State',
+                    expanded: false,
                 });
         
                 touchControlStats.addBinding(window.l.controls.touch.controls, 'moveForward', {

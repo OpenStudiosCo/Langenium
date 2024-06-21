@@ -5,7 +5,7 @@
  */
 import * as THREE from 'three';
 
-import { brightenMaterial, proceduralBuilding, proceduralMetalMaterial2 } from '../materials.js';
+import { proceduralBuilding, proceduralMetalMaterial2, proceduralSolarPanel } from '../materials.js';
 
 export default class Platform {
 
@@ -96,7 +96,7 @@ export default class Platform {
 
                 if ( child.material.name == 'Solar Panels' ) {
                 
-                    child.material = proceduralBuilding({
+                    child.material = proceduralSolarPanel({
                         uniforms: {
                             scale:              { value: .55 },                                        // Scale
                             lacunarity:         { value: 2.0 },                                         // Lacunarity
@@ -116,7 +116,7 @@ export default class Platform {
         } );
         
         this.mesh = this.model.scene;
-        this.mesh.scale.multiplyScalar(200);
+        this.mesh.scale.multiplyScalar(1000);
         this.mesh.rotation.order = 'YXZ';
         this.ready = true;
     }

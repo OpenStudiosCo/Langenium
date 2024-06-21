@@ -130,6 +130,38 @@ export function proceduralMetalMaterial2(settings) {
 
 }
 
+export function proceduralSolarPanel(settings) {
+
+  const brickGLSL = document.getElementById( 'brickGLSL' ).textContent;
+  const gradientGLSL = document.getElementById( 'gradientGLSL' ).textContent;
+  const normalGLSL = document.getElementById( 'normalGLSL' ).textContent;
+  const voronoiGLSL = document.getElementById( 'voronoiGLSL' ).textContent;
+  
+  THREE.ShaderChunk['brick'] = brickGLSL;
+  THREE.ShaderChunk['gradient'] = gradientGLSL;
+  THREE.ShaderChunk['normal'] = normalGLSL;
+  THREE.ShaderChunk['voronoi'] = voronoiGLSL;
+
+  // @todo: Move into a common helper / in memory store.
+  let noiseTexture2 = window.l.current_scene.loaders.texture.load( './assets/textures/noise2.jpg' );
+  noiseTexture2.wrapS = noiseTexture2.wrapT = THREE.RepeatWrapping;
+
+  settings.uniforms.noiseTexture = noiseTexture2;
+
+  let material = new THREE.ShaderMaterial( {
+    vertexShader:   document.getElementById( 'proceduralSolarPanelVertShader'   ).textContent,
+    fragmentShader: document.getElementById( 'proceduralSolarPanelFragShader' ).textContent,
+    uniforms: settings.uniforms
+  } );
+
+  material.metalness = 0.9;
+  material.roughess = 0.1;
+
+  return material;
+
+}
+
+
 // @todo: Figure out how to get this working for optimisation.
 export function cacheProceduralMaterial( material ) {
   const textureHeight = 512;

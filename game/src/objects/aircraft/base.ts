@@ -12,8 +12,8 @@ export default class BaseAircraft {
     public verticalSpeed:   number                              = 0;
     public maxForward:      number                              = 3.7 * 5;    // Reading as 200 knots on the airspeed instrument, may not be correct.
     public maxBackward:     number                              = 2.0;
-    public maxUp:           number                              = 1.6;
-    public maxDown:         number                              = 1.6;  // gravity?
+    public maxUp:           number                              = 3.7 * 2.5;
+    public maxDown:         number                              = 3.7 * 5;  // gravity?
     public heading:         number                              = 0;
     public altitude:        number                              = 0;
     public horizon:         [number, number]                    = [0, 0];
@@ -111,8 +111,8 @@ export default class BaseAircraft {
 
         // Update Vertical Speed (velocity)
         this.verticalSpeed = this._changeVelocity(
-            stepSize,
-            stepSize,
+            stepSize * easeInOutExpo( 1 - ( Math.abs ( this.verticalSpeed ) / this.maxUp ) ),
+            stepSize * easeInOutExpo( 1 - ( Math.abs ( this.verticalSpeed ) / this.maxDown ) ),
             this.verticalSpeed,
             this.controls.moveDown,     // Note: Move Down/Up is reversed by design.
             this.controls.moveUp,

@@ -18,7 +18,7 @@ varying vec3 vUv;
 
 void main() {
 
-    vec4 voronoiValue = voronoi(vUv); // Get the distance from Voronoi function
+    vec4 voronoiValue = voronoi(vTexCoord3D); // Get the distance from Voronoi function
 
     vec3 baseColor = getGradient(
         diffuseColour1,

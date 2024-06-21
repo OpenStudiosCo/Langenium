@@ -11,14 +11,14 @@ varying vec3 vUv;         // Varying variable to voronoi value to the fragment s
 #include <voronoi> // Include the voronoi functions
 
 void main() {
-    vUv = position * scale * lacunarity;
+    vUv = position;
 
     // mirror stuff
     vec4 mvPosition = modelMatrix * vec4( position, 1.0 );
 
     vNormal = normalize( normalMatrix * normal );
     vViewPosition = cameraPosition - mvPosition.xyz;
-    vTexCoord3D = scale * ( position.xyz + vec3( 0.0, 0.0, 0.0 ) );    
+    vTexCoord3D = lacunarity * scale * ( position.xyz + vec3( 0.0, 0.0, 0.0 ) );    
 
     // Standard transformations
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);

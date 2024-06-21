@@ -16,7 +16,7 @@ void main() {
     gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 
     vNormal = normalize(mat3(modelMatrix) * normal);
-    vViewPosition = viewPosition.xyz;
+    vViewPosition = cameraPosition - worldPosition.xyz;
     vUv = uv;
     vTexCoord3D = scale * position.xyz * lacunarity;    
 }

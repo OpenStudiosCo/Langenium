@@ -11,9 +11,9 @@ export default class BaseAircraft {
     public airSpeed:        number                              = 0;
     public verticalSpeed:   number                              = 0;
     public maxForward:      number                              = 3.7 * 5;    // Reading as 200 knots on the airspeed instrument, may not be correct.
-    public maxBackward:     number                              = 0.5;
-    public maxUp:           number                              = .4;
-    public maxDown:         number                              = .4;  // gravity?
+    public maxBackward:     number                              = 2.0;
+    public maxUp:           number                              = 1.6;
+    public maxDown:         number                              = 1.6;  // gravity?
     public heading:         number                              = 0;
     public altitude:        number                              = 0;
     public horizon:         [number, number]                    = [0, 0];

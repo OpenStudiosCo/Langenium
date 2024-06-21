@@ -21,7 +21,7 @@ export default class Platform {
     // Loads the ship model inc built-in animations
     async load() {
         
-        this.model = await window.l.current_scene.loaders.gtlf.loadAsync( './assets/models/union-platform3.glb');
+        this.model = await window.l.current_scene.loaders.gtlf.loadAsync( './assets/models/union-platform6.1.glb');
 
         let amount = window.l.current_scene.fast ? 5 : 2.5;
 
@@ -33,7 +33,7 @@ export default class Platform {
 
                 child.original_material = child.material.clone();
 
-                if ( child.material.name == 'Dark-Glass' ) {
+                if ( child.material.name == 'Buildings' ) {
                 
                     child.material = proceduralBuilding({
                         uniforms: {
@@ -49,11 +49,37 @@ export default class Platform {
                     });
                     
                 } 
-                if ( child.material.name == 'Red-Metal' ) {
-                    child.material = new THREE.MeshStandardMaterial( { color: 0xAA0000, metalness: 0.1, roughness: 0.8 } );
-                    brightenMaterial(child.material, amount);
+                if ( child.material.name == 'Pole Cover' ) {
+                    // @todo: turn this red.
+                    child.material = proceduralMetalMaterial2({
+                        uniforms: {
+                            scale:              { value: 2.55 },                                        // Scale
+                            lacunarity:         { value: 2.0 },                                         // Lacunarity
+                            randomness:         { value: 1. },                                       // Randomness
+                            diffuseColour1:     { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.40) },  // Diffuse gradient colour 1
+                            diffuseColour2:     { value: new THREE.Vector4( 0.5, 0.5, 0.5, 0.43) },     // Diffuse gradient colour 2
+                            diffuseColour3:     { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.44) },  // Diffuse gradient colour 3
+                            emitColour1:        { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.61) },  // Emission gradient colour 1
+                            emitColour2:        { value: new THREE.Vector4( 0.3, 0.3, 0.3, 0.63) },     // Emission gradient colour 2
+                        }
+                    });
                 }
-                if ( child.material.name == 'Metal' ) {
+                if ( child.material.name == 'City Cradle' ) {
+                    child.material = proceduralMetalMaterial2({
+                        uniforms: {
+                            scale:              { value: 5.55 },                                        // Scale
+                            lacunarity:         { value: 2.0 },                                         // Lacunarity
+                            randomness:         { value: 1. },                                       // Randomness
+                            diffuseColour1:     { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.40) },  // Diffuse gradient colour 1
+                            diffuseColour2:     { value: new THREE.Vector4( 0.5, 0.5, 0.5, 0.43) },     // Diffuse gradient colour 2
+                            diffuseColour3:     { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.44) },  // Diffuse gradient colour 3
+                            emitColour1:        { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.61) },  // Emission gradient colour 1
+                            emitColour2:        { value: new THREE.Vector4( 0.3, 0.3, 0.3, 0.63) },     // Emission gradient colour 2
+                        }
+                    });
+                }
+
+                if ( child.material.name == 'Pole' || child.material.name == 'Solar Panel Arms' ) {
                     child.material = proceduralMetalMaterial2({
                         uniforms: {
                             scale:              { value: 3.55 },                                        // Scale
@@ -68,12 +94,13 @@ export default class Platform {
                     });
                 }
 
-                if ( child.material.name == 'Light-Metal' ) {
-                    child.material = proceduralMetalMaterial2({
+                if ( child.material.name == 'Solar Panels' ) {
+                
+                    child.material = proceduralBuilding({
                         uniforms: {
-                            scale:              { value: 5.55 },                                        // Scale
+                            scale:              { value: .55 },                                        // Scale
                             lacunarity:         { value: 2.0 },                                         // Lacunarity
-                            randomness:         { value: 1. },                                       // Randomness
+                            randomness:         { value: 1.0 },                                       // Randomness
                             diffuseColour1:     { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.40) },  // Diffuse gradient colour 1
                             diffuseColour2:     { value: new THREE.Vector4( 0.5, 0.5, 0.5, 0.43) },     // Diffuse gradient colour 2
                             diffuseColour3:     { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.44) },  // Diffuse gradient colour 3
@@ -81,7 +108,8 @@ export default class Platform {
                             emitColour2:        { value: new THREE.Vector4( 0.3, 0.3, 0.3, 0.63) },     // Emission gradient colour 2
                         }
                     });
-                }
+
+                } 
 
             }
     

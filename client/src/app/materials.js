@@ -35,6 +35,37 @@ export function brightenMaterial(material, amount) {
   return material;
 }
 
+export function proceduralBuilding(settings) {
+
+  const brickGLSL = document.getElementById( 'brickGLSL' ).textContent;
+  const gradientGLSL = document.getElementById( 'gradientGLSL' ).textContent;
+  const normalGLSL = document.getElementById( 'normalGLSL' ).textContent;
+  const voronoiGLSL = document.getElementById( 'voronoiGLSL' ).textContent;
+  
+  THREE.ShaderChunk['brick'] = brickGLSL;
+  THREE.ShaderChunk['gradient'] = gradientGLSL;
+  THREE.ShaderChunk['normal'] = normalGLSL;
+  THREE.ShaderChunk['voronoi'] = voronoiGLSL;
+
+  // @todo: Move into a common helper / in memory store.
+  let noiseTexture2 = window.l.current_scene.loaders.texture.load( './assets/textures/noise2.jpg' );
+  noiseTexture2.wrapS = noiseTexture2.wrapT = THREE.RepeatWrapping;
+
+  settings.uniforms.noiseTexture = noiseTexture2;
+
+  let material = new THREE.ShaderMaterial( {
+    vertexShader:   document.getElementById( 'proceduralBuildingVertShader'   ).textContent,
+    fragmentShader: document.getElementById( 'proceduralBuildingFragShader' ).textContent,
+    uniforms: settings.uniforms
+  } );
+
+  material.metalness = 0.9;
+  material.roughess = 0.1;
+
+  return material;
+
+}
+
 export function proceduralMetalMaterial(settings) {
 
   const gradientGLSL = document.getElementById( 'gradientGLSL' ).textContent;

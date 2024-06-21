@@ -5,7 +5,7 @@
  */
 import * as THREE from 'three';
 
-import { brightenMaterial, proceduralMetalMaterial, proceduralMetalMaterial2 } from '../materials.js';
+import { brightenMaterial, proceduralBuilding, proceduralMetalMaterial2 } from '../materials.js';
 
 export default class Platform {
 
@@ -35,16 +35,16 @@ export default class Platform {
 
                 if ( child.material.name == 'Dark-Glass' ) {
                 
-                    child.material = proceduralMetalMaterial({
+                    child.material = proceduralBuilding({
                         uniforms: {
-                            scale:              { value: 55.55 },                                       // Scale
+                            scale:              { value: 2.55 },                                        // Scale
                             lacunarity:         { value: 2.0 },                                         // Lacunarity
-                            randomness:         { value: 0.01 },                                        // Randomness
-                            diffuseColour1:     { value: new THREE.Vector4( 0.25, 0.25, 0.25, 0.40) },  // Diffuse gradient colour 1
-                            diffuseColour2:     { value: new THREE.Vector4( 0.5, 0.5, 0.65, 0.43) },    // Diffuse gradient colour 2
-                            diffuseColour3:     { value: new THREE.Vector4( 0.25, 0.25, 0.25, 0.44) },  // Diffuse gradient colour 3
-                            emitColour1:        { value: new THREE.Vector4( 0.25, 0.25, 0.25, 0.61) },  // Emission gradient colour 1
-                            emitColour2:        { value: new THREE.Vector4( 1.0, 0.0, 0.0, 0.63) },     // Emission gradient colour 2
+                            randomness:         { value: 0.5 },                                       // Randomness
+                            diffuseColour1:     { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.40) },  // Diffuse gradient colour 1
+                            diffuseColour2:     { value: new THREE.Vector4( 0.5, 0.5, 0.5, 0.43) },     // Diffuse gradient colour 2
+                            diffuseColour3:     { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.44) },  // Diffuse gradient colour 3
+                            emitColour1:        { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.61) },  // Emission gradient colour 1
+                            emitColour2:        { value: new THREE.Vector4( 0.3, 0.3, 0.3, 0.63) },     // Emission gradient colour 2
                         }
                     });
                     
@@ -56,7 +56,7 @@ export default class Platform {
                 if ( child.material.name == 'Metal' ) {
                     child.material = proceduralMetalMaterial2({
                         uniforms: {
-                            scale:              { value: 5.55 },                                        // Scale
+                            scale:              { value: 3.55 },                                        // Scale
                             lacunarity:         { value: 2.0 },                                         // Lacunarity
                             randomness:         { value: 1. },                                       // Randomness
                             diffuseColour1:     { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.40) },  // Diffuse gradient colour 1

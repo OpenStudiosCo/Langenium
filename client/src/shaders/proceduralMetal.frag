@@ -39,16 +39,15 @@ void main() {
     // Mix with gray
     baseColor = mix(baseColor, vec3(gray), 0.5);
 
+    // Mix in emission color
     baseColor = mix(baseColor, emissionColor, 0.5);
 
     gl_FragColor = vec4( baseColor, 1.0) ;
-    // gl_FragColor = vec4( voronoiValue.rgb, 1.0 );
 
-    // @todo: Implement a switch so this is off on fast mode / low power gpus
-    if ((baseColor.r > 0.05 ) ) {
+    // Using the bump mapping function
+    vec3 perturbedNormal = bumpMapping(vViewPosition, normalize(vNormal), 1.5, 0.75, 0.0, baseColor.r, baseColor.r, false);
 
-        vec3 lightWeighting = computeLightWeighting( gray, 0.25 );
-        gl_FragColor *= vec4( lightWeighting, 1.0 ); //
-    }
+    vec3 lightWeighting = calculateMergedLighting(baseColor, perturbedNormal, gray, 0.35);
+    gl_FragColor *= vec4( lightWeighting, 1.0 ); //
 
 }

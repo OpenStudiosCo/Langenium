@@ -6,7 +6,6 @@ const float zoom = 10.;
 const vec3 brickColor = vec3(0.205, .195, .188) / 2.;
 const vec3 groutColor = vec3(0.06, 0.07, 0.08) /2. ;
 const vec3 outlineColor = vec3(0.06, 0.07, 0.08) / 2.5;
-const float edgePos = 1.5;
 const float edgeThickness = 0.008; // Thickness of the grout
 const float outlineThickness = 0.001; // Thickness of the outline
 
@@ -22,7 +21,7 @@ float sincosbundle(float val)
 }
 
 //color function
-vec3 brick_color(in vec3 vTexCoord3D, float brickHeight)
+vec3 brick_color(in vec3 vTexCoord3D, float brickHeight, float edgePos)
 {
     vTexCoord3D.y *= (1.0 - brickHeight);
 

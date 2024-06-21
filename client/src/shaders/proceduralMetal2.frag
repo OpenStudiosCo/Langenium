@@ -22,7 +22,7 @@ void main() {
     vec4 voronoiValue = voronoi(vTexCoord3D * 0.75);
     float gray = dot(voronoiValue.rgb, vec3(0.2126, 0.7152, 0.0722));
 
-    vec3 baseColor = brick_color(vTexCoord3D * 3.21 * gray, 0.5);
+    vec3 baseColor = brick_color(vTexCoord3D * 3.21 * gray, 0.5, 1.5);
 
     // Using the bump mapping function
     vec3 perturbedNormal = bumpMapping(vViewPosition, normalize(vNormal), bumpScale, 0.75, 0.0, baseColor.r, baseColor.r, true);

@@ -22,19 +22,34 @@ void main() {
     vec4 voronoiValue = voronoi(vTexCoord3D * 0.75);
     float gray = dot(voronoiValue.rgb, vec3(0.2126, 0.7152, 0.0722));
 
-    vec3 baseColor = brick_color(vTexCoord3D * 3.21 * gray, 0.5);
+    vec3 baseColor = brick_color(vTexCoord3D * 3.21 * gray, 0.5, 1.5);
+    vec3 bricks = brick_color(vTexCoord3D * 100., 0.85, 0.0);
 
-    baseColor = mix (baseColor, brick_color(vTexCoord3D * 321. * gray, 1.0), 0.5);
+    float lightRatio = 0.15;
 
-    // Using the bump mapping function
-    vec3 perturbedNormal = bumpMapping(vViewPosition, normalize(vNormal), bumpScale, 0.75, 0.0, baseColor.r, baseColor.r, true);
+    if ( baseColor.r < bricks.r ) {
+        baseColor = baseColor * bricks;
+        baseColor = mix( baseColor, vec3( 0.05, 0.15, 0.4), 0.65) ;
+        lightRatio = 0.55;
+    }
+    else {
+        baseColor = mix( baseColor, vec3( 0.0), 0.8) ;
+    }
 
-    vec3 lightWeighting = calculateMergedLighting(baseColor, perturbedNormal, baseColor.r, 0.35);
+    // Add some noise.
+    baseColor += ( nrand( vTexCoord3D.xz ) * 0.001);
 
-    vec3 finalColor = mix( baseColor, lightWeighting, 0.25 );
+    // // Using the bump mapping function
+    vec3 perturbedNormal = bumpMapping(vViewPosition, normalize(vNormal), bumpScale, 1.0, 0.0, baseColor.r, baseColor.r, true);
 
-    gl_FragColor = vec4(finalColor, 1.0);
+    vec3 lightWeighting = calculateMergedLighting(baseColor, perturbedNormal, baseColor.r, lightRatio);
 
-    gl_FragColor += vec4(baseColor * lightWeighting, 1.0);
-   
+    baseColor = mix( baseColor, lightWeighting, lightRatio == 0.55 ? 0.25 : 0.09 );
+
+    gl_FragColor = vec4(baseColor, 1.0);
+
+    if (lightRatio == 0.55) {
+        gl_FragColor += vec4(baseColor * lightWeighting, 1.0);
+    }
+
 }

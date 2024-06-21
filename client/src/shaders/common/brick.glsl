@@ -3,32 +3,33 @@
 
 //constant function
 const float zoom = 10.;
-const vec3 brickColor = vec3(0.205, .195, .188)/ 2.;
-const vec3 lineColor = vec3(0.06, 0.07, 0.08) / 2.;
+const vec3 brickColor = vec3(0.205, .195, .188) / 2.;
+const vec3 groutColor = vec3(0.06, 0.07, 0.08) /2. ;
+const vec3 outlineColor = vec3(0.06, 0.07, 0.08) / 2.5;
 const float edgePos = 1.5;
 const float brickHeight = 0.75; // Adjust brick height.
+const float edgeThickness = 0.008; // Thickness of the grout
+const float outlineThickness = 0.0001; // Thickness of the outline
 
 //random noise function
-float nrand( vec2 n )
+float nrand(vec2 n)
 {
-	return fract(sin(dot(n.xy, vec2(12.9898, 78.233)))* 43758.5453);
+    return fract(sin(dot(n.xy, vec2(12.9898, 78.233))) * 43758.5453);
 }
 
 float sincosbundle(float val)
 {
-	return sin(cos(2.*val) + sin(4.*val)- cos(5.*val) + sin(3.*val))*0.05;
+    return sin(cos(2. * val) + sin(4. * val) - cos(5. * val) + sin(3. * val)) * 0.05;
 }
-
 
 //color function
 vec3 brick_color(in vec3 vTexCoord3D)
 {
-
-    vTexCoord3D.y *= ( 1.0 - brickHeight);
+    vTexCoord3D.y *= (1.0 - brickHeight);
 
     // Grid and coordinates inside each cell
     vec3 coord = floor(vTexCoord3D);
-    vec3 gv = fract(vTexCoord3D);   
+    vec3 gv = fract(vTexCoord3D);
 
     // For randomness in brick pattern
     float movingValue = -sincosbundle(coord.y);
@@ -40,13 +41,18 @@ vec3 brick_color(in vec3 vTexCoord3D)
     // Color of the bricks
     vec3 brick = brickColor - movingValue;
 
-    // Determine if we are on a vertical or horizontal edge
-    bool vrtEdge = step(1. - 0.01, verticalEdge) == 1.;
-    //bool hrtEdge = gv.y > 0.9 || gv.y < 0.1;
-    bool hrtEdge = gv.y > 0.9 || gv.y < 0.1;
+    // Determine if we are on a vertical or horizontal grout line
+    bool vrtGrout = step(1.0 - edgeThickness, verticalEdge) == 1.0;
+    bool hrtGrout = gv.y < edgeThickness || gv.y > 1.0 - edgeThickness;
 
-    // Return line color for edges, brick color otherwise
-    if (hrtEdge || vrtEdge)  
-        return lineColor;
+    // Determine if we are on a vertical or horizontal outline
+    bool vrtOutline = step(1.0 - (edgeThickness + outlineThickness), verticalEdge) == 1.0 && !vrtGrout;
+    bool hrtOutline = (gv.y >= edgeThickness && gv.y < edgeThickness + outlineThickness) || (gv.y <= 1.0 - edgeThickness && gv.y > 1.0 - edgeThickness - outlineThickness);
+
+    // Return the appropriate color based on the position
+    if (vrtGrout || hrtGrout)
+        return groutColor;
+    if (vrtOutline || hrtOutline)
+        return outlineColor;
     return brick;
 }

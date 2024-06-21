@@ -11,12 +11,12 @@ varying vec2 vUv;         // Varying variable to voronoi value to the fragment s
 #include <voronoi> // Include the voronoi functions
 
 void main() {
-
     vec4 worldPosition = modelMatrix * vec4(position, 1.0);
     vec4 viewPosition = viewMatrix * worldPosition;
     gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 
-    vNormal = (modelMatrix * vec4(normal, 0.0)).xyz;
-    vUv = uv * scale * lacunarity;
-    vTexCoord3D = scale * ( position.xyz + vec3( 0.0, 0.0, 0.0 ) ) * lacunarity;    
+    vNormal = normalize(mat3(modelMatrix) * normal);
+    vViewPosition = viewPosition.xyz;
+    vUv = uv;
+    vTexCoord3D = scale * position.xyz * lacunarity;    
 }

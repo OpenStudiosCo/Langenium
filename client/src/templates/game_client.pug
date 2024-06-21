@@ -98,6 +98,8 @@ html(lang='en')
                 div(style='color:#FFF; margin: 1rem;') Previewing Procedural Materials
             #webgl
             // Shaders
+            script(type='x-shader/x-vertex', id='brickGLSL')
+                include ../shaders/common/brick.glsl
             script(type='x-shader/x-vertex', id='gradientGLSL')
                 include ../shaders/common/gradient.glsl
             script(type='x-shader/x-vertex', id='voronoiGLSL')
@@ -110,6 +112,10 @@ html(lang='en')
                 include ../shaders/proceduralMetal.vert
             script(type='x-shader/x-fragment', id='proceduralMetalFragShader')
                 include ../shaders/proceduralMetal.frag
+            script(type='x-shader/x-vertex', id='proceduralMetal2VertShader')
+                include ../shaders/proceduralMetal2.vert
+            script(type='x-shader/x-fragment', id='proceduralMetal2FragShader')
+                include ../shaders/proceduralMetal2.frag
             script#vertexshader(type='x-shader/x-vertex').
                 varying vec2 vUv;
                 void main() {

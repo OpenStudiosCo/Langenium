@@ -5,7 +5,7 @@
  */
 import * as THREE from 'three';
 
-import { brightenMaterial, proceduralMetalMaterial } from '../materials.js';
+import { brightenMaterial, proceduralMetalMaterial, proceduralMetalMaterial2 } from '../materials.js';
 
 export default class Platform {
 
@@ -54,12 +54,22 @@ export default class Platform {
                     brightenMaterial(child.material, amount);
                 }
                 if ( child.material.name == 'Metal' ) {
-                    child.material = new THREE.MeshStandardMaterial( { color: 0x666666, metalness: 0.1, roughness: 0.9 } );
-                    brightenMaterial(child.material, amount);
+                    child.material = proceduralMetalMaterial2({
+                        uniforms: {
+                            scale:              { value: 5.55 },                                        // Scale
+                            lacunarity:         { value: 2.0 },                                         // Lacunarity
+                            randomness:         { value: 0.333 },                                       // Randomness
+                            diffuseColour1:     { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.40) },  // Diffuse gradient colour 1
+                            diffuseColour2:     { value: new THREE.Vector4( 0.5, 0.5, 0.5, 0.43) },     // Diffuse gradient colour 2
+                            diffuseColour3:     { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.44) },  // Diffuse gradient colour 3
+                            emitColour1:        { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.61) },  // Emission gradient colour 1
+                            emitColour2:        { value: new THREE.Vector4( 0.3, 0.3, 0.3, 0.63) },     // Emission gradient colour 2
+                        }
+                    });
                 }
 
                 if ( child.material.name == 'Light-Metal' ) {
-                    child.material = proceduralMetalMaterial({
+                    child.material = proceduralMetalMaterial2({
                         uniforms: {
                             scale:              { value: 5.55 },                                        // Scale
                             lacunarity:         { value: 2.0 },                                         // Lacunarity

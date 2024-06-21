@@ -98,11 +98,13 @@ html(lang='en')
                 div(style='color:#FFF; margin: 1rem;') Previewing Procedural Materials
             #webgl
             // Shaders
-            script(type='x-shader/x-vertex', id='brickGLSL')
+            script(type='x-shader/x-fragment', id='brickGLSL')
                 include ../shaders/common/brick.glsl
-            script(type='x-shader/x-vertex', id='gradientGLSL')
+            script(type='x-shader/x-fragment', id='gradientGLSL')
                 include ../shaders/common/gradient.glsl
-            script(type='x-shader/x-vertex', id='voronoiGLSL')
+            script(type='x-shader/x-fragment', id='normalGLSL')
+                include ../shaders/common/normal.glsl
+            script(type='x-shader/x-fragment', id='voronoiGLSL')
                 include ../shaders/common/voronoi.glsl
             script(type='x-shader/x-vertex', id='cloudVertShader')
                 include ../shaders/cloud.vert

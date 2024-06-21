@@ -38,9 +38,11 @@ export function brightenMaterial(material, amount) {
 export function proceduralMetalMaterial(settings) {
 
   const gradientGLSL = document.getElementById( 'gradientGLSL' ).textContent;
+  const normalGLSL = document.getElementById( 'normalGLSL' ).textContent;
   const voronoiGLSL = document.getElementById( 'voronoiGLSL' ).textContent;
   
   THREE.ShaderChunk['gradient'] = gradientGLSL;
+  THREE.ShaderChunk['normal'] = normalGLSL;
   THREE.ShaderChunk['voronoi'] = voronoiGLSL;
 
 
@@ -70,10 +72,12 @@ export function proceduralMetalMaterial2(settings) {
 
   const brickGLSL = document.getElementById( 'brickGLSL' ).textContent;
   const gradientGLSL = document.getElementById( 'gradientGLSL' ).textContent;
+  const normalGLSL = document.getElementById( 'normalGLSL' ).textContent;
   const voronoiGLSL = document.getElementById( 'voronoiGLSL' ).textContent;
   
   THREE.ShaderChunk['brick'] = brickGLSL;
   THREE.ShaderChunk['gradient'] = gradientGLSL;
+  THREE.ShaderChunk['normal'] = normalGLSL;
   THREE.ShaderChunk['voronoi'] = voronoiGLSL;
 
   // @todo: Move into a common helper / in memory store.

@@ -58,7 +58,7 @@ export default class Platform {
                         uniforms: {
                             scale:              { value: 5.55 },                                        // Scale
                             lacunarity:         { value: 2.0 },                                         // Lacunarity
-                            randomness:         { value: 0.333 },                                       // Randomness
+                            randomness:         { value: 1. },                                       // Randomness
                             diffuseColour1:     { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.40) },  // Diffuse gradient colour 1
                             diffuseColour2:     { value: new THREE.Vector4( 0.5, 0.5, 0.5, 0.43) },     // Diffuse gradient colour 2
                             diffuseColour3:     { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.44) },  // Diffuse gradient colour 3
@@ -73,7 +73,7 @@ export default class Platform {
                         uniforms: {
                             scale:              { value: 5.55 },                                        // Scale
                             lacunarity:         { value: 2.0 },                                         // Lacunarity
-                            randomness:         { value: 0.333 },                                       // Randomness
+                            randomness:         { value: 1. },                                       // Randomness
                             diffuseColour1:     { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.40) },  // Diffuse gradient colour 1
                             diffuseColour2:     { value: new THREE.Vector4( 0.5, 0.5, 0.5, 0.43) },     // Diffuse gradient colour 2
                             diffuseColour3:     { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.44) },  // Diffuse gradient colour 3

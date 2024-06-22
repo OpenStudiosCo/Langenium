@@ -51,7 +51,7 @@ export function proceduralBuilding(settings) {
   let noiseTexture2 = window.l.current_scene.loaders.texture.load( './assets/textures/noise2.jpg' );
   noiseTexture2.wrapS = noiseTexture2.wrapT = THREE.RepeatWrapping;
 
-  settings.uniforms.noiseTexture = noiseTexture2;
+  settings.uniforms.noiseTexture = { type: "t", value: noiseTexture2 };
 
   let material = new THREE.ShaderMaterial( {
     vertexShader:   document.getElementById( 'proceduralBuildingVertShader'   ).textContent,
@@ -81,7 +81,7 @@ export function proceduralMetalMaterial(settings) {
   let noiseTexture2 = window.l.current_scene.loaders.texture.load( './assets/textures/noise2.jpg' );
   noiseTexture2.wrapS = noiseTexture2.wrapT = THREE.RepeatWrapping;
 
-  settings.uniforms.noiseTexture = noiseTexture2;
+  settings.uniforms.noiseTexture = { type: "t", value: noiseTexture2 };
 
   let material = new THREE.ShaderMaterial( {
     vertexShader:   document.getElementById( 'proceduralMetalVertShader'   ).textContent,
@@ -115,7 +115,7 @@ export function proceduralMetalMaterial2(settings) {
   let noiseTexture2 = window.l.current_scene.loaders.texture.load( './assets/textures/noise2.jpg' );
   noiseTexture2.wrapS = noiseTexture2.wrapT = THREE.RepeatWrapping;
 
-  settings.uniforms.noiseTexture = noiseTexture2;
+  settings.uniforms.noiseTexture = { type: "t", value: noiseTexture2 };
 
   let material = new THREE.ShaderMaterial( {
     vertexShader:   document.getElementById( 'proceduralMetal2VertShader'   ).textContent,
@@ -146,7 +146,7 @@ export function proceduralSolarPanel(settings) {
   let noiseTexture2 = window.l.current_scene.loaders.texture.load( './assets/textures/noise2.jpg' );
   noiseTexture2.wrapS = noiseTexture2.wrapT = THREE.RepeatWrapping;
 
-  settings.uniforms.noiseTexture = noiseTexture2;
+  settings.uniforms.noiseTexture = { type: "t", value: noiseTexture2 };
 
   let material = new THREE.ShaderMaterial( {
     vertexShader:   document.getElementById( 'proceduralSolarPanelVertShader'   ).textContent,

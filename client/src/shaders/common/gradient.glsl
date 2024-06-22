@@ -106,3 +106,19 @@ vec3 getGradient(vec4 c1, vec4 c2, vec4 c3, vec4 c4, float value_){
 	
 	return col;
 }
+
+vec3 getGradient(vec4 c1, vec4 c2, vec4 c3, vec4 c4, vec4 c5, float value_){
+	
+	float blend1 = smoothstep(c1.w, c2.w, value_);
+	float blend2 = smoothstep(c2.w, c3.w, value_);
+	float blend3 = smoothstep(c3.w, c4.w, value_);
+	float blend4 = smoothstep(c4.w, c5.w, value_);
+	
+	vec3 
+	col = mix(c1.rgb, c2.rgb, blend1);
+	col = mix(col, c3.rgb, blend2);
+	col = mix(col, c4.rgb, blend3);
+	col = mix(col, c5.rgb, blend4);
+	
+	return col;
+}

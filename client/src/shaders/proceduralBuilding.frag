@@ -4,7 +4,8 @@ uniform vec4 diffuseColour2;
 uniform vec4 diffuseColour3;
 uniform vec4 emitColour1;
 uniform vec4 emitColour2;
-uniform float randomness; 
+uniform float randomness;
+uniform float time;
 
 varying vec3 vTexCoord3D;
 varying vec3 vNormal;
@@ -19,12 +20,25 @@ varying vec2 vUv;
 const float bumpScale = 250.;
 
 void main() {
+    vec3 scaledCoord = vTexCoord3D *(vNormal + vec3(-time / 2., time / 3., -time / 4.));
+
     // Sample the noise texture with scaled UV coordinates for better visibility
-    float emission_noise = abs(snoise(vTexCoord3D / 1000., 14.0 , 3500.0));
+    float emission_noise = abs(snoise(scaledCoord / 5000., 14.0 , 3500.0)) * 0.95 + 0.05;
 
-    vec4 voronoiValue = voronoi(vTexCoord3D * 0.75);
+    vec4 voronoiValue = voronoi(vTexCoord3D);
 
-    vec3 baseColor = brick_color(vTexCoord3D * 3.21 * voronoiValue.a, 0.5, 1.5, false);
+    vec3 buildingSegments = brick_color(vTexCoord3D.xzy * voronoiValue.a * 3.92, 0.5, 1.5, false) ;
+
+    float gray = dot(buildingSegments, vec3(0.2126, 0.7152, 0.0722));
+
+    vec3 buildingSurface = getGradient(
+        vec4( vec3( 0.0 ), 0.0),
+        vec4( vec3( 1.0 ), 0.164),
+        vec4( vec3( 0.0 ), 0.791),
+        vec4( vec3( 1.0 ), 0.907),
+        vec4( vec3( 0.0 ), 1.0),
+        buildingSegments.r
+    );
 
     vec3 emissionColor = getGradient(
         emitColour1,
@@ -34,9 +48,17 @@ void main() {
 
     emissionColor *= 10.;
 
-    if ( baseColor.r < 0.05 ) {
+    emissionColor *= emitColour2.rgb;
+
+    float baseShade = snoise(vTexCoord3D.xzy / 1000., 14.0 , 35.0) * 0.15 + 0.15;
+
+    vec3 baseColor = vec3( baseShade ) * buildingSurface;
+
+    if ( buildingSurface.r < 0.089 ) {
         baseColor = emissionColor;
     }
+
+    //baseColor = buildingSegments;
 
     //baseColor += emissionColor;
 
@@ -64,6 +86,7 @@ void main() {
     // baseColor = mix( baseColor, lightWeighting, lightRatio == 0.55 ? 0.25 : 0.09 );
 
     gl_FragColor = vec4(baseColor, 1.0);
+    //gl_FragColor = vec4(vec3(baseShade), 1.0);
 
     // if (lightRatio == 0.55) {
     //     gl_FragColor += vec4(baseColor * lightWeighting, 1.0);

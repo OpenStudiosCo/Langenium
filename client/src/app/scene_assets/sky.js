@@ -37,8 +37,8 @@ export default class Sky {
         let skyMaterials = new THREE.ShaderMaterial( {
             side: THREE.DoubleSide,
             uniforms: this.uniforms,
-            vertexShader:   document.getElementById( 'cloudVertShader'   ).textContent,
-            fragmentShader: document.getElementById( 'cloudFragShader' ).textContent
+            vertexShader:   document.getElementById( 'skyVertShader'   ).textContent,
+            fragmentShader: document.getElementById( 'skyFragShader' ).textContent
         } );
 
        

@@ -20,17 +20,10 @@ varying vec2 vUv;
 const float bumpScale = 250.;
 
 void main() {
-    vec3 scaledCoord = vTexCoord3D *(vNormal + vec3(-time / 2., time / 3., -time / 4.));
 
-    // Sample the noise texture with scaled UV coordinates for better visibility
-    float emission_noise = abs(snoise(scaledCoord / 5000., 14.0 , 3500.0)) * 0.95 + 0.05;
-
+    // Main colour is based on a voronoi texture distance multiplied by coordinates in a brick texture.
     vec4 voronoiValue = voronoi(vTexCoord3D);
-
     vec3 buildingSegments = brick_color(vTexCoord3D.xzy * voronoiValue.a * 3.92, 0.5, 1.5, false) ;
-
-    float gray = dot(buildingSegments, vec3(0.2126, 0.7152, 0.0722));
-
     vec3 buildingSurface = getGradient(
         vec4( vec3( 0.0 ), 0.0),
         vec4( vec3( 1.0 ), 0.164),
@@ -40,59 +33,42 @@ void main() {
         buildingSegments.r
     );
 
-    vec3 emissionColor = getGradient(
+    // Add time offset to coordinates for animation.
+    vec3 scaledCoord = vTexCoord3D *(vNormal + vec3(-time / 2., -time / 3., -time / 4.));
+
+    // Sample the noise texture with scaled UV coordinates for better visibility
+    float emission_noise = abs(snoise(scaledCoord / 1500., 14.0 , 3500.0)) * 0.95 + 0.05;
+
+    // Calculate the emission colour.
+    vec3 emissionColour = getGradient(
         emitColour1,
         emitColour2,
         emission_noise
     );
+    emissionColour *= 10.;
+    emissionColour *= emitColour1.rgb;
 
-    emissionColor *= 10.;
+    vec3 perturbedNormal = bumpMapping(vViewPosition, normalize(vNormal), bumpScale, 1.0, 0.0, buildingSegments.r, buildingSegments.r, true);
 
-    emissionColor *= emitColour2.rgb;
+    // Calculate the base detailing of the building.
+    float baseShade = snoise(vTexCoord3D.xzy / 1000., 14.0 , 35.0);
+    vec3 baseColor = vec3(baseShade) * 0.5;
 
-    float baseShade = snoise(vTexCoord3D.xzy / 1000., 14.0 , 35.0) * 0.15 + 0.15;
-
-    vec3 baseColor = vec3( baseShade ) * buildingSurface;
-
+    // Using the bump mapping function
+    float lightRatio = 0.35;
     if ( buildingSurface.r < 0.089 ) {
-        baseColor = emissionColor;
+        baseColor = emissionColour;
+        lightRatio = 0.35;
+    }
+    else {
+        baseColor *= buildingSegments;
+        baseColor += emitColour1.rgb * 0.05;
     }
 
-    //baseColor = buildingSegments;
-
-    //baseColor += emissionColor;
-
-    // vec3 bricks = brick_color(vTexCoord3D * 100., 0.85, 0.0);
-
-    // float lightRatio = 0.15;
-
-    // if ( baseColor.r < bricks.r ) {
-    //     baseColor = baseColor * bricks;
-    //     baseColor = mix( baseColor, vec3( 0.05, 0.15, 0.4), 0.65) ;
-    //     lightRatio = 0.55;
-    // }
-    // else {
-    //     baseColor = mix( baseColor, vec3( 0.0), 0.8) ;
-    // }
-
-    // // Add some noise.
-    // baseColor += ( nrand( vTexCoord3D.xz ) * 0.001);
-
-    // // // Using the bump mapping function
-    // vec3 perturbedNormal = bumpMapping(vViewPosition, normalize(vNormal), bumpScale, 1.0, 0.0, baseColor.r, baseColor.r, true);
-
-    // vec3 lightWeighting = calculateMergedLighting(baseColor, perturbedNormal, baseColor.r, lightRatio);
-
-    // baseColor = mix( baseColor, lightWeighting, lightRatio == 0.55 ? 0.25 : 0.09 );
-
-    gl_FragColor = vec4(baseColor, 1.0);
-    //gl_FragColor = vec4(vec3(baseShade), 1.0);
-
-    // if (lightRatio == 0.55) {
-    //     gl_FragColor += vec4(baseColor * lightWeighting, 1.0);
-    // }
-
+    vec3 lightWeighting = calculateMergedLighting(buildingSegments, perturbedNormal, buildingSegments.r, lightRatio);    
 
     // Output the noise texture color
-    //gl_FragColor = vec4(emissionColor, 1.0);
+    gl_FragColor = vec4(baseColor + lightWeighting * 0.25, 1.0);
+    //gl_FragColor = vec4(baseColor, 1.0);
+    
 }

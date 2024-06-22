@@ -19,9 +19,27 @@ varying vec2 vUv;
 const float bumpScale = 250.;
 
 void main() {
+    // Sample the noise texture with scaled UV coordinates for better visibility
+    float emission_noise = abs(snoise(vTexCoord3D / 1000., 14.0 , 3500.0));
+
     vec4 voronoiValue = voronoi(vTexCoord3D * 0.75);
 
     vec3 baseColor = brick_color(vTexCoord3D * 3.21 * voronoiValue.a, 0.5, 1.5, false);
+
+    vec3 emissionColor = getGradient(
+        emitColour1,
+        emitColour2,
+        emission_noise
+    );
+
+    emissionColor *= 10.;
+
+    if ( baseColor.r < 0.05 ) {
+        baseColor = emissionColor;
+    }
+
+    //baseColor += emissionColor;
+
     // vec3 bricks = brick_color(vTexCoord3D * 100., 0.85, 0.0);
 
     // float lightRatio = 0.15;
@@ -51,4 +69,7 @@ void main() {
     //     gl_FragColor += vec4(baseColor * lightWeighting, 1.0);
     // }
 
+
+    // Output the noise texture color
+    //gl_FragColor = vec4(emissionColor, 1.0);
 }

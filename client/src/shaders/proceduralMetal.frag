@@ -18,7 +18,7 @@ varying vec3 vUv;
 
 void main() {
 
-    vec4 voronoiValue = voronoi(vTexCoord3D); // Get the distance from Voronoi function
+    vec4 voronoiValue = voronoi(vTexCoord3D.xzy); // Get the distance from Voronoi function
 
     vec3 baseColor = getGradient(
         diffuseColour1,
@@ -47,7 +47,7 @@ void main() {
     // Using the bump mapping function
     vec3 perturbedNormal = bumpMapping(vViewPosition, normalize(vNormal), 1.5, 0.75, 0.0, baseColor.r, baseColor.r, false);
 
-    vec3 lightWeighting = calculateMergedLighting(baseColor, perturbedNormal, gray, 0.35);
+    vec3 lightWeighting = calculateMergedLighting(baseColor, perturbedNormal, gray, 0.5);
     gl_FragColor *= vec4( lightWeighting, 1.0 ); //
 
 }

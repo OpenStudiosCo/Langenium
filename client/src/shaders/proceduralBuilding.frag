@@ -22,7 +22,7 @@ const float bumpScale = 250.;
 void main() {
 
     // Main colour is based on a voronoi texture distance multiplied by coordinates in a brick texture.
-    vec4 voronoiValue = voronoi(vTexCoord3D);
+    vec4 voronoiValue = voronoi(vTexCoord3D.xzy);
     vec3 buildingSegments = brick_color(vTexCoord3D.xzy * voronoiValue.a * 3.92, 0.5, 1.5, false) ;
     vec3 buildingSurface = getGradient(
         vec4( vec3( 0.0 ), 0.0),
@@ -52,7 +52,7 @@ void main() {
 
     // Calculate the base detailing of the building.
     float baseShade = snoise(vTexCoord3D.xzy / 1000., 14.0 , 35.0);
-    vec3 baseColor = vec3(baseShade) * 0.5;
+    vec3 baseColor = vec3(baseShade);
 
     // Using the bump mapping function
     float lightRatio = 0.35;
@@ -65,10 +65,11 @@ void main() {
         baseColor += emitColour1.rgb * 0.05;
     }
 
-    vec3 lightWeighting = calculateMergedLighting(buildingSegments, perturbedNormal, buildingSegments.r, lightRatio);    
+    vec3 lightWeighting = calculateMergedLighting(buildingSegments, perturbedNormal, buildingSegments.r, lightRatio);
+
+    vec3 simulatedShadow = vec3(  vTexCoord3D.y ) * 0.15 + 0.5;
 
     // Output the noise texture color
-    gl_FragColor = vec4(baseColor + lightWeighting * 0.25, 1.0);
-    //gl_FragColor = vec4(baseColor, 1.0);
+    gl_FragColor = vec4(baseColor * simulatedShadow + lightWeighting * 0.25, 1.0);    
     
 }

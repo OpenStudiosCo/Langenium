@@ -7,6 +7,7 @@ import SceneBase from "./base";
 /**
  * Scene assets
  */
+import Extractor from "../scene_assets/extractor";
 import Ocean from "../scene_assets/ocean";
 import Platform from "../scene_assets/platform";
 import Sky from "../scene_assets/sky";
@@ -128,9 +129,8 @@ export default class Overworld extends SceneBase {
     window.l.current_scene.scene_objects.platform = new Platform();
     await window.l.current_scene.scene_objects.platform.load();
     window.l.current_scene.scene_objects.platform.mesh.position.y = 250;
-    //window.l.current_scene.scene_objects.platform.mesh.position.z = -2500;
-    window.l.current_scene.scene_objects.platform.mesh.position.z = -15000;
-    window.l.current_scene.scene_objects.platform.mesh.position.x = -12500;
+    window.l.current_scene.scene_objects.platform.mesh.position.z = -25000;
+    window.l.current_scene.scene_objects.platform.mesh.position.x = -25000;
     window.l.current_scene.scene_objects.platform.mesh.rotation.y = - Math.PI / 4;
     window.l.current_scene.scene.add(
       window.l.current_scene.scene_objects.platform.mesh
@@ -138,6 +138,30 @@ export default class Overworld extends SceneBase {
     window.l.current_scene.animation_queue.push(
       window.l.current_scene.scene_objects.platform.animate
     );
+
+    // Setup extractor
+    window.l.current_scene.scene_objects.extractor = new Extractor();
+    await window.l.current_scene.scene_objects.extractor.load();
+
+    window.l.current_scene.scene_objects.extractor.mesh.rotation.y = Math.PI / 8;
+    window.l.current_scene.scene_objects.extractor.mesh.position.y = -125;
+    window.l.current_scene.scene_objects.extractor.mesh.position.z = -1250;
+    window.l.current_scene.scene.add(
+      window.l.current_scene.scene_objects.extractor.mesh
+    );
+
+    // Update clipping plane positions to match parent object.
+    // window.l.current_scene.scene_objects.extractor.clippingPlanes.forEach((element) => {
+    //   element.translate( new THREE.Vector3( 0, -125, -1250 ));
+    // });
+
+    // Create helpers to visualize clipping planes
+    const helpers = window.l.current_scene.scene_objects.extractor.clippingPlanes.map(plane => new THREE.PlaneHelper(plane, 1500, 0xff0000));
+    helpers.forEach(helper => window.l.current_scene.scene.add(helper));
+
+    // Enable clipping of the extractor out of the ocean water material.
+    window.l.current_scene.renderers.webgl.localClippingEnabled = true; // Needed to activate local clipping
+    window.l.current_scene.scene_objects.ocean.water.material.clippingPlanes = window.l.current_scene.scene_objects.extractor.clippingPlanes;
 
     // Adjust ambient light intensity
     window.l.current_scene.scene_objects.ambientLight = new THREE.AmbientLight(

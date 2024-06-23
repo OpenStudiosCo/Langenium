@@ -2,7 +2,7 @@
  * Ocean plane
  */
 import * as THREE from 'three';
-import { Water } from 'three/addons/objects/Water.js';
+import { Water } from '../materials/water.js';
 
 export default class Ocean {
     // Configuration
@@ -33,16 +33,27 @@ export default class Ocean {
                 sunColor: 0xffffff,
                 waterColor: 0x0066DD,
                 distortionScale: 20.0,
-                side: THREE.DoubleSide
+                side: THREE.DoubleSide,
+                clipping: true
             }
         );
+        
+        this.water.material = new THREE.MeshPhongMaterial( {
+            alphaToCoverage: true,
+            color: 0x0000ff,
+            side: THREE.DoubleSide,
+            clipping: true,
+            clippingPlanes: [],  // Set to an empty array initially
+            clipShadows: true,
+            clipIntersection: false
+        } );
         this.water.rotation.x = - Math.PI / 2;
 
     }
 
     animate( delta ) {
         // Iterate the sky uniforms to animate it.
-        window.l.current_scene.scene_objects.ocean.water.material.uniforms.time.value += 1.0 / 60;
+        //window.l.current_scene.scene_objects.ocean.water.material.uniforms.time.value += 1.0 / 60;
     }
     
 }

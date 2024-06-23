@@ -9,6 +9,9 @@ import { proceduralBuilding, proceduralMetalMaterial2, proceduralSolarPanel } fr
 
 export default class Platform {
 
+    // THREE.Mesh
+    mesh;
+
     // Platform Model (gltf)
     model;
 

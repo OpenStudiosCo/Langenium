@@ -44,8 +44,9 @@ export default class Platform {
                             diffuseColour1:     { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.40) },  // Diffuse gradient colour 1
                             diffuseColour2:     { value: new THREE.Vector4( 0.5, 0.5, 0.5, 0.43) },     // Diffuse gradient colour 2
                             diffuseColour3:     { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.44) },  // Diffuse gradient colour 3
-                            emitColour1:        { value: new THREE.Vector4( 0.005, 0.051, 0.624, 0.232) },  // Emission gradient colour 1
-                            emitColour2:        { value: new THREE.Vector4( 0.158, 1., 1., 1.) },     // Emission gradient colour 2
+                            //emitColour1:        { value: new THREE.Vector4( 0.005, 0.051, 0.624, 0.25) },  // Emission gradient colour 1
+                            emitColour1:        { value: new THREE.Vector4( 0.0, 0.0, 0.0, 0.25) },  // Emission gradient colour 1
+                            emitColour2:        { value: new THREE.Vector4( 0.158, 1., 1., .9) },     // Emission gradient colour 2
                         }
                     });
 

@@ -539,6 +539,12 @@ export default class Ship {
                     window.l.current_scene.scene_objects.ship.mesh.position.y,
                     window.l.current_scene.scene_objects.ship.mesh.position.z
                 );
+
+                // window.l.controls.orbit.target.set(
+                //     window.l.current_scene.scene_objects.extractor.mesh.position.x,
+                //     window.l.current_scene.scene_objects.extractor.mesh.position.y + window.l.current_scene.scene_objects.extractor.mesh.scale.x,
+                //     window.l.current_scene.scene_objects.extractor.mesh.position.z
+                // );
                 window.l.controls.orbit.update();
             }
 

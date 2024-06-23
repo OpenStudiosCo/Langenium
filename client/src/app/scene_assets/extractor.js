@@ -64,11 +64,11 @@ export default class Extractor {
         // this.mesh.add(innerMesh);
         // this.mesh.scale.setScalar(this.size);
 
-        let outerMesh = new Brush( new THREE.CylinderGeometry( 5, 5, 5, 8, 1, false ), material );
+        let outerMesh = new Brush( new THREE.CylinderGeometry( 5, 5, 5, 12, 1, false ), material );
         outerMesh.scale.setScalar(this.size);
         outerMesh.updateMatrixWorld();
 
-        let innerMesh = new Brush( new THREE.CylinderGeometry( 4, 4, 4, 8, 1, false ), material );
+        let innerMesh = new Brush( new THREE.CylinderGeometry( 4, 4, 4, 12, 1, false ), material );
         innerMesh.position.y = 1000;
         innerMesh.scale.setScalar(this.size);
         innerMesh.updateMatrixWorld();
@@ -89,7 +89,7 @@ export default class Extractor {
         result.receiveShadow = true;
         result.layers.set(11);
 
-        let innerMesh2 = new THREE.Mesh( new THREE.CylinderGeometry( 4, 4, 5, 8, 1, true ), material.clone() );
+        let innerMesh2 = new THREE.Mesh( new THREE.CylinderGeometry( 4, 4, 5, 12, 1, true ), material.clone() );
         window.extractor.inner = innerMesh2.material;
         innerMesh2.material.uniforms.scale.value = 1.33;
         innerMesh2.position.y = 0;
@@ -139,17 +139,18 @@ export default class Extractor {
         const offset = 250;
         const tankArray = [
             { x: -offset, z: -offset },
-            { x: -offset, z: 0.00 },
-            { x: -offset, z: offset },
-            { x: 0.00, z: -offset },
-            { x: 0.00, z: 0.00 },
-            { x: 0.00, z: offset },
-            { x: 0.00, z: offset * 2 },
-            { x: 0.00, z: offset * 3 },
-            { x: 0.00, z: offset * 4 },
-            { x: -offset , z: offset * 2 },
-            { x: -offset , z: offset * 3 },
+            { x: -offset * 1.75, z: 0.00 },
+            { x: -offset * 2, z: offset },
+            { x: -offset * 2, z: offset * 2 },
+            { x: -offset * 1.75, z: offset * 3 },
             { x: -offset , z: offset * 4 },
+            { x: 0.00, z: -offset },
+            { x: -offset * .75, z: 0.00 },
+            { x: -offset * 1.0, z: offset },
+            { x: -offset * 1.0, z: offset * 2 },
+            { x: -offset * 0.75, z: offset * 3 },
+            { x: 0.00, z: offset * 4 },
+            
         ];
 
         let tankMeshes = new THREE.Object3D();

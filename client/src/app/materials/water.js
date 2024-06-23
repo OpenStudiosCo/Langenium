@@ -99,6 +99,9 @@ class Water extends Mesh {
 				varying vec4 mirrorCoord;
 				varying vec4 worldPosition;
 
+				uniform mat3 alphaMapTransform;
+				varying vec2 vAlphaMapUv;
+
 				#include <common>
 				#include <fog_pars_vertex>
 				#include <shadowmap_pars_vertex>
@@ -106,11 +109,15 @@ class Water extends Mesh {
 				#include <clipping_planes_pars_vertex>
 
 				void main() {
+					vAlphaMapUv = (uv - 0.5) * 15.0 + 0.5;
+
 					mirrorCoord = modelMatrix * vec4( position, 1.0 );
 					worldPosition = mirrorCoord.xyzw;
 					mirrorCoord = textureMatrix * mirrorCoord;
 					vec4 mvPosition =  modelViewMatrix * vec4( position, 1.0 );
 					gl_Position = projectionMatrix * mvPosition;
+
+					
 
 				#include <beginnormal_vertex>
 				#include <defaultnormal_vertex>
@@ -134,6 +141,9 @@ class Water extends Mesh {
 
 				varying vec4 mirrorCoord;
 				varying vec4 worldPosition;
+
+				uniform sampler2D alphaMap;
+				varying vec2 vAlphaMapUv;
 
 				vec4 getNoise( vec2 uv ) {
 					vec2 uv0 = ( uv / 103.0 ) + vec2(time / 17.0, time / 29.0);
@@ -162,8 +172,7 @@ class Water extends Mesh {
 				#include <lights_pars_begin>
 				#include <shadowmap_pars_fragment>
 				#include <shadowmask_pars_fragment>
-				#include <clipping_planes_pars_fragment>
-				
+				#include <clipping_planes_pars_fragment>			
 
 				void main() {
 
@@ -191,11 +200,14 @@ class Water extends Mesh {
 					vec3 scatter = max( 0.0, dot( surfaceNormal, eyeDirection ) ) * waterColor;
 					vec3 albedo = mix( ( sunColor * diffuseLight * 0.3 + scatter ) * getShadowMask(), ( vec3( 0.1 ) + reflectionSample * 0.9 + reflectionSample * specularLight ), reflectance);
 					vec3 outgoingLight = albedo;
-					gl_FragColor = vec4( outgoingLight, alpha );
+					vec4 alphaFrag = texture2D( alphaMap, vAlphaMapUv);
+					float newAlpha = alphaFrag.g < .25 ? 0. : 1.;
+					gl_FragColor = vec4( outgoingLight, newAlpha );
 
 					#include <tonemapping_fragment>
 					#include <colorspace_fragment>
-					#include <fog_fragment>	
+					#include <fog_fragment>
+
 				}`
 
 		};

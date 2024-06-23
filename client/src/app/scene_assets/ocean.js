@@ -37,16 +37,22 @@ export default class Ocean {
                 clipping: true
             }
         );
+
+        console.log(this.water.material.uniforms);
+
+        this.water.material.transparent = true;
+        this.water.material.uniforms.alphaMap = {
+            value: new THREE.TextureLoader().load( './assets/textures/test2.png')
+        };
+
+        this.water.material.uniformsNeedUpdate = true;
         
-        this.water.material = new THREE.MeshPhongMaterial( {
-            alphaToCoverage: true,
-            color: 0x0000ff,
-            side: THREE.DoubleSide,
-            clipping: true,
-            clippingPlanes: [],  // Set to an empty array initially
-            clipShadows: true,
-            clipIntersection: false
-        } );
+        // this.water.material = new THREE.MeshBasicMaterial( {
+        //     alphaMap: new THREE.TextureLoader().load( './assets/textures/test.png'),
+        //     color: 0x0000ff,
+        //     side: THREE.DoubleSide,
+        //     transparent: true,
+        // } );
         this.water.rotation.x = - Math.PI / 2;
 
     }

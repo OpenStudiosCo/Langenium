@@ -34,12 +34,11 @@ void main() {
     );
 
     // Add time offset to coordinates for animation.
-    float timeFactor = mix(-time * voronoiValue.a / 10., -time, 0.5) ;
-    timeFactor *= 1.65432123111;
-    vec3 scaledCoord = vTexCoord3D *(vNormal + vec3(-timeFactor / 2.23123124, - timeFactor / 2.3214567821 , -timeFactor / 4.4321431));
+    float timeFactor = mix(-time * voronoiValue.a / 10., -time, 1. - buildingSegments.r) ;
+    vec3 scaledCoord = vTexCoord3D *(vNormal + vec3(-timeFactor / 3., timeFactor  , -timeFactor / 4.));
 
     // Sample the noise texture with scaled UV coordinates for better visibility
-    float emission_noise = abs(snoise(scaledCoord / 1500., 14.0 , 3500.0)) * 0.95 + 0.05;
+    float emission_noise = abs(snoise(scaledCoord / 250., 14.0 , 3500.0)) * 0.95 + 0.05;
 
     // Calculate the emission colour.
     vec3 emissionColour = getGradient(
@@ -48,7 +47,15 @@ void main() {
         emission_noise
     );
     emissionColour *= 10.;
-    emissionColour *= emitColour1.rgb;
+
+    if (emissionColour.r < .9) {
+        emissionColour *= emitColour1.rgb;
+    }
+    else {
+        if (emissionColour.r > 0.8) {
+            emissionColour *= emitColour2.rgb;
+        }
+    }
 
     vec3 perturbedNormal = bumpMapping(vViewPosition, normalize(vNormal), bumpScale, 1.0, 0.0, buildingSegments.r, buildingSegments.r, true);
 
@@ -60,7 +67,7 @@ void main() {
     float lightRatio = 0.35;
     if ( buildingSurface.r < 0.089 ) {
         baseColor = emissionColour;
-        lightRatio = 0.35;
+        lightRatio = 0.45;
     }
     else {
         baseColor *= buildingSegments;
@@ -68,10 +75,10 @@ void main() {
     }
 
     vec3 lightWeighting = calculateMergedLighting(buildingSegments, perturbedNormal, buildingSegments.r, lightRatio);
-
     vec3 simulatedShadow = vec3(  vTexCoord3D.y ) * 0.15 + 0.5;
 
     // Output the noise texture color
-    gl_FragColor = vec4(baseColor * simulatedShadow + lightWeighting * 0.25, 1.0);    
+    gl_FragColor = vec4(baseColor * simulatedShadow + lightWeighting * 0.25, 1.0);
+    //gl_FragColor = vec4(emissionColour, 1.0);
     
 }

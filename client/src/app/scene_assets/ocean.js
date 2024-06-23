@@ -40,6 +40,7 @@ export default class Ocean {
 
         console.log(this.water.material.uniforms);
 
+        this.water.material.depthWrite = false;
         this.water.material.transparent = true;
         this.water.material.uniforms.alphaMap = {
             value: new THREE.TextureLoader().load( './assets/textures/test2.png')
@@ -59,7 +60,7 @@ export default class Ocean {
 
     animate( delta ) {
         // Iterate the sky uniforms to animate it.
-        //window.l.current_scene.scene_objects.ocean.water.material.uniforms.time.value += 1.0 / 60;
+        window.l.current_scene.scene_objects.ocean.water.material.uniforms.time.value += 1.0 / 60;
     }
     
 }

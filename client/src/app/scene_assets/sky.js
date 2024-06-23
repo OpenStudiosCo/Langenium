@@ -23,7 +23,7 @@ export default class Sky {
         // Setup uniforms for the sky.
         this.uniforms = {
             noiseTexture:	{ type: "t", value: this.noiseTexture2 },
-            scale: 			{ type: "f", value: 0.000001 },
+            scale: 			{ type: "f", value: 1 / window.l.scale / 5},
             time: 			{ type: "f", value: 0.0 }
         };
 

@@ -103,7 +103,7 @@ window.l.current_scene.init = async function () {
     fov,
     aspect,
     1,
-    window.l.scale * 2
+    window.l.scale * Math.PI
   );
   window.l.current_scene.camera.aspect = width / height;
   window.l.current_scene.camera.rotation.order = "YZX";

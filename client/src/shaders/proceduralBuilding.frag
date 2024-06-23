@@ -34,7 +34,9 @@ void main() {
     );
 
     // Add time offset to coordinates for animation.
-    vec3 scaledCoord = vTexCoord3D *(vNormal + vec3(-time / 2., -time / 3., -time / 4.));
+    float timeFactor = mix(-time * voronoiValue.a / 10., -time, 0.5) ;
+    timeFactor *= 1.65432123111;
+    vec3 scaledCoord = vTexCoord3D *(vNormal + vec3(-timeFactor / 2.23123124, - timeFactor / 2.3214567821 , -timeFactor / 4.4321431));
 
     // Sample the noise texture with scaled UV coordinates for better visibility
     float emission_noise = abs(snoise(scaledCoord / 1500., 14.0 , 3500.0)) * 0.95 + 0.05;

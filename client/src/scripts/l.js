@@ -31,7 +31,7 @@ function _init( wait ) {
 	// Game settings
 	l.current_scene = false;
 	l.multiplayer = false;
-	l.scale = 500000;
+	l.scale = 4.82803 * 1000000;
 	l.scenograph = false;
 
 	// Engine settings

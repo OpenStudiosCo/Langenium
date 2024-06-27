@@ -28,7 +28,7 @@ export default class Extractor {
 
         // Setup extractors
         this.extractorLocations = [
-            new THREE.Vector3( 0, 0, this.size * 10 ),
+            //new THREE.Vector3( 0, 0, this.size * 10 ),            // Test extractor.
             new THREE.Vector3( 0, -70000, this.size * 10 ),
             new THREE.Vector3( 0, 70000, this.size * 10 ), 
             new THREE.Vector3( -70000, 0, this.size * 10 ), 

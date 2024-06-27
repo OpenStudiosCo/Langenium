@@ -21,7 +21,6 @@ export default class Ocean {
         this.water = new Water(
             waterGeometry,
             {
-                clipBias: 0.003,
                 textureWidth: 512,
                 textureHeight: 512,
                 waterNormals: new THREE.TextureLoader().load( './assets/textures/waternormals.jpg', function ( texture ) {
@@ -34,16 +33,14 @@ export default class Ocean {
                 waterColor: 0x0066DD,
                 distortionScale: 20.0,
                 side: THREE.DoubleSide,
-                clipping: true,
                 // Submerged objects that need transparency where they are located
+                // Coordinates have to be pre-entered before shader compilation due to GLSL being inflexible with array sizes
                 submergedObjects: [
-                    new THREE.Vector3(0.0, 0.0, 1500.),
-                    new THREE.Vector3(-25000.0, -25000.0, 5000.),
+                    new THREE.Vector3(5000.0, -12500.0, 1500.0),
                 ]
             }
         );
 
-        this.water.material.depthWrite = false;
         this.water.material.transparent = true;
 
         // this.water.material = new THREE.MeshBasicMaterial( {

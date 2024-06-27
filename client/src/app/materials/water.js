@@ -198,25 +198,28 @@ class Water extends Mesh {
 					vec3 albedo = mix( ( sunColor * diffuseLight * 0.3 + scatter ) * getShadowMask(), ( vec3( 0.1 ) + reflectionSample * 0.9 + reflectionSample * specularLight ), reflectance);
 					vec3 outgoingLight = albedo;
 
-					float newAlpha = 1.0;
-
-					for (int i = 0; i < submerged_objects_length; i+=3) {
+					for (int i = 0; i < submerged_objects_length; i += 3) {
 						float x = submerged_objects[i];
 						float y = submerged_objects[i + 1];
 						float radius = submerged_objects[i + 2];
+					
+						// Calculate the absolute distance from the center (x, y)
+						vec2 delta = abs(worldPosition.xz - vec2(x, y));
+					
+						// Calculate the half-width of the octagon sides
+						float halfSideLength = radius / sqrt(2.0);
+					
+						// Check if the point is within the octagon shape
 						if (
-							(
-								worldPosition.x < (x + radius) &&
-								worldPosition.x > (x - radius) &&
-								worldPosition.z < (y + radius) &&
-								worldPosition.z > (y - radius) 
-							) 
+							delta.x < halfSideLength &&
+							delta.y < halfSideLength &&
+							(delta.x + delta.y) < radius
 						) {
-							newAlpha = 0.0;
+							discard;
 						}
 					}
 				
-					gl_FragColor = vec4( outgoingLight, newAlpha );
+					gl_FragColor = vec4( outgoingLight, 1.0 );
 
 					#include <tonemapping_fragment>
 					#include <colorspace_fragment>

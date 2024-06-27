@@ -144,14 +144,16 @@ export default class Overworld extends SceneBase {
     await window.l.current_scene.scene_objects.extractor.load();
 
     window.l.current_scene.scene_objects.extractor.mesh.rotation.y = Math.PI / 8;
+    window.l.current_scene.scene_objects.extractor.mesh.position.x = 5000;
     window.l.current_scene.scene_objects.extractor.mesh.position.y = -500;
-    //window.l.current_scene.scene_objects.extractor.mesh.position.z = -1250;
+    window.l.current_scene.scene_objects.extractor.mesh.position.z = -12500;
     window.l.current_scene.scene.add(
       window.l.current_scene.scene_objects.extractor.mesh
     );
     window.l.current_scene.animation_queue.push(
       window.l.current_scene.scene_objects.extractor.animate
     );
+
 
     // Adjust ambient light intensity
     window.l.current_scene.scene_objects.ambientLight = new THREE.AmbientLight(

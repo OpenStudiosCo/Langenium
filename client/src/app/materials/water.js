@@ -1,6 +1,8 @@
 /**
  * Forked from 'three/addons/objects/Water.js'.
  * 
+ * Implements a 'submerged objects' array to discard fragments of objects that are underwater.
+ * 
  * @see https://stackoverflow.com/a/42540542
  */
 import {
@@ -251,8 +253,6 @@ class Water extends Mesh {
 		material.uniforms[ 'distortionScale' ].value = distortionScale;
 		material.uniforms[ 'submerged_objects' ].value = submergedObjectsFlattened;
 		material.uniforms[ 'submerged_objects_length' ].value = submergedObjectsFlattened.length;
-
-		console.log(material.uniforms);
 
 		material.uniforms[ 'eye' ].value = eye;
 

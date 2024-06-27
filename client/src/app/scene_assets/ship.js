@@ -134,7 +134,7 @@ export default class Ship {
         trailMaterial.uniforms.tailColor.value.set( 132 / 255, 42 /255, 36 / 255, .0 ); // RGBA.
 
         // specify length of trail
-        const trailLength = 5;
+        const trailLength = 4;
 
         const trailContainer = new THREE.Object3D();
         trailContainer.position.set(0,this.trail_position_y,this.trail_position_z);
@@ -445,10 +445,6 @@ export default class Ship {
             if ( window.l.controls.touch && ! window.l.controls.touch.controls.rotationPad.mouseDown )
                 window.l.current_scene.camera.rotation.x *= .9;
         }
-
-        if (this.trail) {
-            this.trail.update();
-        }
     }
 
     // Update the position of the aircraft to spot determined by game logic.
@@ -549,41 +545,50 @@ export default class Ship {
             }
 
 
-            // Fix the trail being too far behind.
-            let trailOffset = 0;
-
-            // Only offset the trail effect if we are going forward which is (z-1) in numerical terms
-            if ( window.l.current_scene.scene_objects.ship.state.airSpeed < 0 ) {
-
-                // Update ship thruster
-                window.l.current_scene.scene_objects.ship.animateThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.centralConeBurner, .1);
-                window.l.current_scene.scene_objects.ship.animateThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.outerCylBurner, .1);
-
+            
+            if (window.l.current_scene.scene_objects.ship.trail) {
                 
-                window.l.current_scene.scene_objects.ship.spinThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.rearConeBurner, -1 );
-                window.l.current_scene.scene_objects.ship.spinThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.centralConeBurner, 1 );
-                window.l.current_scene.scene_objects.ship.spinThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.outerCylBurner, -1 );
-                window.l.current_scene.scene_objects.ship.spinThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.innerCylBurner, 1 );
+                // Fix the trail being too far behind.
+                let trailOffset = 0;
 
-                // Limit playback rate to 5x as large values freak out the browser.
-                window.l.current_scene.scene_objects.ship.thruster.videoElement.playbackRate = Math.min( 5, 0.25 + Math.abs(window.l.current_scene.scene_objects.ship.state.airSpeed) );
+                // Only offset the trail effect if we are going forward which is (z-1) in numerical terms
+                if ( window.l.current_scene.scene_objects.ship.state.airSpeed < 0 ) {
 
-                trailOffset += window.l.current_scene.scene_objects.ship.trail_position_z - Math.abs( window.l.current_scene.scene_objects.ship.state.airSpeed );
+                    // Update ship thruster
+                    window.l.current_scene.scene_objects.ship.animateThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.centralConeBurner, .1);
+                    window.l.current_scene.scene_objects.ship.animateThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.outerCylBurner, .1);
 
-                window.l.current_scene.scene_objects.ship.trail.mesh.material.uniforms.headColor.value.set( 255 / 255 , 212 / 255, 148/255, .8 ); // RGBA.
+                    
+                    window.l.current_scene.scene_objects.ship.spinThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.rearConeBurner, -1 );
+                    window.l.current_scene.scene_objects.ship.spinThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.centralConeBurner, 1 );
+                    window.l.current_scene.scene_objects.ship.spinThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.outerCylBurner, -1 );
+                    window.l.current_scene.scene_objects.ship.spinThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.innerCylBurner, 1 );
 
-                
-            }
-            else {
-                window.l.current_scene.scene_objects.ship.trail.mesh.material.uniforms.headColor.value.set( 255 / 255 , 212 / 255, 148/255, 0 ); // RGBA.
-            }
+                    // Limit playback rate to 5x as large values freak out the browser.
+                    window.l.current_scene.scene_objects.ship.thruster.videoElement.playbackRate = Math.min( 5, 0.25 + Math.abs(window.l.current_scene.scene_objects.ship.state.airSpeed) );
 
-            // Update the trail position based on above calculations.
-            window.l.current_scene.scene_objects.ship.trail.targetObject.position.y = window.l.current_scene.scene_objects.ship.trail_position_y + window.l.current_scene.scene_objects.ship.state.verticalSpeed;
-            window.l.current_scene.scene_objects.ship.trail.targetObject.position.z = trailOffset;
+                    trailOffset += window.l.current_scene.scene_objects.ship.trail_position_z - Math.abs( window.l.current_scene.scene_objects.ship.state.airSpeed );
 
-            if (rY != 0) {
-                window.l.current_scene.scene_objects.ship.trail.targetObject.position.x = Math.sin( rY ) * 10;
+                    window.l.current_scene.scene_objects.ship.trail.mesh.material.uniforms.headColor.value.set( 255 / 255 , 212 / 255, 148/255, .8 ); // RGBA.
+
+                    
+                }
+                else {
+                    window.l.current_scene.scene_objects.ship.trail.mesh.material.uniforms.headColor.value.set( 255 / 255 , 212 / 255, 148/255, 0 ); // RGBA.
+                }
+
+                // Update the trail position based on above calculations.
+                window.l.current_scene.scene_objects.ship.trail.targetObject.position.y = window.l.current_scene.scene_objects.ship.trail_position_y + window.l.current_scene.scene_objects.ship.state.verticalSpeed;
+                window.l.current_scene.scene_objects.ship.trail.targetObject.position.z = trailOffset;
+
+                if ( rY != 0 ) {
+                    window.l.current_scene.scene_objects.ship.trail.targetObject.position.x = rY * window.l.current_scene.scene_objects.ship.state.airSpeed ;
+                    window.l.current_scene.scene_objects.ship.trail.targetObject.position.y += Math.abs(window.l.current_scene.scene_objects.ship.trail.targetObject.position.x) / 4;
+                }
+                else {
+                    window.l.current_scene.scene_objects.ship.trail.targetObject.position.x = 0;
+                }
+                window.l.current_scene.scene_objects.ship.trail.update();
             }
 
         }

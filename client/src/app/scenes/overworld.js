@@ -106,15 +106,6 @@ export default class Overworld extends SceneBase {
       window.l.current_scene.scene_objects.sky.animate
     );
 
-    // Setup ocean
-    window.l.current_scene.scene_objects.ocean = new Ocean();
-    window.l.current_scene.scene.add(
-      window.l.current_scene.scene_objects.ocean.water
-    );
-    window.l.current_scene.animation_queue.push(
-      window.l.current_scene.scene_objects.ocean.animate
-    );
-
     // Setup Ship
     window.l.current_scene.scene_objects.ship = new Ship();
     await window.l.current_scene.scene_objects.ship.load();
@@ -129,7 +120,7 @@ export default class Overworld extends SceneBase {
     window.l.current_scene.scene_objects.platform = new Platform();
     await window.l.current_scene.scene_objects.platform.load();
     window.l.current_scene.scene_objects.platform.mesh.position.y = 250;
-    window.l.current_scene.scene_objects.platform.mesh.position.z = -25000;
+    window.l.current_scene.scene_objects.platform.mesh.position.z = -55000;
     window.l.current_scene.scene_objects.platform.mesh.position.x = -25000;
     window.l.current_scene.scene_objects.platform.mesh.rotation.y = - Math.PI / 4;
     window.l.current_scene.scene.add(
@@ -139,21 +130,39 @@ export default class Overworld extends SceneBase {
       window.l.current_scene.scene_objects.platform.animate
     );
 
-    // Setup extractor
-    window.l.current_scene.scene_objects.extractor = new Extractor();
-    await window.l.current_scene.scene_objects.extractor.load();
+    // Setup extractors
+    let extractor_locations = [
+      new THREE.Vector3( 0, -70000, 1500 ), 
+      new THREE.Vector3( 0, 70000, 1500 ), 
+      new THREE.Vector3( -70000, 0, 1500 ), 
+      new THREE.Vector3( 70000, 0, 1500 ),
+    ];
 
-    window.l.current_scene.scene_objects.extractor.mesh.rotation.y = Math.PI / 8;
-    window.l.current_scene.scene_objects.extractor.mesh.position.x = 5000;
-    window.l.current_scene.scene_objects.extractor.mesh.position.y = -500;
-    window.l.current_scene.scene_objects.extractor.mesh.position.z = -12500;
+    extractor_locations.forEach( async ( extractor_location, i ) => {
+      window.l.current_scene.scene_objects[ 'extractor_' + i ] = new Extractor();
+      await window.l.current_scene.scene_objects[ 'extractor_' + i ].load();
+  
+      window.l.current_scene.scene_objects[ 'extractor_' + i ].mesh.rotation.y = Math.PI / 8;
+      window.l.current_scene.scene_objects[ 'extractor_' + i ].mesh.position.x = extractor_location.x;
+      window.l.current_scene.scene_objects[ 'extractor_' + i ].mesh.position.y = -500;
+      window.l.current_scene.scene_objects[ 'extractor_' + i ].mesh.position.z = extractor_location.y;
+      window.l.current_scene.scene.add(
+        window.l.current_scene.scene_objects[ 'extractor_' + i ].mesh
+      );
+      window.l.current_scene.animation_queue.push(
+        window.l.current_scene.scene_objects[ 'extractor_' + i ].animate
+      );
+  
+    });
+
+    // Setup ocean
+    window.l.current_scene.scene_objects.ocean = new Ocean( extractor_locations );
     window.l.current_scene.scene.add(
-      window.l.current_scene.scene_objects.extractor.mesh
+      window.l.current_scene.scene_objects.ocean.water
     );
     window.l.current_scene.animation_queue.push(
-      window.l.current_scene.scene_objects.extractor.animate
+      window.l.current_scene.scene_objects.ocean.animate
     );
-
 
     // Adjust ambient light intensity
     window.l.current_scene.scene_objects.ambientLight = new THREE.AmbientLight(

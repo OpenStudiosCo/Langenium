@@ -14,7 +14,7 @@ export default class Ocean {
     // The sky mesh.
     mesh;
 
-    constructor() {
+    constructor( submergedObjects ) {
 
         const waterGeometry = new THREE.PlaneGeometry( window.l.scale * 2, window.l.scale * 2, 50, 50 );
 
@@ -35,9 +35,7 @@ export default class Ocean {
                 side: THREE.DoubleSide,
                 // Submerged objects that need transparency where they are located
                 // Coordinates have to be pre-entered before shader compilation due to GLSL being inflexible with array sizes
-                submergedObjects: [
-                    new THREE.Vector3(5000.0, -12500.0, 1500.0),
-                ]
+                submergedObjects: submergedObjects
             }
         );
 

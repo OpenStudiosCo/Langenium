@@ -34,20 +34,18 @@ export default class Ocean {
                 waterColor: 0x0066DD,
                 distortionScale: 20.0,
                 side: THREE.DoubleSide,
-                clipping: true
+                clipping: true,
+                // Submerged objects that need transparency where they are located
+                submergedObjects: [
+                    new THREE.Vector3(0.0, 0.0, 1500.),
+                    new THREE.Vector3(-25000.0, -25000.0, 5000.),
+                ]
             }
         );
 
-        console.log(this.water.material.uniforms);
-
         this.water.material.depthWrite = false;
         this.water.material.transparent = true;
-        this.water.material.uniforms.alphaMap = {
-            value: new THREE.TextureLoader().load( './assets/textures/test2.png')
-        };
 
-        this.water.material.uniformsNeedUpdate = true;
-        
         // this.water.material = new THREE.MeshBasicMaterial( {
         //     alphaMap: new THREE.TextureLoader().load( './assets/textures/test.png'),
         //     color: 0x0000ff,

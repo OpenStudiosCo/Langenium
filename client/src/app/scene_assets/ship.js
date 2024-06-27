@@ -552,12 +552,18 @@ export default class Ship {
             // Fix the trail being too far behind.
             let trailOffset = 0;
 
-            // Only offset the trail effect if we are going forward.
+            // Only offset the trail effect if we are going forward which is (z-1) in numerical terms
             if ( window.l.current_scene.scene_objects.ship.state.airSpeed < 0 ) {
 
                 // Update ship thruster
-                window.l.current_scene.scene_objects.ship.animateThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.centralConeBurner, .5 );
-                window.l.current_scene.scene_objects.ship.animateThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.outerCylBurner, .5 );
+                window.l.current_scene.scene_objects.ship.animateThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.centralConeBurner, .1);
+                window.l.current_scene.scene_objects.ship.animateThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.outerCylBurner, .1);
+
+                
+                window.l.current_scene.scene_objects.ship.spinThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.rearConeBurner, -1 );
+                window.l.current_scene.scene_objects.ship.spinThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.centralConeBurner, 1 );
+                window.l.current_scene.scene_objects.ship.spinThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.outerCylBurner, -1 );
+                window.l.current_scene.scene_objects.ship.spinThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.innerCylBurner, 1 );
 
                 // Limit playback rate to 5x as large values freak out the browser.
                 window.l.current_scene.scene_objects.ship.thruster.videoElement.playbackRate = Math.min( 5, 0.25 + Math.abs(window.l.current_scene.scene_objects.ship.state.airSpeed) );
@@ -565,26 +571,34 @@ export default class Ship {
                 trailOffset += window.l.current_scene.scene_objects.ship.trail_position_z - Math.abs( window.l.current_scene.scene_objects.ship.state.airSpeed );
 
                 window.l.current_scene.scene_objects.ship.trail.mesh.material.uniforms.headColor.value.set( 255 / 255 , 212 / 255, 148/255, .8 ); // RGBA.
+
+                
             }
             else {
                 window.l.current_scene.scene_objects.ship.trail.mesh.material.uniforms.headColor.value.set( 255 / 255 , 212 / 255, 148/255, 0 ); // RGBA.
             }
 
-            // Shift the trail effect backward if we are going up or down so it doesn't clip into the aircraft.
-            trailOffset += Math.abs(window.l.current_scene.scene_objects.ship.state.verticalSpeed) / 2;
-
             // Update the trail position based on above calculations.
             window.l.current_scene.scene_objects.ship.trail.targetObject.position.y = window.l.current_scene.scene_objects.ship.trail_position_y + window.l.current_scene.scene_objects.ship.state.verticalSpeed;
             window.l.current_scene.scene_objects.ship.trail.targetObject.position.z = trailOffset;
+
+            if (rY != 0) {
+                window.l.current_scene.scene_objects.ship.trail.targetObject.position.x = Math.sin( rY ) * 10;
+            }
 
         }
     }
 
     animateThruster( airSpeed, burnerMesh, ratio ) {
-        burnerMesh.scale.y = 1 + Math.abs( airSpeed ) * ratio;
-        burnerMesh.position.y = Math.abs( airSpeed ) * ratio * 0.5;
+        if ( Math.abs( airSpeed ) < 4.5 ) {
+            burnerMesh.scale.y = 1 + Math.abs( airSpeed ) * ratio;
+            burnerMesh.position.y = Math.abs( airSpeed ) * ratio * 0.5;
+        }
     }
 
-    
+    spinThruster( airSpeed, burnerMesh, rotation_factor ) {
+        burnerMesh.rotation.y += airSpeed / 50. * rotation_factor;
+    }
     
 }
+w

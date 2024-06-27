@@ -50,7 +50,10 @@ class Water extends Mesh {
 		const side = options.side !== undefined ? options.side : FrontSide;
 		const fog = options.fog !== undefined ? options.fog : false;
 
-		//
+		const submergedObjects = options.submergedObjects !== undefined ? options.submergedObjects : [];
+
+		// Convert vec2Array to an array of floats
+		const submergedObjectsFlattened = submergedObjects.flatMap(vec => [vec.x, vec.y, vec.z]);
 
 		const mirrorPlane = new Plane();
 		const normal = new Vector3();
@@ -88,7 +91,9 @@ class Water extends Mesh {
 					'sunColor': { value: new Color( 0x7F7F7F ) },
 					'sunDirection': { value: new Vector3( 0.70707, 0.70707, 0 ) },
 					'eye': { value: new Vector3() },
-					'waterColor': { value: new Color( 0x555555 ) }
+					'waterColor': { value: new Color( 0x555555 ) },
+					'submerged_objects': { value: [] },
+					'submerged_objects_length': { value: 0 },
 				}
 			] ),
 
@@ -99,9 +104,6 @@ class Water extends Mesh {
 				varying vec4 mirrorCoord;
 				varying vec4 worldPosition;
 
-				uniform mat3 alphaMapTransform;
-				varying vec2 vAlphaMapUv;
-
 				#include <common>
 				#include <fog_pars_vertex>
 				#include <shadowmap_pars_vertex>
@@ -109,15 +111,11 @@ class Water extends Mesh {
 				#include <clipping_planes_pars_vertex>
 
 				void main() {
-					vAlphaMapUv = (uv - 0.5) * 15.0 + 0.5;
-
 					mirrorCoord = modelMatrix * vec4( position, 1.0 );
 					worldPosition = mirrorCoord.xyzw;
 					mirrorCoord = textureMatrix * mirrorCoord;
 					vec4 mvPosition =  modelViewMatrix * vec4( position, 1.0 );
-					gl_Position = projectionMatrix * mvPosition;
-
-					
+					gl_Position = projectionMatrix * mvPosition;					
 
 				#include <beginnormal_vertex>
 				#include <defaultnormal_vertex>
@@ -138,12 +136,11 @@ class Water extends Mesh {
 				uniform vec3 sunDirection;
 				uniform vec3 eye;
 				uniform vec3 waterColor;
+				uniform float submerged_objects[${submergedObjectsFlattened.length}];
+				uniform int submerged_objects_length;
 
 				varying vec4 mirrorCoord;
 				varying vec4 worldPosition;
-
-				uniform sampler2D alphaMap;
-				varying vec2 vAlphaMapUv;
 
 				vec4 getNoise( vec2 uv ) {
 					vec2 uv0 = ( uv / 103.0 ) + vec2(time / 17.0, time / 29.0);
@@ -200,8 +197,25 @@ class Water extends Mesh {
 					vec3 scatter = max( 0.0, dot( surfaceNormal, eyeDirection ) ) * waterColor;
 					vec3 albedo = mix( ( sunColor * diffuseLight * 0.3 + scatter ) * getShadowMask(), ( vec3( 0.1 ) + reflectionSample * 0.9 + reflectionSample * specularLight ), reflectance);
 					vec3 outgoingLight = albedo;
-					vec4 alphaFrag = texture2D( alphaMap, vAlphaMapUv);
-					float newAlpha = alphaFrag.g < .25 ? 0. : 1.;
+
+					float newAlpha = 1.0;
+
+					for (int i = 0; i < submerged_objects_length; i+=3) {
+						float x = submerged_objects[i];
+						float y = submerged_objects[i + 1];
+						float radius = submerged_objects[i + 2];
+						if (
+							(
+								worldPosition.x < (x + radius) &&
+								worldPosition.x > (x - radius) &&
+								worldPosition.z < (y + radius) &&
+								worldPosition.z > (y - radius) 
+							) 
+						) {
+							newAlpha = 0.0;
+						}
+					}
+				
 					gl_FragColor = vec4( outgoingLight, newAlpha );
 
 					#include <tonemapping_fragment>
@@ -232,6 +246,10 @@ class Water extends Mesh {
 		material.uniforms[ 'waterColor' ].value = waterColor;
 		material.uniforms[ 'sunDirection' ].value = sunDirection;
 		material.uniforms[ 'distortionScale' ].value = distortionScale;
+		material.uniforms[ 'submerged_objects' ].value = submergedObjectsFlattened;
+		material.uniforms[ 'submerged_objects_length' ].value = submergedObjectsFlattened.length;
+
+		console.log(material.uniforms);
 
 		material.uniforms[ 'eye' ].value = eye;
 

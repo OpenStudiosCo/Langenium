@@ -19,8 +19,10 @@ export default class Controls {
     constructor() {
         this.keyboard = new KeyboardControls();
 
-        this.orbit = new OrbitControls(window.l.current_scene.camera, window.l.current_scene.renderers.webgl.domElement);
-        this.orbit.target.set(0,10.775,0);
+        if ( window.l.current_scene.debug ) {
+            this.orbit = new OrbitControls(window.l.current_scene.camera, window.l.current_scene.renderers.webgl.domElement);
+            this.orbit.target.set(0,10.775,0);
+        }
 
         this.touch = new TouchControls();
 

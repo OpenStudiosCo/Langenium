@@ -23,9 +23,10 @@ export default class CargoShips {
 
         // Setup extractors
         this.locations = [
+            //new THREE.Vector3( 0, -500, this.size * 10 ),              // Test ship
             new THREE.Vector3( -35000, -2000, this.size * 10 ),
-             new THREE.Vector3( -36000, -1500, this.size * 10 ),
-             new THREE.Vector3( -34000, -1500, this.size * 10 ),
+            new THREE.Vector3( -36000, -1500, this.size * 10 ),
+            new THREE.Vector3( -34000, -1500, this.size * 10 ),
         ];
     }
 

@@ -23,7 +23,7 @@ export default class Refineries {
 
         // Setup extractors
         this.locations = [
-            //new THREE.Vector3( 0, -2000, this.size * 10 ),
+            //new THREE.Vector3( 0, -2000, this.size * 10 ),              // Test refinery
             new THREE.Vector3( 20000, -20000, this.size * 10 ),
             new THREE.Vector3( -20000, 20000, this.size * 10 ),
         ];

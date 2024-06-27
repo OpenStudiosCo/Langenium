@@ -6,6 +6,8 @@ uniform vec4 emitColour1;
 uniform vec4 emitColour2;
 uniform float randomness;
 uniform float time;
+uniform float shadowFactor;
+uniform float shadowOffset;
 
 varying vec3 vTexCoord3D;
 varying vec3 vNormal;
@@ -75,10 +77,10 @@ void main() {
     }
 
     vec3 lightWeighting = calculateMergedLighting(buildingSegments, perturbedNormal, buildingSegments.r, lightRatio);
-    vec3 simulatedShadow = vec3(  vTexCoord3D.y ) * 0.15 + 0.5;
+    vec3 simulatedShadow = vec3(  vTexCoord3D.y ) * shadowFactor + shadowOffset;
 
     // Output the noise texture color
     gl_FragColor = vec4(baseColor * simulatedShadow + lightWeighting * 0.25, 1.0);
-    //gl_FragColor = vec4(emissionColour, 1.0);
+    //gl_FragColor = vec4(simulatedShadow, 1.0);
     
 }

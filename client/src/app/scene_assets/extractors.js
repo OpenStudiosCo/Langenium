@@ -24,15 +24,15 @@ export default class Extractor {
 
     constructor() {
         this.ready = false;
-        this.size = 250;
+        this.size = 150;
 
         // Setup extractors
         this.extractorLocations = [
-            //new THREE.Vector3( 0, 0, 2500 ),
-            new THREE.Vector3( 0, -70000, 2500 ),
-            new THREE.Vector3( 0, 70000, 2500 ), 
-            new THREE.Vector3( -70000, 0, 2500 ), 
-            new THREE.Vector3( 70000, 0, 2500 ),
+            new THREE.Vector3( 0, 0, this.size * 10 ),
+            new THREE.Vector3( 0, -70000, this.size * 10 ),
+            new THREE.Vector3( 0, 70000, this.size * 10 ), 
+            new THREE.Vector3( -70000, 0, this.size * 10 ), 
+            new THREE.Vector3( 70000, 0, this.size * 10 ),
       ];
     }
 
@@ -46,7 +46,7 @@ export default class Extractor {
         
             extractor.rotation.y = Math.PI / 8;
             extractor.position.x = extractor_location.x;
-            extractor.position.y = -extractor_location.z + 100;
+            extractor.position.y = -7450;
             extractor.position.z = extractor_location.y;
             
             extractors.push( extractor );
@@ -67,7 +67,7 @@ export default class Extractor {
         const material = proceduralBuilding({
             uniforms: {
                 time: 			    { value: 0.0 },
-                scale:              { value: .01 },                                        // Scale
+                scale:              { value: .005 },                                        // Scale
                 lacunarity:         { value: 2.0 },                                         // Lacunarity
                 randomness:         { value: 1.0 },                                       // Randomness
                 diffuseColour1:     { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.40) },  // Diffuse gradient colour 1
@@ -76,6 +76,8 @@ export default class Extractor {
                 //emitColour1:        { value: new THREE.Vector4( 0.005, 0.051, 0.624, 0.25) },  // Emission gradient colour 1
                 emitColour1:        { value: new THREE.Vector4( 0.0, 0.0, 0.0, 0.25) },  // Emission gradient colour 1
                 emitColour2:        { value: new THREE.Vector4( 0.158, 1., 1., .9) },     // Emission gradient colour 2
+                shadowFactor:       { value: 0.03 },
+                shadowOffset:       { value: 0.1 },
             }
         });
 
@@ -95,11 +97,11 @@ export default class Extractor {
         // this.mesh.add(innerMesh);
         // this.mesh.scale.setScalar(this.size);
 
-        let outerMesh = new Brush( new THREE.CylinderGeometry( 8, 8, 20, 8, 1, false ), material );
+        let outerMesh = new Brush( new THREE.CylinderGeometry( 8, 8, 100, 8, 1, false ), material );
         outerMesh.scale.setScalar(this.size);
         outerMesh.updateMatrixWorld();
 
-        let innerMesh = new Brush( new THREE.CylinderGeometry( 7.5, 7.5, 19, 8, 1, false ), material );
+        let innerMesh = new Brush( new THREE.CylinderGeometry( 7.5, 7.5, 99, 8, 1, false ), material );
         innerMesh.position.y = 1000;
         innerMesh.scale.setScalar(this.size);
         innerMesh.updateMatrixWorld();
@@ -119,23 +121,27 @@ export default class Extractor {
         csgEvaluator.evaluate(outerMesh, innerMesh, HOLLOW_SUBTRACTION    , result);
         result.receiveShadow = true;
         result.layers.set(11);
+        result.name = 'outer';
 
-        let innerMesh2 = new THREE.Mesh( new THREE.CylinderGeometry( 7.5, 7.5, 20, 8, 1, true ), material.clone() );
+        let innerMesh2 = new THREE.Mesh( new THREE.CylinderGeometry( 7.5, 7.5, 100, 8, 1, true ), material.clone() );
         window.extractor.inner = innerMesh2.material;
-        innerMesh2.material.uniforms.scale.value = 1.33;
+        innerMesh2.material.uniforms.scale.value = 0.8;
         innerMesh2.position.y = 0;
         innerMesh2.scale.setScalar(this.size);
         innerMesh2.updateMatrixWorld();
+        innerMesh2.name = 'inner';
 
         this.mesh = new THREE.Object3D();
         this.mesh.add(result);
         this.mesh.add(innerMesh2);
-        this.mesh.add(this.getStorageTanks());
 
-        let phatTank = this.getPhatTank();
-        phatTank.position.y = -2500;
-        phatTank.position.x = 200;
-        this.mesh.add(phatTank);
+        // Storage tanks.
+        // this.mesh.add(this.getStorageTanks());
+
+        // let phatTank = this.getPhatTank();
+        // phatTank.position.y = -2500;
+        // phatTank.position.x = 200;
+        // this.mesh.add(phatTank);
         
     }
 
@@ -182,12 +188,12 @@ export default class Extractor {
             tankMeshes.add(tank);
         });
 
-        tankMeshes.position.y = -1000;
+        tankMeshes.position.y = -100;
         return tankMeshes;
     }
 
     getStorageTank() {
-        const geometry = new THREE.CapsuleGeometry( 1, 30, 8, 16 ); 
+        const geometry = new THREE.CapsuleGeometry( 1, 40, 8, 16 ); 
         // const material = new THREE.MeshBasicMaterial( {color: 0x00ff00} ); 
         const material = proceduralMetalMaterial2({
             uniforms: {
@@ -210,11 +216,11 @@ export default class Extractor {
     animate( delta ) {
 
         window.l.current_scene.scene_objects.extractors.forEach( (extractor, i) => {
-
+            let inner = extractor.getObjectByName('inner');
+            let outer = extractor.getObjectByName('outer');
+            inner.material.uniforms.time.value += 0.0000025;
+            outer.material[0].uniforms.time.value += 0.0000025;
         } );
-        // // Iterate the sky uniforms to animate it.
-        // window.extractor.inner.uniforms.time.value += 0.0125;
-        // window.extractor.outer.uniforms.time.value += 0.0125;
     }
 
 }

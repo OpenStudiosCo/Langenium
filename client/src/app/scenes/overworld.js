@@ -7,7 +7,7 @@ import SceneBase from "./base";
 /**
  * Scene assets
  */
-import Extractor from "../scene_assets/extractor";
+import Extractors from "../scene_assets/extractors";
 import Ocean from "../scene_assets/ocean";
 import Platform from "../scene_assets/platform";
 import Sky from "../scene_assets/sky";
@@ -130,33 +130,23 @@ export default class Overworld extends SceneBase {
       window.l.current_scene.scene_objects.platform.animate
     );
 
-    // Setup extractors
-    let extractor_locations = [
-      new THREE.Vector3( 0, -70000, 1500 ), 
-      new THREE.Vector3( 0, 70000, 1500 ), 
-      new THREE.Vector3( -70000, 0, 1500 ), 
-      new THREE.Vector3( 70000, 0, 1500 ),
-    ];
 
-    extractor_locations.forEach( async ( extractor_location, i ) => {
-      window.l.current_scene.scene_objects[ 'extractor_' + i ] = new Extractor();
-      await window.l.current_scene.scene_objects[ 'extractor_' + i ].load();
-  
-      window.l.current_scene.scene_objects[ 'extractor_' + i ].mesh.rotation.y = Math.PI / 8;
-      window.l.current_scene.scene_objects[ 'extractor_' + i ].mesh.position.x = extractor_location.x;
-      window.l.current_scene.scene_objects[ 'extractor_' + i ].mesh.position.y = -500;
-      window.l.current_scene.scene_objects[ 'extractor_' + i ].mesh.position.z = extractor_location.y;
+    // Setup Extractors.
+    let extractors = new Extractors();
+    window.l.current_scene.scene_objects.extractors = await extractors.getAll();
+
+    window.l.current_scene.scene_objects.extractors.forEach( async ( extractor, i ) => {
       window.l.current_scene.scene.add(
-        window.l.current_scene.scene_objects[ 'extractor_' + i ].mesh
+        extractor
       );
-      window.l.current_scene.animation_queue.push(
-        window.l.current_scene.scene_objects[ 'extractor_' + i ].animate
-      );
-  
     });
 
+    window.l.current_scene.animation_queue.push(
+      extractors.animate
+    );
+
     // Setup ocean
-    window.l.current_scene.scene_objects.ocean = new Ocean( extractor_locations );
+    window.l.current_scene.scene_objects.ocean = new Ocean( extractors.extractorLocations );
     window.l.current_scene.scene.add(
       window.l.current_scene.scene_objects.ocean.water
     );

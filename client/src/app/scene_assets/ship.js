@@ -125,6 +125,9 @@ export default class Ship {
         const trailMaterial = TrailRenderer.createBaseMaterial();
 
         trailMaterial.depthWrite = true;
+        trailMaterial.depthBias = -0.0001; // Adjust depth bias as needed
+        trailMaterial.depthBiasConstant = 0; // Adjust depth bias constant term if necessary
+        trailMaterial.depthBiasSlope = 0; // Adjust depth bias slope term if necessary
 
         trailMaterial.side = THREE.DoubleSide;
 
@@ -557,7 +560,6 @@ export default class Ship {
                     // Update ship thruster
                     window.l.current_scene.scene_objects.ship.animateThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.centralConeBurner, .1);
                     window.l.current_scene.scene_objects.ship.animateThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.outerCylBurner, .1);
-
                     
                     window.l.current_scene.scene_objects.ship.spinThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.rearConeBurner, -1 );
                     window.l.current_scene.scene_objects.ship.spinThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.centralConeBurner, 1 );
@@ -569,9 +571,7 @@ export default class Ship {
 
                     trailOffset += window.l.current_scene.scene_objects.ship.trail_position_z - Math.abs( window.l.current_scene.scene_objects.ship.state.airSpeed );
 
-                    window.l.current_scene.scene_objects.ship.trail.mesh.material.uniforms.headColor.value.set( 255 / 255 , 212 / 255, 148/255, .8 ); // RGBA.
-
-                    
+                    window.l.current_scene.scene_objects.ship.trail.mesh.material.uniforms.headColor.value.set( 255 / 255 , 212 / 255, 148/255, .8 ); // RGBA.                    
                 }
                 else {
                     window.l.current_scene.scene_objects.ship.trail.mesh.material.uniforms.headColor.value.set( 255 / 255 , 212 / 255, 148/255, 0 ); // RGBA.

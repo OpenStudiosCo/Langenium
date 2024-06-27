@@ -19,15 +19,13 @@ export default class CargoShips {
 
     constructor() {
         this.ready = false;
-        this.size = 400;
+        this.size = 1000;
 
         // Setup extractors
         this.locations = [
-            new THREE.Vector3( 0, -500, this.size * 10 ),            // Test extractor.
-            // new THREE.Vector3( 0, -70000, this.size * 10 ),
-            // new THREE.Vector3( 0, 70000, this.size * 10 ), 
-            // new THREE.Vector3( -70000, 0, this.size * 10 ), 
-            // new THREE.Vector3( 70000, 0, this.size * 10 ),
+            new THREE.Vector3( -35000, -2000, this.size * 10 ),
+             new THREE.Vector3( -36000, -1500, this.size * 10 ),
+             new THREE.Vector3( -34000, -1500, this.size * 10 ),
         ];
     }
 
@@ -76,12 +74,9 @@ export default class CargoShips {
         innerMesh.rotation.x = -0.1;
         innerMesh.rotation.y = Math.PI ;
         innerMesh.rotation.z = Math.PI / 4;
-        innerMesh.position.z = this.size / 4;
+        innerMesh.position.z = this.size / 1.5;
         innerMesh.scale.set(this.size / 4, this.size / 4, this.size);
         innerMesh.updateMatrixWorld();
-
-        // this.mesh.add(outerMesh);
-        // this.mesh.add(innerMesh);
 
         let result = new THREE.Mesh(
             new THREE.BufferGeometry(),
@@ -98,11 +93,7 @@ export default class CargoShips {
         result.name = 'outer';
 
         this.mesh = new THREE.Object3D();
-        // this.mesh.add(outerMesh);
-        // this.mesh.add(innerMesh);
-
         this.mesh.add(result);
-        
-        //this.mesh.add(innerMesh2);
+
     }
 }

@@ -125,7 +125,7 @@ export default class Platform {
         } );
         
         this.mesh = this.model.scene;
-        this.mesh.scale.multiplyScalar(1000);
+        this.mesh.scale.multiplyScalar(2000);
         this.mesh.rotation.order = 'YXZ';
         this.ready = true;
     }

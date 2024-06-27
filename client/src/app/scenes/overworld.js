@@ -120,9 +120,8 @@ export default class Overworld extends SceneBase {
     // Setup Platform
     window.l.current_scene.scene_objects.platform = new Platform();
     await window.l.current_scene.scene_objects.platform.load();
-    window.l.current_scene.scene_objects.platform.mesh.position.y = 250;
-    window.l.current_scene.scene_objects.platform.mesh.position.z = -55000;
-    window.l.current_scene.scene_objects.platform.mesh.position.x = -25000;
+    window.l.current_scene.scene_objects.platform.mesh.position.z = -65000;
+    window.l.current_scene.scene_objects.platform.mesh.position.x = -35000;
     window.l.current_scene.scene_objects.platform.mesh.rotation.y = - Math.PI / 4;
     window.l.current_scene.scene.add(
       window.l.current_scene.scene_objects.platform.mesh

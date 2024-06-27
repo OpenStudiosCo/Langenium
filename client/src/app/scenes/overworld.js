@@ -7,6 +7,7 @@ import SceneBase from "./base";
 /**
  * Scene assets
  */
+import CargoShips from "../scene_assets/cargo_ships";
 import Extractors from "../scene_assets/extractors";
 import Ocean from "../scene_assets/ocean";
 import Platform from "../scene_assets/platform";
@@ -144,6 +145,16 @@ export default class Overworld extends SceneBase {
     window.l.current_scene.animation_queue.push(
       extractors.animate
     );
+
+    // Setup Cargo Ships.
+    let cargo_ships = new CargoShips();
+    window.l.current_scene.scene_objects.cargo_ships = await cargo_ships.getAll();
+
+    window.l.current_scene.scene_objects.cargo_ships.forEach( async ( cargo_ship, i ) => {
+      window.l.current_scene.scene.add(
+        cargo_ship
+      );
+    });
 
     // Setup ocean
     window.l.current_scene.scene_objects.ocean = new Ocean( extractors.extractorLocations );

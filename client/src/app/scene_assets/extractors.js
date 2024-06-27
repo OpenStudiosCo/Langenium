@@ -10,9 +10,6 @@ import { HOLLOW_SUBTRACTION    , Brush, Evaluator } from 'three-bvh-csg';
 
 export default class Extractor {
 
-    // THREE.Planes for clipping this out of the water material.
-    clippingPlanes;
-
     // Array of three.vector3's defining X/Z coordinates and radius of where extractors are in the ocean.
     extractorLocations;
 
@@ -58,11 +55,6 @@ export default class Extractor {
     async load() {
 
         //const material = new THREE.MeshBasicMaterial( {color: 0xff0000, transparent: true, opacity: 1.0, side: THREE.DoubleSide} ); 
-
-        const transparentMaterial = new THREE.MeshLambertMaterial({
-            opacity: 0,
-            transparent: true
-          });
 
         const material = proceduralBuilding({
             uniforms: {

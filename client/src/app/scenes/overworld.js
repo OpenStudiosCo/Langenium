@@ -11,6 +11,7 @@ import CargoShips from "../scene_assets/cargo_ships";
 import Extractors from "../scene_assets/extractors";
 import Ocean from "../scene_assets/ocean";
 import Platform from "../scene_assets/platform";
+import Refineries from "../scene_assets/refineries";
 import Sky from "../scene_assets/sky";
 import Ship from "../scene_assets/ship";
 
@@ -143,6 +144,20 @@ export default class Overworld extends SceneBase {
 
     window.l.current_scene.animation_queue.push(
       extractors.animate
+    );
+
+    // Setup Refineries.
+    let refineries = new Refineries();
+    window.l.current_scene.scene_objects.refineries = await refineries.getAll();
+
+    window.l.current_scene.scene_objects.refineries.forEach( async ( refinery, i ) => {
+      window.l.current_scene.scene.add(
+        refinery
+      );
+    });
+
+    window.l.current_scene.animation_queue.push(
+      refineries.animate
     );
 
     // Setup Cargo Ships.

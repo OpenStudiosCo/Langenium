@@ -482,19 +482,22 @@ export default class Ship {
             window.l.current_scene.scene_objects.ship.updateMesh();
 
             var radian = (Math.PI / 180);
+
+            window.l.current_scene.scene_objects.ship.camera_distance = window.l.current_scene.scene_objects.ship.default_camera_distance + (window.l.current_scene.room_depth / 2);
+            if ( window.l.current_scene.scene_objects.ship.state.airSpeed < 0 ) {
+                window.l.current_scene.scene_objects.ship.camera_distance -= window.l.current_scene.scene_objects.ship.state.airSpeed * 4;
+            }
+
+            let xDiff = window.l.current_scene.scene_objects.ship.mesh.position.x;
+            let zDiff = window.l.current_scene.scene_objects.ship.mesh.position.z;
+
+            window.l.current_scene.camera.position.x = xDiff + window.l.current_scene.scene_objects.ship.camera_distance * Math.sin(window.l.current_scene.scene_objects.ship.mesh.rotation.y);
+            window.l.current_scene.camera.position.z = zDiff + window.l.current_scene.scene_objects.ship.camera_distance * Math.cos(window.l.current_scene.scene_objects.ship.mesh.rotation.y);
           
-            if (rY != 0) {
-
-                let xDiff = window.l.current_scene.scene_objects.ship.mesh.position.x;
-                let zDiff = window.l.current_scene.scene_objects.ship.mesh.position.z;
-
-                window.l.current_scene.camera.position.x = xDiff + window.l.current_scene.scene_objects.ship.camera_distance * Math.sin(window.l.current_scene.scene_objects.ship.mesh.rotation.y);
-                window.l.current_scene.camera.position.z = zDiff + window.l.current_scene.scene_objects.ship.camera_distance * Math.cos(window.l.current_scene.scene_objects.ship.mesh.rotation.y);
+            if (rY != 0) {   
                 window.l.current_scene.camera.rotation.y += rY;
-                
             }
             else {
-
                 // Check there is y difference and the rotation pad isn't being pressed.                   
                 if (
                     window.l.current_scene.camera.rotation.y != window.l.current_scene.scene_objects.ship.mesh.rotation.y &&
@@ -519,15 +522,15 @@ export default class Ship {
                 
             }
 
-            let xDiff = tZ * Math.sin(window.l.current_scene.scene_objects.ship.mesh.rotation.y),
-                zDiff = tZ * Math.cos(window.l.current_scene.scene_objects.ship.mesh.rotation.y);
+            let xDiff2 = tZ * Math.sin(window.l.current_scene.scene_objects.ship.mesh.rotation.y),
+                zDiff2 = tZ * Math.cos(window.l.current_scene.scene_objects.ship.mesh.rotation.y);
             
             if (window.l.current_scene.scene_objects.ship.mesh.position.y + tY >= 1 ) {
                 window.l.current_scene.camera.position.y += tY;
             }
             
-            window.l.current_scene.camera.position.x += xDiff;
-            window.l.current_scene.camera.position.z += zDiff;
+            window.l.current_scene.camera.position.x += xDiff2;
+            window.l.current_scene.camera.position.z += zDiff2;
             
             window.l.current_scene.camera.updateProjectionMatrix();
 

@@ -102,8 +102,8 @@ window.l.current_scene.init = async function () {
   window.l.current_scene.camera = new THREE.PerspectiveCamera(
     fov,
     aspect,
-    1,
-    window.l.scale * Math.PI
+    2.5,
+    window.l.scale * 4
   );
   window.l.current_scene.camera.aspect = width / height;
   window.l.current_scene.camera.rotation.order = "YZX";

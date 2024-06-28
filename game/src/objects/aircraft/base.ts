@@ -10,10 +10,10 @@ import { normaliseSpeedDelta, easeOutExpo, easeInQuad, easeInOutExpo } from '../
 export default class BaseAircraft {
     public airSpeed:        number                              = 0;
     public verticalSpeed:   number                              = 0;
-    public maxForward:      number                              = 3.7;    // Reading as 200 knots on the airspeed instrument, may not be correct.
-    public maxBackward:     number                              = 0.5;
-    public maxUp:           number                              = .4;
-    public maxDown:         number                              = .4;  // gravity?
+    public maxForward:      number                              = 3.7 * 5;    // Reading as 200 knots on the airspeed instrument, may not be correct.
+    public maxBackward:     number                              = 2.0;
+    public maxUp:           number                              = 3.7 * 2.5;
+    public maxDown:         number                              = 3.7 * 5;  // gravity?
     public heading:         number                              = 0;
     public altitude:        number                              = 0;
     public horizon:         [number, number]                    = [0, 0];
@@ -91,7 +91,7 @@ export default class BaseAircraft {
      * @param time_delta 
      */
     public move( time_delta: number ): object {
-        let stepSize:           number = .01 * normaliseSpeedDelta( time_delta ),
+        let stepSize:           number = .05 * normaliseSpeedDelta( time_delta ),
             rY:                 number = 0, 
             tZ:                 number = 0, 
             tY:                 number = 0,
@@ -111,8 +111,8 @@ export default class BaseAircraft {
 
         // Update Vertical Speed (velocity)
         this.verticalSpeed = this._changeVelocity(
-            stepSize,
-            stepSize,
+            stepSize * easeInOutExpo( 1 - ( Math.abs ( this.verticalSpeed ) / this.maxUp ) ),
+            stepSize * easeInOutExpo( 1 - ( Math.abs ( this.verticalSpeed ) / this.maxDown ) ),
             this.verticalSpeed,
             this.controls.moveDown,     // Note: Move Down/Up is reversed by design.
             this.controls.moveUp,

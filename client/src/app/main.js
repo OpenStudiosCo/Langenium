@@ -9,10 +9,16 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
  * Internal classes and helpers.
  */
 import Controls from "./controls.js";
+import Materials from "./materials.js";
 import UI from "./ui.js";
 import { handleViewportChange } from "./events.js";
 import Multiplayer from "./multiplayer.js";
 import Scenograph from "./scenograph.js";
+
+/**
+ * Custom materials.
+ */
+window.l.materials = new Materials();
 
 /**
  * Multiplayer allows connecting to server.
@@ -28,6 +34,28 @@ window.l.scenograph = new Scenograph();
  * Load up the overworld by default.
  */
 window.l.current_scene = window.l.scenograph.load("Overworld");
+
+window.l.select_box = function( object ) {
+  // Remove any existing select boxes
+  if (window.l.current_scene.scene_objects.select_box) {
+    window.l.current_scene.scene.remove(window.l.current_scene.scene_objects.select_box);
+    delete window.l.current_scene.scene_objects.select_box;
+  }
+
+  const box = new THREE.BoxHelper( object, 0xffff00 );
+  window.l.current_scene.scene_objects.select_box = box;
+  window.l.current_scene.scene.add(window.l.current_scene.scene_objects.select_box);
+
+  window.l.current_scene.animation_queue.push(
+    window.l.select_box_update
+  );
+}
+
+window.l.select_box_update = function () {
+  window.l.current_scene.scene_objects.select_box.position.copy( window.l.current_scene.scene_objects.select_box.object.position );
+  window.l.current_scene.scene_objects.select_box.rotation.copy( window.l.current_scene.scene_objects.select_box.object.rotation );
+  window.l.current_scene.scene_objects.select_box.update();
+}
 
 /**
  * Game client initialiser, called by window.l when it's finished loading.
@@ -80,8 +108,8 @@ window.l.current_scene.init = async function () {
   window.l.current_scene.camera = new THREE.PerspectiveCamera(
     fov,
     aspect,
-    1,
-    window.l.scale * 2
+    2.5,
+    window.l.scale * 4
   );
   window.l.current_scene.camera.aspect = width / height;
   window.l.current_scene.camera.rotation.order = "YZX";

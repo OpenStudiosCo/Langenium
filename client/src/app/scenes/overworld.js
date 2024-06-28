@@ -7,7 +7,11 @@ import SceneBase from "./base";
 /**
  * Scene assets
  */
+import CargoShips from "../scene_assets/cargo_ships";
+import Extractors from "../scene_assets/extractors";
 import Ocean from "../scene_assets/ocean";
+import Platform from "../scene_assets/platform";
+import Refineries from "../scene_assets/refineries";
 import Sky from "../scene_assets/sky";
 import Ship from "../scene_assets/ship";
 
@@ -104,15 +108,6 @@ export default class Overworld extends SceneBase {
       window.l.current_scene.scene_objects.sky.animate
     );
 
-    // Setup ocean
-    window.l.current_scene.scene_objects.ocean = new Ocean();
-    window.l.current_scene.scene.add(
-      window.l.current_scene.scene_objects.ocean.water
-    );
-    window.l.current_scene.animation_queue.push(
-      window.l.current_scene.scene_objects.ocean.animate
-    );
-
     // Setup Ship
     window.l.current_scene.scene_objects.ship = new Ship();
     await window.l.current_scene.scene_objects.ship.load();
@@ -121,6 +116,67 @@ export default class Overworld extends SceneBase {
     );
     window.l.current_scene.animation_queue.push(
       window.l.current_scene.scene_objects.ship.animate
+    );
+
+    // Setup Platform
+    window.l.current_scene.scene_objects.platform = new Platform();
+    await window.l.current_scene.scene_objects.platform.load();
+    window.l.current_scene.scene_objects.platform.mesh.position.z = -65000;
+    window.l.current_scene.scene_objects.platform.mesh.position.x = -35000;
+    window.l.current_scene.scene_objects.platform.mesh.rotation.y = - Math.PI / 4;
+    window.l.current_scene.scene.add(
+      window.l.current_scene.scene_objects.platform.mesh
+    );
+    window.l.current_scene.animation_queue.push(
+      window.l.current_scene.scene_objects.platform.animate
+    );
+
+
+    // Setup Extractors.
+    let extractors = new Extractors();
+    window.l.current_scene.scene_objects.extractors = await extractors.getAll();
+
+    window.l.current_scene.scene_objects.extractors.forEach( async ( extractor, i ) => {
+      window.l.current_scene.scene.add(
+        extractor
+      );
+    });
+
+    window.l.current_scene.animation_queue.push(
+      extractors.animate
+    );
+
+    // Setup Refineries.
+    let refineries = new Refineries();
+    window.l.current_scene.scene_objects.refineries = await refineries.getAll();
+
+    window.l.current_scene.scene_objects.refineries.forEach( async ( refinery, i ) => {
+      window.l.current_scene.scene.add(
+        refinery
+      );
+    });
+
+    window.l.current_scene.animation_queue.push(
+      refineries.animate
+    );
+
+    // Setup Cargo Ships.
+    let cargo_ships = new CargoShips();
+    window.l.current_scene.scene_objects.cargo_ships = await cargo_ships.getAll();
+
+    window.l.current_scene.scene_objects.cargo_ships.forEach( async ( cargo_ship, i ) => {
+      window.l.current_scene.scene.add(
+        cargo_ship
+      );
+    });
+
+    // Setup ocean
+    window.l.current_scene.scene_objects.ocean = new Ocean( extractors.extractorLocations );
+    window.l.current_scene.scene.add(
+      window.l.current_scene.scene_objects.ocean.water
+    );
+    window.l.current_scene.animation_queue.push(
+      window.l.current_scene.scene_objects.ocean.animate
     );
 
     // Adjust ambient light intensity

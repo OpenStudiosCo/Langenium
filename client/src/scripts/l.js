@@ -31,11 +31,11 @@ function _init( wait ) {
 	// Game settings
 	l.current_scene = false;
 	l.multiplayer = false;
-	l.scale = 500000;
+	l.scale = 500000; // 500 kilometres, used as the radius by the sky and ocean.
 	l.scenograph = false;
 
 	// Engine settings
-	l.version = '0.6.0';
+	l.version = '0.6.0-Alpha';
 	l.url = '//' + location.host;
 	l.env = _check_environment();
 	

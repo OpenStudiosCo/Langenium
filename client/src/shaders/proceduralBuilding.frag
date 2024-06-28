@@ -1,7 +1,4 @@
 uniform sampler2D noiseTexture;
-uniform vec4 diffuseColour1;
-uniform vec4 diffuseColour2;
-uniform vec4 diffuseColour3;
 uniform vec4 emitColour1;
 uniform vec4 emitColour2;
 uniform float randomness;

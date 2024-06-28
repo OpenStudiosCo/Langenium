@@ -1,5 +1,7 @@
 // Helpers that simulate global illumination and bump mapping.
 
+// @param: uniform sampler2D noiseTexture;
+
 float snoise ( vec3 coord, float scale, float time_factor ) {
     vec3 scaledCoord = coord * scale - (vNormal / time_factor + vec3(0.0, 0.0, 0.0));
 

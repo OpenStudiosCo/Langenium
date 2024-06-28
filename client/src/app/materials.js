@@ -76,7 +76,7 @@ export function brightenMaterial(material, amount) {
  * 
  * Uses simulated GI, voronoi and brick textures to create a futuristic building surface.
  * 
- * Based on x material from BlenderKit.
+ * Based on Procedural Scifi Alien Metal Green, https://www.blenderkit.com/asset-gallery-detail/c23680d6-fde9-441c-bab2-99922f4686bc/
  * 
  * Used by:
  * - Union Platform buildings
@@ -112,7 +112,7 @@ export function proceduralBuilding(settings) {
  * 
  * Uses simulated GI and voronoi textures to create a futuristic vehicle surface.
  * 
- * Based on x material from BlenderKit.
+ * Based on Procedural Abstract Sci-Fi Panels, https://www.blenderkit.com/asset-gallery-detail/484c0cf9-6ae7-4bb1-801d-8bf40e70e554/
  * 
  * Used by:
  * - Valiant aircraft
@@ -152,7 +152,7 @@ export function proceduralMetalMaterial(settings) {
  * 
  * Uses simulated GI and voronoi textures to create a futuristic metal cladded surface.
  * 
- * Based on x material from BlenderKit.
+ * Based on Procedural Scifi Greeble, https://www.blenderkit.com/asset-gallery-detail/9430fd1f-a2cd-4df6-ae1d-0ba2ad84b5de/
  * 
  * Used by:
  * - Union platform outer casing and pole
@@ -188,7 +188,7 @@ export function proceduralMetalMaterial2(settings) {
  * 
  * Uses simulated GI and brick textures to create a solar panel surface.
  * 
- * Based on x material from BlenderKit.
+ * Based on Solar Panel, https://www.blenderkit.com/asset-gallery-detail/e92512fb-12b5-4142-878a-c12a5c9f70a0/
  * 
  * Used by:
  * - Union platform solar panels

@@ -488,13 +488,19 @@ export default class Ship {
                 window.l.current_scene.scene_objects.ship.camera_distance -= window.l.current_scene.scene_objects.ship.state.airSpeed * 4;
             }
 
-            let xDiff = window.l.current_scene.scene_objects.ship.mesh.position.x;
-            let zDiff = window.l.current_scene.scene_objects.ship.mesh.position.z;
+            // Check we aren't in debug mode which uses orbit controls
+            if ( ! window.l.current_scene.debug ) {
+                let xDiff = window.l.current_scene.scene_objects.ship.mesh.position.x;
+                let zDiff = window.l.current_scene.scene_objects.ship.mesh.position.z;
 
-            window.l.current_scene.camera.position.x = xDiff + window.l.current_scene.scene_objects.ship.camera_distance * Math.sin(window.l.current_scene.scene_objects.ship.mesh.rotation.y);
-            window.l.current_scene.camera.position.z = zDiff + window.l.current_scene.scene_objects.ship.camera_distance * Math.cos(window.l.current_scene.scene_objects.ship.mesh.rotation.y);
+                window.l.current_scene.camera.position.x = xDiff + window.l.current_scene.scene_objects.ship.camera_distance * Math.sin(window.l.current_scene.scene_objects.ship.mesh.rotation.y);
+                window.l.current_scene.camera.position.z = zDiff + window.l.current_scene.scene_objects.ship.camera_distance * Math.cos(window.l.current_scene.scene_objects.ship.mesh.rotation.y);
+            }
+
+            //window.l.current_scene.camera.position.z = zDiff + window.l.current_scene.scene_objects.ship.camera_distance * Math.cos(window.l.current_scene.scene_objects.ship.mesh.rotation.y);
           
-            if (rY != 0) {   
+            if (rY != 0) {
+                
                 window.l.current_scene.camera.rotation.y += rY;
             }
             else {
@@ -561,8 +567,8 @@ export default class Ship {
                 if ( window.l.current_scene.scene_objects.ship.state.airSpeed < 0 ) {
 
                     // Update ship thruster
-                    window.l.current_scene.scene_objects.ship.animateThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.centralConeBurner, .1);
-                    window.l.current_scene.scene_objects.ship.animateThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.outerCylBurner, .1);
+                    window.l.current_scene.scene_objects.ship.animateThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.centralConeBurner, .5);
+                    window.l.current_scene.scene_objects.ship.animateThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.outerCylBurner, .5);
                     
                     window.l.current_scene.scene_objects.ship.spinThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.rearConeBurner, -1 );
                     window.l.current_scene.scene_objects.ship.spinThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.centralConeBurner, 1 );

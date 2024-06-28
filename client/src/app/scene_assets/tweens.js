@@ -85,6 +85,11 @@ export function setupTweens() {
    */
   window.l.current_scene.tweens.dollyUp = dollyUp();
 
+  /**
+   * Sink the office.
+   * Animation: Automatic, single use
+   */
+
   resetReusables();
 }
 
@@ -206,7 +211,7 @@ function flickerEffect() {
  */
 function enterTheOffice() {
   let coords = { x: 15 + window.l.current_scene.room_depth / 2 }; // Start at (0, 0)
-  let targetZ = -30 + window.l.current_scene.room_depth / 2;
+  let targetZ = window.l.current_scene.scene_objects.ship.default_camera_distance + window.l.current_scene.room_depth / 2;
   return new TWEEN.Tween(coords, false) // Create a new tween that modifies 'coords'.
     .to({ x: targetZ }, window.l.current_scene.skipintro ? 0 : 1000) // Move to (300, 200) in 1 second.
     .easing(TWEEN.Easing.Quadratic.InOut) // Use an easing function to make the animation smooth.
@@ -217,7 +222,6 @@ function enterTheOffice() {
           if ( effectPass.name =='EffectPass' ) {
             effectPass.effects.forEach( ( effect ) => {
               if ( effect.name == 'BloomEffect' ) {
-                console.log( );
                 effect.blendMode.setOpacity( Math.min( (coords.x / targetZ) - 1, 1 ));
               }
             } );
@@ -289,6 +293,7 @@ function openDoor(doorRotation) {
     .onComplete(() => {
       window.l.current_scene.tweens.enterTheOffice.start();
       window.l.current_scene.tweens.dollyUp.delay(500).start();
+      
     });
 }
 
@@ -304,6 +309,29 @@ function dollyUp() {
     })
     .onComplete(() => {
       window.l.current_scene.ui.show_main_menu();
+      window.l.current_scene.tweens.sinkOffice = sinkOffice();
+      window.l.current_scene.tweens.sinkOffice.delay(500).start();
+    })
+}
+
+/**
+ * Sinks the office room the player exits from
+ */
+function sinkOffice() {
+  let coords = {
+    y: l.current_scene.scene_objects.room.position.y
+  };
+  return new TWEEN.Tween(coords)
+    .to({ y: -50 }, window.l.current_scene.skipintro ? 0 : 10000) // Set the duration of the animation
+    .onUpdate(() => {
+      window.l.current_scene.scene_objects.room.position.y = coords.y;
+      window.l.current_scene.scene_objects.door.position.y =  coords.y;
+      window.l.current_scene.scene_objects.door_frame.position.y =  coords.y;
+    })
+    .onComplete(() => {
+      window.l.current_scene.scene.remove( window.l.current_scene.scene_objects.room );
+      window.l.current_scene.scene.remove( window.l.current_scene.scene_objects.door );
+      window.l.current_scene.scene.remove( window.l.current_scene.scene_objects.door_frame );
     })
 }
 

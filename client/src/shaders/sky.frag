@@ -7,10 +7,6 @@ uniform sampler2D noiseTexture;
 uniform float time;
 varying vec2 vUv;
 
-float blendOverlay(float base, float blend) {
-    return( base < 0.5 ? ( 2.0 * base * blend ) : (1.0 - 2.0 * ( 1.0 - base ) * ( 1.1 - blend ) ) );
-}
-
 float snoise ( vec3 coord, float scale, float time_factor ) {
     vec3 scaledCoord = coord * scale - (vNormal / time_factor + vec3(0.0, 0.0, -time / time_factor));
 
@@ -92,10 +88,9 @@ void main(void) {
     // color
     gl_FragColor = texColor;
 
-    // normal
+    if ((vTexCoord3D.y > -0.1) && (n > 0.3 ) ) {
 
-     if ((vTexCoord3D.y > -0.1) && (n > 0.3 ) ) {
-
+        // normal
         const float e = .005926;
 
         float nx = heightMap( vTexCoord3D + vec3( e, 0.0, 0.0 ) );
@@ -105,7 +100,7 @@ void main(void) {
         vec3 normal = normalize( vNormal + .5 * vec3( n - nx, n - ny, n - nz ) / e );
 
         // diffuse light
-        vec3 vLightWeighting = vec3( 0.0015926 );
+        vec3 vLightWeighting = vec3( 0.1 );
 
         vec4 lDirection = viewMatrix * vec4( normalize( vec3( 1.0, 0.0, 0.5 ) ), 0.0 );
         float directionalLightWeighting = dot( normal, normalize( lDirection.xyz ) ) * 0.15 + 0.85;
@@ -121,8 +116,8 @@ void main(void) {
         if ( dirDotNormalHalf >= 0.0 )
             dirSpecularWeight = ( 1.0 - n ) * pow( dirDotNormalHalf, 5.0 );
 
-        vLightWeighting += vec3( 1.0, 0.5, 0.0 ) * dirSpecularWeight * n / 3.1415926;
-        //vLightWeighting += vec3( 1.0, 0.5, 0.0 ) * dirSpecularWeight * n * 2.0;
+        //vLightWeighting += vec3( 1.0, 0.5, 0.0 ) * dirSpecularWeight * n / 3.1415926;
+        vLightWeighting += vec3( 1.0, 0.5, 0.0 ) * dirSpecularWeight * n * 2.0;
 
         gl_FragColor *= vec4( vLightWeighting, 1.0 ); //
     }

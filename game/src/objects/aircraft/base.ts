@@ -5,11 +5,15 @@
  * - Add weight and wind resistance
  */
 
-import { normaliseSpeedDelta } from '../../../helpers';
+import { normaliseSpeedDelta, easeOutExpo, easeInQuad, easeInOutExpo } from '../../../helpers';
 
 export default class BaseAircraft {
     public airSpeed:        number                              = 0;
     public verticalSpeed:   number                              = 0;
+    public maxForward:      number                              = 3.7 * 5;    // Reading as 200 knots on the airspeed instrument, may not be correct.
+    public maxBackward:     number                              = 2.0;
+    public maxUp:           number                              = 3.7 * 2.5;
+    public maxDown:         number                              = 3.7 * 5;  // gravity?
     public heading:         number                              = 0;
     public altitude:        number                              = 0;
     public horizon:         [number, number]                    = [0, 0];
@@ -45,21 +49,30 @@ export default class BaseAircraft {
      * @param increasePushed 
      * @param decreasePushed 
      */
-    private _changeVelocity(stepSize, currentVelocity, increasePushed, decreasePushed): number {
+    private _changeVelocity(stepIncrease, stepDecrease, currentVelocity, increasePushed, decreasePushed, increaseMax, decreaseMax, dragFactor): number {
         let newVelocity = currentVelocity;
 
         if (increasePushed) {
-            newVelocity -= stepSize;
+
+            // Check if the change puts us over the max.
+            let tempVelocity = newVelocity - stepIncrease;
+            if (Math.abs(increaseMax) >= Math.abs(tempVelocity))
+                newVelocity = tempVelocity;
         }
         else {
             if (decreasePushed) {
-                newVelocity += stepSize;
+
+                // Check if the change puts us over the max.
+                let tempVelocity = newVelocity + stepDecrease;
+                if (Math.abs(decreaseMax) >= tempVelocity)
+                    newVelocity = tempVelocity;
             }
             else {
                 if (newVelocity != 0) {
 
                     if (Math.abs(newVelocity) > 0.1) {
-                        newVelocity *= 0.987; //damping
+                        // Ease out the velocity exponentially to simulate drag
+                        newVelocity *= dragFactor;
                     }
                     else {
                         newVelocity = 0;
@@ -78,7 +91,7 @@ export default class BaseAircraft {
      * @param time_delta 
      */
     public move( time_delta: number ): object {
-        let stepSize:           number = .01 * normaliseSpeedDelta( time_delta ),
+        let stepSize:           number = .05 * normaliseSpeedDelta( time_delta ),
             rY:                 number = 0, 
             tZ:                 number = 0, 
             tY:                 number = 0,
@@ -86,18 +99,26 @@ export default class BaseAircraft {
 
         // Update Airspeed (horizontal velocity)
         this.airSpeed = this._changeVelocity(
+            stepSize * easeInOutExpo( 1 - ( Math.abs ( this.airSpeed ) / this.maxForward ) ),
             stepSize,
             this.airSpeed,
             this.controls.throttleUp,
-            this.controls.throttleDown
+            this.controls.throttleDown,
+            this.maxForward,
+            this.maxBackward,
+            easeOutExpo( 0.987 )
         );
 
         // Update Vertical Speed (velocity)
         this.verticalSpeed = this._changeVelocity(
-            stepSize,
+            stepSize * easeInOutExpo( 1 - ( Math.abs ( this.verticalSpeed ) / this.maxUp ) ),
+            stepSize * easeInOutExpo( 1 - ( Math.abs ( this.verticalSpeed ) / this.maxDown ) ),
             this.verticalSpeed,
             this.controls.moveDown,     // Note: Move Down/Up is reversed by design.
-            this.controls.moveUp
+            this.controls.moveUp,
+            this.maxDown,
+            this.maxUp,
+            easeInQuad( 0.321 )
         );
 
          // Check the vertical speed exceeds minimum threshold for change in vertical position

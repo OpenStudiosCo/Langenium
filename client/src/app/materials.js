@@ -1,5 +1,9 @@
 /**
- * Materials related helpers.
+ * Materials related class and helpers.
+ * 
+ * @todo:
+ *  - Refactor for reuse and DRYer code
+ *  - Variable quality settings for performance
  */
 
 /**
@@ -7,12 +11,33 @@
  */
 import * as THREE from 'three';
 
+export default class Materials {
+  // Array of textures already loaded via AJAX.
+  loaded_textures;
+
+  constructor() {
+
+    // Initialise custom shader chunks.
+    const brickGLSL = document.getElementById( 'brickGLSL' ).textContent;
+    const gradientGLSL = document.getElementById( 'gradientGLSL' ).textContent;
+    const normalGLSL = document.getElementById( 'normalGLSL' ).textContent;
+    const voronoiGLSL = document.getElementById( 'voronoiGLSL' ).textContent;
+    
+    THREE.ShaderChunk['brick'] = brickGLSL;
+    THREE.ShaderChunk['gradient'] = gradientGLSL;
+    THREE.ShaderChunk['normal'] = normalGLSL;
+    THREE.ShaderChunk['voronoi'] = voronoiGLSL;
+
+    this.loaded_textures = [];
+  }
+}
+
 /**
  * Brighten material helper.
  * 
- * @param {THREE.Maetrial} material 
+ * @param {THREE.Material} material 
  * @param {Float} amount 
- * @returns 
+ * @returns {THREE.Material} 
  */
 export function brightenMaterial(material, amount) {
 
@@ -35,17 +60,22 @@ export function brightenMaterial(material, amount) {
   return material;
 }
 
+/**
+ * Procedural building material.
+ * 
+ * Uses simulated GI, voronoi and brick textures to create a futuristic building surface.
+ * 
+ * Based on x material from BlenderKit.
+ * 
+ * Used by:
+ * - Union Platform buildings
+ * - Extractor wells
+ * - Refinery inner building
+ * 
+ * @param {*} settings 
+ * @returns {THREE.Material} 
+ */
 export function proceduralBuilding(settings) {
-
-  const brickGLSL = document.getElementById( 'brickGLSL' ).textContent;
-  const gradientGLSL = document.getElementById( 'gradientGLSL' ).textContent;
-  const normalGLSL = document.getElementById( 'normalGLSL' ).textContent;
-  const voronoiGLSL = document.getElementById( 'voronoiGLSL' ).textContent;
-  
-  THREE.ShaderChunk['brick'] = brickGLSL;
-  THREE.ShaderChunk['gradient'] = gradientGLSL;
-  THREE.ShaderChunk['normal'] = normalGLSL;
-  THREE.ShaderChunk['voronoi'] = voronoiGLSL;
 
   // @todo: Move into a common helper / in memory store.
   let noiseTexture2 = window.l.current_scene.loaders.texture.load( './assets/textures/noise2.jpg' );
@@ -66,16 +96,22 @@ export function proceduralBuilding(settings) {
 
 }
 
+/**
+ * Procedural metallic material.
+ * 
+ * Uses simulated GI and voronoi textures to create a futuristic vehicle surface.
+ * 
+ * Based on x material from BlenderKit.
+ * 
+ * Used by:
+ * - Valiant aircraft
+ * - Union cargo ships
+ * - Apex aircraft (TBA)
+ * 
+ * @param {*} settings 
+ * @returns {THREE.Material} 
+ */
 export function proceduralMetalMaterial(settings) {
-
-  const gradientGLSL = document.getElementById( 'gradientGLSL' ).textContent;
-  const normalGLSL = document.getElementById( 'normalGLSL' ).textContent;
-  const voronoiGLSL = document.getElementById( 'voronoiGLSL' ).textContent;
-  
-  THREE.ShaderChunk['gradient'] = gradientGLSL;
-  THREE.ShaderChunk['normal'] = normalGLSL;
-  THREE.ShaderChunk['voronoi'] = voronoiGLSL;
-
 
   // @todo: Move into a common helper / in memory store.
   let noiseTexture2 = window.l.current_scene.loaders.texture.load( './assets/textures/noise2.jpg' );
@@ -92,6 +128,7 @@ export function proceduralMetalMaterial(settings) {
   material.metalness = 0.9;
   material.roughess = 0.1;
 
+  // @todo: Figure out the caching / sharing of materials between meshes; to reduce overheads
   //let cached_material = cacheProceduralMaterial ( material );
   //return cached_material;
 
@@ -99,17 +136,22 @@ export function proceduralMetalMaterial(settings) {
 
 }
 
+/**
+ * Procedural metallic material for buildings.
+ * 
+ * Uses simulated GI and voronoi textures to create a futuristic metal cladded surface.
+ * 
+ * Based on x material from BlenderKit.
+ * 
+ * Used by:
+ * - Union platform outer casing and pole
+ * - Union refinery outer shell
+ * - Union extractor well tanks
+ * 
+ * @param {*} settings 
+ * @returns {THREE.Material} 
+ */
 export function proceduralMetalMaterial2(settings) {
-
-  const brickGLSL = document.getElementById( 'brickGLSL' ).textContent;
-  const gradientGLSL = document.getElementById( 'gradientGLSL' ).textContent;
-  const normalGLSL = document.getElementById( 'normalGLSL' ).textContent;
-  const voronoiGLSL = document.getElementById( 'voronoiGLSL' ).textContent;
-  
-  THREE.ShaderChunk['brick'] = brickGLSL;
-  THREE.ShaderChunk['gradient'] = gradientGLSL;
-  THREE.ShaderChunk['normal'] = normalGLSL;
-  THREE.ShaderChunk['voronoi'] = voronoiGLSL;
 
   // @todo: Move into a common helper / in memory store.
   let noiseTexture2 = window.l.current_scene.loaders.texture.load( './assets/textures/noise2.jpg' );
@@ -130,17 +172,22 @@ export function proceduralMetalMaterial2(settings) {
 
 }
 
+/**
+ * Procedural metallic material for buildings.
+ * 
+ * Uses simulated GI and voronoi textures to create a futuristic metal cladded surface.
+ * 
+ * Based on x material from BlenderKit.
+ * 
+ * Used by:
+ * - Union platform outer casing and pole
+ * - Union refinery outer shell
+ * - Union extractor well tanks
+ * 
+ * @param {*} settings 
+ * @returns {THREE.Material} 
+ */
 export function proceduralSolarPanel(settings) {
-
-  const brickGLSL = document.getElementById( 'brickGLSL' ).textContent;
-  const gradientGLSL = document.getElementById( 'gradientGLSL' ).textContent;
-  const normalGLSL = document.getElementById( 'normalGLSL' ).textContent;
-  const voronoiGLSL = document.getElementById( 'voronoiGLSL' ).textContent;
-  
-  THREE.ShaderChunk['brick'] = brickGLSL;
-  THREE.ShaderChunk['gradient'] = gradientGLSL;
-  THREE.ShaderChunk['normal'] = normalGLSL;
-  THREE.ShaderChunk['voronoi'] = voronoiGLSL;
 
   // @todo: Move into a common helper / in memory store.
   let noiseTexture2 = window.l.current_scene.loaders.texture.load( './assets/textures/noise2.jpg' );

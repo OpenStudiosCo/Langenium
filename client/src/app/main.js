@@ -9,10 +9,16 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
  * Internal classes and helpers.
  */
 import Controls from "./controls.js";
+import Materials from "./materials.js";
 import UI from "./ui.js";
 import { handleViewportChange } from "./events.js";
 import Multiplayer from "./multiplayer.js";
 import Scenograph from "./scenograph.js";
+
+/**
+ * Custom materials.
+ */
+window.l.materials = new Materials();
 
 /**
  * Multiplayer allows connecting to server.

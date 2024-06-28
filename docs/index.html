@@ -148,6 +148,17 @@ body {
 .tp-dfwv {
     z-index: 1;
 }
+
+#preview_materials {
+    display: none;
+    background: rgba(0,0,0,0.8);
+    position: absolute;
+    width: 100%;
+    height: 25%;
+    overflow-y: auto;
+    z-index: 2;
+    bottom: 0;
+}
 </style></head><body onload="_init( 3000 );"><noscript><style>h1#loadingSign { display: none }
 #page-wrapper {
     z-index: 2;
@@ -161,6 +172,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: flex-end;
+    pointer-events: none;
 }
 .control {
     display: none;
@@ -306,7 +318,419 @@ svg * {
         <radialGradient id="_Radial3" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="matrix(411.214,0,0,411.214,639.989,452.849)"><stop offset="0" style="stop-color:rgb(26,26,26);stop-opacity:1"/><stop offset="0.2" style="stop-color:rgb(26,26,26);stop-opacity:1"/><stop offset="1" style="stop-color:black;stop-opacity:1"/></radialGradient>
     </defs>
 </svg>
-</div></div><div id="webgl"></div><!-- Shaders--><script type="x-shader/x-vertex" id="cloudVertShader">varying vec3 vTexCoord3D;
+</div></div><div id="preview_materials"><div style="color:#FFF; margin: 1rem;">Previewing Procedural Materials</div></div><div id="webgl"></div><!-- Shaders--><script type="x-shader/x-fragment" id="brickGLSL">// Brick Texture
+// Based on https://www.shadertoy.com/view/wt3Sz4
+
+//constant function
+const float zoom = 10.;
+vec3 brickColor = vec3(0.205, .195, .188) / 2.;
+vec3 groutColor = vec3(0.06, 0.07, 0.08) /2. ;
+const vec3 outlineColor = vec3(0.06, 0.07, 0.08) / 1.5;
+const float edgeThickness = 0.008; // Thickness of the grout
+const float outlineThickness = 0.001; // Thickness of the outline
+
+//random noise function
+float nrand(vec2 n)
+{
+    return fract(sin(dot(n.xy, vec2(12.9898, 78.233))) * 43758.5453);
+}
+
+float sincosbundle(float val)
+{
+    return sin(cos(2. * val) + sin(4. * val) - cos(5. * val) + sin(3. * val)) * 0.05;
+}
+
+//color function
+vec3 brick_color(in vec3 vTexCoord3D, float brickHeight, float edgePos, bool swapColors)
+{
+    if ( swapColors ) {
+        brickColor = vec3(0.06, 0.07, 0.08) /2. ;
+        groutColor = vec3(0.205, .195, .188) / 2.;
+    }
+
+    vTexCoord3D.y *= (1.0 - brickHeight);
+
+    // Grid and coordinates inside each cell
+    vec3 coord = floor(vTexCoord3D);
+    vec3 gv = fract(vTexCoord3D);
+
+    // For randomness in brick pattern
+    float movingValue = -sincosbundle(coord.y);
+
+    // Offset calculation for bricks
+    float offset = floor(mod(vTexCoord3D.y, 2.0)) * (edgePos);
+    float verticalEdge = abs(cos(vTexCoord3D.x + offset)) > abs(cos(vTexCoord3D.z + offset)) ? abs(cos(vTexCoord3D.x + offset)) : abs(cos(vTexCoord3D.z + offset));
+
+    // Color of the bricks
+    vec3 brick = brickColor - movingValue;
+
+    // Determine if we are on a vertical or horizontal grout line
+    bool vrtGrout = step(1.0 - edgeThickness, verticalEdge) == 1.0;
+    bool hrtGrout = gv.y < edgeThickness || gv.y > 1.0 - edgeThickness;
+
+    // Determine if we are on a vertical or horizontal outline
+    bool vrtOutline = step(1.0 - (edgeThickness + outlineThickness), verticalEdge) == 1.0 && !vrtGrout;
+    bool hrtOutline = (gv.y >= edgeThickness && gv.y < edgeThickness + outlineThickness) || (gv.y <= 1.0 - edgeThickness && gv.y > 1.0 - edgeThickness - outlineThickness);
+
+    // Return the appropriate color based on the position
+    if (vrtGrout || hrtGrout)
+        return groutColor;
+    if (vrtOutline || hrtOutline)
+        return outlineColor;
+    return brick;
+}
+</script><script type="x-shader/x-fragment" id="gradientGLSL">//     _____    ___
+//    /    /   /  /     gradient.glsl
+//   /  __/ * /  /__    (c) ponies & light, 2014. All rights reserved.
+//  /__/     /_____/    poniesandlight.co.uk
+//
+//  Created by tgfrerer on 18/03/2014.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+
+/// @brief  calculates a gradient mapped colour 
+/// @detail the calculations are based on colour stops c1, c2, c3, 
+///         and one normlised input value, emphasises constant 
+///         execution time.
+/// @param c1 [rgbw] first colour stop, with .w being the normalised 
+///         position of the colour stop on the gradient beam.
+/// @param c2 [rgbw] second colour stop, with .w being the normalised 
+///         position of the colour stop on the gradient beam.
+/// @param value the input value for gradient mapping, a normalised 
+///        float
+/// @note   values are interpolated close to sinusoidal, using 
+///         smoothstep, sinusoidal interpolation being what Photoshop
+///         uses for its gradients.
+/// @author @tgfrerer
+vec3 getGradient(vec4 c1, vec4 c2, float value_){
+	float blend = smoothstep(c1.w, c2.w, value_);
+	return mix(c1.rgb, c2.rgb, blend);
+}
+
+// ----------------------------------------------------------------------
+
+/// @brief  calculates a gradient mapped colour 
+/// @detail the calculations are based on colour stops c1, c2, c3, 
+///         and one normlised input value, emphasises constant 
+///         execution time.
+/// @param c1 [rgbw] first colour stop, with .w being the normalised 
+///         position of the colour stop on the gradient beam.
+/// @param c2 [rgbw] second colour stop, with .w being the normalised 
+///         position of the colour stop on the gradient beam.
+/// @param c3 [rgbw] third colour stop, with .w being the normalised 
+///         position of the colour stop on the gradient beam.
+/// @param value the input value for gradient mapping, a normalised 
+///        float
+/// @note   values are interpolated close to sinusoidal, using 
+///         smoothstep, sinusoidal interpolation being what Photoshop
+///         uses for its gradients.
+/// @author @tgfrerer
+vec3 getGradient(vec4 c1, vec4 c2, vec4 c3, float value_){
+	
+	float blend1 = smoothstep(c1.w, c2.w, value_);
+	float blend2 = smoothstep(c2.w, c3.w, value_);
+	
+	vec3 
+	col = mix(c1.rgb, c2.rgb, blend1);
+	col = mix(col, c3.rgb, blend2);
+	
+	return col;
+}
+
+// ----------------------------------------------------------------------
+
+/// @brief  calculates a gradient mapped colour 
+/// @detail the calculations are based on colour stops c1, c2, c3, 
+///         and one normlised input value, emphasises constant 
+///         execution time.
+/// @param c1 [rgbw] first colour stop, with .w being the normalised 
+///         position of the colour stop on the gradient beam.
+/// @param c2 [rgbw] second colour stop, with .w being the normalised 
+///         position of the colour stop on the gradient beam.
+/// @param c3 [rgbw] third colour stop, with .w being the normalised 
+///         position of the colour stop on the gradient beam.
+/// @param c4 [rgbw] fourth colour stop, with .w being the normalised 
+///         position of the colour stop on the gradient beam.
+/// @param value the input value for gradient mapping, a normalised 
+///        float
+/// @note   values are interpolated close to sinusoidal, using 
+///         smoothstep, sinusoidal interpolation being what Photoshop
+///         uses for its gradients.
+/// @author @tgfrerer
+vec3 getGradient(vec4 c1, vec4 c2, vec4 c3, vec4 c4, float value_){
+	
+	float blend1 = smoothstep(c1.w, c2.w, value_);
+	float blend2 = smoothstep(c2.w, c3.w, value_);
+	float blend3 = smoothstep(c3.w, c4.w, value_);
+	
+	vec3 
+	col = mix(c1.rgb, c2.rgb, blend1);
+	col = mix(col, c3.rgb, blend2);
+	col = mix(col, c4.rgb, blend3);
+	
+	return col;
+}
+
+vec3 getGradient(vec4 c1, vec4 c2, vec4 c3, vec4 c4, vec4 c5, float value_){
+	
+	float blend1 = smoothstep(c1.w, c2.w, value_);
+	float blend2 = smoothstep(c2.w, c3.w, value_);
+	float blend3 = smoothstep(c3.w, c4.w, value_);
+	float blend4 = smoothstep(c4.w, c5.w, value_);
+	
+	vec3 
+	col = mix(c1.rgb, c2.rgb, blend1);
+	col = mix(col, c3.rgb, blend2);
+	col = mix(col, c4.rgb, blend3);
+	col = mix(col, c5.rgb, blend4);
+	
+	return col;
+}
+
+vec3 getGradient(vec4 c1, vec4 c2, vec4 c3, vec4 c4, vec4 c5, vec4 c6, float value_){
+	
+	float blend1 = smoothstep(c1.w, c2.w, value_);
+	float blend2 = smoothstep(c2.w, c3.w, value_);
+	float blend3 = smoothstep(c3.w, c4.w, value_);
+	float blend4 = smoothstep(c4.w, c5.w, value_);
+	float blend5 = smoothstep(c5.w, c6.w, value_);
+	
+	vec3 
+	col = mix(c1.rgb, c2.rgb, blend1);
+	col = mix(col, c3.rgb, blend2);
+	col = mix(col, c4.rgb, blend3);
+	col = mix(col, c5.rgb, blend4);
+	col = mix(col, c6.rgb, blend5);
+	
+	return col;
+}
+
+vec3 getGradient(vec4 c1, vec4 c2, vec4 c3, vec4 c4, vec4 c5, vec4 c6, vec4 c7, float value_){
+	
+	float blend1 = smoothstep(c1.w, c2.w, value_);
+	float blend2 = smoothstep(c2.w, c3.w, value_);
+	float blend3 = smoothstep(c3.w, c4.w, value_);
+	float blend4 = smoothstep(c4.w, c5.w, value_);
+	float blend5 = smoothstep(c5.w, c6.w, value_);
+	float blend6 = smoothstep(c6.w, c7.w, value_);
+	
+	vec3 
+	col = mix(c1.rgb, c2.rgb, blend1);
+	col = mix(col, c3.rgb, blend2);
+	col = mix(col, c4.rgb, blend3);
+	col = mix(col, c5.rgb, blend4);
+	col = mix(col, c6.rgb, blend5);
+	col = mix(col, c7.rgb, blend6);
+	
+	return col;
+}
+</script><script type="x-shader/x-fragment" id="normalGLSL">// Helpers that simulate global illumination and bump mapping.
+
+// @param: uniform sampler2D noiseTexture;
+
+float snoise ( vec3 coord, float scale, float time_factor ) {
+    vec3 scaledCoord = coord * scale - (vNormal / time_factor + vec3(0.0, 0.0, 0.0));
+
+    vec2 uvTimeShift = vec2((scaledCoord.x + scaledCoord.z) / 2.0, scaledCoord.y) + vec2( -0.7, 1.5 ) * 0.0 * 0.015;
+    vec4 noiseGeneratorTimeShift = texture2D( noiseTexture, uvTimeShift );
+    vec2 uvNoiseTimeShift = vec2(scaledCoord.x, scaledCoord.y) + 0.5 * vec2( noiseGeneratorTimeShift.r, noiseGeneratorTimeShift.b );
+    vec4 baseColor = texture2D( noiseTexture, uvNoiseTimeShift * vec2(4.0, 4.0) );
+
+    return baseColor.b;
+}
+
+float heightMap( vec3 coord ) {
+    float n = abs(snoise(coord , 1.0 , 1800.0));
+    n -= 0.75 * abs(snoise(coord , 4.0 , 2500.0));
+    n += 0.125 * abs(snoise(coord , 14.0 , 3500.0));
+    n *= 0.7;
+    return n;
+}
+
+vec3 computeNormal( float height ) {
+    const float e = .001;
+
+    float heightX = heightMap( vTexCoord3D + vec3( e, 0.0, 0.0 ) );
+    float heightY = heightMap( vTexCoord3D + vec3( 0.0, e, 0.0 ) );
+    float heightZ = heightMap( vTexCoord3D + vec3( 0.0, 0.0, e ) );
+
+    vec3 normal = normalize( vNormal + .5 * vec3( height - heightX, height - heightY, height - heightZ ) / e );
+
+    return normal;    
+}
+
+vec3 computeLightWeighting( float height, float dlwRatio ) {
+    vec3 normal = computeNormal( height );
+    // diffuse light
+    vec3 vLightWeighting = vec3( 0.001 );
+
+    vec4 lDirection = viewMatrix * vec4( normalize( vec3( 1.0, 0.0, 0.5 ) ), 0.0 );
+    float directionalLightWeighting = dot( normal, normalize( lDirection.xyz ) ) * (dlwRatio) + (1. - dlwRatio);
+    vLightWeighting += vec3( 1.0 ) * directionalLightWeighting;
+
+    // specular light
+    vec3 dirHalfVector = normalize( lDirection.xyz + normalize( vViewPosition ) );
+    float dirDotNormalHalf = dot( normal, dirHalfVector );
+
+    float dirSpecularWeight = 0.0;
+    if ( dirDotNormalHalf >= 0.0 )
+        dirSpecularWeight = ( 1.0 - height ) * pow( dirDotNormalHalf, 5.0 );
+
+    //vLightWeighting += vec3( 1.0, 0.5, 0.0 ) * dirSpecularWeight * n / 3.1415926;
+    vLightWeighting += vec3( 1.0, 0.5, 0.0 ) * dirSpecularWeight * height * 2.0;
+
+    return vLightWeighting;
+}
+
+// Bump mapping function adapted from Blender's Cycles code
+vec3 bumpMapping(vec3 P, vec3 normal, float strength, float distance, float sampleCenter, float sampleX, float sampleY, bool invert) {
+    vec3 dPdx = dFdx(P);
+    vec3 dPdy = dFdy(P);
+
+    vec3 Rx = cross(dPdy, normal);
+    vec3 Ry = cross(normal, dPdx);
+
+    float det = dot(dPdx, Rx);
+    vec3 surfgrad = (sampleX - sampleCenter) * Rx + (sampleY - sampleCenter) * Ry;
+
+    float absdet = abs(det);
+
+    if (invert)
+        distance *= -1.0;
+
+    vec3 NormalOut = normalize(absdet * normal - distance * sign(det) * surfgrad);
+    NormalOut = normalize(strength * NormalOut + (1.0 - strength) * normal);
+
+    return NormalOut;
+}
+
+// Based on a mix of Fireball shader's light weighting formula and simulating metallic.
+vec3 calculateMergedLighting(vec3 baseColor, vec3 normal, float height, float dlwRatio) {
+    // Calculate metallic value
+    float metallic = dot(getGradient(
+        vec4(0., 0., 0., 0.),
+        vec4(1., 1., 1., 0.118),
+        baseColor.r
+    ), vec3(0.2126, 0.7152, 0.0722));
+
+    vec3 lightDir = normalize(vec3(0.1, 1.0, 0.1) - vViewPosition);
+    vec3 viewDir = normalize(vViewPosition - vTexCoord3D);
+
+    // Calculate the halfway vector
+    vec3 halfwayDir = normalize(lightDir + viewDir);
+
+    // Fresnel factor (Schlick's approximation)
+    float fresnel = pow(1.0 - dot(viewDir, halfwayDir), 5.0);
+
+    // Base reflectance at normal incidence for dielectric materials (approximately 4% reflectance)
+    vec3 F0 = vec3(0.04);
+
+    // Interpolate between dielectric F0 and the base color for metals
+    F0 = mix(F0, baseColor, metallic);
+
+    // Specular reflection (using Blinn-Phong model here)
+    float spec = pow(max(dot(normal, halfwayDir), 0.0), 16.0);
+
+    // Fresnel equation for specular reflection
+    vec3 specular = (1.0 - fresnel) * F0 + fresnel;
+
+    // Lambertian diffuse reflection
+    float diff = max(dot(normal, lightDir), 0.0);
+    vec3 diffuse = baseColor * diff * (1.0 - metallic);
+
+    // Compute light weighting
+    vec3 vLightWeighting = vec3(0.001);
+
+    vec4 lDirection = viewMatrix * vec4(normalize(vec3(0.1, 1.0, 0.1)), 0.0);
+    float directionalLightWeighting = dot(normal, normalize(lDirection.xyz)) * (dlwRatio) + (1.0 - dlwRatio);
+    vLightWeighting += vec3(1.0) * directionalLightWeighting;
+
+    // Specular light component
+    vec3 dirHalfVector = normalize(lDirection.xyz + normalize(vViewPosition));
+    float dirDotNormalHalf = dot(normal, dirHalfVector);
+
+    float dirSpecularWeight = 0.0;
+    if (dirDotNormalHalf >= 0.0)
+        dirSpecularWeight = (1.0 - height) * pow(dirDotNormalHalf, 5.0);
+
+    vLightWeighting += vec3(1.0, 0.5, 0.0) * dirSpecularWeight * height * 2.0;
+
+    // Combine diffuse and specular components
+    vec3 finalColor = diffuse + specular * vLightWeighting;
+
+    return finalColor;
+}</script><script type="x-shader/x-fragment" id="voronoiGLSL">// 3D Voronoi function to calculate displacement and color similar to Blenders.
+// @see https://github.com/kinakomoti-321/Voronoi_textures/blob/main/VoronoiTexture/Voronoi.glsl
+
+// @param: uniform float randomness;
+
+vec3 Hash_3D_to_3D(vec3 k){
+    vec3 st = vec3(dot(k,vec3(103,393,293)),dot(k,vec3(593,339,299)),dot(k,vec3(523,334,192)));
+    return vec3(fract(sin(st) * 2304.2002));
+}
+
+//Chebyshev Distance 
+float Checyshev3D(vec3 p){
+    return max(max(abs(p.x),abs(p.y)),abs(p.z));
+}
+
+//----
+//3D Voronoi
+//----
+
+float voronoi_distance_3d(vec3 a,vec3 b){
+    return Checyshev3D(b - a);
+}
+
+vec4 voronoi(vec3 coord) {
+    vec3 cellPosition = floor(coord);
+    vec3 localPosition = coord - cellPosition;
+
+    float minDistance = 3.402823466e+38;  // max value
+;
+    vec3 targetOffset = vec3(0);
+    vec3 targetPosition = vec3(0);
+    vec4 result = vec4(0.0); // Initialize result as vec4 to store color and displacement
+    
+    for(int j = -1; j <= 1; j++){
+        for(int i = -1; i<=1; i++){
+            for(int k = -1; k<=1; k++){
+                vec3 cellOffset =  vec3(i,j,k);
+                vec3 pointPosition = cellOffset + Hash_3D_to_3D(cellPosition + cellOffset) * randomness;
+                
+                float distanceToPoint = voronoi_distance_3d(pointPosition,localPosition);
+                if(distanceToPoint < minDistance){
+                    minDistance = distanceToPoint;
+                    targetOffset = cellOffset;
+                    targetPosition = pointPosition;
+                }
+            }
+        }
+    }
+    
+    result.a = minDistance;
+    result.rgb = Hash_3D_to_3D(cellPosition + targetOffset);
+
+    return result;
+}
+</script><script type="x-shader/x-vertex" id="skyVertShader">varying vec3 vTexCoord3D;
 varying vec3 vNormal;
 varying vec3 vViewPosition;
 
@@ -327,7 +751,7 @@ void main()
   vTexCoord3D = scale * ( position.xyz + vec3( 0.0, 0.0, -time ) );
   
   gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-}</script><script type="x-shader/x-vertex" id="cloudFragShader">varying vec3 vTexCoord3D;
+}</script><script type="x-shader/x-fragment" id="skyFragShader">varying vec3 vTexCoord3D;
 varying vec3 vNormal;
 varying vec3 vViewPosition;
 
@@ -335,10 +759,6 @@ uniform sampler2D noiseTexture;
 
 uniform float time;
 varying vec2 vUv;
-
-float blendOverlay(float base, float blend) {
-    return( base < 0.5 ? ( 2.0 * base * blend ) : (1.0 - 2.0 * ( 1.0 - base ) * ( 1.1 - blend ) ) );
-}
 
 float snoise ( vec3 coord, float scale, float time_factor ) {
     vec3 scaledCoord = coord * scale - (vNormal / time_factor + vec3(0.0, 0.0, -time / time_factor));
@@ -421,10 +841,9 @@ void main(void) {
     // color
     gl_FragColor = texColor;
 
-    // normal
+    if ((vTexCoord3D.y > -0.1) && (n > 0.3 ) ) {
 
-     if ((vTexCoord3D.y > -0.1) && (n > 0.3 ) ) {
-
+        // normal
         const float e = .005926;
 
         float nx = heightMap( vTexCoord3D + vec3( e, 0.0, 0.0 ) );
@@ -434,7 +853,7 @@ void main(void) {
         vec3 normal = normalize( vNormal + .5 * vec3( n - nx, n - ny, n - nz ) / e );
 
         // diffuse light
-        vec3 vLightWeighting = vec3( 0.0015926 );
+        vec3 vLightWeighting = vec3( 0.1 );
 
         vec4 lDirection = viewMatrix * vec4( normalize( vec3( 1.0, 0.0, 0.5 ) ), 0.0 );
         float directionalLightWeighting = dot( normal, normalize( lDirection.xyz ) ) * 0.15 + 0.85;
@@ -450,12 +869,313 @@ void main(void) {
         if ( dirDotNormalHalf >= 0.0 )
             dirSpecularWeight = ( 1.0 - n ) * pow( dirDotNormalHalf, 5.0 );
 
-        vLightWeighting += vec3( 1.0, 0.5, 0.0 ) * dirSpecularWeight * n / 3.1415926;
-        //vLightWeighting += vec3( 1.0, 0.5, 0.0 ) * dirSpecularWeight * n * 2.0;
+        //vLightWeighting += vec3( 1.0, 0.5, 0.0 ) * dirSpecularWeight * n / 3.1415926;
+        vLightWeighting += vec3( 1.0, 0.5, 0.0 ) * dirSpecularWeight * n * 2.0;
 
         gl_FragColor *= vec4( vLightWeighting, 1.0 ); //
     }
-}</script><script id="vertexshader" type="x-shader/x-vertex">varying vec2 vUv;
+}</script><script type="x-shader/x-vertex" id="proceduralBuildingVertShader">uniform float scale;      // Scale to adjust the size of the Voronoi cells
+uniform float lacunarity; // Lacunarity controls the gap between frequencies
+uniform float randomness; // Lacunarity controls the gap between frequencies
+
+varying vec3 vTexCoord3D;
+varying vec3 vNormal;
+varying vec3 vViewPosition;
+varying vec2 vUv;         // Varying variable to voronoi value to the fragment shader
+
+#include <gradient> // Include the gradient functions
+#include <voronoi> // Include the voronoi functions
+
+void main() {
+    vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+    vec4 viewPosition = viewMatrix * worldPosition;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+
+    vNormal = normalize(mat3(modelMatrix) * normal);
+    vViewPosition = cameraPosition - worldPosition.xyz;
+    vUv = uv;
+    vTexCoord3D = scale * position.xyz * lacunarity;    
+}
+</script><script type="x-shader/x-fragment" id="proceduralBuildingFragShader">uniform sampler2D noiseTexture;
+uniform vec4 emitColour1;
+uniform vec4 emitColour2;
+uniform float randomness;
+uniform float time;
+uniform float shadowFactor;
+uniform float shadowOffset;
+
+varying vec3 vTexCoord3D;
+varying vec3 vNormal;
+varying vec3 vViewPosition;
+varying vec2 vUv;
+
+#include <brick>        // Include the brick functions
+#include <gradient>     // Include the gradient functions
+#include <normal>       // Include the normal functions
+#include <voronoi>      // Include the voronoi functions
+
+const float bumpScale = 250.;
+
+void main() {
+
+    // Main colour is based on a voronoi texture distance multiplied by coordinates in a brick texture.
+    vec4 voronoiValue = voronoi(vTexCoord3D.xzy);
+    vec3 buildingSegments = brick_color(vTexCoord3D.xzy * voronoiValue.a * 3.92, 0.5, 1.5, false) ;
+    vec3 buildingSurface = getGradient(
+        vec4( vec3( 0.0 ), 0.0),
+        vec4( vec3( 1.0 ), 0.164),
+        vec4( vec3( 0.0 ), 0.791),
+        vec4( vec3( 1.0 ), 0.907),
+        vec4( vec3( 0.0 ), 1.0),
+        buildingSegments.r
+    );
+
+    // Add time offset to coordinates for animation.
+    float timeFactor = mix(-time * voronoiValue.a / 10., -time, 1. - buildingSegments.r) ;
+    vec3 scaledCoord = vTexCoord3D *(vNormal + vec3(-timeFactor / 3., timeFactor  , -timeFactor / 4.));
+
+    // Sample the noise texture with scaled UV coordinates for better visibility
+    float emission_noise = abs(snoise(scaledCoord / 250., 14.0 , 3500.0)) * 0.95 + 0.05;
+
+    // Calculate the emission colour.
+    vec3 emissionColour = getGradient(
+        emitColour1,
+        emitColour2,
+        emission_noise
+    );
+    emissionColour *= 10.;
+
+    if (emissionColour.r < .9) {
+        emissionColour *= emitColour1.rgb;
+    }
+    else {
+        if (emissionColour.r > 0.8) {
+            emissionColour *= emitColour2.rgb;
+        }
+    }
+
+    vec3 perturbedNormal = bumpMapping(vViewPosition, normalize(vNormal), bumpScale, 1.0, 0.0, buildingSegments.r, buildingSegments.r, true);
+
+    // Calculate the base detailing of the building.
+    float baseShade = snoise(vTexCoord3D.xzy / 1000., 14.0 , 35.0);
+    vec3 baseColor = vec3(baseShade);
+
+    // Using the bump mapping function
+    float lightRatio = 0.35;
+    if ( buildingSurface.r < 0.089 ) {
+        baseColor = emissionColour;
+        lightRatio = 0.45;
+    }
+    else {
+        baseColor *= buildingSegments;
+        baseColor += emitColour1.rgb * 0.05;
+    }
+
+    vec3 lightWeighting = calculateMergedLighting(buildingSegments, perturbedNormal, buildingSegments.r, lightRatio);
+    vec3 simulatedShadow = vec3(  vTexCoord3D.y ) * shadowFactor + shadowOffset;
+
+    // Output the noise texture color
+    gl_FragColor = vec4(baseColor * simulatedShadow + lightWeighting * 0.25, 1.0);
+    //gl_FragColor = vec4(simulatedShadow, 1.0);
+    
+}
+</script><script type="x-shader/x-vertex" id="proceduralMetalVertShader">varying vec3 vTexCoord3D;
+varying vec3 vNormal;
+varying vec3 vViewPosition;
+
+uniform float scale;      // Scale to adjust the size of the Voronoi cells
+uniform float lacunarity; // Lacunarity controls the gap between frequencies
+uniform float randomness; // Lacunarity controls the gap between frequencies
+varying vec3 vUv;         // Varying variable to voronoi value to the fragment shader
+
+#include <gradient> // Include the gradient functions
+#include <voronoi> // Include the voronoi functions
+
+void main() {
+    vUv = position;
+
+    // mirror stuff
+    vec4 mvPosition = modelMatrix * vec4( position, 1.0 );
+
+    vNormal = normalize( normalMatrix * normal );
+    vViewPosition = cameraPosition - mvPosition.xyz;
+    vTexCoord3D = lacunarity * scale * ( position.xyz + vec3( 0.0, 0.0, 0.0 ) );    
+
+    // Standard transformations
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+}
+</script><script type="x-shader/x-fragment" id="proceduralMetalFragShader">varying vec3 vTexCoord3D;
+varying vec3 vNormal;
+varying vec3 vViewPosition;
+
+uniform sampler2D noiseTexture;
+uniform vec4 diffuseColour1;
+uniform vec4 diffuseColour2;
+uniform vec4 diffuseColour3;
+uniform vec4 emitColour1;
+uniform vec4 emitColour2;
+
+uniform float randomness; 
+varying vec3 vUv;       
+
+#include <gradient> // Include the gradient functions
+#include <normal>       // Include the normal functions
+#include <voronoi> // Include the voronoi functions
+
+void main() {
+
+    vec4 voronoiValue = voronoi(vTexCoord3D.xzy); // Get the distance from Voronoi function
+
+    vec3 baseColor = getGradient(
+        diffuseColour1,
+        diffuseColour2,
+        diffuseColour3,
+        voronoiValue.a
+    );
+
+    vec3 emissionColor = getGradient(
+        emitColour1,
+        emitColour2,
+        voronoiValue.a
+    );
+    
+    float gray = dot(voronoiValue.rgb, vec3(0.2126, 0.7152, 0.0722));
+    gray = ( gray - 0.5 ) * 0.2;
+
+    // Mix with gray
+    baseColor = mix(baseColor, vec3(gray), 0.5);
+
+    // Mix in emission color
+    baseColor = mix(baseColor, emissionColor, 0.5);
+
+    gl_FragColor = vec4( baseColor, 1.0) ;
+
+    // Using the bump mapping function
+    vec3 perturbedNormal = bumpMapping(vViewPosition, normalize(vNormal), 1.5, 0.75, 0.0, baseColor.r, baseColor.r, false);
+
+    vec3 lightWeighting = calculateMergedLighting(baseColor, perturbedNormal, gray, 0.5);
+    gl_FragColor *= vec4( lightWeighting, 1.0 ); //
+
+}
+</script><script type="x-shader/x-vertex" id="proceduralMetal2VertShader">uniform float scale;      // Scale to adjust the size of the Voronoi cells
+uniform float lacunarity; // Lacunarity controls the gap between frequencies
+uniform float randomness; // Lacunarity controls the gap between frequencies
+
+varying vec3 vTexCoord3D;
+varying vec3 vNormal;
+varying vec3 vViewPosition;
+varying vec2 vUv;         // Varying variable to voronoi value to the fragment shader
+
+#include <gradient> // Include the gradient functions
+#include <voronoi> // Include the voronoi functions
+
+void main() {
+    vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+    vec4 viewPosition = viewMatrix * worldPosition;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+
+    vNormal = normalize(mat3(modelMatrix) * normal);
+    vViewPosition = cameraPosition - worldPosition.xyz;
+    vUv = uv;
+    vTexCoord3D = scale * position.xyz * lacunarity;    
+}
+</script><script type="x-shader/x-fragment" id="proceduralMetal2FragShader">uniform sampler2D noiseTexture;
+uniform float randomness; 
+
+varying vec3 vTexCoord3D;
+varying vec3 vNormal;
+varying vec3 vViewPosition;
+varying vec2 vUv;
+
+#include <brick>        // Include the brick functions
+#include <gradient>     // Include the gradient functions
+#include <normal>       // Include the normal functions
+#include <voronoi>      // Include the voronoi functions
+
+const float bumpScale = 250.;
+
+void main() {
+    vec4 voronoiValue = voronoi(vTexCoord3D * 0.75);
+    float gray = dot(voronoiValue.rgb, vec3(0.2126, 0.7152, 0.0722));
+
+    vec3 baseColor = brick_color(vTexCoord3D * 3.21 * gray, 0.5, 1.5, false);
+
+    // Using the bump mapping function
+    vec3 perturbedNormal = bumpMapping(vViewPosition, normalize(vNormal), bumpScale, 0.75, 0.0, baseColor.r, baseColor.r, true);
+
+    vec3 lightWeighting = calculateMergedLighting(baseColor, perturbedNormal, baseColor.r, 0.35);
+
+    vec3 finalColor = mix( baseColor, lightWeighting, 0.25 );
+
+    gl_FragColor = vec4(finalColor, 1.0);
+
+    gl_FragColor += vec4(baseColor * lightWeighting, 1.0);
+}</script><script type="x-shader/x-vertex" id="proceduralSolarPanelVertShader">uniform float scale;      // Scale to adjust the size of the Voronoi cells
+uniform float lacunarity; // Lacunarity controls the gap between frequencies
+uniform float randomness; // Lacunarity controls the gap between frequencies
+
+varying vec3 vTexCoord3D;
+varying vec3 vNormal;
+varying vec3 vViewPosition;
+varying vec2 vUv;         // Varying variable to voronoi value to the fragment shader
+
+#include <gradient> // Include the gradient functions
+#include <voronoi> // Include the voronoi functions
+
+void main() {
+    vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+    vec4 viewPosition = viewMatrix * worldPosition;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+
+    vNormal = normalize(mat3(modelMatrix) * normal);
+    vViewPosition = cameraPosition - worldPosition.xyz;
+    vUv = uv;
+    vTexCoord3D = scale * position.xyz * lacunarity;    
+}
+</script><script type="x-shader/x-fragment" id="proceduralSolarPanelFragShader">uniform sampler2D noiseTexture;
+uniform float randomness; 
+
+varying vec3 vTexCoord3D;
+varying vec3 vNormal;
+varying vec3 vViewPosition;
+varying vec2 vUv;
+
+#include <brick>        // Include the brick functions
+#include <gradient>     // Include the gradient functions
+#include <normal>       // Include the normal functions
+#include <voronoi>      // Include the voronoi functions
+
+const float bumpScale = 250.;
+
+void main() {
+    vec3 baseColor = brick_color(vTexCoord3D * 100., 0.85, 0.0, false);
+
+    float lightRatio = 0.15;
+
+    baseColor = mix( baseColor, vec3( 0.0, 0.0, 0.025), 0.65) ;
+
+    if (baseColor.r < 0.0125) {
+        // Add some noise.
+        baseColor -= ( nrand( vTexCoord3D.xz ) * 0.005);
+        lightRatio = 0.125;
+    }
+    
+
+    // // Using the bump mapping function
+    vec3 perturbedNormal = bumpMapping(vViewPosition, normalize(vNormal), bumpScale, 1.0, 0.0, baseColor.r, baseColor.r, false);
+
+    vec3 lightWeighting = calculateMergedLighting(baseColor, perturbedNormal, baseColor.r, lightRatio);
+
+    baseColor = mix( baseColor, lightWeighting, lightRatio == 0.65 ? 0.25 : 0.09 );
+
+    gl_FragColor = vec4(baseColor, 1.0);
+
+    if (lightRatio == 0.125) {
+        gl_FragColor += vec4(baseColor * lightWeighting, 1.0);
+    }
+
+}
+</script><script id="vertexshader" type="x-shader/x-vertex">varying vec2 vUv;
 void main() {
     vUv = uv;
     gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
@@ -502,11 +1222,11 @@ function _init( wait ) {
 	// Game settings
 	l.current_scene = false;
 	l.multiplayer = false;
-	l.scale = 500000;
+	l.scale = 500000; // 500 kilometres, used as the radius by the sky and ocean.
 	l.scenograph = false;
 
 	// Engine settings
-	l.version = '0.6.0';
+	l.version = '0.6.0-Alpha';
 	l.url = '//' + location.host;
 	l.env = _check_environment();
 	

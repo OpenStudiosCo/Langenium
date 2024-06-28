@@ -1,9 +1,4 @@
 uniform sampler2D noiseTexture;
-uniform vec4 diffuseColour1;
-uniform vec4 diffuseColour2;
-uniform vec4 diffuseColour3;
-uniform vec4 emitColour1;
-uniform vec4 emitColour2;
 uniform float randomness; 
 
 varying vec3 vTexCoord3D;
@@ -34,6 +29,4 @@ void main() {
     gl_FragColor = vec4(finalColor, 1.0);
 
     gl_FragColor += vec4(baseColor * lightWeighting, 1.0);
-
-    
 }

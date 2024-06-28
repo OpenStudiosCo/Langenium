@@ -53,14 +53,9 @@ export default class Refineries {
 
         const material = proceduralMetalMaterial2( {
             uniforms: {
-                scale: { value: .055 },                                        // Scale
-                lacunarity: { value: 2.0 },                                         // Lacunarity
-                randomness: { value: 1. },                                       // Randomness
-                diffuseColour1: { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.40 ) },  // Diffuse gradient colour 1
-                diffuseColour2: { value: new THREE.Vector4( 0.5, 0.5, 0.5, 0.43 ) },     // Diffuse gradient colour 2
-                diffuseColour3: { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.44 ) },  // Diffuse gradient colour 3
-                emitColour1: { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.61 ) },  // Emission gradient colour 1
-                emitColour2: { value: new THREE.Vector4( 0.3, 0.3, 0.3, 0.63 ) },     // Emission gradient colour 2
+                scale     :  { value: .055 },     // Scale
+                lacunarity:  { value: 2.0 },      // Lacunarity
+                randomness:  { value: 1. },       // Randomness
             }
         } );
 
@@ -77,14 +72,14 @@ export default class Refineries {
 
         const material2 = proceduralBuilding( {
             uniforms: {
-                time: { value: 0.0 },
-                scale: { value: 13.3 },                                        // Scale
-                lacunarity: { value: 2.0 },                                         // Lacunarity
-                randomness: { value: 1.0 },                                       // Randomness
-                emitColour1: { value: new THREE.Vector4( 0.0, 0.0, 0.0, 0.25 ) },  // Emission gradient colour 1
-                emitColour2: { value: new THREE.Vector4( 0.158, 1., 1., .9 ) },     // Emission gradient colour 2
-                shadowFactor: { value: 0.01 },
-                shadowOffset: { value: 1.75 },
+                time        :  { value: 0.0 },
+                scale       :  { value: 13.3 },                                         // Scale
+                lacunarity  :  { value: 2.0 },                                          // Lacunarity
+                randomness  :  { value: 1.0 },                                          // Randomness
+                emitColour1 :  { value: new THREE.Vector4( 0.0, 0.0, 0.0, 0.25 ) },     // Emission gradient colour 1
+                emitColour2 :  { value: new THREE.Vector4( 0.158, 1., 1., .9 ) },       // Emission gradient colour 2
+                shadowFactor:  { value: 0.01 },
+                shadowOffset:  { value: 1.75 },
             }
         } );
 

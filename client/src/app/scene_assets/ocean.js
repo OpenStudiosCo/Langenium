@@ -21,21 +21,21 @@ export default class Ocean {
         this.water = new Water(
             waterGeometry,
             {
-                textureWidth: 512,
-                textureHeight: 512,
-                waterNormals: new THREE.TextureLoader().load( './assets/textures/waternormals.jpg', function ( texture ) {
+                textureWidth :  512,
+                textureHeight:  512,
+                waterNormals :  new THREE.TextureLoader().load( './assets/textures/waternormals.jpg', function ( texture ) {
 
-                    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+                    texture.wrapS    =    texture.wrapT    =    THREE.RepeatWrapping;
 
                 } ),
-                sunDirection: new THREE.Vector3(),
-                sunColor: 0xffffff,
-                waterColor: 0x0066DD,
-                distortionScale: 20.0,
-                side: THREE.DoubleSide,
+                sunDirection   :  new THREE.Vector3(),
+                sunColor       :  0xffffff,
+                waterColor     :  0x0066DD,
+                distortionScale:  20.0,
+                side           :  THREE.DoubleSide,
                 // Submerged objects that need transparency where they are located
                 // Coordinates have to be pre-entered before shader compilation due to GLSL being inflexible with array sizes
-                submergedObjects: submergedObjects
+                submergedObjects:  submergedObjects
             }
         );
 
@@ -55,5 +55,5 @@ export default class Ocean {
         // Iterate the sky uniforms to animate it.
         window.l.current_scene.scene_objects.ocean.water.material.uniforms.time.value += 1.0 / 60;
     }
-    
+
 }

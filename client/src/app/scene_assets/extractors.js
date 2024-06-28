@@ -128,11 +128,6 @@ export default class Extractor {
                 scale         :  { value: 1.5 },                                             // Scale
                 lacunarity    :  { value: 2.0 },                                             // Lacunarity
                 randomness    :  { value: .5 },                                              // Randomness
-                diffuseColour1:  { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.40 ) },     // Diffuse gradient colour 1
-                diffuseColour2:  { value: new THREE.Vector4( 0.5, 0.5, 0.5, 0.43 ) },        // Diffuse gradient colour 2
-                diffuseColour3:  { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.44 ) },     // Diffuse gradient colour 3
-                emitColour1   :  { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.61 ) },     // Emission gradient colour 1
-                emitColour2   :  { value: new THREE.Vector4( 0.3, 0.3, 0.3, 0.63 ) },        // Emission gradient colour 2
             }
         } );
         const sphere = new THREE.Mesh( geometry, material );
@@ -175,11 +170,6 @@ export default class Extractor {
                 scale         :  { value: .75 },                                             // Scale
                 lacunarity    :  { value: 2.0 },                                             // Lacunarity
                 randomness    :  { value: .5 },                                              // Randomness
-                diffuseColour1:  { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.40 ) },     // Diffuse gradient colour 1
-                diffuseColour2:  { value: new THREE.Vector4( 0.5, 0.5, 0.5, 0.43 ) },        // Diffuse gradient colour 2
-                diffuseColour3:  { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.44 ) },     // Diffuse gradient colour 3
-                emitColour1   :  { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.61 ) },     // Emission gradient colour 1
-                emitColour2   :  { value: new THREE.Vector4( 0.3, 0.3, 0.3, 0.63 ) },        // Emission gradient colour 2
             }
         } );
         const capsule = new THREE.Mesh( geometry, material );

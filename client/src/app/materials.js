@@ -28,7 +28,18 @@ export default class Materials {
     THREE.ShaderChunk['normal'] = normalGLSL;
     THREE.ShaderChunk['voronoi'] = voronoiGLSL;
 
-    this.loaded_textures = [];
+    this.loaded_textures = {};
+  }
+
+  get_texture( path ) {
+
+    if ( this.loaded_textures.path === undefined ) {
+      let texture = window.l.current_scene.loaders.texture.load( path );
+
+      this.loaded_textures[ path ] = texture;
+    }
+
+    return this.loaded_textures[ path ].clone();
   }
 }
 
@@ -78,7 +89,7 @@ export function brightenMaterial(material, amount) {
 export function proceduralBuilding(settings) {
 
   // @todo: Move into a common helper / in memory store.
-  let noiseTexture2 = window.l.current_scene.loaders.texture.load( './assets/textures/noise2.jpg' );
+  let noiseTexture2 = window.l.materials.get_texture( './assets/textures/noise2.jpg' );
   noiseTexture2.wrapS = noiseTexture2.wrapT = THREE.RepeatWrapping;
 
   settings.uniforms.noiseTexture = { type: "t", value: noiseTexture2 };
@@ -114,7 +125,7 @@ export function proceduralBuilding(settings) {
 export function proceduralMetalMaterial(settings) {
 
   // @todo: Move into a common helper / in memory store.
-  let noiseTexture2 = window.l.current_scene.loaders.texture.load( './assets/textures/noise2.jpg' );
+  let noiseTexture2 = window.l.materials.get_texture( './assets/textures/noise2.jpg' );
   noiseTexture2.wrapS = noiseTexture2.wrapT = THREE.RepeatWrapping;
 
   settings.uniforms.noiseTexture = { type: "t", value: noiseTexture2 };
@@ -154,7 +165,7 @@ export function proceduralMetalMaterial(settings) {
 export function proceduralMetalMaterial2(settings) {
 
   // @todo: Move into a common helper / in memory store.
-  let noiseTexture2 = window.l.current_scene.loaders.texture.load( './assets/textures/noise2.jpg' );
+  let noiseTexture2 = window.l.materials.get_texture( './assets/textures/noise2.jpg' );
   noiseTexture2.wrapS = noiseTexture2.wrapT = THREE.RepeatWrapping;
 
   settings.uniforms.noiseTexture = { type: "t", value: noiseTexture2 };
@@ -173,16 +184,14 @@ export function proceduralMetalMaterial2(settings) {
 }
 
 /**
- * Procedural metallic material for buildings.
+ * Procedural solar panel material.
  * 
- * Uses simulated GI and voronoi textures to create a futuristic metal cladded surface.
+ * Uses simulated GI and brick textures to create a solar panel surface.
  * 
  * Based on x material from BlenderKit.
  * 
  * Used by:
- * - Union platform outer casing and pole
- * - Union refinery outer shell
- * - Union extractor well tanks
+ * - Union platform solar panels
  * 
  * @param {*} settings 
  * @returns {THREE.Material} 
@@ -190,7 +199,7 @@ export function proceduralMetalMaterial2(settings) {
 export function proceduralSolarPanel(settings) {
 
   // @todo: Move into a common helper / in memory store.
-  let noiseTexture2 = window.l.current_scene.loaders.texture.load( './assets/textures/noise2.jpg' );
+  let noiseTexture2 = window.l.materials.get_texture( './assets/textures/noise2.jpg' );
   noiseTexture2.wrapS = noiseTexture2.wrapT = THREE.RepeatWrapping;
 
   settings.uniforms.noiseTexture = { type: "t", value: noiseTexture2 };

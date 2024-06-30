@@ -5,12 +5,22 @@
 import { Pane } from 'tweakpane';
 
 export default class Main_Menu {
+    buttons;
+
     default_title;
 
+    settings;
+
     constructor() {
-        this.default_title = "Langenium v" + window.l.version;
+
+        this.default_title = "Langenium v" + l.version;
+
+        this.buttons = {};
+
+        this.settings = {};
+
         /**
-         * Tweakpane Pane UI
+         * Setup the menu's Tweakpane Pane UI
          */
         this.pane = new Pane( {
             title: this.default_title,
@@ -18,172 +28,147 @@ export default class Main_Menu {
             expanded: true
         } );
 
-        const exit_game = this.pane.addButton( {
+        this.buttons.exit_game = this.pane.addButton( {
             title: 'Exit game',
             hidden: true
         } );
-        exit_game.on( 'click', () => {
+        this.buttons.exit_game.on( 'click', () => {
             console.log( 'Exit to Main Menu, closing game session' );
-            window.l.controls.deactivate()
-            window.l.ui.hide_flight_instruments();
+            l.controls.deactivate()
+            l.ui.hide_flight_instruments();
 
             // Show game mode buttons.
-            single_player.hidden = false;
-            multi_player.hidden = false;
+            this.buttons.single_player.hidden = false;
+            this.buttons.multi_player.hidden = false;
 
             // Hide game exit button to return to main menu.
-            exit_game.hidden = true;
+            this.buttons.exit_game.hidden = true;
 
             // Restore the main menu title.
-            window.l.ui.menus.main_menu.title = this.default_title;
+            this.pane.title = this.default_title;
 
-            if ( window.l.multiplayer.connected ) {
-                window.l.multiplayer.disconnect();
+            if ( l.multiplayer.connected ) {
+                l.multiplayer.disconnect();
             }
 
+            // Set client mode.
+            l.mode = 'home';
         } );
 
-        const single_player = this.pane.addButton( {
+        this.buttons.single_player = this.pane.addButton( {
             title: 'Single Player',
         } );
-        single_player.on( 'click', () => {
+        this.buttons.single_player.on( 'click', () => {
             console.log( 'Single player launched' );
-            window.l.controls.activate();
-            window.l.ui.show_flight_instruments();
+            l.controls.activate();
+            l.ui.show_flight_instruments();
 
             // Hide game mode buttons.
-            single_player.hidden = true;
-            multi_player.hidden = true;
+            this.buttons.single_player.hidden = true;
+            this.buttons.multi_player.hidden = true;
 
             // Hide main menu and change it's title
-            window.l.ui.menus.main_menu.expanded = false;
-            window.l.ui.menus.main_menu.title = "Menu";
+            this.pane.expanded = false;
+            this.pane.title = "Menu";
 
             // Show game exit button to return to main menu.
-            exit_game.hidden = false;
+            this.buttons.exit_game.hidden = false;
+
+            // Set client mode.
+            l.mode = 'this.buttons.single_player';
         } );
 
-        const multi_player = this.pane.addButton( {
+        this.buttons.multi_player = this.pane.addButton( {
             title: 'Multi Player',
         } );
-        multi_player.on( 'click', () => {
+        this.buttons.multi_player.on( 'click', () => {
             console.log( 'Multi player launched' );
-            window.l.controls.activate();
-            window.l.ui.show_flight_instruments();
+            l.controls.activate();
+            l.ui.show_flight_instruments();
 
             // Hide game mode buttons.
-            single_player.hidden = true;
-            multi_player.hidden = true;
+            this.buttons.single_player.hidden = true;
+            this.buttons.multi_player.hidden = true;
 
             // Hide main menu
-            window.l.ui.menus.main_menu.expanded = false;
-            window.l.ui.menus.main_menu.title = "Menu";
+            this.pane.expanded = false;
+            this.pane.title = "Menu";
 
             // Show game exit button to return to main menu.
-            exit_game.hidden = false;
+            this.buttons.exit_game.hidden = false;
 
-            let serverLocation = window.l.env == 'Dev' ? 'lcl.langenium.com:8090' : 'test.langenium.com:42069';
+            let serverLocation = l.env == 'Dev' ? 'lcl.langenium.com:8090' : 'test.langenium.com:42069';
 
-            window.l.multiplayer.connect( '//' + serverLocation );
+            l.multiplayer.connect( '//' + serverLocation );
 
+            // Set client mode.
+            l.mode = 'this.buttons.multi_player';
         } );
 
-        const settings = this.pane.addButton( {
+        this.buttons.settings = this.pane.addButton( {
             title: 'Settings',
         } );
-        settings.on( 'click', () => {
+        this.buttons.settings.on( 'click', () => {
             console.log( 'Settings launched' );
+
+            // Hide all the other buttons.
+            this.buttons.exit_game.hidden = true;
+            this.buttons.single_player.hidden = true;
+            this.buttons.multi_player.hidden = true;
+            this.buttons.settings.hidden = true;
+            this.buttons.help.hidden = true;
+
+            // Show the settings area elements.
+            this.buttons.settingsExit.hidden = false;
+            this.settings.debug.hidden = false;
+            this.settings.fast.hidden = false;
+
+            // Change the main menu title.
+            this.pane.title = 'Settings';
+
         } );
 
-        const help = this.pane.addButton( {
+        this.buttons.settingsExit = this.pane.addButton( {
+            title: "Back to menu",
+            hidden: true
+        } );
+        this.buttons.settingsExit.on( 'click', () => {
+            console.log( 'Settings closed' );
+
+            // Show all the other buttons.
+            this.buttons.exit_game.hidden = l.mode !== 'home' ? false : true;
+            this.buttons.single_player.hidden = l.mode !== 'home' ? true : false;
+            this.buttons.multi_player.hidden = l.mode !== 'home' ? true : false;
+            this.buttons.settings.hidden = false;
+            this.buttons.help.hidden = l.mode !== 'home' ? true : false;
+
+            // Hide the settings area.
+            this.buttons.settingsExit.hidden = true;
+            this.settings.debug.hidden = true;
+            this.settings.fast.hidden = true;
+
+            // Restore the main menu title.
+            this.pane.title = this.default_title;
+        } );
+          
+        this.settings.debug = this.pane.addBinding(l.config, 'debug', {
+            label: 'Debugging mode',
+            hidden: true
+        });
+
+        this.settings.fast = this.pane.addBinding(l.config, 'fast', {
+            label: 'Performance mode',
+            hidden: true
+        });
+
+        this.buttons.help = this.pane.addButton( {
             title: 'Help',
         } );
-        help.on( 'click', () => {
+        this.buttons.help.on( 'click', () => {
             console.log( 'Help launched' );
         } );
 
-        if ( window.l.config.debug ) {
-            const debugging = this.pane.addFolder( {
-                title: 'Debugging',
-                expanded: true,
-            } );
-
-            const stats = debugging.addFolder( {
-                title: 'Stats',
-                expanded: false,
-            } );
-
-            stats.addBinding( window.l.current_scene.stats, 'fps', {
-                readonly: true,
-                view: 'graph',
-                interval: 200,
-                min: 0,
-                max: 60
-            } );
-
-            const latency = stats.addBinding( window.l.multiplayer, 'latency', {
-                readonly: true,
-                view: 'graph',
-                interval: 200
-            } );
-
-            const shipState = debugging.addFolder( {
-                title: 'Ship Controls State',
-                expanded: false,
-            } );
-
-            shipState.addBinding( window.l.current_scene.scene_objects.ship.state.controls, 'throttleUp', {
-                readonly: true,
-                interval: 200
-            } )
-            shipState.addBinding( window.l.current_scene.scene_objects.ship.state.controls, 'throttleDown', {
-                readonly: true,
-                interval: 200
-            } )
-            shipState.addBinding( window.l.current_scene.scene_objects.ship.state.controls, 'moveLeft', {
-                readonly: true,
-                interval: 200
-            } )
-            shipState.addBinding( window.l.current_scene.scene_objects.ship.state.controls, 'moveRight', {
-                readonly: true,
-                interval: 200
-            } )
-
-            if ( window.l.controls.touch ) {
-
-                const touchControlStats = debugging.addFolder( {
-                    title: 'Touch Controls State',
-                    expanded: false,
-                } );
-
-                touchControlStats.addBinding( window.l.controls.touch.controls, 'moveForward', {
-                    readonly: true,
-                    interval: 200
-                } )
-                touchControlStats.addBinding( window.l.controls.touch.controls, 'moveBackward', {
-                    readonly: true,
-                    interval: 200
-                } )
-                touchControlStats.addBinding( window.l.controls.touch.controls, 'moveLeft', {
-                    readonly: true,
-                    interval: 200
-                } )
-                touchControlStats.addBinding( window.l.controls.touch.controls, 'moveRight', {
-                    readonly: true,
-                    interval: 200
-                } )
-                touchControlStats.addBinding( window.l.controls.touch.controls, 'moveUp', {
-                    readonly: true,
-                    interval: 200
-                } )
-                touchControlStats.addBinding( window.l.controls.touch.controls, 'moveDown', {
-                    readonly: true,
-                    interval: 200
-                } )
-            }
-        }
-
-        return this.pane;
+        return this;
     }
 
 }

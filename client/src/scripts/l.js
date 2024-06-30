@@ -28,8 +28,9 @@ function _init( wait ) {
     if ( window.l ) { alert("window.l already set! Something is wrong."); return; }
 	window.l = {};
 
-	// Game settings
+	// Game client initial settings
 	l.current_scene = false;
+	l.mode = 'home';
 	l.multiplayer = false;
 	l.scale = 500000; // 500 kilometres, used as the radius by the sky and ocean.
 	l.scenograph = false;

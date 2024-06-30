@@ -79,7 +79,7 @@ html(lang='en')
 
             #menu_overlay {
                 position: absolute;
-                z-index: 2;
+                z-index: 3;
                 display: flex;
                 width: 100vw;
                 height: 100vh;
@@ -107,9 +107,15 @@ html(lang='en')
                 --cnt-usz: var(--tp-container-unit-size, 40px);
             }
 
+            #debugging_tools,
             #object_editor,
             #scene_overview {
                 position: absolute;
+            }
+
+            #debugging_tools {
+                bottom: 8px;
+                right: 8px;
             }
 
             #object_editor {
@@ -129,6 +135,7 @@ html(lang='en')
                     z-index: 2;
                 }
         #menu_overlay
+                #debugging_tools
                 #main_menu
                 #object_editor
                 #scene_overview

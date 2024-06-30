@@ -13,18 +13,13 @@ export default class Config {
         let url = new URL( window.location.href );
 
         // Check if we should skip the logo title sequence.
-        if ( url.searchParams.has( "skipintro" ) ) {
-            this.skipintro = true;
-        }
+        this.skipintro = url.searchParams.has( "skipintro" );
 
         // Check if we're in debug mode.
-        if ( url.searchParams.has( "debug" ) ) {
-            this.debug = true;
-        }
+        this.debug = url.searchParams.has( "debug" );
+        
+        // Set fast mode on by default, gpu tier will determine if it can switch off.
+        this.fast = true;
 
-        // Check if we're in fast mode.
-        if ( url.searchParams.has( "fast" ) ) {
-            this.fast = true;
-        }
     }
 }

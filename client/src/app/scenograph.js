@@ -48,7 +48,11 @@ export default class Scenograph {
     
             if ( gpuTier && gpuTier.tier && gpuTier.tier >= 3 ) {
                 // Enable effects
-                l.fast = false;
+                l.config.fast = false;
+            }
+            else {
+                // Disable performance setting for platforms that can't do it
+                l.ui.menus.main_menu.settings.fast.disabled = true;
             }
         }
     

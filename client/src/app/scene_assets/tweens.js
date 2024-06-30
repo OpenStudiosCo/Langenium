@@ -308,7 +308,7 @@ function dollyUp() {
       window.l.current_scene.camera.updateProjectionMatrix();
     } )
     .onComplete( () => {
-      window.l.current_scene.ui.show_menus();
+      window.l.ui.show_menus();
       window.l.current_scene.tweens.sinkOffice = sinkOffice();
       window.l.current_scene.tweens.sinkOffice.delay( 500 ).start();
     } )

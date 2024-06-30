@@ -23,7 +23,7 @@ export default class UI {
     // Function for performing UI updates
     updater;
 
-    constructor() {
+    init() {
         // @todo: Determine if this needs to actually be here.
         window.Alpine = Alpine;
         Alpine.start();
@@ -38,11 +38,11 @@ export default class UI {
      * Adds itself to the ui classes update queue.
      */
     show_flight_instruments() {
-        window.l.current_scene.ui.flight_instruments = new Flight_Instruments();
-        document.querySelector( window.l.current_scene.ui.flight_instruments.containerSelector + ' .control' ).classList.add( 'active' );
+        window.l.ui.flight_instruments = new Flight_Instruments();
+        document.querySelector( window.l.ui.flight_instruments.containerSelector + ' .control' ).classList.add( 'active' );
 
-        window.l.current_scene.ui.update_queue.push( {
-            callback: 'window.l.current_scene.ui.flight_instruments.update',
+        window.l.ui.update_queue.push( {
+            callback: 'window.l.ui.flight_instruments.update',
             data: []
         } );
 
@@ -53,11 +53,11 @@ export default class UI {
      * Deactivate Flight Instruments
      */
     hide_flight_instruments() {
-        document.querySelector( window.l.current_scene.ui.flight_instruments.containerSelector + ' .control' ).classList.remove( 'active' );
-        window.l.current_scene.ui.flight_instruments = false;
+        document.querySelector( window.l.ui.flight_instruments.containerSelector + ' .control' ).classList.remove( 'active' );
+        window.l.ui.flight_instruments = false;
 
         // @todo: Remove specific updates instead of purging the whole queue.
-        window.l.current_scene.ui.update_queue = [];
+        window.l.ui.update_queue = [];
 
 
     }
@@ -68,9 +68,9 @@ export default class UI {
      * Called after game client boot up is complete.
      */
     show_menus() {
-        window.l.current_scene.ui.menus = new Menus();
+        window.l.ui.menus = new Menus();
 
-        window.l.current_scene.ui.updater = setInterval( this.update, 1 / 60 );
+        window.l.ui.updater = setInterval( this.update, 1 / 60 );
     }
 
     /**
@@ -79,7 +79,7 @@ export default class UI {
      * Runs on setInterval
      */
     update() {
-        window.l.current_scene.ui.update_queue.forEach( ( current_update, i ) => {
+        window.l.ui.update_queue.forEach( ( current_update, i ) => {
             _execute( current_update.callback, current_update.data, window );
         } );
 

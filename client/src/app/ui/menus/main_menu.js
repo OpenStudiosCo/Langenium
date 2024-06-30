@@ -25,7 +25,7 @@ export default class Main_Menu {
         exit_game.on( 'click', () => {
             console.log( 'Exit to Main Menu, closing game session' );
             window.l.controls.deactivate()
-            window.l.current_scene.ui.hide_flight_instruments();
+            window.l.ui.hide_flight_instruments();
 
             // Show game mode buttons.
             single_player.hidden = false;
@@ -35,7 +35,7 @@ export default class Main_Menu {
             exit_game.hidden = true;
 
             // Restore the main menu title.
-            window.l.current_scene.ui.menus.main_menu.title = this.default_title;
+            window.l.ui.menus.main_menu.title = this.default_title;
 
             if ( window.l.multiplayer.connected ) {
                 window.l.multiplayer.disconnect();
@@ -49,15 +49,15 @@ export default class Main_Menu {
         single_player.on( 'click', () => {
             console.log( 'Single player launched' );
             window.l.controls.activate();
-            window.l.current_scene.ui.show_flight_instruments();
+            window.l.ui.show_flight_instruments();
 
             // Hide game mode buttons.
             single_player.hidden = true;
             multi_player.hidden = true;
 
             // Hide main menu and change it's title
-            window.l.current_scene.ui.menus.main_menu.expanded = false;
-            window.l.current_scene.ui.menus.main_menu.title = "Menu";
+            window.l.ui.menus.main_menu.expanded = false;
+            window.l.ui.menus.main_menu.title = "Menu";
 
             // Show game exit button to return to main menu.
             exit_game.hidden = false;
@@ -69,15 +69,15 @@ export default class Main_Menu {
         multi_player.on( 'click', () => {
             console.log( 'Multi player launched' );
             window.l.controls.activate();
-            window.l.current_scene.ui.show_flight_instruments();
+            window.l.ui.show_flight_instruments();
 
             // Hide game mode buttons.
             single_player.hidden = true;
             multi_player.hidden = true;
 
             // Hide main menu
-            window.l.current_scene.ui.menus.main_menu.expanded = false;
-            window.l.current_scene.ui.menus.main_menu.title = "Menu";
+            window.l.ui.menus.main_menu.expanded = false;
+            window.l.ui.menus.main_menu.title = "Menu";
 
             // Show game exit button to return to main menu.
             exit_game.hidden = false;

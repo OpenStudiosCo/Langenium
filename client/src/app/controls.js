@@ -16,7 +16,7 @@ export default class Controls {
 
     touch;
 
-    constructor() {
+    init() {
         this.keyboard = new KeyboardControls();
 
         if ( window.l.config.debug ) {

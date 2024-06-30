@@ -53,7 +53,7 @@ function _init( wait ) {
 		{ 
 			name: "Game Client",
 			requires: [ 'TWEEN.js' ],
-			files: [ { path: "./main.js", callback: "window.l.current_scene.init" } ]
+			files: [ { path: "./main.js", callback: "l.init" } ]
 		}
 	];
 

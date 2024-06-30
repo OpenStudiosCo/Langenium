@@ -8,6 +8,7 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 /**
  * Internal classes and helpers.
  */
+import Config from "./config.js";
 import Controls from "./controls.js";
 import Materials from "./materials.js";
 import UI from "./ui.js";
@@ -16,8 +17,22 @@ import Multiplayer from "./multiplayer.js";
 import Scenograph from "./scenograph.js";
 
 /**
- * Custom materials.
+ * Load main engine classes
+ * 
+ * - Config
+ * - Materials
+ * - Multiplayer
+ * - Scenograph
  */
+
+/**
+ * Config.
+ */
+window.l.config = new Config();
+
+/**
+ * Custom materials.
+ */ 
 window.l.materials = new Materials();
 
 /**
@@ -61,32 +76,19 @@ window.l.select_box_update = function () {
  * Game client initialiser, called by window.l when it's finished loading.
  */
 window.l.current_scene.init = async function () {
-  window.l.current_scene.ui = new UI();
 
-  let url = new URL(window.location.href);
-
-  // Check if we should skip the logo title sequence.
-  if (url.searchParams.has("skipintro")) {
-    window.l.current_scene.skipintro = true;
-  }
-
-  // Check if we're in debug mode.
-  if (url.searchParams.has("debug")) {
-    window.l.current_scene.debug = true;
-  }
-
-  // Check if we're in fast mode.
-  if (url.searchParams.has("fast")) {
-    window.l.current_scene.fast = true;
-  } else {
+  // Check the GPU tier and allow advanced effects if 3 or greater.
+  if ( ! window.l.fast ) {
     // Run scaling
     const gpuTier = await getGPUTier();
 
-    if (gpuTier && gpuTier.tier && gpuTier.tier >= 3) {
-      // Enable effects
-      window.l.current_scene.fast = false;
+    if ( gpuTier && gpuTier.tier && gpuTier.tier >= 3 ) {
+        // Enable effects
+        window.l.fast = false;
     }
   }
+
+  window.l.current_scene.ui = new UI();
 
   window.l.current_scene.loaders.gtlf = new GLTFLoader();
   window.l.current_scene.loaders.object = new THREE.ObjectLoader();

@@ -24,7 +24,7 @@ export default class Platform {
 
         this.model = await window.l.current_scene.loaders.gtlf.loadAsync( './assets/models/union-platform6.1.glb' );
 
-        let amount = window.l.current_scene.fast ? 5 : 2.5;
+        let amount = window.l.config.fast ? 5 : 2.5;
 
         this.model.scene.traverse( function ( child ) {
 

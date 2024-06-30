@@ -71,7 +71,7 @@ export default class Overworld extends SceneBase {
       // Effects loaded.
       (window.l.current_scene.effects.postprocessing.passes && window.l.current_scene.effects.postprocessing.passes.length > 0) &&
       // Not fast mode.
-      (!window.l.current_scene.fast)
+      (!window.l.config.fast)
     ) {
       window.l.current_scene.effects.postprocessing.render();
     } else {
@@ -181,7 +181,7 @@ export default class Overworld extends SceneBase {
 
     // Adjust ambient light intensity
     window.l.current_scene.scene_objects.ambientLight = new THREE.AmbientLight(
-      window.l.current_scene.fast ? 0x555555 : 0x444444
+      window.l.config.fast ? 0x555555 : 0x444444
     ); // Dim ambient light color
     window.l.current_scene.scene_objects.ambientLight.intensity = Math.PI;
     window.l.current_scene.scene.add(

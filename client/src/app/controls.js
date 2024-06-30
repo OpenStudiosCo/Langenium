@@ -19,7 +19,7 @@ export default class Controls {
     constructor() {
         this.keyboard = new KeyboardControls();
 
-        if ( window.l.current_scene.debug ) {
+        if ( window.l.config.debug ) {
             this.orbit = new OrbitControls(window.l.current_scene.camera, window.l.current_scene.renderers.webgl.domElement);
             this.orbit.target.set(0,10.775,0);
         }
@@ -78,7 +78,7 @@ export default class Controls {
         );
 
         // @todo Test and uncomment.
-        // if (window.l.current_scene.debug) {
+        // if (window.l.config.debug) {
         //     stats = new Stats();
         //     stats.dom.remove();
         // }

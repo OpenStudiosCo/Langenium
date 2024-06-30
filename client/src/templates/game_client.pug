@@ -77,6 +77,50 @@ html(lang='en')
                 bottom: 0;
             }
 
+            #menu_overlay {
+                position: absolute;
+                z-index: 2;
+                display: flex;
+                width: 100vw;
+                height: 100vh;
+                pointer-events: none;
+                align-items: center;
+                justify-content: center;
+            }
+
+            #menu_overlay > div {
+                pointer-events: all;
+            }
+
+            #menu_overlay #main_menu .tp-rotv {
+                position: absolute;
+                top: 8px;
+                right: 8px;
+            }
+
+            #menu_overlay #main_menu .tp-rotv-expanded {
+                position: relative;
+                font-size: 20px;
+                --cnt-hp: var(--tp-container-horizontal-padding, 10px);
+                --cnt-vp: var(--tp-container-vertical-padding, 10px);
+                --cnt-usp: var(--tp-container-unit-spacing, 10px);
+                --cnt-usz: var(--tp-container-unit-size, 40px);
+            }
+
+            #object_editor,
+            #scene_overview {
+                position: absolute;
+            }
+
+            #object_editor {
+                bottom: 8px;
+                right: 8px;
+            }
+            #scene_overview {
+                top: 8px;
+                right: 8px;
+            }
+
     body(onload="_init( 3000 );")
         noscript
             style.
@@ -84,6 +128,10 @@ html(lang='en')
                 #page-wrapper {
                     z-index: 2;
                 }
+        #menu_overlay
+                #main_menu
+                #object_editor
+                #scene_overview
         #webgl-wrapper
             canvas#loader_symbols
             canvas#loader_image

@@ -58,7 +58,7 @@ export function brightenMaterial(material, amount) {
     material.map.needsUpdate = true; // Update the material
   }
   
-  amount = window.l.current_scene.fast ? amount / 4 : amount;
+  amount = window.l.config.fast ? amount / 4 : amount;
 
   // Increase the brightness by adjusting the material color
   const brightness = amount; // Increase the value to make it brighter

@@ -98,5 +98,9 @@ export default class Controls {
     debug_off() {
         this.orbit.dispose();
         this.orbit = false;
+
+        // Reset camera y position after disengaging orbit controls.
+        l.current_scene.camera.position.copy( l.current_scene.scene_objects.ship.mesh.position );
+        l.current_scene.camera.position.y += 10.775 / 4;
     }
 }

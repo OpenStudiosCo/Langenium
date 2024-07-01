@@ -16,7 +16,7 @@ export function setupEffects( ) {
     window.l.current_scene.effects.particles.animateShipThrusters
   );
 
-  if (!window.l.config.fast) {
+  if (!window.l.config.settings.fast) {
     window.l.current_scene.renderers.webgl.shadowMap.enabled = true;
     window.l.current_scene.effects.postprocessing = setupPostProcessing();
   }

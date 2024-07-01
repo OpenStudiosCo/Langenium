@@ -11,6 +11,6 @@ export default class Object_Editor {
             container: document.getElementById( 'object_editor' ),
             expanded: true
         } );
-        return this.pane;
+        return this;
     }
 }

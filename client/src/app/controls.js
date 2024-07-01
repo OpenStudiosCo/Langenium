@@ -19,9 +19,8 @@ export default class Controls {
     init() {
         this.keyboard = new KeyboardControls();
 
-        if ( window.l.config.debug ) {
-            this.orbit = new OrbitControls(window.l.current_scene.camera, window.l.current_scene.renderers.webgl.domElement);
-            this.orbit.target.set(0,10.775,0);
+        if ( window.l.config.settings.debug ) {
+            
         }
 
         this.touch = new TouchControls();
@@ -35,9 +34,6 @@ export default class Controls {
         if ( window.l.controls.touch ) {
             window.l.controls.touch.activate();
         }
-
-        // window.l.controls.orbit = new OrbitControls(window.l.current_scene.camera, window.l.current_scene.renderers.webgl.domElement);
-        // window.l.controls.orbit.target.set(0,10.775,0);
 
         window.addEventListener(
             "keydown",
@@ -78,7 +74,7 @@ export default class Controls {
         );
 
         // @todo Test and uncomment.
-        // if (window.l.config.debug) {
+        // if (window.l.config.settings.debug) {
         //     stats = new Stats();
         //     stats.dom.remove();
         // }
@@ -88,5 +84,14 @@ export default class Controls {
     animate() {
         if (window.l.controls.orbit)
             window.l.controls.orbit.update();
+    }
+
+    debug_on() {
+        this.orbit = new OrbitControls(window.l.current_scene.camera, window.l.current_scene.renderers.webgl.domElement);
+        this.orbit.target.set(0,10.775,0);
+    }
+
+    debug_off() {
+        this.orbit = false;
     }
 }

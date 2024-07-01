@@ -11,6 +11,6 @@ export default class Scene_Overview {
             container: document.getElementById( 'scene_overview' ),
             expanded: true
         } );
-        return this.pane;
+        return this;
     }
 }

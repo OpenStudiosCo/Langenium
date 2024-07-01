@@ -122,6 +122,7 @@ export default class Main_Menu {
             this.buttons.settingsExit.hidden = false;
             this.settings.debug.hidden = false;
             this.settings.fast.hidden = false;
+            this.settings.skipintro.hidden = false;
 
             // Change the main menu title.
             this.pane.title = 'Settings';
@@ -146,20 +147,40 @@ export default class Main_Menu {
             this.buttons.settingsExit.hidden = true;
             this.settings.debug.hidden = true;
             this.settings.fast.hidden = true;
+            this.settings.skipintro.hidden = true;
 
             // Restore the main menu title.
             this.pane.title = this.default_title;
         } );
           
-        this.settings.debug = this.pane.addBinding(l.config, 'debug', {
+        this.settings.debug = this.pane.addBinding(l.config.settings, 'debug', {
             label: 'Debugging mode',
             hidden: true
         });
 
-        this.settings.fast = this.pane.addBinding(l.config, 'fast', {
+        this.settings.debug.on( 'change', () => {
+            l.scenograph.modes.debugging.toggle();
+            l.config.save_settings();
+        } );
+
+        this.settings.fast = this.pane.addBinding(l.config.settings, 'fast', {
             label: 'Performance mode',
+            disabled: l.config.client_info.gpu.tier < 3,
             hidden: true
         });
+
+        this.settings.fast.on( 'change', () => {
+            l.config.save_settings();
+        } );
+
+        this.settings.skipintro = this.pane.addBinding(l.config.settings, 'skipintro', {
+            label: 'Skip title sequence',
+            hidden: true
+        });
+
+        this.settings.skipintro.on( 'change', () => {
+            l.config.save_settings();
+        } );
 
         this.buttons.help = this.pane.addButton( {
             title: 'Help',

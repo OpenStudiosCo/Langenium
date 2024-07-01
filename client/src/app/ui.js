@@ -23,7 +23,7 @@ export default class UI {
     // Function for performing UI updates
     updater;
 
-    init() {
+    constructor() {
         // @todo: Determine if this needs to actually be here.
         window.Alpine = Alpine;
         Alpine.start();
@@ -38,11 +38,11 @@ export default class UI {
      * Adds itself to the ui classes update queue.
      */
     show_flight_instruments() {
-        window.l.ui.flight_instruments = new Flight_Instruments();
-        document.querySelector( window.l.ui.flight_instruments.containerSelector + ' .control' ).classList.add( 'active' );
+        l.ui.flight_instruments = new Flight_Instruments();
+        document.querySelector( l.ui.flight_instruments.containerSelector + ' .control' ).classList.add( 'active' );
 
-        window.l.ui.update_queue.push( {
-            callback: 'window.l.ui.flight_instruments.update',
+        l.ui.update_queue.push( {
+            callback: 'l.ui.flight_instruments.update',
             data: []
         } );
 
@@ -53,11 +53,11 @@ export default class UI {
      * Deactivate Flight Instruments
      */
     hide_flight_instruments() {
-        document.querySelector( window.l.ui.flight_instruments.containerSelector + ' .control' ).classList.remove( 'active' );
-        window.l.ui.flight_instruments = false;
+        document.querySelector( l.ui.flight_instruments.containerSelector + ' .control' ).classList.remove( 'active' );
+        l.ui.flight_instruments = false;
 
         // @todo: Remove specific updates instead of purging the whole queue.
-        window.l.ui.update_queue = [];
+        l.ui.update_queue = [];
 
 
     }
@@ -68,9 +68,9 @@ export default class UI {
      * Called after game client boot up is complete.
      */
     show_menus() {
-        window.l.ui.menus = new Menus();
+        l.ui.menus = new Menus();
 
-        window.l.ui.updater = setInterval( this.update, 1 / 60 );
+        l.ui.updater = setInterval( this.update, 1 / 60 );
     }
 
     /**
@@ -79,7 +79,7 @@ export default class UI {
      * Runs on setInterval
      */
     update() {
-        window.l.ui.update_queue.forEach( ( current_update, i ) => {
+        l.ui.update_queue.forEach( ( current_update, i ) => {
             _execute( current_update.callback, current_update.data, window );
         } );
 

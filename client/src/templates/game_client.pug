@@ -10,6 +10,8 @@ html(lang='en')
         include ./head_common.pug
 
         style.
+            html, body {margin: 0; height: 100%; overflow: hidden}
+
             #page-wrapper {
                 position: relative;
                 z-index: 0;
@@ -135,10 +137,10 @@ html(lang='en')
                     z-index: 2;
                 }
         #menu_overlay
-                #debugging_tools
-                #main_menu
-                #object_editor
-                #scene_overview
+            #debugging_tools
+            #main_menu
+            #object_editor
+            #scene_overview
         #webgl-wrapper
             canvas#loader_symbols
             canvas#loader_image
@@ -153,33 +155,33 @@ html(lang='en')
                 div(style='color:#FFF; margin: 1rem;') Previewing Procedural Materials
             #webgl
             // Shaders
-            script(type='x-shader/x-fragment', id='brickGLSL')
+            script(type='x-shader/x-fragment' id='brickGLSL')
                 include ../shaders/common/brick.glsl
-            script(type='x-shader/x-fragment', id='gradientGLSL')
+            script(type='x-shader/x-fragment' id='gradientGLSL')
                 include ../shaders/common/gradient.glsl
-            script(type='x-shader/x-fragment', id='normalGLSL')
+            script(type='x-shader/x-fragment' id='normalGLSL')
                 include ../shaders/common/normal.glsl
-            script(type='x-shader/x-fragment', id='voronoiGLSL')
+            script(type='x-shader/x-fragment' id='voronoiGLSL')
                 include ../shaders/common/voronoi.glsl
-            script(type='x-shader/x-vertex', id='skyVertShader')
+            script(type='x-shader/x-vertex' id='skyVertShader')
                 include ../shaders/sky.vert
-            script(type='x-shader/x-fragment', id='skyFragShader')
+            script(type='x-shader/x-fragment' id='skyFragShader')
                 include ../shaders/sky.frag
-            script(type='x-shader/x-vertex', id='proceduralBuildingVertShader')
+            script(type='x-shader/x-vertex' id='proceduralBuildingVertShader')
                 include ../shaders/proceduralBuilding.vert
-            script(type='x-shader/x-fragment', id='proceduralBuildingFragShader')
+            script(type='x-shader/x-fragment' id='proceduralBuildingFragShader')
                 include ../shaders/proceduralBuilding.frag
-            script(type='x-shader/x-vertex', id='proceduralMetalVertShader')
+            script(type='x-shader/x-vertex' id='proceduralMetalVertShader')
                 include ../shaders/proceduralMetal.vert
-            script(type='x-shader/x-fragment', id='proceduralMetalFragShader')
+            script(type='x-shader/x-fragment' id='proceduralMetalFragShader')
                 include ../shaders/proceduralMetal.frag
-            script(type='x-shader/x-vertex', id='proceduralMetal2VertShader')
+            script(type='x-shader/x-vertex' id='proceduralMetal2VertShader')
                 include ../shaders/proceduralMetal2.vert
-            script(type='x-shader/x-fragment', id='proceduralMetal2FragShader')
+            script(type='x-shader/x-fragment' id='proceduralMetal2FragShader')
                 include ../shaders/proceduralMetal2.frag
-            script(type='x-shader/x-vertex', id='proceduralSolarPanelVertShader')
+            script(type='x-shader/x-vertex' id='proceduralSolarPanelVertShader')
                 include ../shaders/proceduralSolarPanel.vert
-            script(type='x-shader/x-fragment', id='proceduralSolarPanelFragShader')
+            script(type='x-shader/x-fragment' id='proceduralSolarPanelFragShader')
                 include ../shaders/proceduralSolarPanel.frag
             script#vertexshader(type='x-shader/x-vertex').
                 varying vec2 vUv;
@@ -198,7 +200,7 @@ html(lang='en')
                     float lum = 0.21 * bloom_color.r + 0.71 * bloom_color.g + 0.07 * bloom_color.b;
                     gl_FragColor = vec4(base_color.rgb + bloom_color.rgb, max(base_color.a, lum));
                 }
-            
+
             script
                 include ../scripts/l.js
             script

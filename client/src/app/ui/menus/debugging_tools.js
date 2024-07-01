@@ -12,7 +12,7 @@ export default class Debugging_Tools {
             expanded: true
         } );
 
-        if ( l.config.debug ) {
+        if ( l.config.settings.debug ) {
             const debugging = this.pane.addFolder( {
                 title: 'Debugging',
                 expanded: true,
@@ -93,6 +93,6 @@ export default class Debugging_Tools {
             }
         }
 
-        return this.pane;
+        return this;
     }
 }

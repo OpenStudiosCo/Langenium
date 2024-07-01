@@ -5,7 +5,11 @@
  */
 import * as THREE from 'three';
 
-import { proceduralBuilding, proceduralMetalMaterial2, proceduralSolarPanel } from '../../materials.js';
+/**
+ * Internal libs and helpers.
+ */
+import l from '@/helpers/l.js';
+import { proceduralBuilding, proceduralMetalMaterial2, proceduralSolarPanel } from '@/scenograph/materials.js';
 
 export default class Platform {
 

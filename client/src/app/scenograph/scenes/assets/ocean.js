@@ -2,7 +2,12 @@
  * Ocean plane
  */
 import * as THREE from 'three';
-import { Water } from '../../materials/water.js';
+
+/**
+ * Internal libs and helpers.
+ */
+import l from '@/helpers/l.js';
+import { Water } from '@/scenograph/materials/water.js';
 
 export default class Ocean {
     // Configuration

@@ -3,6 +3,11 @@
  */
 import * as THREE from 'three';
 
+/**
+ * Internal libs and helpers.
+ */
+import l from '@/helpers/l.js';
+
 export default class Sky {
     // Configuration
     uniforms;

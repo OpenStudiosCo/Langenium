@@ -4,8 +4,12 @@
  * - Post processing
  */
 
-import setupParticles from './effects/particles.js';
-import setupPostProcessing from './effects/postprocessing.js';
+/**
+ * Internal libs and helpers.
+ */
+import l from '@/helpers/l.js';
+import setupParticles from '@/scenograph/effects/particles.js';
+import setupPostProcessing from '@/scenograph/effects/postprocessing.js';
 
 export default class Effects {
     particles;

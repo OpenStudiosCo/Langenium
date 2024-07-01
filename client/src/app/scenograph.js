@@ -16,21 +16,21 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 /**
  * Internal libs and helpers.
  */
-import l from "./helpers/l.js";
-import { calculateAdjustedGapSize, setCameraFOV } from './helpers/math.js';
+import l from "@/helpers/l.js";
+import { calculateAdjustedGapSize, setCameraFOV } from '@/helpers/math.js';
 
-import Controls from "./scenograph/controls.js";
-import Effects from "./scenograph/effects";
-import { handleViewportChange } from "./scenograph/events.js";
-import Materials from "./scenograph/materials.js";
+import Controls from "@/scenograph/controls.js";
+import Effects from "@/scenograph/effects";
+import { handleViewportChange } from "@/scenograph/events.js";
+import Materials from "@/scenograph/materials.js";
 
-import Debugging from './scenograph/modes/debugging.js';
-import Multiplayer from "./scenograph/modes/multiplayer.js";
+import Debugging from '@/scenograph/modes/debugging.js';
+import Multiplayer from "@/scenograph/modes/multiplayer.js";
 
 /**
  * Scenes 
  */
-import Overworld from './scenograph/scenes/overworld.js';
+import Overworld from '@/scenograph/scenes/overworld.js';
 
 export default class Scenograph {
 

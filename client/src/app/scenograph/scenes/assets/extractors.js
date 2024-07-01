@@ -1,12 +1,18 @@
 /**
  * Union Extractor
- * 
- * 
+ */
+
+/**
+ * Vendor libs
  */
 import * as THREE from 'three';
-
-import { proceduralBuilding, proceduralMetalMaterial2 } from '../../materials.js';
 import { HOLLOW_SUBTRACTION, Brush, Evaluator } from 'three-bvh-csg';
+
+/**
+ * Internal libs and helpers.
+ */
+import l from '@/helpers/l.js';
+import { proceduralBuilding, proceduralMetalMaterial2 } from '@/scenograph/materials.js';
 
 export default class Extractor {
 

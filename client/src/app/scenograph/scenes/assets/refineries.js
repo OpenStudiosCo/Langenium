@@ -3,7 +3,11 @@
  */
 import * as THREE from 'three';
 
-import { proceduralMetalMaterial2, proceduralBuilding } from '../../materials.js';
+/**
+ * Internal libs and helpers.
+ */
+import l from '@/helpers/l.js';
+import { proceduralMetalMaterial2, proceduralBuilding } from '@/scenograph/materials.js';
 import { Brush, Evaluator, INTERSECTION } from 'three-bvh-csg';
 
 export default class Refineries {

@@ -4,10 +4,17 @@
  * Uses setInterval to update UI elements so they don't choke the animation loop.
  */
 
+/**
+ * Vendor libs
+ */
 import Alpine from 'alpinejs';
 
-import Flight_Instruments from './ui/flight_instruments.js';
-import Menus from './ui/menus.js';
+/**
+ * Internal libs and helpers.
+ */
+import l from '@/helpers/l.js';
+import Flight_Instruments from '@/ui/flight_instruments.js';
+import Menus from '@/ui/menus.js';
 
 export default class UI {
 

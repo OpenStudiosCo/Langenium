@@ -2,18 +2,23 @@
  * Vendor libs and base class.
  */
 import * as THREE from "three";
-import SceneBase from "./base";
+
+/**
+ * Internal libs and helpers
+ */
+import l from '@/helpers/l.js';
+import SceneBase from "@/scenograph/scenes/base";
 
 /**
  * Scene assets
  */
-import CargoShips from "./assets/cargo_ships";
-import Extractors from "./assets/extractors";
-import Ocean from "./assets/ocean";
-import Platform from "./assets/platform";
-import Refineries from "./assets/refineries";
-import Sky from "./assets/sky";
-import Ship from "./assets/ship";
+import CargoShips from "@/scenograph/scenes/assets/cargo_ships";
+import Extractors from "@/scenograph/scenes/assets/extractors";
+import Ocean from "@/scenograph/scenes/assets/ocean";
+import Platform from "@/scenograph/scenes/assets/platform";
+import Refineries from "@/scenograph/scenes/assets/refineries";
+import Sky from "@/scenograph/scenes/assets/sky";
+import Ship from "@/scenograph/scenes/assets/ship";
 
 /**
  * Preloader assets
@@ -23,17 +28,17 @@ import {
   createOfficeRoom,
   doorHeight,
   doorWidth,
-} from "./assets/office_room";
+} from "@/scenograph/scenes/assets/office_room";
 
 /**
  * Scene controllers
  */
-import { setupTriggers, updateTriggers } from "../triggers";
+import { setupTriggers, updateTriggers } from "@/scenograph/triggers";
 import {
   setupTweens,
   updateTweens,
   startTweening,
-} from "../tweens";
+} from "@/scenograph/tweens";
 
 /**
  * Main overworld

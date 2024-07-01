@@ -3,14 +3,17 @@
  * 
  * Handles user interaction with the scene.
  */
-import * as THREE from 'three';
 
-import { createOfficeRoom } from './scenes/assets/office_room';
-import { calculateAdjustedGapSize, setCameraFOV } from '../helpers/math.js';
+/**
+ * Internal libs and helpers.
+ */
+import l from '@/helpers/l.js';
+import { createOfficeRoom } from '@/scenograph/scenes/assets/office_room';
+import { calculateAdjustedGapSize, setCameraFOV } from '@/helpers/math.js';
 
 export default class Events {
     constructor() {
-
+        // @todo: Convert below function to class.
     }
 }
 

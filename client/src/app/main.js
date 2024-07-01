@@ -1,10 +1,10 @@
 /**
  * Classes and helpers.
  */
-import l from './helpers/l.js';
-import Config from "./config.js";
-import Scenograph from "./scenograph.js";
-import UI from "./ui.js";
+import l from '@/helpers/l.js';
+import Config from "@/config.js";
+import Scenograph from "@/scenograph.js";
+import UI from "@/ui.js";
 
 /**
  * Config.

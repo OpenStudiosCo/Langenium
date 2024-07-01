@@ -4,12 +4,14 @@
  * Currently hardcoded to use the Valiant aircraft.
  */
 import * as THREE from 'three';
+import { TrailRenderer } from '@/../vendor/TrailRenderer.js';
 
-import { TrailRenderer } from '../../../../vendor/TrailRenderer.js';
-
-import { brightenMaterial, proceduralMetalMaterial } from '../../materials.js';
-
-import Valiant from '../../../../../../game/src/objects/aircraft/valiant.js';
+/**
+ * Internal libs and helpers.
+ */
+import l from '@/helpers/l.js';
+import { brightenMaterial, proceduralMetalMaterial } from '@/scenograph/materials.js';
+import Valiant from '#/game/src/objects/aircraft/valiant.js';
 
 export default class Ship {
 

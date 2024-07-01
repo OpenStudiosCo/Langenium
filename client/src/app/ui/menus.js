@@ -2,11 +2,10 @@
  * Menus
  */
 
-import { Pane } from 'tweakpane';
-import Debugging_Tools from './menus/debugging_tools';
-import Main_Menu from './menus/main_menu';
-import Object_Editor from './menus/object_editor';
-import Scene_Overview from './menus/scene_overview';
+import Debugging_Tools from '@/ui/menus/debugging_tools';
+import Main_Menu from '@/ui/menus/main_menu';
+import Object_Editor from '@/ui/menus/object_editor';
+import Scene_Overview from '@/ui/menus/scene_overview';
 
 export default class Menus {
 

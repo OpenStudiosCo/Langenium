@@ -5,9 +5,17 @@
  * - Touch
  */
 
-import KeyboardControls from "./controls/keyboard.js";
+/**
+ * Vendor libs
+ */
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import TouchControls from "./controls/touch.js";
+
+/**
+ * Internal libs and helpers.
+ */
+import l from '@/helpers/l.js';
+import KeyboardControls from "@/scenograph/controls/keyboard.js";
+import TouchControls from "@/scenograph/controls/touch.js";
 
 export default class Controls {
     keyboard;
@@ -18,10 +26,6 @@ export default class Controls {
 
     init() {
         this.keyboard = new KeyboardControls();
-
-        if ( l.config.settings.debug ) {
-
-        }
 
         this.touch = new TouchControls();
 

@@ -1,4 +1,4 @@
-import l from './l.js';
+import l from '@/helpers/l.js';
 
 l.select_box = function ( object ) {
     // Remove any existing select boxes

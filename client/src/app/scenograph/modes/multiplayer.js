@@ -2,7 +2,11 @@
  * Multiplayer code for connecting to Langenium server instances.
  */
 
-import Ship from "../scenes/assets/ship";
+/**
+ * Internal libs and helpers.
+ */
+import l from '@/helpers/l.js';
+import Ship from "@/scenograph/scenes/assets/ship";
 
 export default class Multiplayer {
 

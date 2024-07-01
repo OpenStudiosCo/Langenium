@@ -10,6 +10,11 @@
 import * as THREE from "three";
 
 /**
+ * Internal libs and helpers.
+ */
+import l from '@/helpers/l.js';
+
+/**
  * Initiator of tween sequences.
  */
 export function startTweening() {

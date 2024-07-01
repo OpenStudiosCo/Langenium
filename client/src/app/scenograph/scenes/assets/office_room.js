@@ -1,7 +1,18 @@
+/**
+ * Open Studios office room object.
+ */
+
+/**
+ * Vendor libs
+ */
 import * as THREE from 'three';
 import { SUBTRACTION, Brush, Evaluator } from 'three-bvh-csg';
-
 import { SVGLoader } from 'three/addons/loaders/SVGLoader.js';
+
+/**
+ * Internal libs and helpers.
+ */
+import l from '@/helpers/l.js';
 
 // Create door geometry
 export var doorWidth = 8.2;

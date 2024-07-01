@@ -1,9 +1,17 @@
 /**
  * Cargo Ships loader
  */
+
+/**
+ * Vendor libs
+ */
 import * as THREE from 'three';
 
-import { proceduralMetalMaterial } from '../../materials.js';
+/**
+ * Internal libs and helpers.
+ */
+import l from '@/helpers/l.js';
+import { proceduralMetalMaterial } from '@/scenograph/materials.js';
 import { SUBTRACTION, Brush, Evaluator } from 'three-bvh-csg';
 
 export default class CargoShips {

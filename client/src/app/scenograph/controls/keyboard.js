@@ -4,6 +4,11 @@
  * Based on https://github.com/jeromeetienne/threex.keyboardstate
  */
 
+/**
+ * Internal libs and helpers.
+ */
+import l from '@/helpers/l.js';
+
 let MODIFIERS = [ 'shift', 'ctrl', 'alt', 'meta' ];
 let ALIAS = {
     'left'    :  37,

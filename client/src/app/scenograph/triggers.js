@@ -6,6 +6,11 @@
  * Each trigger has a constructing function that returns an object containing a way to update itself.
  */
 
+/**
+ * Internal libs and helpers.
+ */
+import l from '@/helpers/l.js';
+
 export function setupTriggers() {
     //l.current_scene.triggers.updateSigns = updateSigns();
 }

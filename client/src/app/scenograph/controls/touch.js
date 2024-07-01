@@ -4,7 +4,11 @@
  * Based on https://mese79.github.io/TouchControls/
  */
 
-import TouchControlUI from './touch/TouchControlUI';
+/**
+ * Internal libs and helpers.
+ */
+import l from '@/helpers/l.js';
+import TouchControlUI from '@/scenograph/controls/touch/TouchControlUI';
 
 export default class TouchControls {
     controls;

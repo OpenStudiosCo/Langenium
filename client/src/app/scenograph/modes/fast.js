@@ -4,7 +4,7 @@
  * Can be active for game modes and the home screen.
  */
 
-import l from "../../helpers/l";
+import l from "@/helpers/l";
 
 export default class Fast {
     active;

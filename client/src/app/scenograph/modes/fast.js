@@ -26,16 +26,17 @@ export default class Fast {
     }
 
     activate() {
-        if ( ! l.current_scene.effects.postprocesing ) {
-            l.scenograph.effects.init();
-        }
+        
 
         this.active = true;
 
     }
 
     deactivate() {
-
+        if ( l.current_scene.effects.postprocesing == undefined
+            || l.current_scene.effects.postprocesing ==  false ) {
+            l.scenograph.effects.init();
+        }
 
         this.active = false;
 

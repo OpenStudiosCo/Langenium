@@ -170,6 +170,7 @@ export default class Main_Menu {
         } );
 
         this.settings.fast.on( 'change', () => {
+            l.scenograph.modes.fast.toggle();
             l.config.save_settings();
         } );
 

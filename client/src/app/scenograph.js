@@ -25,6 +25,7 @@ import { handleViewportChange } from "@/scenograph/events.js";
 import Materials from "@/scenograph/materials.js";
 
 import Debugging from '@/scenograph/modes/debugging.js';
+import Fast from '@/scenograph/modes/fast.js';
 import Multiplayer from "@/scenograph/modes/multiplayer.js";
 
 /**
@@ -66,13 +67,19 @@ export default class Scenograph {
         this.materials = new Materials();
 
         /**
-         * Setup the different game modes
+         * Setup the different game modes (controllers)
          */
 
         /**
          * Debugging.
          */
         this.modes.debugging = new Debugging();
+
+        
+        /**
+         * Fast mode.
+         */
+        this.modes.fast = new Fast();
 
         /**
          * Multiplayer allows connecting to server.

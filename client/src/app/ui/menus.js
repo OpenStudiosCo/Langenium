@@ -38,6 +38,11 @@ export default class Menus {
         // Position: Top left.
         this.scene_overview = new Scene_Overview();
 
+        // l.ui.update_queue.push( {
+        //     callback: 'l.ui.menus.scene_overview.update',
+        //     data: []
+        // } );
+
     }
 
     debug_off(){

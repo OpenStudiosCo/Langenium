@@ -1,8 +1,10 @@
 /**
  * Debugging mode
+ * 
+ * Can be active for game modes and the home screen.
  */
 
-import l from "../helpers/l";
+import l from "../../helpers/l";
 
 export default class Debugging {
     active;
@@ -25,7 +27,7 @@ export default class Debugging {
 
     activate() {
 
-        l.controls.debug_on();
+        l.scenograph.controls.debug_on();
 
         l.ui.menus.debug_on();
 
@@ -35,7 +37,7 @@ export default class Debugging {
 
     deactivate() {
 
-        l.controls.debug_off();
+        l.scenograph.controls.debug_off();
 
         l.ui.menus.debug_off();
 

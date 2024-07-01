@@ -22,11 +22,11 @@ export default class Materials {
     const gradientGLSL = document.getElementById( 'gradientGLSL' ).textContent;
     const normalGLSL = document.getElementById( 'normalGLSL' ).textContent;
     const voronoiGLSL = document.getElementById( 'voronoiGLSL' ).textContent;
-    
-    THREE.ShaderChunk['brick'] = brickGLSL;
-    THREE.ShaderChunk['gradient'] = gradientGLSL;
-    THREE.ShaderChunk['normal'] = normalGLSL;
-    THREE.ShaderChunk['voronoi'] = voronoiGLSL;
+
+    THREE.ShaderChunk[ 'brick' ] = brickGLSL;
+    THREE.ShaderChunk[ 'gradient' ] = gradientGLSL;
+    THREE.ShaderChunk[ 'normal' ] = normalGLSL;
+    THREE.ShaderChunk[ 'voronoi' ] = voronoiGLSL;
 
     this.loaded_textures = {};
   }
@@ -34,7 +34,7 @@ export default class Materials {
   get_texture( path ) {
 
     if ( this.loaded_textures.path === undefined ) {
-      let texture = window.l.current_scene.loaders.texture.load( path );
+      let texture = l.current_scene.loaders.texture.load( path );
 
       this.loaded_textures[ path ] = texture;
     }
@@ -50,15 +50,15 @@ export default class Materials {
  * @param {Float} amount 
  * @returns {THREE.Material} 
  */
-export function brightenMaterial(material, amount) {
+export function brightenMaterial( material, amount ) {
 
-  if (material.map) {
+  if ( material.map ) {
     // Increase the brightness of the texture
     material.map.magFilter = THREE.LinearFilter; // Ensures smooth interpolation
     material.map.needsUpdate = true; // Update the material
   }
-  
-  amount = window.l.config.settings.fast ? amount / 4 : amount;
+
+  amount = l.config.settings.fast ? amount / 4 : amount;
 
   // Increase the brightness by adjusting the material color
   const brightness = amount; // Increase the value to make it brighter
@@ -86,16 +86,16 @@ export function brightenMaterial(material, amount) {
  * @param {*} settings 
  * @returns {THREE.Material} 
  */
-export function proceduralBuilding(settings) {
+export function proceduralBuilding( settings ) {
 
   // @todo: Move into a common helper / in memory store.
-  let noiseTexture2 = window.l.materials.get_texture( './assets/textures/noise2.jpg' );
+  let noiseTexture2 = l.scenograph.materials.get_texture( './assets/textures/noise2.jpg' );
   noiseTexture2.wrapS = noiseTexture2.wrapT = THREE.RepeatWrapping;
 
   settings.uniforms.noiseTexture = { type: "t", value: noiseTexture2 };
 
   let material = new THREE.ShaderMaterial( {
-    vertexShader:   document.getElementById( 'proceduralBuildingVertShader'   ).textContent,
+    vertexShader: document.getElementById( 'proceduralBuildingVertShader' ).textContent,
     fragmentShader: document.getElementById( 'proceduralBuildingFragShader' ).textContent,
     uniforms: settings.uniforms
   } );
@@ -122,16 +122,16 @@ export function proceduralBuilding(settings) {
  * @param {*} settings 
  * @returns {THREE.Material} 
  */
-export function proceduralMetalMaterial(settings) {
+export function proceduralMetalMaterial( settings ) {
 
   // @todo: Move into a common helper / in memory store.
-  let noiseTexture2 = window.l.materials.get_texture( './assets/textures/noise2.jpg' );
+  let noiseTexture2 = l.scenograph.materials.get_texture( './assets/textures/noise2.jpg' );
   noiseTexture2.wrapS = noiseTexture2.wrapT = THREE.RepeatWrapping;
 
   settings.uniforms.noiseTexture = { type: "t", value: noiseTexture2 };
 
   let material = new THREE.ShaderMaterial( {
-    vertexShader:   document.getElementById( 'proceduralMetalVertShader'   ).textContent,
+    vertexShader: document.getElementById( 'proceduralMetalVertShader' ).textContent,
     fragmentShader: document.getElementById( 'proceduralMetalFragShader' ).textContent,
     uniforms: settings.uniforms
   } );
@@ -162,16 +162,16 @@ export function proceduralMetalMaterial(settings) {
  * @param {*} settings 
  * @returns {THREE.Material} 
  */
-export function proceduralMetalMaterial2(settings) {
+export function proceduralMetalMaterial2( settings ) {
 
   // @todo: Move into a common helper / in memory store.
-  let noiseTexture2 = window.l.materials.get_texture( './assets/textures/noise2.jpg' );
+  let noiseTexture2 = l.scenograph.materials.get_texture( './assets/textures/noise2.jpg' );
   noiseTexture2.wrapS = noiseTexture2.wrapT = THREE.RepeatWrapping;
 
   settings.uniforms.noiseTexture = { type: "t", value: noiseTexture2 };
 
   let material = new THREE.ShaderMaterial( {
-    vertexShader:   document.getElementById( 'proceduralMetal2VertShader'   ).textContent,
+    vertexShader: document.getElementById( 'proceduralMetal2VertShader' ).textContent,
     fragmentShader: document.getElementById( 'proceduralMetal2FragShader' ).textContent,
     uniforms: settings.uniforms
   } );
@@ -196,16 +196,16 @@ export function proceduralMetalMaterial2(settings) {
  * @param {*} settings 
  * @returns {THREE.Material} 
  */
-export function proceduralSolarPanel(settings) {
+export function proceduralSolarPanel( settings ) {
 
   // @todo: Move into a common helper / in memory store.
-  let noiseTexture2 = window.l.materials.get_texture( './assets/textures/noise2.jpg' );
+  let noiseTexture2 = l.scenograph.materials.get_texture( './assets/textures/noise2.jpg' );
   noiseTexture2.wrapS = noiseTexture2.wrapT = THREE.RepeatWrapping;
 
   settings.uniforms.noiseTexture = { type: "t", value: noiseTexture2 };
 
   let material = new THREE.ShaderMaterial( {
-    vertexShader:   document.getElementById( 'proceduralSolarPanelVertShader'   ).textContent,
+    vertexShader: document.getElementById( 'proceduralSolarPanelVertShader' ).textContent,
     fragmentShader: document.getElementById( 'proceduralSolarPanelFragShader' ).textContent,
     uniforms: settings.uniforms
   } );
@@ -222,27 +222,27 @@ export function proceduralSolarPanel(settings) {
 export function cacheProceduralMaterial( material ) {
   const textureHeight = 512;
   const textureWidth = 512;
-  const renderTarget = new THREE.WebGLRenderTarget(textureWidth, textureHeight);
+  const renderTarget = new THREE.WebGLRenderTarget( textureWidth, textureHeight );
   // Scene and camera for first pass
   const firstPassScene = new THREE.Scene();
   const firstPassCamera = new THREE.Camera();
 
   // Mesh for first pass
-  const firstPassQuad = new THREE.Mesh(new THREE.PlaneGeometry( 2 * material.uniforms.scale.value, 2 * material.uniforms.scale.value), material);
-  firstPassScene.add(firstPassQuad);
+  const firstPassQuad = new THREE.Mesh( new THREE.PlaneGeometry( 2 * material.uniforms.scale.value, 2 * material.uniforms.scale.value ), material );
+  firstPassScene.add( firstPassQuad );
 
 
   // Render the first pass to the render target
-  window.l.current_scene.renderers.webgl.setRenderTarget(renderTarget);
-  window.l.current_scene.renderers.webgl.render(firstPassScene, firstPassCamera);
-  window.l.current_scene.renderers.webgl.setRenderTarget(null); // Reset the render target
+  l.current_scene.renderers.webgl.setRenderTarget( renderTarget );
+  l.current_scene.renderers.webgl.render( firstPassScene, firstPassCamera );
+  l.current_scene.renderers.webgl.setRenderTarget( null ); // Reset the render target
 
-  const secondPassMaterial = new THREE.MeshBasicMaterial({
+  const secondPassMaterial = new THREE.MeshBasicMaterial( {
     map: renderTarget.texture,
-  });
+  } );
 
   // Append img tag to DOM for preview
-  document.getElementById('preview_materials').appendChild(renderTargetToImage( renderTarget, textureWidth, textureHeight ));
+  document.getElementById( 'preview_materials' ).appendChild( renderTargetToImage( renderTarget, textureWidth, textureHeight ) );
 
   return secondPassMaterial;
 }
@@ -250,21 +250,21 @@ export function cacheProceduralMaterial( material ) {
 export function renderTargetToImage( renderTarget, textureWidth, textureHeight ) {
 
   // Read pixels from renderTarget and convert to image
-  const pixels = new Uint8Array(textureWidth * textureHeight * 4);
-  window.l.current_scene.renderers.webgl.readRenderTargetPixels(renderTarget, 0, 0, textureWidth, textureHeight, pixels);
+  const pixels = new Uint8Array( textureWidth * textureHeight * 4 );
+  l.current_scene.renderers.webgl.readRenderTargetPixels( renderTarget, 0, 0, textureWidth, textureHeight, pixels );
 
   // Create a canvas element to convert pixels to image
-  const canvas = document.createElement('canvas');
+  const canvas = document.createElement( 'canvas' );
   canvas.width = textureWidth;
   canvas.height = textureHeight;
-  const ctx = canvas.getContext('2d');
-  const imageData = ctx.createImageData(textureWidth, textureHeight);
-  imageData.data.set(pixels);
-  ctx.putImageData(imageData, 0, 0);
+  const ctx = canvas.getContext( '2d' );
+  const imageData = ctx.createImageData( textureWidth, textureHeight );
+  imageData.data.set( pixels );
+  ctx.putImageData( imageData, 0, 0 );
 
   // Convert canvas to data URL and set as src for img tag
   const imageUrl = canvas.toDataURL(); // default is PNG format
-  const img = document.createElement('img');
+  const img = document.createElement( 'img' );
   img.src = imageUrl;
   img.height = 256;
   img.width = 256;

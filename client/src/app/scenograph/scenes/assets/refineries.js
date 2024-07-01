@@ -3,7 +3,7 @@
  */
 import * as THREE from 'three';
 
-import { proceduralMetalMaterial2, proceduralBuilding } from '../materials.js';
+import { proceduralMetalMaterial2, proceduralBuilding } from '../../materials.js';
 import { Brush, Evaluator, INTERSECTION } from 'three-bvh-csg';
 
 export default class Refineries {
@@ -126,7 +126,7 @@ export default class Refineries {
 
     animate( delta ) {
 
-        window.l.current_scene.scene_objects.refineries.forEach( ( refinery, i ) => {
+        l.current_scene.scene_objects.refineries.forEach( ( refinery, i ) => {
             let inner = refinery.getObjectByName( 'inner' );
             inner.material.uniforms.time.value += 0.00005;
         } );

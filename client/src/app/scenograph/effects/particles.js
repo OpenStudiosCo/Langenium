@@ -10,7 +10,6 @@ export default function setupParticles( ) {
     };
 }
 
-
 function createShipThruster (ship, scale, position) {
     const assignSRGB = ( texture ) => {
         texture.colorSpace = THREE.SRGBColorSpace;
@@ -20,7 +19,7 @@ function createShipThruster (ship, scale, position) {
     const vertices = [];
     const pMaterial =
 		  new THREE.PointsMaterial({
-			map: window.l.current_scene.loaders.texture.load("/assets/textures/ember.png?nocache", assignSRGB),
+			map: l.current_scene.loaders.texture.load("/assets/textures/ember.png?nocache", assignSRGB),
 			size: .35 * scale,
 			blending: THREE.AdditiveBlending,
 			opacity: 0.15,
@@ -65,13 +64,13 @@ function createShipThruster (ship, scale, position) {
 	plasma.obj_scale = scale;
     plasma.ship = ship;
     plasma.vertices = vertices;
-	window.l.current_scene.effects.particles.shipThrusters.push(plasma);
+	l.current_scene.effects.particles.shipThrusters.push(plasma);
 	// add it to the scene
 	ship.mesh.add(plasma);
 };
 
 function animateShipThrusters (delta) {
-	window.l.current_scene.effects.particles.shipThrusters.forEach(function(plasma, index){
+	l.current_scene.effects.particles.shipThrusters.forEach(function(plasma, index){
 		const velocity = plasma.ship.state.airSpeed;
 		plasma.sortParticles = true;
 

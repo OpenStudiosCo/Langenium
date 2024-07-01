@@ -7,13 +7,13 @@ import SceneBase from "./base";
 /**
  * Scene assets
  */
-import CargoShips from "../scene_assets/cargo_ships";
-import Extractors from "../scene_assets/extractors";
-import Ocean from "../scene_assets/ocean";
-import Platform from "../scene_assets/platform";
-import Refineries from "../scene_assets/refineries";
-import Sky from "../scene_assets/sky";
-import Ship from "../scene_assets/ship";
+import CargoShips from "./assets/cargo_ships";
+import Extractors from "./assets/extractors";
+import Ocean from "./assets/ocean";
+import Platform from "./assets/platform";
+import Refineries from "./assets/refineries";
+import Sky from "./assets/sky";
+import Ship from "./assets/ship";
 
 /**
  * Preloader assets
@@ -23,18 +23,17 @@ import {
   createOfficeRoom,
   doorHeight,
   doorWidth,
-} from "../scene_assets/office_room";
+} from "./assets/office_room";
 
 /**
  * Scene controllers
  */
-import { setupTriggers, updateTriggers } from "../scene_assets/triggers";
+import { setupTriggers, updateTriggers } from "../triggers";
 import {
   setupTweens,
   updateTweens,
   startTweening,
-} from "../scene_assets/tweens";
-import l from "../helpers/l";
+} from "../tweens";
 
 /**
  * Main overworld

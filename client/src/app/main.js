@@ -3,9 +3,6 @@
  */
 import l from './helpers/l.js';
 import Config from "./config.js";
-import Controls from "./controls.js";
-import Materials from "./materials.js";
-import Multiplayer from "./multiplayer.js";
 import Scenograph from "./scenograph.js";
 import UI from "./ui.js";
 
@@ -13,21 +10,6 @@ import UI from "./ui.js";
  * Config.
  */
 l.config = new Config();
-
-/**
- * Controls.
- */
-l.controls = new Controls();
-
-/**
- * Custom materials.
- */
-l.materials = new Materials();
-
-/**
- * Multiplayer allows connecting to server.
- */
-l.multiplayer = new Multiplayer();
 
 /**
  * Scenograph controls the current scene
@@ -39,7 +21,7 @@ l.scenograph = new Scenograph();
  */
 l.ui = new UI();
 
-l.init = function() {
+l.init = function () {
     /**
      * Load up the overworld by default.
      */

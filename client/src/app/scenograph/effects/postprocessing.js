@@ -30,24 +30,24 @@ import {
 
 // Sets up the postprocessing effects
 export default function setupPostProcessing() {
-    const composer = new EffectComposer(window.l.current_scene.renderers.webgl, {
+    const composer = new EffectComposer( l.current_scene.renderers.webgl, {
         frameBufferType: THREE.HalfFloatType
-    });
-    composer.addPass(new RenderPass(window.l.current_scene.scene, window.l.current_scene.camera));
+    } );
+    composer.addPass( new RenderPass( l.current_scene.scene, l.current_scene.camera ) );
 
     // ssao
-    const normalPass = new NormalPass(window.l.current_scene.scene, window.l.current_scene.camera);
-    const depthDownsamplingPass = new DepthDownsamplingPass({
+    const normalPass = new NormalPass( l.current_scene.scene, l.current_scene.camera );
+    const depthDownsamplingPass = new DepthDownsamplingPass( {
         normalBuffer: normalPass.texture,
         resolutionScale: 0.5
-    });
+    } );
 
     const capabilities = composer.getRenderer().capabilities;
 
     const normalDepthBuffer = capabilities.isWebGL2 ?
         depthDownsamplingPass.texture : null;
 
-    const ssao = new SSAOEffect(window.l.current_scene.camera, normalPass.texture, {
+    const ssao = new SSAOEffect( l.current_scene.camera, normalPass.texture, {
         blendFunction: BlendFunction.MULTIPLY,
         distanceScaling: true,
         depthAwareUpsampling: true,
@@ -66,17 +66,17 @@ export default function setupPostProcessing() {
         fade: 0.01,
         color: null,
         resolutionScale: 0.5
-    });
+    } );
 
     // smaa
-    const smaa = new SMAAEffect({
+    const smaa = new SMAAEffect( {
         blendFunction: EdgeDetectionMode.DEPTH,
         preset: SMAAPreset.HIGH
-    });
+    } );
 
     // bloom
     const bloom = new SelectiveBloomEffect(
-        window.l.current_scene.scene, window.l.current_scene.camera,
+        l.current_scene.scene, l.current_scene.camera,
         {
             blendFunction: BlendFunction.ADD,
             intensity: 8.5,
@@ -85,16 +85,16 @@ export default function setupPostProcessing() {
             luminanceSmoothing: 0.2,
             radius: 0.85,
             resolutionScale: 1
-        });
+        } );
 
     bloom.inverted = true;
 
-    const textureEffect = new TextureEffect({
+    const textureEffect = new TextureEffect( {
         blendFunction: BlendFunction.SKIP,
         texture: depthDownsamplingPass.texture
-    });
+    } );
 
-    const toneMappingEffect = new ToneMappingEffect({
+    const toneMappingEffect = new ToneMappingEffect( {
         mode: ToneMappingMode.REINHARD2_ADAPTIVE,
         resolution: 256,
         whitePoint: 16.0,
@@ -102,21 +102,21 @@ export default function setupPostProcessing() {
         minLuminance: 0.01,
         averageLuminance: 0.01,
         adaptationRate: 1.0
-    });
+    } );
 
-    composer.addPass(normalPass);
+    composer.addPass( normalPass );
 
-    if (capabilities.isWebGL2) {
+    if ( capabilities.isWebGL2 ) {
 
-        composer.addPass(depthDownsamplingPass);
+        composer.addPass( depthDownsamplingPass );
 
     } else {
 
-        console.log("WebGL 2 not supported, falling back to naive depth downsampling");
+        console.log( "WebGL 2 not supported, falling back to naive depth downsampling" );
 
     }
 
-    composer.addPass(new EffectPass(window.l.current_scene.camera, ssao, smaa, textureEffect, bloom, toneMappingEffect));
+    composer.addPass( new EffectPass( l.current_scene.camera, ssao, smaa, textureEffect, bloom, toneMappingEffect ) );
     return composer;
 
 }

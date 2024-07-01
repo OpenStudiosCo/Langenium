@@ -2,7 +2,7 @@
  * Ocean plane
  */
 import * as THREE from 'three';
-import { Water } from '../materials/water.js';
+import { Water } from '../../materials/water.js';
 
 export default class Ocean {
     // Configuration
@@ -16,7 +16,7 @@ export default class Ocean {
 
     constructor( submergedObjects ) {
 
-        const waterGeometry = new THREE.PlaneGeometry( window.l.scale * 2, window.l.scale * 2, 50, 50 );
+        const waterGeometry = new THREE.PlaneGeometry( l.scale * 2, l.scale * 2, 50, 50 );
 
         this.water = new Water(
             waterGeometry,
@@ -53,7 +53,7 @@ export default class Ocean {
 
     animate( delta ) {
         // Iterate the sky uniforms to animate it.
-        window.l.current_scene.scene_objects.ocean.water.material.uniforms.time.value += 1.0 / 60;
+        l.current_scene.scene_objects.ocean.water.material.uniforms.time.value += 1.0 / 60;
     }
 
 }

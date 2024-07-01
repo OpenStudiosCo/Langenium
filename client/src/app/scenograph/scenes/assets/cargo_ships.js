@@ -3,7 +3,7 @@
  */
 import * as THREE from 'three';
 
-import { proceduralMetalMaterial } from '../materials.js';
+import { proceduralMetalMaterial } from '../../materials.js';
 import { SUBTRACTION, Brush, Evaluator } from 'three-bvh-csg';
 
 export default class CargoShips {

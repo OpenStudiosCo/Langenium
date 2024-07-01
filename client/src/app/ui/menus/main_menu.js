@@ -34,7 +34,7 @@ export default class Main_Menu {
         } );
         this.buttons.exit_game.on( 'click', () => {
             console.log( 'Exit to Main Menu, closing game session' );
-            l.controls.deactivate()
+            l.scenograph.controls.deactivate()
             l.ui.hide_flight_instruments();
 
             // Show game mode buttons.
@@ -47,8 +47,8 @@ export default class Main_Menu {
             // Restore the main menu title.
             this.pane.title = this.default_title;
 
-            if ( l.multiplayer.connected ) {
-                l.multiplayer.disconnect();
+            if ( l.scenograph.modes.multiplayer.connected ) {
+                l.scenograph.modes.multiplayer.disconnect();
             }
 
             // Set client mode.
@@ -60,7 +60,7 @@ export default class Main_Menu {
         } );
         this.buttons.single_player.on( 'click', () => {
             console.log( 'Single player launched' );
-            l.controls.activate();
+            l.scenograph.controls.activate();
             l.ui.show_flight_instruments();
 
             // Hide game mode buttons.
@@ -75,7 +75,7 @@ export default class Main_Menu {
             this.buttons.exit_game.hidden = false;
 
             // Set client mode.
-            l.mode = 'this.buttons.single_player';
+            l.mode = 'single_player';
         } );
 
         this.buttons.multi_player = this.pane.addButton( {
@@ -83,7 +83,7 @@ export default class Main_Menu {
         } );
         this.buttons.multi_player.on( 'click', () => {
             console.log( 'Multi player launched' );
-            l.controls.activate();
+            l.scenograph.controls.activate();
             l.ui.show_flight_instruments();
 
             // Hide game mode buttons.
@@ -99,10 +99,10 @@ export default class Main_Menu {
 
             let serverLocation = l.env == 'Dev' ? 'lcl.langenium.com:8090' : 'test.langenium.com:42069';
 
-            l.multiplayer.connect( '//' + serverLocation );
+            l.scenograph.modes.multiplayer.connect( '//' + serverLocation );
 
             // Set client mode.
-            l.mode = 'this.buttons.multi_player';
+            l.mode = 'multi_player';
         } );
 
         this.buttons.settings = this.pane.addButton( {
@@ -152,31 +152,31 @@ export default class Main_Menu {
             // Restore the main menu title.
             this.pane.title = this.default_title;
         } );
-          
-        this.settings.debug = this.pane.addBinding(l.config.settings, 'debug', {
+
+        this.settings.debug = this.pane.addBinding( l.config.settings, 'debug', {
             label: 'Debugging mode',
             hidden: true
-        });
+        } );
 
         this.settings.debug.on( 'change', () => {
             l.scenograph.modes.debugging.toggle();
             l.config.save_settings();
         } );
 
-        this.settings.fast = this.pane.addBinding(l.config.settings, 'fast', {
+        this.settings.fast = this.pane.addBinding( l.config.settings, 'fast', {
             label: 'Performance mode',
             disabled: l.config.client_info.gpu.tier < 3,
             hidden: true
-        });
+        } );
 
         this.settings.fast.on( 'change', () => {
             l.config.save_settings();
         } );
 
-        this.settings.skipintro = this.pane.addBinding(l.config.settings, 'skipintro', {
+        this.settings.skipintro = this.pane.addBinding( l.config.settings, 'skipintro', {
             label: 'Skip title sequence',
             hidden: true
-        });
+        } );
 
         this.settings.skipintro.on( 'change', () => {
             l.config.save_settings();

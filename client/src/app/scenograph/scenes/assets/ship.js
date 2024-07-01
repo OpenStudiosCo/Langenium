@@ -5,11 +5,11 @@
  */
 import * as THREE from 'three';
 
-import { TrailRenderer } from '../../vendor/TrailRenderer.js';
+import { TrailRenderer } from '../../../../vendor/TrailRenderer.js';
 
-import { brightenMaterial, proceduralMetalMaterial } from '../materials.js';
+import { brightenMaterial, proceduralMetalMaterial } from '../../materials.js';
 
-import Valiant from '../../../../game/src/objects/aircraft/valiant';
+import Valiant from '../../../../../../game/src/objects/aircraft/valiant.js';
 
 export default class Ship {
 
@@ -55,9 +55,9 @@ export default class Ship {
     async load() {
 
 
-        this.model = await window.l.current_scene.loaders.gtlf.loadAsync( './assets/models/mercenary4.glb' );
+        this.model = await l.current_scene.loaders.gtlf.loadAsync( './assets/models/mercenary4.glb' );
 
-        let amount = window.l.config.settings.fast ? 5 : 2.5;
+        let amount = l.config.settings.fast ? 5 : 2.5;
 
         this.model.scene.traverse( function ( child ) {
 
@@ -98,7 +98,7 @@ export default class Ship {
         } );
 
         this.mesh = this.model.scene;
-        this.mesh.position.z = window.l.current_scene.room_depth;
+        this.mesh.position.z = l.current_scene.room_depth;
         this.mesh.rotation.order = 'YXZ';
 
         this.createThruster();
@@ -107,16 +107,16 @@ export default class Ship {
         this.mixer.clipAction( this.model.animations[ 0 ] ).play();
         this.mixer.clipAction( this.model.animations[ 1 ] ).play();
 
-        window.l.current_scene.tweens.shipEnterY = this.shipEnterY();
-        window.l.current_scene.tweens.shipEnterZ = this.shipEnterZ();
+        l.current_scene.tweens.shipEnterY = this.shipEnterY();
+        l.current_scene.tweens.shipEnterZ = this.shipEnterZ();
 
-        //window.l.current_scene.effects.particles.createShipThruster(this, 1.5, { x: 0, y: 1.2, z: 1.5 });
+        //l.current_scene.effects.particles.createShipThruster(this, 1.5, { x: 0, y: 1.2, z: 1.5 });
 
         // specify points to create planar trail-head geometry
         const trailHeadGeometry = this.createTrailCircle();
 
         // create the trail renderer object
-        this.trail = new TrailRenderer( window.l.current_scene.scene, false );
+        this.trail = new TrailRenderer( l.current_scene.scene, false );
 
         // set how often a new trail node will be added and existing nodes will be updated
         this.trail.setAdvanceFrequency( 60 );
@@ -308,10 +308,10 @@ export default class Ship {
         let coords = { y: 60 }; // Start at (0, 0)
         let target = { y: 8.5 };
         return new TWEEN.Tween( coords, false ) // Create a new tween that modifies 'coords'.
-            .to( target, window.l.config.settings.skipintro ? 0 : 2000 ) // Move to (300, 200) in 1 second.
+            .to( target, l.config.settings.skipintro ? 0 : 2000 ) // Move to (300, 200) in 1 second.
             .easing( TWEEN.Easing.Circular.Out ) // Use an easing function to make the animation smooth.
             .onUpdate( () => {
-                window.l.current_scene.scene_objects.ship.mesh.position.y = coords.y;
+                l.current_scene.scene_objects.ship.mesh.position.y = coords.y;
             } )
             .onComplete( () => {
                 //console.log('ready');
@@ -319,24 +319,24 @@ export default class Ship {
     }
     // Tween for the ship intro sequence.
     shipEnterZ() {
-        let coords = { x: window.l.current_scene.room_depth }; // Start at (0, 0)
+        let coords = { x: l.current_scene.room_depth }; // Start at (0, 0)
         let target = { x: 0 };
         return new TWEEN.Tween( coords, false ) // Create a new tween that modifies 'coords'.
-            .delay( window.l.config.settings.skipintro ? 0 : 1000 )
-            .to( target, window.l.config.settings.skipintro ? 0 : 2000 ) // Move to (300, 200) in 1 second.
+            .delay( l.config.settings.skipintro ? 0 : 1000 )
+            .to( target, l.config.settings.skipintro ? 0 : 2000 ) // Move to (300, 200) in 1 second.
             .easing( TWEEN.Easing.Circular.Out ) // Use an easing function to make the animation smooth.
             .onUpdate( () => {
 
                 // Called after tween.js updates 'coords'.
                 // Move 'box' to the position described by 'coords' with a CSS translation.
-                window.l.current_scene.scene_objects.ship.mesh.position.z = coords.x;
+                l.current_scene.scene_objects.ship.mesh.position.z = coords.x;
 
             } )
             .onComplete( () => {
 
                 // Turn off bloom from the other scene.
-                if ( window.l.current_scene.effects.postprocessing && window.l.current_scene.effects.postprocessing.passes.length > 0 ) {
-                    window.l.current_scene.effects.postprocessing.passes.forEach( ( effectPass ) => {
+                if ( l.current_scene.effects.postprocessing && l.current_scene.effects.postprocessing.passes.length > 0 ) {
+                    l.current_scene.effects.postprocessing.passes.forEach( ( effectPass ) => {
                         if ( effectPass.name == 'EffectPass' ) {
                             effectPass.effects.forEach( ( effect ) => {
                                 if ( effect.name == 'BloomEffect' ) {
@@ -349,11 +349,11 @@ export default class Ship {
                 }
 
                 // Set the ship as ready.
-                window.l.current_scene.scene_objects.ship.ready = true;
-                window.l.current_scene.scene_objects.ship.camera_distance = window.l.current_scene.scene_objects.ship.default_camera_distance + ( window.l.current_scene.room_depth / 2 );
-                window.l.current_scene.scene_objects.ship.state.position.x = window.l.current_scene.scene_objects.ship.mesh.position.x;
-                window.l.current_scene.scene_objects.ship.state.position.y = window.l.current_scene.scene_objects.ship.mesh.position.y;
-                window.l.current_scene.scene_objects.ship.state.position.z = window.l.current_scene.scene_objects.ship.mesh.position.z;
+                l.current_scene.scene_objects.ship.ready = true;
+                l.current_scene.scene_objects.ship.camera_distance = l.current_scene.scene_objects.ship.default_camera_distance + ( l.current_scene.room_depth / 2 );
+                l.current_scene.scene_objects.ship.state.position.x = l.current_scene.scene_objects.ship.mesh.position.x;
+                l.current_scene.scene_objects.ship.state.position.y = l.current_scene.scene_objects.ship.mesh.position.y;
+                l.current_scene.scene_objects.ship.state.position.z = l.current_scene.scene_objects.ship.mesh.position.z;
             } );
     }
 
@@ -369,235 +369,235 @@ export default class Ship {
         }
         let changing = false;
         for ( const [ controlName, keyMapping ] of Object.entries( mappings ) ) {
-            if ( window.l.controls.keyboard.pressed( keyMapping ) ) {
-                window.l.current_scene.scene_objects.ship.state.controls[ controlName ] = true;
+            if ( l.scenograph.controls.keyboard.pressed( keyMapping ) ) {
+                l.current_scene.scene_objects.ship.state.controls[ controlName ] = true;
                 changing = true;
             }
             else {
 
-                window.l.current_scene.scene_objects.ship.state.controls[ controlName ] = false;
+                l.current_scene.scene_objects.ship.state.controls[ controlName ] = false;
 
-                if ( window.l.controls.touch ) {
+                if ( l.scenograph.controls.touch ) {
                     // Check if any touchpad controls are being pressed
                     if (
-                        window.l.controls.touch.controls.moveUp ||
-                        window.l.controls.touch.controls.moveDown ||
-                        window.l.controls.touch.controls.moveForward ||
-                        window.l.controls.touch.controls.moveBackward ||
-                        window.l.controls.touch.controls.moveLeft ||
-                        window.l.controls.touch.controls.moveRight
+                        l.scenograph.controls.touch.controls.moveUp ||
+                        l.scenograph.controls.touch.controls.moveDown ||
+                        l.scenograph.controls.touch.controls.moveForward ||
+                        l.scenograph.controls.touch.controls.moveBackward ||
+                        l.scenograph.controls.touch.controls.moveLeft ||
+                        l.scenograph.controls.touch.controls.moveRight
                     ) {
                         changing = true;
-                        if ( window.l.controls.touch.controls.moveUp ) {
-                            window.l.current_scene.scene_objects.ship.state.controls.moveUp = true;
+                        if ( l.scenograph.controls.touch.controls.moveUp ) {
+                            l.current_scene.scene_objects.ship.state.controls.moveUp = true;
                         }
-                        if ( window.l.controls.touch.controls.moveDown ) {
-                            window.l.current_scene.scene_objects.ship.state.controls.moveDown = true;
+                        if ( l.scenograph.controls.touch.controls.moveDown ) {
+                            l.current_scene.scene_objects.ship.state.controls.moveDown = true;
                         }
-                        if ( window.l.controls.touch.controls.moveForward ) {
-                            window.l.current_scene.scene_objects.ship.state.controls.throttleUp = true;
+                        if ( l.scenograph.controls.touch.controls.moveForward ) {
+                            l.current_scene.scene_objects.ship.state.controls.throttleUp = true;
                         }
-                        if ( window.l.controls.touch.controls.moveBackward ) {
-                            window.l.current_scene.scene_objects.ship.state.controls.throttleDown = true;
+                        if ( l.scenograph.controls.touch.controls.moveBackward ) {
+                            l.current_scene.scene_objects.ship.state.controls.throttleDown = true;
                         }
-                        if ( window.l.controls.touch.controls.moveLeft ) {
-                            window.l.current_scene.scene_objects.ship.state.controls.moveLeft = true;
+                        if ( l.scenograph.controls.touch.controls.moveLeft ) {
+                            l.current_scene.scene_objects.ship.state.controls.moveLeft = true;
                         }
-                        if ( window.l.controls.touch.controls.moveRight ) {
-                            window.l.current_scene.scene_objects.ship.state.controls.moveRight = true;
+                        if ( l.scenograph.controls.touch.controls.moveRight ) {
+                            l.current_scene.scene_objects.ship.state.controls.moveRight = true;
                         }
                     }
 
                 }
             }
         }
-        window.l.current_scene.scene_objects.ship.state.controls.changing = changing;
+        l.current_scene.scene_objects.ship.state.controls.changing = changing;
 
     }
 
     updateAnimation( delta ) {
-        if ( window.l.current_scene.scene_objects.ship.mixer ) {
-            window.l.current_scene.scene_objects.ship.mixer.update( delta );
+        if ( l.current_scene.scene_objects.ship.mixer ) {
+            l.current_scene.scene_objects.ship.mixer.update( delta );
         }
 
         // Rock the ship forward and back when moving horizontally
-        if ( window.l.current_scene.scene_objects.ship.state.controls.throttleDown || window.l.current_scene.scene_objects.ship.state.controls.throttleUp ) {
-            let pitchChange = window.l.current_scene.scene_objects.ship.state.controls.throttleUp ? -1 : 1;
-            if ( Math.abs( window.l.current_scene.scene_objects.ship.mesh.rotation.x ) < 1 / 4 ) {
-                window.l.current_scene.scene_objects.ship.mesh.rotation.x += pitchChange / 10 / 180;
+        if ( l.current_scene.scene_objects.ship.state.controls.throttleDown || l.current_scene.scene_objects.ship.state.controls.throttleUp ) {
+            let pitchChange = l.current_scene.scene_objects.ship.state.controls.throttleUp ? -1 : 1;
+            if ( Math.abs( l.current_scene.scene_objects.ship.mesh.rotation.x ) < 1 / 4 ) {
+                l.current_scene.scene_objects.ship.mesh.rotation.x += pitchChange / 10 / 180;
             }
         }
 
         // Rock the ship forward and back when moving vertically
         if (
-            window.l.current_scene.scene_objects.ship.state.controls.moveDown
+            l.current_scene.scene_objects.ship.state.controls.moveDown
             ||
-            window.l.current_scene.scene_objects.ship.state.controls.moveUp
+            l.current_scene.scene_objects.ship.state.controls.moveUp
         ) {
-            let elevationChange = window.l.current_scene.scene_objects.ship.state.controls.moveDown ? -1 : 1;
-            if ( Math.abs( window.l.current_scene.scene_objects.ship.mesh.rotation.x ) < 1 / 8 ) {
-                window.l.current_scene.scene_objects.ship.mesh.rotation.x += elevationChange / 10 / 180;
+            let elevationChange = l.current_scene.scene_objects.ship.state.controls.moveDown ? -1 : 1;
+            if ( Math.abs( l.current_scene.scene_objects.ship.mesh.rotation.x ) < 1 / 8 ) {
+                l.current_scene.scene_objects.ship.mesh.rotation.x += elevationChange / 10 / 180;
             }
 
-            if ( Math.abs( window.l.current_scene.camera.rotation.x ) < 1 / 8 ) {
+            if ( Math.abs( l.current_scene.camera.rotation.x ) < 1 / 8 ) {
                 let radian = ( Math.PI / 180 );
-                window.l.current_scene.camera.rotation.x += elevationChange * radian / 10;
+                l.current_scene.camera.rotation.x += elevationChange * radian / 10;
             }
         }
         else {
-            if ( window.l.controls.touch && !window.l.controls.touch.controls.rotationPad.mouseDown )
-                window.l.current_scene.camera.rotation.x *= .9;
+            if ( l.scenograph.controls.touch && !l.scenograph.controls.touch.controls.rotationPad.mouseDown )
+                l.current_scene.camera.rotation.x *= .9;
         }
     }
 
     // Update the position of the aircraft to spot determined by game logic.
     updateMesh() {
-        window.l.current_scene.scene_objects.ship.mesh.position.x = window.l.current_scene.scene_objects.ship.state.position.x;
-        window.l.current_scene.scene_objects.ship.mesh.position.y = window.l.current_scene.scene_objects.ship.state.position.y;
-        window.l.current_scene.scene_objects.ship.mesh.position.z = window.l.current_scene.scene_objects.ship.state.position.z;
+        l.current_scene.scene_objects.ship.mesh.position.x = l.current_scene.scene_objects.ship.state.position.x;
+        l.current_scene.scene_objects.ship.mesh.position.y = l.current_scene.scene_objects.ship.state.position.y;
+        l.current_scene.scene_objects.ship.mesh.position.z = l.current_scene.scene_objects.ship.state.position.z;
 
-        window.l.current_scene.scene_objects.ship.mesh.rotation.x = window.l.current_scene.scene_objects.ship.state.rotation.x;
-        window.l.current_scene.scene_objects.ship.mesh.rotation.y = window.l.current_scene.scene_objects.ship.state.rotation.y;
-        window.l.current_scene.scene_objects.ship.mesh.rotation.z = window.l.current_scene.scene_objects.ship.state.rotation.z;
+        l.current_scene.scene_objects.ship.mesh.rotation.x = l.current_scene.scene_objects.ship.state.rotation.x;
+        l.current_scene.scene_objects.ship.mesh.rotation.y = l.current_scene.scene_objects.ship.state.rotation.y;
+        l.current_scene.scene_objects.ship.mesh.rotation.z = l.current_scene.scene_objects.ship.state.rotation.z;
     }
 
     // Runs on the main animation loop
     animate( delta ) {
 
-        if ( window.l.current_scene.scene_objects.ship.ready ) {
+        if ( l.current_scene.scene_objects.ship.ready ) {
 
-            if ( window.l.current_scene.settings.game_controls ) {
+            if ( l.current_scene.settings.game_controls ) {
                 // Detect keyboard input and pass it to the ship state model.
-                window.l.current_scene.scene_objects.ship.updateControls();
+                l.current_scene.scene_objects.ship.updateControls();
 
-                if ( window.l.multiplayer.connected ) {
-                    window.l.multiplayer.socket.emit( 'input', window.l.current_scene.scene_objects.ship.state.controls );
+                if ( l.scenograph.modes.multiplayer.connected ) {
+                    l.scenograph.modes.multiplayer.socket.emit( 'input', l.current_scene.scene_objects.ship.state.controls );
                 }
             }
 
-            window.l.current_scene.scene_objects.ship.updateAnimation( delta );
+            l.current_scene.scene_objects.ship.updateAnimation( delta );
 
             // Update the ships state model.
-            let [ rY, tY, tZ ] = window.l.current_scene.scene_objects.ship.state.move( window.l.current_scene.stats.currentTime - window.l.current_scene.stats.lastTime );
-            window.l.current_scene.scene_objects.ship.updateMesh();
+            let [ rY, tY, tZ ] = l.current_scene.scene_objects.ship.state.move( l.current_scene.stats.currentTime - l.current_scene.stats.lastTime );
+            l.current_scene.scene_objects.ship.updateMesh();
 
             var radian = ( Math.PI / 180 );
 
-            window.l.current_scene.scene_objects.ship.camera_distance = window.l.current_scene.scene_objects.ship.default_camera_distance + ( window.l.current_scene.room_depth / 2 );
-            if ( window.l.current_scene.scene_objects.ship.state.airSpeed < 0 ) {
-                window.l.current_scene.scene_objects.ship.camera_distance -= window.l.current_scene.scene_objects.ship.state.airSpeed * 4;
+            l.current_scene.scene_objects.ship.camera_distance = l.current_scene.scene_objects.ship.default_camera_distance + ( l.current_scene.room_depth / 2 );
+            if ( l.current_scene.scene_objects.ship.state.airSpeed < 0 ) {
+                l.current_scene.scene_objects.ship.camera_distance -= l.current_scene.scene_objects.ship.state.airSpeed * 4;
             }
 
             // Check we aren't in debug mode which uses orbit controls
-            if ( !window.l.config.settings.debug ) {
-                let xDiff = window.l.current_scene.scene_objects.ship.mesh.position.x;
-                let zDiff = window.l.current_scene.scene_objects.ship.mesh.position.z;
+            if ( !l.config.settings.debug ) {
+                let xDiff = l.current_scene.scene_objects.ship.mesh.position.x;
+                let zDiff = l.current_scene.scene_objects.ship.mesh.position.z;
 
-                window.l.current_scene.camera.position.x = xDiff + window.l.current_scene.scene_objects.ship.camera_distance * Math.sin( window.l.current_scene.scene_objects.ship.mesh.rotation.y );
-                window.l.current_scene.camera.position.z = zDiff + window.l.current_scene.scene_objects.ship.camera_distance * Math.cos( window.l.current_scene.scene_objects.ship.mesh.rotation.y );
+                l.current_scene.camera.position.x = xDiff + l.current_scene.scene_objects.ship.camera_distance * Math.sin( l.current_scene.scene_objects.ship.mesh.rotation.y );
+                l.current_scene.camera.position.z = zDiff + l.current_scene.scene_objects.ship.camera_distance * Math.cos( l.current_scene.scene_objects.ship.mesh.rotation.y );
             }
 
-            //window.l.current_scene.camera.position.z = zDiff + window.l.current_scene.scene_objects.ship.camera_distance * Math.cos(window.l.current_scene.scene_objects.ship.mesh.rotation.y);
+            //l.current_scene.camera.position.z = zDiff + l.current_scene.scene_objects.ship.camera_distance * Math.cos(l.current_scene.scene_objects.ship.mesh.rotation.y);
 
             if ( rY != 0 ) {
 
-                window.l.current_scene.camera.rotation.y += rY;
+                l.current_scene.camera.rotation.y += rY;
             }
             else {
                 // Check there is y difference and the rotation pad isn't being pressed.                   
                 if (
-                    window.l.current_scene.camera.rotation.y != window.l.current_scene.scene_objects.ship.mesh.rotation.y &&
-                    ( window.l.controls.touch && !window.l.controls.touch.controls.rotationPad.mouseDown )
+                    l.current_scene.camera.rotation.y != l.current_scene.scene_objects.ship.mesh.rotation.y &&
+                    ( l.scenograph.controls.touch && !l.scenograph.controls.touch.controls.rotationPad.mouseDown )
                 ) {
 
                     // Get the difference in y rotation betwen the camera and ship
-                    let yDiff = window.l.current_scene.scene_objects.ship.mesh.rotation.y - window.l.current_scene.camera.rotation.y;
+                    let yDiff = l.current_scene.scene_objects.ship.mesh.rotation.y - l.current_scene.camera.rotation.y;
 
                     // Check the y difference is larger than 1/100th of a radian
                     if (
                         Math.abs( yDiff ) > radian / 100
                     ) {
                         // Add 1/60th of the difference in rotation, as FPS currently capped to 60.
-                        window.l.current_scene.camera.rotation.y += ( window.l.current_scene.scene_objects.ship.mesh.rotation.y - window.l.current_scene.camera.rotation.y ) * 1 / 60;
+                        l.current_scene.camera.rotation.y += ( l.current_scene.scene_objects.ship.mesh.rotation.y - l.current_scene.camera.rotation.y ) * 1 / 60;
                     }
                     else {
-                        window.l.current_scene.camera.rotation.y = window.l.current_scene.scene_objects.ship.mesh.rotation.y;
+                        l.current_scene.camera.rotation.y = l.current_scene.scene_objects.ship.mesh.rotation.y;
                     }
 
                 }
 
             }
 
-            let xDiff2 = tZ * Math.sin( window.l.current_scene.scene_objects.ship.mesh.rotation.y ),
-                zDiff2 = tZ * Math.cos( window.l.current_scene.scene_objects.ship.mesh.rotation.y );
+            let xDiff2 = tZ * Math.sin( l.current_scene.scene_objects.ship.mesh.rotation.y ),
+                zDiff2 = tZ * Math.cos( l.current_scene.scene_objects.ship.mesh.rotation.y );
 
-            if ( window.l.current_scene.scene_objects.ship.mesh.position.y + tY >= 1 ) {
-                window.l.current_scene.camera.position.y += tY;
+            if ( l.current_scene.scene_objects.ship.mesh.position.y + tY >= 1 ) {
+                l.current_scene.camera.position.y += tY;
             }
 
-            window.l.current_scene.camera.position.x += xDiff2;
-            window.l.current_scene.camera.position.z += zDiff2;
+            l.current_scene.camera.position.x += xDiff2;
+            l.current_scene.camera.position.z += zDiff2;
 
-            window.l.current_scene.camera.updateProjectionMatrix();
+            l.current_scene.camera.updateProjectionMatrix();
 
-            if ( window.l.controls.orbit ) {
+            if ( l.scenograph.controls.orbit ) {
 
-                window.l.controls.orbit.target.set(
-                    window.l.current_scene.scene_objects.ship.mesh.position.x,
-                    window.l.current_scene.scene_objects.ship.mesh.position.y,
-                    window.l.current_scene.scene_objects.ship.mesh.position.z
+                l.scenograph.controls.orbit.target.set(
+                    l.current_scene.scene_objects.ship.mesh.position.x,
+                    l.current_scene.scene_objects.ship.mesh.position.y,
+                    l.current_scene.scene_objects.ship.mesh.position.z
                 );
 
-                // window.l.controls.orbit.target.set(
-                //     window.l.current_scene.scene_objects.extractor.mesh.position.x,
-                //     window.l.current_scene.scene_objects.extractor.mesh.position.y + window.l.current_scene.scene_objects.extractor.mesh.scale.x,
-                //     window.l.current_scene.scene_objects.extractor.mesh.position.z
+                // l.scenograph.controls.orbit.target.set(
+                //     l.current_scene.scene_objects.extractor.mesh.position.x,
+                //     l.current_scene.scene_objects.extractor.mesh.position.y + l.current_scene.scene_objects.extractor.mesh.scale.x,
+                //     l.current_scene.scene_objects.extractor.mesh.position.z
                 // );
-                window.l.controls.orbit.update();
+                l.scenograph.controls.orbit.update();
             }
 
 
 
-            if ( window.l.current_scene.scene_objects.ship.trail ) {
+            if ( l.current_scene.scene_objects.ship.trail ) {
 
                 // Fix the trail being too far behind.
                 let trailOffset = 0;
 
                 // Only offset the trail effect if we are going forward which is (z-1) in numerical terms
-                if ( window.l.current_scene.scene_objects.ship.state.airSpeed < 0 ) {
+                if ( l.current_scene.scene_objects.ship.state.airSpeed < 0 ) {
 
                     // Update ship thruster
-                    window.l.current_scene.scene_objects.ship.animateThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.centralConeBurner, .5 );
-                    window.l.current_scene.scene_objects.ship.animateThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.outerCylBurner, .5 );
+                    l.current_scene.scene_objects.ship.animateThruster( l.current_scene.scene_objects.ship.state.airSpeed, l.current_scene.scene_objects.ship.thruster.centralConeBurner, .5 );
+                    l.current_scene.scene_objects.ship.animateThruster( l.current_scene.scene_objects.ship.state.airSpeed, l.current_scene.scene_objects.ship.thruster.outerCylBurner, .5 );
 
-                    window.l.current_scene.scene_objects.ship.spinThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.rearConeBurner, -1 );
-                    window.l.current_scene.scene_objects.ship.spinThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.centralConeBurner, 1 );
-                    window.l.current_scene.scene_objects.ship.spinThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.outerCylBurner, -1 );
-                    window.l.current_scene.scene_objects.ship.spinThruster( window.l.current_scene.scene_objects.ship.state.airSpeed, window.l.current_scene.scene_objects.ship.thruster.innerCylBurner, 1 );
+                    l.current_scene.scene_objects.ship.spinThruster( l.current_scene.scene_objects.ship.state.airSpeed, l.current_scene.scene_objects.ship.thruster.rearConeBurner, -1 );
+                    l.current_scene.scene_objects.ship.spinThruster( l.current_scene.scene_objects.ship.state.airSpeed, l.current_scene.scene_objects.ship.thruster.centralConeBurner, 1 );
+                    l.current_scene.scene_objects.ship.spinThruster( l.current_scene.scene_objects.ship.state.airSpeed, l.current_scene.scene_objects.ship.thruster.outerCylBurner, -1 );
+                    l.current_scene.scene_objects.ship.spinThruster( l.current_scene.scene_objects.ship.state.airSpeed, l.current_scene.scene_objects.ship.thruster.innerCylBurner, 1 );
 
                     // Limit playback rate to 5x as large values freak out the browser.
-                    window.l.current_scene.scene_objects.ship.thruster.videoElement.playbackRate = Math.min( 5, 0.25 + Math.abs( window.l.current_scene.scene_objects.ship.state.airSpeed ) );
+                    l.current_scene.scene_objects.ship.thruster.videoElement.playbackRate = Math.min( 5, 0.25 + Math.abs( l.current_scene.scene_objects.ship.state.airSpeed ) );
 
-                    trailOffset += window.l.current_scene.scene_objects.ship.trail_position_z - Math.abs( window.l.current_scene.scene_objects.ship.state.airSpeed );
+                    trailOffset += l.current_scene.scene_objects.ship.trail_position_z - Math.abs( l.current_scene.scene_objects.ship.state.airSpeed );
 
-                    window.l.current_scene.scene_objects.ship.trail.mesh.material.uniforms.headColor.value.set( 255 / 255, 212 / 255, 148 / 255, .8 ); // RGBA.                    
+                    l.current_scene.scene_objects.ship.trail.mesh.material.uniforms.headColor.value.set( 255 / 255, 212 / 255, 148 / 255, .8 ); // RGBA.                    
                 }
                 else {
-                    window.l.current_scene.scene_objects.ship.trail.mesh.material.uniforms.headColor.value.set( 255 / 255, 212 / 255, 148 / 255, 0 ); // RGBA.
+                    l.current_scene.scene_objects.ship.trail.mesh.material.uniforms.headColor.value.set( 255 / 255, 212 / 255, 148 / 255, 0 ); // RGBA.
                 }
 
                 // Update the trail position based on above calculations.
-                window.l.current_scene.scene_objects.ship.trail.targetObject.position.y = window.l.current_scene.scene_objects.ship.trail_position_y + window.l.current_scene.scene_objects.ship.state.verticalSpeed;
-                window.l.current_scene.scene_objects.ship.trail.targetObject.position.z = trailOffset;
+                l.current_scene.scene_objects.ship.trail.targetObject.position.y = l.current_scene.scene_objects.ship.trail_position_y + l.current_scene.scene_objects.ship.state.verticalSpeed;
+                l.current_scene.scene_objects.ship.trail.targetObject.position.z = trailOffset;
 
                 if ( rY != 0 ) {
-                    window.l.current_scene.scene_objects.ship.trail.targetObject.position.x = rY * window.l.current_scene.scene_objects.ship.state.airSpeed;
-                    window.l.current_scene.scene_objects.ship.trail.targetObject.position.y += Math.abs( window.l.current_scene.scene_objects.ship.trail.targetObject.position.x ) / 4;
+                    l.current_scene.scene_objects.ship.trail.targetObject.position.x = rY * l.current_scene.scene_objects.ship.state.airSpeed;
+                    l.current_scene.scene_objects.ship.trail.targetObject.position.y += Math.abs( l.current_scene.scene_objects.ship.trail.targetObject.position.x ) / 4;
                 }
                 else {
-                    window.l.current_scene.scene_objects.ship.trail.targetObject.position.x = 0;
+                    l.current_scene.scene_objects.ship.trail.targetObject.position.x = 0;
                 }
-                window.l.current_scene.scene_objects.ship.trail.update();
+                l.current_scene.scene_objects.ship.trail.update();
             }
 
         }

@@ -31,7 +31,7 @@ export default class Debugging_Tools {
                 max: 60
             } );
 
-            const latency = stats.addBinding( l.multiplayer, 'latency', {
+            const latency = stats.addBinding( l.scenograph.modes.multiplayer, 'latency', {
                 readonly: true,
                 view: 'graph',
                 interval: 200
@@ -59,34 +59,34 @@ export default class Debugging_Tools {
                 interval: 200
             } )
 
-            if ( l.controls.touch ) {
+            if ( l.scenograph.controls.touch ) {
 
                 const touchControlStats = debugging.addFolder( {
                     title: 'Touch Controls State',
                     expanded: false,
                 } );
 
-                touchControlStats.addBinding( l.controls.touch.controls, 'moveForward', {
+                touchControlStats.addBinding( l.scenograph.controls.touch.controls, 'moveForward', {
                     readonly: true,
                     interval: 200
                 } )
-                touchControlStats.addBinding( l.controls.touch.controls, 'moveBackward', {
+                touchControlStats.addBinding( l.scenograph.controls.touch.controls, 'moveBackward', {
                     readonly: true,
                     interval: 200
                 } )
-                touchControlStats.addBinding( l.controls.touch.controls, 'moveLeft', {
+                touchControlStats.addBinding( l.scenograph.controls.touch.controls, 'moveLeft', {
                     readonly: true,
                     interval: 200
                 } )
-                touchControlStats.addBinding( l.controls.touch.controls, 'moveRight', {
+                touchControlStats.addBinding( l.scenograph.controls.touch.controls, 'moveRight', {
                     readonly: true,
                     interval: 200
                 } )
-                touchControlStats.addBinding( l.controls.touch.controls, 'moveUp', {
+                touchControlStats.addBinding( l.scenograph.controls.touch.controls, 'moveUp', {
                     readonly: true,
                     interval: 200
                 } )
-                touchControlStats.addBinding( l.controls.touch.controls, 'moveDown', {
+                touchControlStats.addBinding( l.scenograph.controls.touch.controls, 'moveDown', {
                     readonly: true,
                     interval: 200
                 } )

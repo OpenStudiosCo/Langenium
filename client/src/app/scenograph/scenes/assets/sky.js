@@ -3,7 +3,6 @@
  */
 import * as THREE from 'three';
 
-
 export default class Sky {
     // Configuration
     uniforms;
@@ -17,13 +16,13 @@ export default class Sky {
     constructor() {
 
         // todo: Make this reusable.
-        this.noiseTexture2 = window.l.current_scene.loaders.texture.load( './assets/textures/noise2.jpg' );
+        this.noiseTexture2 = l.current_scene.loaders.texture.load( './assets/textures/noise2.jpg' );
         this.noiseTexture2.wrapS = this.noiseTexture2.wrapT = THREE.RepeatWrapping;
 
         // Setup uniforms for the sky.
         this.uniforms = {
             noiseTexture:  { type: "t", value: this.noiseTexture2 },
-            scale       :  { type: "f", value: 1 / window.l.scale / 5 },
+            scale       :  { type: "f", value: 1 / l.scale / 5 },
             time        :  { type: "f", value: 0.0 }
         };
 
@@ -32,7 +31,7 @@ export default class Sky {
     }
 
     createSkyMesh() {
-        let skyGeometry = new THREE.SphereGeometry( window.l.scale, 32, 64 );
+        let skyGeometry = new THREE.SphereGeometry( l.scale, 32, 64 );
 
         let skyMaterials = new THREE.ShaderMaterial( {
             side          :  THREE.DoubleSide,
@@ -44,14 +43,14 @@ export default class Sky {
 
         let skyMesh = new THREE.Mesh( skyGeometry, skyMaterials );
         skyMesh.name = 'Skybox';
-        skyMesh.position.y = window.l.scale * 0;
+        skyMesh.position.y = l.scale * 0;
         return skyMesh;
 
     }
 
     animate( delta ) {
         // Iterate the sky uniforms to animate it.
-        window.l.current_scene.scene_objects.sky.uniforms.time.value += 0.025;
+        l.current_scene.scene_objects.sky.uniforms.time.value += 0.025;
     }
 
 }

@@ -21,7 +21,7 @@ import { calculateAdjustedGapSize, setCameraFOV } from '@/helpers/math.js';
 
 import Controls from "@/scenograph/controls.js";
 import Effects from "@/scenograph/effects";
-import { handleViewportChange } from "@/scenograph/events.js";
+import Events from "./scenograph/events";
 import Materials from "@/scenograph/materials.js";
 
 import Debugging from '@/scenograph/modes/debugging.js';
@@ -32,6 +32,7 @@ import Multiplayer from "@/scenograph/modes/multiplayer.js";
  * Scenes 
  */
 import Overworld from '@/scenograph/scenes/overworld.js';
+
 
 export default class Scenograph {
 
@@ -48,7 +49,6 @@ export default class Scenograph {
 
     constructor() {
 
-
         this.modes = {};
 
         /**
@@ -60,6 +60,11 @@ export default class Scenograph {
          * Effects.
          */
         this.effects = new Effects();
+
+        /**
+         * Events
+         */
+        this.events = new Events();
 
         /**
          * Custom materials.
@@ -101,6 +106,43 @@ export default class Scenograph {
      */
     async init() {
 
+        // Check the GPU capability.
+        await this.checkGPUTier();
+
+        // Setup asset loaders.
+        this.setupLoaders();
+
+        // Size
+        l.current_scene.settings.adjusted_gap = calculateAdjustedGapSize();
+        l.current_scene.room_depth = 8 * l.current_scene.settings.adjusted_gap;
+
+        // Setup renderers.
+        l.scenograph.setupRenderers();
+
+        // Setup the camera.
+        this.setupCamera();
+
+        // Reusable pointer for tracking user interaction.
+        l.current_scene.pointer = new THREE.Vector3();
+
+        // Reusable raycaster for tracking what the user tried to hit.
+        l.current_scene.raycaster = new THREE.Raycaster();
+
+        // Scene Setup.
+        l.current_scene.setup();
+
+        // Bloom effect materials.
+        l.current_scene.materials = {};
+
+        // Activate controls
+        this.controls.init();
+
+        // Activate Event listeners.
+        this.events.init();
+
+    };
+
+    async checkGPUTier() {
         // Check the GPU tier to allow advanced effects if 3 or greater.
         const gpuTier = await getGPUTier();
         l.config.client_info.gpu = gpuTier;
@@ -115,18 +157,9 @@ export default class Scenograph {
                 l.config.settings.fast = false;
             }
         }
+    }
 
-        l.current_scene.loaders.gtlf = new GLTFLoader();
-        l.current_scene.loaders.object = new THREE.ObjectLoader();
-        l.current_scene.loaders.texture = new THREE.TextureLoader();
-
-        // Size
-        l.current_scene.settings.adjusted_gap = calculateAdjustedGapSize();
-        l.current_scene.room_depth = 8 * l.current_scene.settings.adjusted_gap;
-
-        // Setup renderers.
-        l.scenograph.setupRenderers();
-
+    setupCamera() {
         // Camera.
         var width = window.innerWidth;
         var height = window.innerHeight;
@@ -150,95 +183,13 @@ export default class Scenograph {
             l.current_scene.settings.startPosZ +
             l.current_scene.room_depth / 2
         );
+    }
 
-        // Reusable pointer for tracking user interaction.
-        l.current_scene.pointer = new THREE.Vector3();
-
-        // Reusable raycaster for tracking what the user tried to hit.
-        l.current_scene.raycaster = new THREE.Raycaster();
-
-        // Scene Setup.
-        l.current_scene.setup();
-
-        // Bloom effect materials.
-        l.current_scene.materials = {};
-
-        // Activate controls
-        this.controls.init();
-
-        window.addEventListener( "orientationchange", handleViewportChange );
-        window.addEventListener( "resize", handleViewportChange );
-
-        function onPointerMove( event ) {
-            // calculate pointer position in normalized device coordinates
-            // (-1 to +1) for both components
-
-            l.current_scene.pointer.x =
-                ( event.clientX / window.innerWidth ) * 2 - 1;
-            l.current_scene.pointer.y =
-                -( event.clientY / window.innerHeight ) * 2 + 1;
-        }
-
-        l.current_scene.renderers.webgl.domElement.addEventListener(
-            "pointermove",
-            onPointerMove
-        );
-
-        function onTouchStart( event ) {
-            if ( !l.current_scene.selected ) {
-                event.preventDefault();
-
-                l.current_scene.pointer.x =
-                    ( event.changedTouches[ 0 ].clientX / window.innerWidth ) * 2 - 1;
-                l.current_scene.pointer.y =
-                    -( event.changedTouches[ 0 ].clientY / window.innerHeight ) * 2 + 1;
-                l.current_scene.pointer.z = 1; // previously mouseDown = true
-            }
-        }
-        function onTouchEnd( event ) {
-            if ( !l.current_scene.selected ) {
-                event.preventDefault();
-
-                l.current_scene.pointer.x =
-                    ( event.changedTouches[ 0 ].clientX / window.innerWidth ) * 2 - 1;
-                l.current_scene.pointer.y =
-                    -( event.changedTouches[ 0 ].clientY / window.innerHeight ) * 2 + 1;
-                l.current_scene.pointer.z = 0; // previously mouseDown = false
-            }
-        }
-
-        l.current_scene.renderers.webgl.domElement.addEventListener(
-            "touchstart",
-            onTouchStart,
-            false
-        );
-        l.current_scene.renderers.webgl.domElement.addEventListener(
-            "touchend",
-            onTouchEnd,
-            false
-        );
-
-        function onMouseDown( event ) {
-            l.current_scene.pointer.z = 1; // previously mouseDown = true
-        }
-
-        function onMouseUp( event ) {
-            l.current_scene.pointer.z = 0; // previously mouseDown = false
-        }
-
-        // Attach the mouse down and up event listeners
-        l.current_scene.renderers.webgl.domElement.addEventListener(
-            "pointerdown",
-            onMouseDown,
-            false
-        );
-        l.current_scene.renderers.webgl.domElement.addEventListener(
-            "pointerup",
-            onMouseUp,
-            false
-        );
-
-    };
+    setupLoaders() {
+        l.current_scene.loaders.gtlf = new GLTFLoader();
+        l.current_scene.loaders.object = new THREE.ObjectLoader();
+        l.current_scene.loaders.texture = new THREE.TextureLoader();
+    }
 
 
     /**

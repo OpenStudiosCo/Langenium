@@ -441,14 +441,14 @@ export default class Ship {
                 l.current_scene.scene_objects.ship.mesh.rotation.x += elevationChange / 10 / 180;
             }
 
-            if ( Math.abs( l.current_scene.camera.rotation.x ) < 1 / 8 ) {
+            if ( Math.abs( l.scenograph.cameras.player.rotation.x ) < 1 / 8 ) {
                 let radian = ( Math.PI / 180 );
-                l.current_scene.camera.rotation.x += elevationChange * radian / 10;
+                l.scenograph.cameras.player.rotation.x += elevationChange * radian / 10;
             }
         }
         else {
             if ( l.scenograph.controls.touch && !l.scenograph.controls.touch.controls.rotationPad.mouseDown )
-                l.current_scene.camera.rotation.x *= .9;
+                l.scenograph.cameras.player.rotation.x *= .9;
         }
     }
 
@@ -483,64 +483,7 @@ export default class Ship {
             let [ rY, tY, tZ ] = l.current_scene.scene_objects.ship.state.move( l.current_scene.stats.currentTime - l.current_scene.stats.lastTime );
             l.current_scene.scene_objects.ship.updateMesh();
 
-            var radian = ( Math.PI / 180 );
-
-            l.current_scene.scene_objects.ship.camera_distance = l.current_scene.scene_objects.ship.default_camera_distance + ( l.current_scene.room_depth / 2 );
-            if ( l.current_scene.scene_objects.ship.state.airSpeed < 0 ) {
-                l.current_scene.scene_objects.ship.camera_distance -= l.current_scene.scene_objects.ship.state.airSpeed * 4;
-            }
-
-            // Check we aren't in debug mode which uses orbit controls
-            if ( !l.config.settings.debug ) {
-                let xDiff = l.current_scene.scene_objects.ship.mesh.position.x;
-                let zDiff = l.current_scene.scene_objects.ship.mesh.position.z;
-
-                l.current_scene.camera.position.x = xDiff + l.current_scene.scene_objects.ship.camera_distance * Math.sin( l.current_scene.scene_objects.ship.mesh.rotation.y );
-                l.current_scene.camera.position.z = zDiff + l.current_scene.scene_objects.ship.camera_distance * Math.cos( l.current_scene.scene_objects.ship.mesh.rotation.y );
-            }
-
-            //l.current_scene.camera.position.z = zDiff + l.current_scene.scene_objects.ship.camera_distance * Math.cos(l.current_scene.scene_objects.ship.mesh.rotation.y);
-
-            if ( rY != 0 ) {
-
-                l.current_scene.camera.rotation.y += rY;
-            }
-            else {
-                // Check there is y difference and the rotation pad isn't being pressed.                   
-                if (
-                    l.current_scene.camera.rotation.y != l.current_scene.scene_objects.ship.mesh.rotation.y &&
-                    ( l.scenograph.controls.touch && !l.scenograph.controls.touch.controls.rotationPad.mouseDown )
-                ) {
-
-                    // Get the difference in y rotation betwen the camera and ship
-                    let yDiff = l.current_scene.scene_objects.ship.mesh.rotation.y - l.current_scene.camera.rotation.y;
-
-                    // Check the y difference is larger than 1/100th of a radian
-                    if (
-                        Math.abs( yDiff ) > radian / 100
-                    ) {
-                        // Add 1/60th of the difference in rotation, as FPS currently capped to 60.
-                        l.current_scene.camera.rotation.y += ( l.current_scene.scene_objects.ship.mesh.rotation.y - l.current_scene.camera.rotation.y ) * 1 / 60;
-                    }
-                    else {
-                        l.current_scene.camera.rotation.y = l.current_scene.scene_objects.ship.mesh.rotation.y;
-                    }
-
-                }
-
-            }
-
-            let xDiff2 = tZ * Math.sin( l.current_scene.scene_objects.ship.mesh.rotation.y ),
-                zDiff2 = tZ * Math.cos( l.current_scene.scene_objects.ship.mesh.rotation.y );
-
-            if ( l.current_scene.scene_objects.ship.mesh.position.y + tY >= 1 ) {
-                l.current_scene.camera.position.y += tY;
-            }
-
-            l.current_scene.camera.position.x += xDiff2;
-            l.current_scene.camera.position.z += zDiff2;
-
-            l.current_scene.camera.updateProjectionMatrix();
+            l.scenograph.cameras.updatePlayer( rY, tY, tZ );
 
             if ( l.scenograph.controls.orbit ) {
 

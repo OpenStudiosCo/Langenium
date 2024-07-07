@@ -79,7 +79,7 @@ export default class Overworld extends SceneBase {
     ) {
       l.current_scene.effects.postprocessing.render();
     } else {
-      l.current_scene.renderers.webgl.render( l.current_scene.scene, l.current_scene.camera ); // Render the scene without the effects
+      l.current_scene.renderers.webgl.render( l.current_scene.scene, l.scenograph.cameras.active ); // Render the scene without the effects
     }
 
     requestAnimationFrame( l.current_scene.animate );
@@ -91,9 +91,6 @@ export default class Overworld extends SceneBase {
     l.current_scene.scene.visible = false;
 
     l.scenograph.effects.init();
-
-    // Enable the effects layer, default of 11 for postprocessing bloom
-    l.current_scene.camera.layers.enable( 11 );
 
     l.current_scene.scene_objects.door = await createDoor();
     l.current_scene.scene_objects.door.position.set(

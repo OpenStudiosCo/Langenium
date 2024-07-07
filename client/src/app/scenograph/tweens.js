@@ -38,8 +38,8 @@ export function startTweening() {
                 if ( location.pathname.indexOf( screen.slug ) >= 0 ) {
                     let [ targetPosition, targetRotation ] = screen.mesh.getViewingCoords();
 
-                    l.current_scene.camera.position.copy( targetPosition );
-                    l.current_scene.camera.rotation.copy( targetRotation );
+                    l.scenograph.cameras.player.position.copy( targetPosition );
+                    l.scenograph.cameras.player.rotation.copy( targetRotation );
 
                     updateFlickering( { emissiveIntensity: 1 } );
                 }
@@ -237,8 +237,8 @@ function enterTheOffice() {
 
             // Called after tween.js updates 'coords'.
             // Move 'box' to the position described by 'coords' with a CSS translation.
-            l.current_scene.camera.position.z = coords.x;
-            l.current_scene.camera.updateProjectionMatrix();
+            l.scenograph.cameras.player.position.z = coords.x;
+            l.scenograph.cameras.player.updateProjectionMatrix();
         } )
         .onComplete( () => {
             l.current_scene.scene_objects.room.material.forEach(
@@ -275,8 +275,8 @@ function slideBack() {
 
             // Called after tween.js updates 'coords'.
             // Move 'box' to the position described by 'coords' with a CSS translation.
-            l.current_scene.camera.position.z = coords.x;
-            l.current_scene.camera.updateProjectionMatrix();
+            l.scenograph.cameras.player.position.z = coords.x;
+            l.scenograph.cameras.player.updateProjectionMatrix();
         } )
         .onComplete( () => {
             l.current_scene.tweens.openDoor.start();
@@ -306,11 +306,11 @@ function openDoor( doorRotation ) {
  * Moves the camera up to see the scene.
  */
 function dollyUp() {
-    return new TWEEN.Tween( l.current_scene.camera.position )
+    return new TWEEN.Tween( l.scenograph.cameras.player.position )
         .to( { y: 10.775 }, l.config.settings.skipintro ? 0 : 500 ) // Set the duration of the animation
         .onUpdate( () => {
-            //l.current_scene.camera.lookAt(l.current_scene.scene_objects.ship.mesh.position);
-            l.current_scene.camera.updateProjectionMatrix();
+            //l.scenograph.cameras.player.lookAt(l.current_scene.scene_objects.ship.mesh.position);
+            l.scenograph.cameras.player.updateProjectionMatrix();
         } )
         .onComplete( () => {
             l.ui.show_menus();
@@ -363,7 +363,7 @@ export function resetReusables() {
     /**
      * Reset the camera to original position and rotation.
      */
-    let cameraRotationX = -( Math.PI / 30 ) * l.current_scene.camera.aspect;
+    let cameraRotationX = -( Math.PI / 30 ) * l.scenograph.cameras.player.aspect;
     let cameraDefaultPosition = {
         x: 0,
         y: 18,
@@ -382,10 +382,10 @@ export function resetReusables() {
  * A reusable tween that can pan the camera.
  */
 function moveCamera() {
-    return new TWEEN.Tween( l.current_scene.camera.position )
+    return new TWEEN.Tween( l.scenograph.cameras.player.position )
         .easing( TWEEN.Easing.Quadratic.InOut ) // Use desired easing function
         .onUpdate( () => {
-            l.current_scene.camera.updateProjectionMatrix();
+            l.scenograph.cameras.player.updateProjectionMatrix();
         } )
         .onComplete( () => {
             l.current_scene.moving = false;
@@ -396,10 +396,10 @@ function moveCamera() {
  * A reusable tween that can rotate the camera.
  */
 function rotateCamera() {
-    return new TWEEN.Tween( l.current_scene.camera.rotation )
+    return new TWEEN.Tween( l.scenograph.cameras.player.rotation )
         .easing( TWEEN.Easing.Quadratic.InOut ) // Easing function
         .onUpdate( () => {
-            l.current_scene.camera.updateProjectionMatrix();
+            l.scenograph.cameras.player.updateProjectionMatrix();
         } )
         .onComplete( () => {
             l.current_scene.moving = false;
@@ -410,11 +410,11 @@ function rotateCamera() {
  * A reusable tween that resets the camera to default position.
  */
 function resetCameraPosition( cameraDefaultPosition ) {
-    return new TWEEN.Tween( l.current_scene.camera.position )
+    return new TWEEN.Tween( l.scenograph.cameras.player.position )
         .to( cameraDefaultPosition, l.config.settings.skipintro ? 0 : 1000 )
         .easing( TWEEN.Easing.Quadratic.InOut ) // Use desired easing function
         .onUpdate( () => {
-            l.current_scene.camera.updateProjectionMatrix();
+            l.scenograph.cameras.player.updateProjectionMatrix();
         } )
         .onComplete( () => {
             l.current_scene.moving = false;
@@ -425,10 +425,10 @@ function resetCameraPosition( cameraDefaultPosition ) {
  * A reusable tween that resets the camera to default rotation.
  */
 function resetCameraRotation( cameraDefaultRotation ) {
-    return new TWEEN.Tween( l.current_scene.camera.rotation )
+    return new TWEEN.Tween( l.scenograph.cameras.player.rotation )
         .to( cameraDefaultRotation, l.config.settings.skipintro ? 0 : 1000 )
         .easing( TWEEN.Easing.Quadratic.InOut ) // Use desired easing function
         .onUpdate( () => {
-            l.current_scene.camera.updateProjectionMatrix();
+            l.scenograph.cameras.player.updateProjectionMatrix();
         } );
 }

@@ -9,6 +9,8 @@ export default class Main_Menu {
 
     default_title;
 
+    pane;
+
     settings;
 
     constructor() {

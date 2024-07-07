@@ -33,10 +33,10 @@ export default function setupPostProcessing() {
     const composer = new EffectComposer( l.current_scene.renderers.webgl, {
         frameBufferType: THREE.HalfFloatType
     } );
-    composer.addPass( new RenderPass( l.current_scene.scene, l.current_scene.camera ) );
+    composer.addPass( new RenderPass( l.current_scene.scene, l.scenograph.cameras.active ) );
 
     // ssao
-    const normalPass = new NormalPass( l.current_scene.scene, l.current_scene.camera );
+    const normalPass = new NormalPass( l.current_scene.scene, l.scenograph.cameras.active );
     const depthDownsamplingPass = new DepthDownsamplingPass( {
         normalBuffer: normalPass.texture,
         resolutionScale: 0.5
@@ -47,7 +47,7 @@ export default function setupPostProcessing() {
     const normalDepthBuffer = capabilities.isWebGL2 ?
         depthDownsamplingPass.texture : null;
 
-    const ssao = new SSAOEffect( l.current_scene.camera, normalPass.texture, {
+    const ssao = new SSAOEffect( l.scenograph.cameras.active, normalPass.texture, {
         blendFunction: BlendFunction.MULTIPLY,
         distanceScaling: true,
         depthAwareUpsampling: true,
@@ -76,7 +76,7 @@ export default function setupPostProcessing() {
 
     // bloom
     const bloom = new SelectiveBloomEffect(
-        l.current_scene.scene, l.current_scene.camera,
+        l.current_scene.scene, l.scenograph.cameras.active,
         {
             blendFunction: BlendFunction.ADD,
             intensity: 8.5,
@@ -116,7 +116,7 @@ export default function setupPostProcessing() {
 
     }
 
-    composer.addPass( new EffectPass( l.current_scene.camera, ssao, smaa, textureEffect, bloom, toneMappingEffect ) );
+    composer.addPass( new EffectPass( l.scenograph.cameras.active, ssao, smaa, textureEffect, bloom, toneMappingEffect ) );
     return composer;
 
 }

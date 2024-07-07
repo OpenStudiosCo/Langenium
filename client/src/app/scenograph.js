@@ -17,8 +17,9 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
  * Internal libs and helpers.
  */
 import l from "@/helpers/l.js";
-import { calculateAdjustedGapSize, setCameraFOV } from '@/helpers/math.js';
+import { calculateAdjustedGapSize } from '@/helpers/math.js';
 
+import Cameras from "@/scenograph/cameras.js";
 import Controls from "@/scenograph/controls.js";
 import Effects from "@/scenograph/effects";
 import Events from "./scenograph/events";
@@ -36,6 +37,8 @@ import Overworld from '@/scenograph/scenes/overworld.js';
 
 export default class Scenograph {
 
+    cameras;
+
     /**
      * @instance Controls;
      */
@@ -50,6 +53,11 @@ export default class Scenograph {
     constructor() {
 
         this.modes = {};
+
+        /**
+         * Cameras.
+         */
+        this.cameras = new Cameras();
 
         /**
          * Controls.
@@ -119,8 +127,8 @@ export default class Scenograph {
         // Setup renderers.
         l.scenograph.setupRenderers();
 
-        // Setup the camera.
-        this.setupCamera();
+        // Setup the cameras.
+        this.cameras.init();
 
         // Reusable pointer for tracking user interaction.
         l.current_scene.pointer = new THREE.Vector3();
@@ -157,32 +165,6 @@ export default class Scenograph {
                 l.config.settings.fast = false;
             }
         }
-    }
-
-    setupCamera() {
-        // Camera.
-        var width = window.innerWidth;
-        var height = window.innerHeight;
-        var aspect = width / height;
-        var fov = setCameraFOV( aspect );
-        l.current_scene.camera = new THREE.PerspectiveCamera(
-            fov,
-            aspect,
-            2.5,
-            l.scale * 4
-        );
-        l.current_scene.camera.aspect = width / height;
-        l.current_scene.camera.rotation.order = "YZX";
-
-        if ( aspect < 0.88 ) {
-            l.current_scene.settings.startPosZ = -5;
-        }
-        l.current_scene.camera.position.set(
-            0,
-            10.775,
-            l.current_scene.settings.startPosZ +
-            l.current_scene.room_depth / 2
-        );
     }
 
     setupLoaders() {

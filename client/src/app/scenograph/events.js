@@ -17,8 +17,8 @@ export default class Events {
 
     init() {
         
-        window.addEventListener( "orientationchange", handleViewportChange );
-        window.addEventListener( "resize", handleViewportChange );
+        window.addEventListener( "orientationchange", this.handleViewportChange );
+        window.addEventListener( "resize", this.handleViewportChange );
 
         function onPointerMove( event ) {
             // calculate pointer position in normalized device coordinates
@@ -91,33 +91,36 @@ export default class Events {
     }
 
     async handleViewportChange () {
+
+        // Determine the new room gap size.
         l.current_scene.settings.adjusted_gap = calculateAdjustedGapSize();
         l.current_scene.room_depth = 8 * l.current_scene.settings.adjusted_gap;
     
+        // Grab the new width and height.
         var width = window.innerWidth;
         var height = window.innerHeight;
     
+        // Update the renderer dimensions.
         l.current_scene.renderers.webgl.setSize( width, height );
-    
-        if ( l.current_scene.effects.postprocessing && l.current_scene.effects.postprocessing.passes.length > 0 )
+        if ( l.current_scene.effects.postprocessing && l.current_scene.effects.postprocessing.passes.length > 0 ) {
             l.current_scene.effects.postprocessing.setSize( width, height );
-    
-    
-        l.current_scene.camera.aspect = width / height;
-    
-        l.current_scene.camera.fov = setCameraFOV( l.current_scene.camera.aspect );
-        if ( !l.current_scene.selected && !l.current_scene.moving ) {
-            let posZ = -20;
-            //l.current_scene.camera.position.z = posZ + (l.current_scene.room_depth / 2);
-            //l.current_scene.camera.rotation.x = - (Math.PI / 30) * l.current_scene.camera.aspect;
         }
-        l.current_scene.camera.updateProjectionMatrix();
+
+        // Update cameras.
+        l.scenograph.cameras.orbit.aspect = width / height;
+        l.scenograph.cameras.player.aspect = width / height;
+    
+        l.scenograph.cameras.orbit.fov = setCameraFOV( l.scenograph.cameras.orbit.aspect );
+        l.scenograph.cameras.player.fov = setCameraFOV( l.scenograph.cameras.player.aspect );
+
+        l.scenograph.cameras.orbit.updateProjectionMatrix();
+        l.scenograph.cameras.player.updateProjectionMatrix();
     
         const newRoom = await createOfficeRoom();
         l.current_scene.scene_objects.room.geometry = newRoom.geometry;
     
         if ( !l.current_scene.started ) {
-            if ( l.current_scene.camera.aspect < 0.88 ) {
+            if ( l.scenograph.cameras.player.aspect < 0.88 ) {
                 l.current_scene.settings.startPosZ = -5;
             }
             else {

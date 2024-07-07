@@ -23,7 +23,7 @@ export default class TouchControls {
         }
         this.controls = new TouchControlUI(
             document.querySelector( 'body' ),
-            l.current_scene.camera,
+            l.scenograph.cameras.player,
             options
         );
         this.controls.movementPad.padElement.style.display = 'none';

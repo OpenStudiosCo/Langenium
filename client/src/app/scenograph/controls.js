@@ -91,7 +91,7 @@ export default class Controls {
     }
 
     debug_on() {
-        this.orbit = new OrbitControls( l.current_scene.camera, l.current_scene.renderers.webgl.domElement );
+        this.orbit = new OrbitControls( l.scenograph.cameras.orbit, l.current_scene.renderers.webgl.domElement );
         this.orbit.target.set( 0, 10.775, 0 );
     }
 
@@ -100,7 +100,7 @@ export default class Controls {
         this.orbit = false;
 
         // Reset camera y position after disengaging orbit controls.
-        l.current_scene.camera.position.copy( l.current_scene.scene_objects.ship.mesh.position );
-        l.current_scene.camera.position.y += 10.775 / 4;
+        // l.scenograph.cameras.player.position.copy( l.current_scene.scene_objects.ship.mesh.position );
+        // l.scenograph.cameras.player.position.y += 10.775 / 4;
     }
 }

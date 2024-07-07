@@ -163,10 +163,10 @@ class TouchControlUI {
 
     setRotation( x, y ) {
         if ( x !== null )
-            l.current_scene.camera.rotation.x += x
+            l.scenograph.cameras.player.rotation.x += x
 
         if ( y !== null )
-            l.current_scene.camera.rotation.y += y
+            l.scenograph.cameras.player.rotation.y += y
     }
 
 }

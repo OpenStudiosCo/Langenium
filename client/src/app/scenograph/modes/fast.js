@@ -36,6 +36,16 @@ export default class Fast {
         if ( l.current_scene.effects.postprocesing == undefined
             || l.current_scene.effects.postprocesing ==  false ) {
             l.scenograph.effects.init();
+            l.current_scene.effects.postprocessing.passes.forEach( ( effectPass ) => {
+                if ( effectPass.name == 'EffectPass' ) {
+                    effectPass.effects.forEach( ( effect ) => {
+                        if ( effect.name == 'BloomEffect' ) {
+                            effect.blendMode.setOpacity( 0 );
+                        }
+                    } );
+                }
+
+            } );
         }
 
         this.active = false;

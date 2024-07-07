@@ -48,6 +48,7 @@ export default class CargoShips {
 
             mesh.position.x = location.x;
             mesh.position.z = location.y;
+            mesh.name = 'Cargo Ship #' + ( i + 1 );
 
             meshes.push( mesh );
         } );

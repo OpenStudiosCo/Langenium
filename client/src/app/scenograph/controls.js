@@ -8,6 +8,7 @@
 /**
  * Vendor libs
  */
+import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
 /**
@@ -21,6 +22,7 @@ export default class Controls {
     keyboard;
 
     orbit;
+    orbitTarget;
 
     touch;
 
@@ -29,6 +31,9 @@ export default class Controls {
 
         this.touch = new TouchControls();
 
+        l.current_scene.animation_queue.push(
+            l.scenograph.controls.animate
+        );
     }
 
     activate() {
@@ -48,9 +53,6 @@ export default class Controls {
             "keyup",
             l.scenograph.controls.keyboard.onKeyUp,
             false
-        );
-        l.current_scene.animation_queue.push(
-            l.scenograph.controls.animate
         );
 
     }
@@ -86,13 +88,32 @@ export default class Controls {
     }
 
     animate() {
-        if ( l.scenograph.controls.orbit )
+        if ( l.scenograph.controls.orbit ) {
+        
+            l.scenograph.controls.orbit.target.set(
+                l.scenograph.controls.orbitTarget.x,
+                l.scenograph.controls.orbitTarget.y,
+                l.scenograph.controls.orbitTarget.z
+            );
             l.scenograph.controls.orbit.update();
+        }
+    }
+
+    // Changes the orbit target based on object id.
+    set_target( object_id ) {
+        let target_object = l.current_scene.scene.getObjectById( object_id );
+        l.scenograph.controls.orbitTarget = target_object.position.clone();
+        l.scenograph.cameras.orbit.position.copy( l.scenograph.controls.orbitTarget );
+        l.scenograph.cameras.orbit.position.y = 500;
+        l.scenograph.cameras.orbit.translateZ( - 500 );
+        l.scenograph.cameras.orbit.updateProjectionMatrix();
+        l.scenograph.controls.orbit.update();
     }
 
     debug_on() {
         this.orbit = new OrbitControls( l.scenograph.cameras.orbit, l.current_scene.renderers.webgl.domElement );
-        this.orbit.target.set( 0, 10.775, 0 );
+        this.orbitTarget = new THREE.Vector3( 0, 10.775, 0 );
+        //this.orbit.target.set( this.orbitTarget );
     }
 
     debug_off() {

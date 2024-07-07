@@ -21,6 +21,7 @@ export var doorDepth = 0.2;
 
 export async function createDoor() {
     var doorParent = new THREE.Object3D();
+    doorParent.name = 'Door';
 
     await l.current_scene.loaders.texture.load( './assets/models/desk-diffuse.jpg', async ( doorTexture ) => {
         doorTexture.wrapS = THREE.RepeatWrapping;
@@ -41,7 +42,7 @@ export async function createDoor() {
         doorParent.add( door );
 
         const frameGroup = new THREE.Group();
-        frameGroup.name = "doorFrame";
+        frameGroup.name = "Door Frame";
         frameGroup.position.z = - 15 + ( l.current_scene.room_depth / 2 );
 
         var frameWidth = 0.4;
@@ -356,6 +357,7 @@ export async function createOfficeRoom() {
     csgEvaluator.evaluate( roomBrush, doorBrush, SUBTRACTION, result );
     result.receiveShadow = true;
     result.layers.set( 11 );
+    result.name = 'Office room';
 
     return result;
 }

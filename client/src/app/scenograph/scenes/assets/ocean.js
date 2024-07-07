@@ -54,6 +54,8 @@ export default class Ocean {
         // } );
         this.water.rotation.x = - Math.PI / 2;
 
+        this.water.name = 'Ocean';
+
     }
 
     animate( delta ) {

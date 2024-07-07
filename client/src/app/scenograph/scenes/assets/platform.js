@@ -105,6 +105,7 @@ export default class Platform {
         this.mesh = this.model.scene;
         this.mesh.scale.multiplyScalar( 2000 );
         this.mesh.rotation.order = 'YXZ';
+        this.mesh.name = 'Union Platform City';
         this.ready = true;
     }
 

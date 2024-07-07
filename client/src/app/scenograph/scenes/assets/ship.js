@@ -100,6 +100,7 @@ export default class Ship {
         } );
 
         this.mesh = this.model.scene;
+        this.mesh.name = 'Player Ship';
         this.mesh.position.z = l.current_scene.room_depth;
         this.mesh.rotation.order = 'YXZ';
 
@@ -147,6 +148,8 @@ export default class Ship {
 
         // initialize the trail
         this.trail.initialize( trailMaterial, trailLength, false, 0, trailHeadGeometry, trailContainer );
+
+        this.trail.mesh.name = 'Player Ship Trail';
 
         // activate the trail
         this.trail.activate();
@@ -484,24 +487,6 @@ export default class Ship {
             l.current_scene.scene_objects.ship.updateMesh();
 
             l.scenograph.cameras.updatePlayer( rY, tY, tZ );
-
-            if ( l.scenograph.controls.orbit ) {
-
-                l.scenograph.controls.orbit.target.set(
-                    l.current_scene.scene_objects.ship.mesh.position.x,
-                    l.current_scene.scene_objects.ship.mesh.position.y,
-                    l.current_scene.scene_objects.ship.mesh.position.z
-                );
-
-                // l.scenograph.controls.orbit.target.set(
-                //     l.current_scene.scene_objects.extractor.mesh.position.x,
-                //     l.current_scene.scene_objects.extractor.mesh.position.y + l.current_scene.scene_objects.extractor.mesh.scale.x,
-                //     l.current_scene.scene_objects.extractor.mesh.position.z
-                // );
-                l.scenograph.controls.orbit.update();
-            }
-
-
 
             if ( l.current_scene.scene_objects.ship.trail ) {
 

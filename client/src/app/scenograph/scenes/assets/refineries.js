@@ -44,6 +44,7 @@ export default class Refineries {
             mesh.position.x = location.x;
             mesh.position.y = this.size / 6.5;
             mesh.position.z = location.y;
+            mesh.name = 'Refinery #' + ( i + 1 );
 
             meshes.push( mesh );
         } );

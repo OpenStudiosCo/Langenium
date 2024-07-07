@@ -47,7 +47,7 @@ export default class Sky {
 
 
         let skyMesh = new THREE.Mesh( skyGeometry, skyMaterials );
-        skyMesh.name = 'Skybox';
+        skyMesh.name = 'Sky';
         skyMesh.position.y = l.scale * 0;
         return skyMesh;
 

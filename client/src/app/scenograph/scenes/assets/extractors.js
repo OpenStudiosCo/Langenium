@@ -52,6 +52,8 @@ export default class Extractor {
             extractor.position.y = -7450;
             extractor.position.z = extractor_location.y;
 
+            extractor.name = 'Extractor #' + ( i + 1 );
+
             extractors.push( extractor );
         } );
 

@@ -341,6 +341,10 @@ function sinkOffice() {
             l.current_scene.scene.remove( l.current_scene.scene_objects.room );
             l.current_scene.scene.remove( l.current_scene.scene_objects.door );
             l.current_scene.scene.remove( l.current_scene.scene_objects.door_frame );
+
+            if ( l.config.settings.debug ) {
+                l.ui.menus.scene_overview.buildTable();
+            }
         } )
 }
 

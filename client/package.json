@@ -4,6 +4,10 @@
   "version": "0.6.0-Alpha",
   "description": "The Langenium Game, Server and Client",
   "repository": "https://github.com/paulbrzeski/Langenium",
+  "engines" : { 
+    "npm" : ">=10.0.0 <11.0.0",
+    "node" : ">=22.0.0 <23.0.0"
+  },
   "scripts": {
     "build": "cross-env NODE_ENV=production npm-run-all clean -p build:*",
     "build:11ty": "eleventy --quiet",

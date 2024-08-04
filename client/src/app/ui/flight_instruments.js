@@ -26,7 +26,7 @@ export default class Flight_Instruments {
     update() {
 
         // Check if the main aircraft is loaded and ready
-        if (l.current_scene.scene_objects.ship && l.current_scene.scene_objects.player.ready) {
+        if (l.current_scene.scene_objects.player && l.current_scene.scene_objects.player.ready) {
 
             if ( l.current_scene.settings.game_controls ) {
                 if ( !l.ui.flight_instruments.activated ) {

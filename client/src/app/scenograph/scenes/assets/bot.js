@@ -55,8 +55,7 @@ export default class Bot {
 
                 child.original_material = child.material.clone();
 
-                let scale = 0.7;
-                console.log(child.name, child.material);
+                let scale = 0.35;
 
                 if ( child.name == 'Chassis' ) {
                     scale = 1.05;

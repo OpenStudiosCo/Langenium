@@ -19,6 +19,7 @@ import Platform from "@/scenograph/scenes/assets/platform";
 import Refineries from "@/scenograph/scenes/assets/refineries";
 import Sky from "@/scenograph/scenes/assets/sky";
 import Player from "@/scenograph/scenes/assets/player";
+import Bot from "@/scenograph/scenes/assets/bot";
 
 /**
  * Preloader assets
@@ -117,6 +118,15 @@ export default class Overworld extends SceneBase {
     );
     l.current_scene.animation_queue.push(
       l.current_scene.scene_objects.player.animate
+    );
+
+    // Setup Bot
+    // @todo: refactor to support more
+    l.current_scene.scene_objects.bot = new Bot();
+    await l.current_scene.scene_objects.bot.load();
+    l.current_scene.scene_objects.bot.mesh.position.y = 20;
+    l.current_scene.scene.add(
+      l.current_scene.scene_objects.bot.mesh
     );
 
     // Setup Platform

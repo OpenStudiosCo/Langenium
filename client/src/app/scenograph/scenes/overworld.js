@@ -18,7 +18,7 @@ import Ocean from "@/scenograph/scenes/assets/ocean";
 import Platform from "@/scenograph/scenes/assets/platform";
 import Refineries from "@/scenograph/scenes/assets/refineries";
 import Sky from "@/scenograph/scenes/assets/sky";
-import Ship from "@/scenograph/scenes/assets/ship";
+import Player from "@/scenograph/scenes/assets/player";
 
 /**
  * Preloader assets
@@ -47,7 +47,7 @@ export default class Overworld extends SceneBase {
   constructor() {
     super();
 
-    this.scene_objects.ships = [];
+    this.scene_objects.players = [];
   }
 
   animate( currentTime ) {
@@ -109,14 +109,14 @@ export default class Overworld extends SceneBase {
       l.current_scene.scene_objects.sky.animate
     );
 
-    // Setup Ship
-    l.current_scene.scene_objects.ship = new Ship();
-    await l.current_scene.scene_objects.ship.load();
+    // Setup Player
+    l.current_scene.scene_objects.player = new Player();
+    await l.current_scene.scene_objects.player.load();
     l.current_scene.scene.add(
-      l.current_scene.scene_objects.ship.mesh
+      l.current_scene.scene_objects.player.mesh
     );
     l.current_scene.animation_queue.push(
-      l.current_scene.scene_objects.ship.animate
+      l.current_scene.scene_objects.player.animate
     );
 
     // Setup Platform

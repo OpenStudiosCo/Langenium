@@ -100,16 +100,16 @@ export default class Cameras {
     updatePlayer( rY, tY, tZ ) {
         var radian = ( Math.PI / 180 );
 
-        l.current_scene.scene_objects.ship.camera_distance = l.current_scene.scene_objects.ship.default_camera_distance + ( l.current_scene.room_depth / 2 );
-        if ( l.current_scene.scene_objects.ship.state.airSpeed < 0 ) {
-            l.current_scene.scene_objects.ship.camera_distance -= l.current_scene.scene_objects.ship.state.airSpeed * 4;
+        l.current_scene.scene_objects.player.camera_distance = l.current_scene.scene_objects.player.default_camera_distance + ( l.current_scene.room_depth / 2 );
+        if ( l.current_scene.scene_objects.player.state.airSpeed < 0 ) {
+            l.current_scene.scene_objects.player.camera_distance -= l.current_scene.scene_objects.player.state.airSpeed * 4;
         }
 
-        let xDiff = l.current_scene.scene_objects.ship.mesh.position.x;
-        let zDiff = l.current_scene.scene_objects.ship.mesh.position.z;
+        let xDiff = l.current_scene.scene_objects.player.mesh.position.x;
+        let zDiff = l.current_scene.scene_objects.player.mesh.position.z;
 
-        l.scenograph.cameras.player.position.x = xDiff + l.current_scene.scene_objects.ship.camera_distance * Math.sin( l.current_scene.scene_objects.ship.mesh.rotation.y );
-        l.scenograph.cameras.player.position.z = zDiff + l.current_scene.scene_objects.ship.camera_distance * Math.cos( l.current_scene.scene_objects.ship.mesh.rotation.y );
+        l.scenograph.cameras.player.position.x = xDiff + l.current_scene.scene_objects.player.camera_distance * Math.sin( l.current_scene.scene_objects.player.mesh.rotation.y );
+        l.scenograph.cameras.player.position.z = zDiff + l.current_scene.scene_objects.player.camera_distance * Math.cos( l.current_scene.scene_objects.player.mesh.rotation.y );
 
         if ( rY != 0 ) {
 
@@ -118,32 +118,32 @@ export default class Cameras {
         else {
             // Check there is y difference and the rotation pad isn't being pressed.                   
             if (
-                l.scenograph.cameras.player.rotation.y != l.current_scene.scene_objects.ship.mesh.rotation.y &&
+                l.scenograph.cameras.player.rotation.y != l.current_scene.scene_objects.player.mesh.rotation.y &&
                 ( l.scenograph.controls.touch && !l.scenograph.controls.touch.controls.rotationPad.mouseDown )
             ) {
 
                 // Get the difference in y rotation betwen the camera and ship
-                let yDiff = l.current_scene.scene_objects.ship.mesh.rotation.y - l.scenograph.cameras.player.rotation.y;
+                let yDiff = l.current_scene.scene_objects.player.mesh.rotation.y - l.scenograph.cameras.player.rotation.y;
 
                 // Check the y difference is larger than 1/100th of a radian
                 if (
                     Math.abs( yDiff ) > radian / 100
                 ) {
                     // Add 1/60th of the difference in rotation, as FPS currently capped to 60.
-                    l.scenograph.cameras.player.rotation.y += ( l.current_scene.scene_objects.ship.mesh.rotation.y - l.scenograph.cameras.player.rotation.y ) * 1 / 60;
+                    l.scenograph.cameras.player.rotation.y += ( l.current_scene.scene_objects.player.mesh.rotation.y - l.scenograph.cameras.player.rotation.y ) * 1 / 60;
                 }
                 else {
-                    l.scenograph.cameras.player.rotation.y = l.current_scene.scene_objects.ship.mesh.rotation.y;
+                    l.scenograph.cameras.player.rotation.y = l.current_scene.scene_objects.player.mesh.rotation.y;
                 }
 
             }
 
         }
 
-        let xDiff2 = tZ * Math.sin( l.current_scene.scene_objects.ship.mesh.rotation.y ),
-            zDiff2 = tZ * Math.cos( l.current_scene.scene_objects.ship.mesh.rotation.y );
+        let xDiff2 = tZ * Math.sin( l.current_scene.scene_objects.player.mesh.rotation.y ),
+            zDiff2 = tZ * Math.cos( l.current_scene.scene_objects.player.mesh.rotation.y );
 
-        if ( l.current_scene.scene_objects.ship.mesh.position.y + tY >= 1 ) {
+        if ( l.current_scene.scene_objects.player.mesh.position.y + tY >= 1 ) {
             l.scenograph.cameras.player.position.y += tY;
         }
 

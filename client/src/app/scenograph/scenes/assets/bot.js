@@ -10,7 +10,7 @@ import * as THREE from 'three';
  */
 import l from '@/helpers/l.js';
 import { brightenMaterial, proceduralMetalMaterial } from '@/scenograph/materials.js';
-import Valiant from '#/game/src/objects/aircraft/valiant.js';
+import Raven from '#/game/src/objects/aircraft/raven.js';
 
 export default class Bot {
 

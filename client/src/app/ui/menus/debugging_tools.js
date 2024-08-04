@@ -75,19 +75,19 @@ export default class Debugging_Tools {
             expanded: false,
         } );
 
-        shipState.addBinding( l.current_scene.scene_objects.ship.state.controls, 'throttleUp', {
+        shipState.addBinding( l.current_scene.scene_objects.player.state.controls, 'throttleUp', {
             readonly: true,
             interval: 200
         } )
-        shipState.addBinding( l.current_scene.scene_objects.ship.state.controls, 'throttleDown', {
+        shipState.addBinding( l.current_scene.scene_objects.player.state.controls, 'throttleDown', {
             readonly: true,
             interval: 200
         } )
-        shipState.addBinding( l.current_scene.scene_objects.ship.state.controls, 'moveLeft', {
+        shipState.addBinding( l.current_scene.scene_objects.player.state.controls, 'moveLeft', {
             readonly: true,
             interval: 200
         } )
-        shipState.addBinding( l.current_scene.scene_objects.ship.state.controls, 'moveRight', {
+        shipState.addBinding( l.current_scene.scene_objects.player.state.controls, 'moveRight', {
             readonly: true,
             interval: 200
         } )

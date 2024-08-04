@@ -6,7 +6,7 @@
  * Internal libs and helpers.
  */
 import l from '@/helpers/l.js';
-import Ship from "@/scenograph/scenes/assets/ship";
+import Player from "@/scenograph/scenes/assets/player";
 
 export default class Multiplayer {
 
@@ -80,21 +80,21 @@ export default class Multiplayer {
      * Add a new remote player to the client session.
      */
     async add_player( data ) {
-        let newShip = new Ship();
-        await newShip.load();
-        newShip.socket_id = data.socket_id;
-        newShip.mesh.position.x = 0;
-        newShip.mesh.position.y = 8.5;
-        newShip.mesh.position.z = 0;
+        let newPlayer = new Player();
+        await newPlayer.load();
+        newPlayer.socket_id = data.socket_id;
+        newPlayer.mesh.position.x = 0;
+        newPlayer.mesh.position.y = 8.5;
+        newPlayer.mesh.position.z = 0;
 
         l.current_scene.scene.add(
-            newShip.mesh
+            newPlayer.mesh
         );
         // @todo Allow animation on other ships, currently it's hardcoded to the player ship in the function itself.
         // l.current_scene.animation_queue.push(
-        //     newShip.animate
+        //     newPlayer.animate
         // );
-        l.current_scene.scene_objects.ships.push( newShip );
+        l.current_scene.scene_objects.players.push( newPlayer );
 
     }
 
@@ -102,7 +102,7 @@ export default class Multiplayer {
      * Remove a disconnected remote player from the client session.
      */
     async remove_player( data ) {
-        l.current_scene.scene_objects.ships.forEach( ( ship ) => {
+        l.current_scene.scene_objects.players.forEach( ( ship ) => {
             if ( ship.socket_id == data.socket_id ) {
                 l.current_scene.scene.remove( ship.mesh );
             }
@@ -115,18 +115,18 @@ export default class Multiplayer {
     move_ship( data ) {
         if ( data.socket_id == l.scenograph.modes.multiplayer.socket.id ) {
             // Update stored ship state, don't punch out as functions aren't transmitted.
-            l.current_scene.scene_objects.ship.state.airSpeed = data.airSpeed;
-            l.current_scene.scene_objects.ship.state.altitude = data.altitude;
-            l.current_scene.scene_objects.ship.state.heading = data.heading;
-            l.current_scene.scene_objects.ship.state.horizon = data.horizon;
-            l.current_scene.scene_objects.ship.state.position.x = data.position.x;
-            l.current_scene.scene_objects.ship.state.position.y = data.position.y;
-            l.current_scene.scene_objects.ship.state.position.z = data.position.z;
-            l.current_scene.scene_objects.ship.state.rotation = data.rotation;
-            l.current_scene.scene_objects.ship.state.verticalSpeed = data.verticalSpeed;
+            l.current_scene.scene_objects.player.state.airSpeed = data.airSpeed;
+            l.current_scene.scene_objects.player.state.altitude = data.altitude;
+            l.current_scene.scene_objects.player.state.heading = data.heading;
+            l.current_scene.scene_objects.player.state.horizon = data.horizon;
+            l.current_scene.scene_objects.player.state.position.x = data.position.x;
+            l.current_scene.scene_objects.player.state.position.y = data.position.y;
+            l.current_scene.scene_objects.player.state.position.z = data.position.z;
+            l.current_scene.scene_objects.player.state.rotation = data.rotation;
+            l.current_scene.scene_objects.player.state.verticalSpeed = data.verticalSpeed;
         }
         else {
-            l.current_scene.scene_objects.ships.forEach( ( ship ) => {
+            l.current_scene.scene_objects.players.forEach( ( ship ) => {
 
                 if ( ship.socket_id == data.socket_id ) {
                     // Update stored ship state, don't punch out as functions aren't transmitted.

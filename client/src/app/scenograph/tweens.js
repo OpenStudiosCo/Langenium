@@ -216,7 +216,7 @@ function flickerEffect() {
  */
 function enterTheOffice() {
     let coords = { x: 15 + l.current_scene.room_depth / 2 }; // Start at (0, 0)
-    let targetZ = l.current_scene.scene_objects.ship.default_camera_distance + l.current_scene.room_depth / 2;
+    let targetZ = l.current_scene.scene_objects.player.default_camera_distance + l.current_scene.room_depth / 2;
     return new TWEEN.Tween( coords, false ) // Create a new tween that modifies 'coords'.
         .to( { x: targetZ }, l.config.settings.skipintro ? 0 : 1000 ) // Move to (300, 200) in 1 second.
         .easing( TWEEN.Easing.Quadratic.InOut ) // Use an easing function to make the animation smooth.
@@ -309,7 +309,7 @@ function dollyUp() {
     return new TWEEN.Tween( l.scenograph.cameras.player.position )
         .to( { y: 10.775 }, l.config.settings.skipintro ? 0 : 500 ) // Set the duration of the animation
         .onUpdate( () => {
-            //l.scenograph.cameras.player.lookAt(l.current_scene.scene_objects.ship.mesh.position);
+            //l.scenograph.cameras.player.lookAt(l.current_scene.scene_objects.player.mesh.position);
             l.scenograph.cameras.player.updateProjectionMatrix();
         } )
         .onComplete( () => {

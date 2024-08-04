@@ -124,10 +124,13 @@ export default class Overworld extends SceneBase {
     // @todo: refactor to support more
     l.current_scene.scene_objects.bot = new Bot();
     await l.current_scene.scene_objects.bot.load();
-    l.current_scene.scene_objects.bot.mesh.position.y = 20;
     l.current_scene.scene.add(
       l.current_scene.scene_objects.bot.mesh
     );
+    l.current_scene.animation_queue.push(
+      l.current_scene.scene_objects.bot.animate
+    );
+
 
     // Setup Platform
     l.current_scene.scene_objects.platform = new Platform();

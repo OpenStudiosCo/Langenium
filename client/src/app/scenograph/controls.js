@@ -102,6 +102,11 @@ export default class Controls {
     // Changes the orbit target based on object id.
     set_target( object_id ) {
         let target_object = l.current_scene.scene.getObjectById( object_id );
+
+        if (target_object.name == 'Bot Ship') {
+            target_object = l.current_scene.scene_objects.bot.vehicle;
+        }
+
         l.scenograph.controls.orbitTarget = target_object.position.clone();
         l.scenograph.cameras.orbit.position.copy( l.scenograph.controls.orbitTarget );
         l.scenograph.cameras.orbit.position.y = 500;

@@ -98,7 +98,7 @@ export default class Bot {
 
         this.mesh = this.model.scene;
         this.mesh.name = 'Bot Ship';
-        this.mesh.position.z = - l.current_scene.room_depth * 10;
+        this.mesh.position.z = - l.current_scene.room_depth * 2;
         this.mesh.position.y = 20;
         this.mesh.rotation.order = 'YXZ';
 
@@ -113,16 +113,49 @@ export default class Bot {
         this.vehicle = new YUKA.Vehicle();
         this.vehicle.position.z = this.mesh.position.z;
         this.vehicle.position.y = this.mesh.position.y;
-        this.vehicle.maxSpeed = 5000;
+        this.vehicle.maxSpeed = 500;
         this.vehicle.setRenderComponent( this.mesh, sync );
-
-        const wanderBehavior = new YUKA.WanderBehavior();
-        // wanderBehavior.distance = 100;
-        // wanderBehavior.jitter = 100;
-        // wanderBehavior.radius = 1.5;
-        this.vehicle.steering.add( wanderBehavior );
+        this.vehicle.boundingRadius = 20;
+        this.vehicle.smoother = new YUKA.Smoother( 20 );
+        this.vehicle.rotation.order = 'XYZ';
 
         l.scenograph.entityManager.add( this.vehicle );
+
+        let obstacles = [];
+ 
+        // const boundaryHandler = new YUKA.ObstacleAvoidanceBehavior(
+        //     obstacles
+        // )
+        // this.vehicle.steering.add( boundaryHandler );
+
+
+        const loopDistance = 1500;
+        const path = new YUKA.Path();
+			path.loop = true;
+			path.add( new YUKA.Vector3( loopDistance, 20, loopDistance ) );
+			path.add( new YUKA.Vector3( loopDistance, 20, - loopDistance ) );
+			path.add( new YUKA.Vector3( - loopDistance, 20, - loopDistance ) );
+			path.add( new YUKA.Vector3( - loopDistance, 20, loopDistance ) );
+
+        // const wanderBehavior = new YUKA.WanderBehavior();
+        // // wanderBehavior.distance = 100;
+        // // wanderBehavior.jitter = 100;
+        // // wanderBehavior.radius = 1.5;
+        // this.vehicle.steering.add( wanderBehavior );
+
+        const followPathBehavior = new YUKA.FollowPathBehavior( path );
+        this.vehicle.steering.add( followPathBehavior );
+
+        // l.current_scene.scene_objects.boundaries.forEach( ( boundaryMesh ) => {
+        //     const obstacle1 = new YUKA.GameEntity();
+        //     obstacle1.position.copy( boundaryMesh.position );
+            
+        //     obstacle1.boundingRadius = boundaryMesh.geometry.boundingSphere.radius;
+            
+        //     l.scenograph.entityManager.add( obstacle1 );
+        //     obstacles.push(obstacle1);
+        // } );
+
 
     }
 

@@ -85,6 +85,54 @@ export default class Overworld extends SceneBase {
       l.current_scene.scene_objects.player.animate
     );
 
+    // let scale = 500;
+    // let geometry = new THREE.BoxGeometry( scale, scale / 10, scale );
+    // geometry.computeBoundingSphere();
+    // let material = new THREE.MeshBasicMaterial( {
+    //   color: 0xFF0000,
+    //   visible: false
+    // } );
+
+    // l.current_scene.scene_objects.boundaries = [];
+
+    // for (var i = 0; i < 4; i++) {
+    //   let boundary = new THREE.Mesh( geometry, material.clone() );
+    //   boundary.name = "Boundary";
+    //   switch(i) {
+    //     case 0:
+    //       boundary.position.z = -scale;
+    //       boundary.name += " ( North )";
+    //       break;
+    //     case 1:
+    //       boundary.position.z = scale;
+    //       boundary.name += " ( South )";
+    //       boundary.material.color = new THREE.Color( 0x0000FF );
+    //       break;
+    //     case 2:
+    //       boundary.position.x = -scale;
+    //       boundary.name += " ( West )";
+    //       boundary.material.color =  new THREE.Color( 0x00FF00 );
+    //       break;
+    //     case 3:
+    //       boundary.position.x = scale;
+    //       boundary.name += " ( East )";
+    //       boundary.material.color = new THREE.Color( 0xFF00FF );
+    //       break;
+    //   }
+
+    //   let boxHelper = new THREE.BoxHelper( boundary );
+  
+    //   l.current_scene.scene.add(
+    //     boundary
+    //   );
+    //   l.current_scene.scene.add(
+    //     boxHelper
+    //   );
+
+		// 	l.current_scene.scene_objects.boundaries.push( boundary );
+
+    // }
+
     // Setup Bot
     // @todo: refactor to support more
     l.current_scene.scene_objects.bot = new Bot();

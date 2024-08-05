@@ -114,7 +114,7 @@ export default class Bot {
         this.vehicle.position.z = this.mesh.position.z;
         this.vehicle.position.y = this.mesh.position.y;
         this.vehicle.maxSpeed = 500;
-        this.vehicle.setRenderComponent( this.mesh, sync );
+        this.vehicle.setRenderComponent( this.mesh, this.sync );
         this.vehicle.boundingRadius = 20;
         this.vehicle.smoother = new YUKA.Smoother( 20 );
         this.vehicle.rotation.order = 'XYZ';
@@ -165,12 +165,10 @@ export default class Bot {
         l.scenograph.entityManager.update( delta );
     }
 
-}
+    sync( entity, renderComponent ) {
 
-// @todo: Figure out where to put this, maybe in some kind of AI manager?
-function sync( entity, renderComponent ) {
+        renderComponent.matrix.copy( entity.worldMatrix );
 
-    renderComponent.matrix.copy( entity.worldMatrix );
-
+    }
 }
 

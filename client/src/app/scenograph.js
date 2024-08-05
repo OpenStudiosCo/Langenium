@@ -3,7 +3,7 @@
  * 
  * Controls which scene composition is being played in the game client
  * 
- * e.g. scene objects, sky box, lighting, effects.
+ * e.g. entities, scenery objects, sky box, lighting, effects.
  */
 
 /**

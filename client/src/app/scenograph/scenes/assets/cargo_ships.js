@@ -6,6 +6,7 @@
  * Vendor libs
  */
 import * as THREE from 'three';
+import * as YUKA from 'yuka';
 
 /**
  * Internal libs and helpers.
@@ -22,8 +23,14 @@ export default class CargoShips {
     // THREE.Mesh
     mesh;
 
+    // @instance YUKA.Path.
+    path;
+
     // The scale of the mesh.
     size;
+
+    // Locations the cargo ships will randomly select and travel to.
+    targets;
 
     constructor() {
         this.ready = false;
@@ -36,9 +43,27 @@ export default class CargoShips {
             new THREE.Vector3( -36000, -1500, this.size * 10 ),
             new THREE.Vector3( -34000, -1500, this.size * 10 ),
         ];
+
+        this.path = new YUKA.Path();
+        this.path.loop = true;
     }
 
     async getAll() {
+        /**
+         * Paths
+         */
+        // Add the union platform
+        const platform_location = l.current_scene.scene_objects.platform.mesh.position;
+        this.path.add( new YUKA.Vector3( platform_location.x, 0, platform_location.z ) );
+
+        l.current_scene.scene_objects.extractors.forEach( (extractor) => {
+            this.path.add( new YUKA.Vector3( extractor.position.x, 0, extractor.position.z ) );
+            this.path.add( new YUKA.Vector3( platform_location.x, 0, platform_location.z ) );
+        });
+
+        /**
+         * Load Meshes
+         */
         let meshes = [];
 
         await this.load();
@@ -49,6 +74,23 @@ export default class CargoShips {
             mesh.position.x = location.x;
             mesh.position.z = location.y;
             mesh.name = 'Cargo Ship #' + ( i + 1 );
+
+            mesh.userData.vehicle = new YUKA.Vehicle();
+            mesh.userData.vehicle.position.z = mesh.position.z;
+            mesh.userData.vehicle.position.x = mesh.position.x;
+            mesh.userData.vehicle.maxSpeed = 15000;
+            mesh.userData.vehicle.boundingRadius = 2000;
+            mesh.userData.vehicle.setRenderComponent( mesh, this.sync );
+            //mesh.userData.vehicle.smoother = new YUKA.Smoother( 20 );
+
+            l.scenograph.entityManager.add( mesh.userData.vehicle );
+
+            const followPathBehavior = new YUKA.FollowPathBehavior( this.path );
+            mesh.userData.vehicle.steering.add( followPathBehavior );
+            // const wanderBehavior = new YUKA.WanderBehavior();
+            // mesh.userData.vehicle.steering.add( wanderBehavior );
+
+            mesh.matrixAutoUpdate = false;
 
             meshes.push( mesh );
         } );
@@ -102,8 +144,19 @@ export default class CargoShips {
         result.layers.set( 11 );
         result.name = 'outer';
 
+        // Flip the object
+        const scale = new THREE.Vector3(1, 1, -1);
+        result.scale.multiply(scale);
+
         this.mesh = new THREE.Object3D();
         this.mesh.add( result );
 
     }
+    sync( entity, renderComponent ) {
+
+        renderComponent.matrix.copy( entity.worldMatrix );
+    
+    }
+    
+    
 }

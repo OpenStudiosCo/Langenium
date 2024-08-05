@@ -111,7 +111,7 @@ export default class Platform {
 
     animate( delta ) {
         // Iterate the sky uniforms to animate it.
-        window.buildings.uniforms.time.value += 0.025;
+        window.buildings.uniforms.time.value += delta / 10;
     }
 
 }

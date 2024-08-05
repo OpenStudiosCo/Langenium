@@ -13,8 +13,6 @@ import l from '@/helpers/l.js';
 import { brightenMaterial, proceduralMetalMaterial } from '@/scenograph/materials.js';
 import Raven from '#/game/src/objects/aircraft/raven.js';
 
-let entityManager, time;
-
 export default class Bot {
     // AI seeing distance.
     sight_radius;
@@ -31,6 +29,9 @@ export default class Bot {
     // Aircraft flight sim data like airspeed.
     state;
 
+    // YUKA.Vehicle instance.
+    vehicle;
+
     constructor() {
         this.default_camera_distance = window.innerWidth < window.innerHeight ? -70 : -35;
         this.trail_position_y = 1.2;
@@ -41,9 +42,6 @@ export default class Bot {
 
         this.state = new Raven();
 
-        // @todo: move this upstream if necessary
-        entityManager = new YUKA.EntityManager();
-        time = new YUKA.Time();
     }
 
     // Loads the ship model inc built-in animations
@@ -72,26 +70,26 @@ export default class Bot {
 
                     child.material = proceduralMetalMaterial( {
                         uniforms: {
-                            scale         :  { value: scale },                                           // Scale
-                            lacunarity    :  { value: 2.0 },                                             // Lacunarity
-                            randomness    :  { value: 1.0 },                                             // Randomness
-                            diffuseColour1:  { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.40 ) },     // Diffuse gradient colour 1
-                            diffuseColour2:  { value: new THREE.Vector4( 0.5, 0.5, 0.5, 0.43 ) },        // Diffuse gradient colour 2
-                            diffuseColour3:  { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.44 ) },     // Diffuse gradient colour 3
-                            emitColour1   :  { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.61 ) },     // Emission gradient colour 1
-                            emitColour2   :  { value: new THREE.Vector4( 1.0, 0.0, 0.0, 0.63 ) },        // Emission gradient colour 2
+                            scale: { value: scale },                                           // Scale
+                            lacunarity: { value: 2.0 },                                             // Lacunarity
+                            randomness: { value: 1.0 },                                             // Randomness
+                            diffuseColour1: { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.40 ) },     // Diffuse gradient colour 1
+                            diffuseColour2: { value: new THREE.Vector4( 0.5, 0.5, 0.5, 0.43 ) },        // Diffuse gradient colour 2
+                            diffuseColour3: { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.44 ) },     // Diffuse gradient colour 3
+                            emitColour1: { value: new THREE.Vector4( 0.02, 0.02, 0.02, 0.61 ) },     // Emission gradient colour 1
+                            emitColour2: { value: new THREE.Vector4( 1.0, 0.0, 0.0, 0.63 ) },        // Emission gradient colour 2
                         }
                     } );
 
                 }
                 else {
-                    child.material = new THREE.MeshPhysicalMaterial({
+                    child.material = new THREE.MeshPhysicalMaterial( {
                         color: 0xf6ee04,
                         flatShading: true,
                         metalness: 0.5,
                         reflectivity: 1,
                         roughness: 0
-                    });
+                    } );
                 }
 
             }
@@ -112,32 +110,26 @@ export default class Bot {
         // this.mesh.scale.set(100,100,100);
         this.mesh.matrixAutoUpdate = false;
 
-        const vehicle = new YUKA.Vehicle();
-        vehicle.position.z = this.mesh.position.z;
-        vehicle.position.y = this.mesh.position.y;
-        vehicle.maxSpeed = 1500;
-        vehicle.setRenderComponent( this.mesh, sync );
+        this.vehicle = new YUKA.Vehicle();
+        this.vehicle.position.z = this.mesh.position.z;
+        this.vehicle.position.y = this.mesh.position.y;
+        this.vehicle.maxSpeed = 5000;
+        this.vehicle.setRenderComponent( this.mesh, sync );
 
         const wanderBehavior = new YUKA.WanderBehavior();
         // wanderBehavior.distance = 100;
         // wanderBehavior.jitter = 100;
         // wanderBehavior.radius = 1.5;
-        vehicle.steering.add( wanderBehavior );
+        this.vehicle.steering.add( wanderBehavior );
 
-        window.vehicle = vehicle;
-        window.wanderBehavior = wanderBehavior;
-        console.log(vehicle, wanderBehavior);
-
-        entityManager.add( vehicle );
+        l.scenograph.entityManager.add( this.vehicle );
 
     }
 
     // Runs on the main animation loop
-    animate( ) {
+    animate( delta ) {
 
-        const delta = time.update().getDelta();
-
-        entityManager.update( delta );
+        l.scenograph.entityManager.update( delta );
     }
 
 }
@@ -148,3 +140,4 @@ function sync( entity, renderComponent ) {
     renderComponent.matrix.copy( entity.worldMatrix );
 
 }
+

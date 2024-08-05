@@ -51,41 +51,6 @@ export default class Overworld extends SceneBase {
     this.scene_objects.players = [];
   }
 
-  animate( currentTime ) {
-    updateFPS();
-
-    if ( l.current_scene.started ) {
-      if ( l.current_scene.animation_queue.length > 0 ) {
-        for (
-          var i = 0;
-          i < l.current_scene.animation_queue.length;
-          i++
-        ) {
-          l.current_scene.animation_queue[ i ]( currentTime );
-        }
-      }
-
-      updateTriggers( currentTime );
-
-      updateTweens( currentTime );
-    }
-
-
-    // Render the composer
-    if (
-      // Effects loaded.
-      ( l.current_scene.effects.postprocessing.passes && l.current_scene.effects.postprocessing.passes.length > 0 ) &&
-      // Not fast mode.
-      ( !l.config.settings.fast )
-    ) {
-      l.current_scene.effects.postprocessing.render();
-    } else {
-      l.current_scene.renderers.webgl.render( l.current_scene.scene, l.scenograph.cameras.active ); // Render the scene without the effects
-    }
-
-    requestAnimationFrame( l.current_scene.animate );
-  }
-
   async setup() {
     // Scene container.
     l.current_scene.scene = new THREE.Scene();
@@ -233,25 +198,8 @@ export default class Overworld extends SceneBase {
         // Start tweens.
         startTweening();
 
-        requestAnimationFrame( l.current_scene.animate );
+        requestAnimationFrame( l.scenograph.animate );
       }
     }, 100 );
-  }
-}
-
-function updateFPS() {
-  // Calculate FPS
-  l.current_scene.stats.currentTime = performance.now();
-  const timeDiff =
-    l.current_scene.stats.currentTime -
-    l.current_scene.stats.lastTime;
-  l.current_scene.stats.frameCount++;
-  if ( timeDiff >= 1000 ) {
-    l.current_scene.stats.fps = Math.round(
-      ( l.current_scene.stats.frameCount * 1000 ) / timeDiff
-    );
-    l.current_scene.stats.frameCount = 0;
-    l.current_scene.stats.lastTime =
-      l.current_scene.stats.currentTime;
   }
 }

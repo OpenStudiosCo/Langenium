@@ -10,6 +10,7 @@
  * Vendor libs
  */
 import * as THREE from "three";
+import * as YUKA from 'yuka';
 import { getGPUTier } from "detect-gpu";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
@@ -34,6 +35,13 @@ import Multiplayer from "@/scenograph/modes/multiplayer.js";
  */
 import Overworld from '@/scenograph/scenes/overworld.js';
 
+/**
+ * Scene controllers
+ */
+import { updateTriggers } from "@/scenograph/triggers";
+import {
+  updateTweens,
+} from "@/scenograph/tweens";
 
 export default class Scenograph {
 
@@ -49,6 +57,16 @@ export default class Scenograph {
     materials;
 
     modes;
+
+    /**
+     * @instance YUKA.EntityManager;
+     */
+    entityManager;
+    
+    /**
+     * @instance YUKA.Time;
+     */
+    time;
 
     constructor() {
 
@@ -88,7 +106,6 @@ export default class Scenograph {
          */
         this.modes.debugging = new Debugging();
 
-        
         /**
          * Fast mode.
          */
@@ -98,6 +115,13 @@ export default class Scenograph {
          * Multiplayer allows connecting to server.
          */
         this.modes.multiplayer = new Multiplayer();
+
+        /**
+         * YUKA modules
+         */
+        this.entityManager = new YUKA.EntityManager();
+        this.time = new YUKA.Time();
+
     }
 
     load( sceneName ) {
@@ -167,6 +191,46 @@ export default class Scenograph {
         }
     }
 
+    /**
+     * Main animation loop for the current scene.
+     */
+    animate( currentTime ) {
+        updateFPS();
+
+        const delta = l.scenograph.time.update().getDelta();
+
+        if ( l.current_scene.started ) {
+            if ( l.current_scene.animation_queue.length > 0 ) {
+                for (
+                    var i = 0;
+                    i < l.current_scene.animation_queue.length;
+                    i++
+                ) {
+                    l.current_scene.animation_queue[ i ]( delta );
+                }
+            }
+
+            updateTriggers( currentTime );
+
+            updateTweens( currentTime );
+        }
+
+
+        // Render the composer
+        if (
+            // Effects loaded.
+            ( l.current_scene.effects.postprocessing.passes && l.current_scene.effects.postprocessing.passes.length > 0 ) &&
+            // Not fast mode.
+            ( !l.config.settings.fast )
+        ) {
+            l.current_scene.effects.postprocessing.render();
+        } else {
+            l.current_scene.renderers.webgl.render( l.current_scene.scene, l.scenograph.cameras.active ); // Render the scene without the effects
+        }
+
+        requestAnimationFrame( l.scenograph.animate );
+    }
+
     setupLoaders() {
         l.current_scene.loaders.gtlf = new GLTFLoader();
         l.current_scene.loaders.object = new THREE.ObjectLoader();
@@ -198,4 +262,24 @@ export default class Scenograph {
     }
 
 
+}
+
+/**
+ * @todo: move to helpers file or into class above
+ */
+function updateFPS() {
+    // Calculate FPS
+    l.current_scene.stats.currentTime = performance.now();
+    const timeDiff =
+        l.current_scene.stats.currentTime -
+        l.current_scene.stats.lastTime;
+    l.current_scene.stats.frameCount++;
+    if ( timeDiff >= 1000 ) {
+        l.current_scene.stats.fps = Math.round(
+            ( l.current_scene.stats.frameCount * 1000 ) / timeDiff
+        );
+        l.current_scene.stats.frameCount = 0;
+        l.current_scene.stats.lastTime =
+            l.current_scene.stats.currentTime;
+    }
 }

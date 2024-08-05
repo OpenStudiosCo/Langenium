@@ -186,7 +186,7 @@ export default class Extractor {
         return capsule;
     }
 
-    animate( delta ) {
+    animate( currentTime ) {
 
         l.current_scene.scene_objects.extractors.forEach( ( extractor, i ) => {
             let inner = extractor.getObjectByName( 'inner' );

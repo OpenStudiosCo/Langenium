@@ -55,7 +55,7 @@ export default class Sky {
 
     animate( delta ) {
         // Iterate the sky uniforms to animate it.
-        l.current_scene.scene_objects.sky.uniforms.time.value += 0.025;
+        l.current_scene.scene_objects.sky.uniforms.time.value += delta / 10;
     }
 
 }

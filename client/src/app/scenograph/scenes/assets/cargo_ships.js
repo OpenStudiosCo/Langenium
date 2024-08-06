@@ -58,8 +58,27 @@ export default class CargoShips {
 
         l.current_scene.scene_objects.extractors.forEach( (extractor) => {
             this.path.add( new YUKA.Vector3( extractor.position.x, 0, extractor.position.z ) );
-            this.path.add( new YUKA.Vector3( platform_location.x, 0, platform_location.z ) );
+            
         });
+        this.path.add( new YUKA.Vector3( platform_location.x, 0, platform_location.z ) );
+
+        const position = [];
+
+        for ( let i = 0; i < this.path._waypoints.length; i ++ ) {
+
+            const waypoint = this.path._waypoints[ i ];
+
+            position.push( waypoint.x, waypoint.y, waypoint.z );
+
+        }
+
+        const lineGeometry = new THREE.BufferGeometry();
+        lineGeometry.setAttribute( 'position', new THREE.Float32BufferAttribute( position, 3 ) );
+
+        const lineMaterial = new THREE.LineBasicMaterial( { color: 0xffffff } );
+        const lines = new THREE.LineLoop( lineGeometry, lineMaterial );
+
+        this.pathLines = lines;
 
         /**
          * Load Meshes

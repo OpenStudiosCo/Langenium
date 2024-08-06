@@ -196,6 +196,9 @@ export default class Overworld extends SceneBase {
         cargo_ship
       );
     } );
+    l.current_scene.scene.add(
+      cargo_ships.pathLines
+    );
 
     // Setup ocean
     l.current_scene.scene_objects.ocean = new Ocean( extractors.extractorLocations );

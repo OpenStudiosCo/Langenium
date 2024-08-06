@@ -4,22 +4,29 @@
  * Uses setInterval to update UI elements so they don't choke the animation loop.
  */
 
+/**
+ * Vendor libs
+ */
 import Alpine from 'alpinejs';
 
-import Flight_Instruments from './ui/flight_instruments.js';
-import Main_Menu from './ui/main_menu.js';
- 
+/**
+ * Internal libs and helpers.
+ */
+import l from '@/helpers/l.js';
+import Flight_Instruments from '@/ui/flight_instruments.js';
+import Menus from '@/ui/menus.js';
+
 export default class UI {
 
     // Custom class for controlling flight control UI
     flight_instruments;
 
     // Control the menu pane, needed by touch controls which activate later.
-    main_menu;
+    menus;
 
     // Array of callbacks and data for updating UI
     update_queue;
-    
+
     // Function for performing UI updates
     updater;
 
@@ -37,40 +44,40 @@ export default class UI {
      * 
      * Adds itself to the ui classes update queue.
      */
-    show_flight_instruments() {        
-        window.l.current_scene.ui.flight_instruments = new Flight_Instruments();
-        document.querySelector(window.l.current_scene.ui.flight_instruments.containerSelector + ' .control').classList.add('active');
+    show_flight_instruments() {
+        l.ui.flight_instruments = new Flight_Instruments();
+        document.querySelector( l.ui.flight_instruments.containerSelector + ' .control' ).classList.add( 'active' );
 
-        window.l.current_scene.ui.update_queue.push({
-            callback: 'window.l.current_scene.ui.flight_instruments.update',
+        l.ui.update_queue.push( {
+            callback: 'l.ui.flight_instruments.update',
             data: []
-        });
+        } );
 
-        
+
     }
 
     /**
      * Deactivate Flight Instruments
      */
     hide_flight_instruments() {
-        document.querySelector(window.l.current_scene.ui.flight_instruments.containerSelector + ' .control').classList.remove('active');
-        window.l.current_scene.ui.flight_instruments = false;
+        document.querySelector( l.ui.flight_instruments.containerSelector + ' .control' ).classList.remove( 'active' );
+        l.ui.flight_instruments = false;
 
         // @todo: Remove specific updates instead of purging the whole queue.
-        window.l.current_scene.ui.update_queue = [];
+        l.ui.update_queue = [];
 
-        
+
     }
 
     /**
-     * Activate Main Menu
+     * Activate the game menu overlays.
      * 
-     * Called during game client boot up
+     * Called after game client boot up is complete.
      */
-    show_main_menu() {
-        window.l.current_scene.ui.main_menu = new Main_Menu();
+    show_menus() {
+        l.ui.menus = new Menus();
 
-        window.l.current_scene.ui.updater = setInterval( this.update, 1 / 60);
+        l.ui.updater = setInterval( this.update, 1 / 60 );
     }
 
     /**
@@ -79,10 +86,10 @@ export default class UI {
      * Runs on setInterval
      */
     update() {
-        window.l.current_scene.ui.update_queue.forEach((current_update, i) => {
-            _execute(current_update.callback, current_update.data, window);
-        });
-            
+        l.ui.update_queue.forEach( ( current_update, i ) => {
+            _execute( current_update.callback, current_update.data, window );
+        } );
+
     }
 
 }

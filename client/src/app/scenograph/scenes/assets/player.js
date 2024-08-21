@@ -136,8 +136,8 @@ export default class Player {
 
         trailMaterial.transparent = true;
 
-        trailMaterial.uniforms.headColor.value.set( 255 / 255, 212 / 255, 148 / 255, .8 ); // RGBA.
-        trailMaterial.uniforms.tailColor.value.set( 132 / 255, 42 / 255, 36 / 255, .0 ); // RGBA.
+        trailMaterial.uniforms.headColor.value.set( 255 / 255, 212 / 255, 148 / 255, 1. ); // RGBA.
+        trailMaterial.uniforms.tailColor.value.set( 132 / 255, 42 / 255, 36 / 255, .8 ); // RGBA.
 
         // specify length of trail
         const trailLength = 4;

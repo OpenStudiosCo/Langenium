@@ -189,15 +189,20 @@ export default class Overworld extends SceneBase {
 
     // Setup Cargo Ships.
     let cargo_ships = new CargoShips();
-    l.current_scene.scene_objects.cargo_ships = await cargo_ships.getAll();
+    await cargo_ships.getAll();
+    l.current_scene.scene_objects.cargo_ships = cargo_ships.instances;
 
     l.current_scene.scene_objects.cargo_ships.forEach( async ( cargo_ship, i ) => {
       l.current_scene.scene.add(
         cargo_ship
       );
     } );
-    l.current_scene.scene.add(
-      cargo_ships.pathLines
+    // l.current_scene.scene.add(
+    //   cargo_ships.pathLines
+    // );
+
+    l.current_scene.animation_queue.push(
+      cargo_ships.animate
     );
 
     // Setup ocean

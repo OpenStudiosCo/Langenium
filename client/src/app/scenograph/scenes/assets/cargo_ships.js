@@ -17,6 +17,9 @@ import { SUBTRACTION, Brush, Evaluator } from 'three-bvh-csg';
 
 export default class CargoShips {
 
+    // THREE.Mesh clones
+    instances;
+
     // Array of three.vector3's defining X/Z coordinates and radius of where extractors are in the ocean.
     locations;
 
@@ -26,6 +29,8 @@ export default class CargoShips {
     // @instance YUKA.Path.
     path;
 
+    // Boolean flag to indicate whether this class is done loading.
+
     // The scale of the mesh.
     size;
 
@@ -33,6 +38,7 @@ export default class CargoShips {
     targets;
 
     constructor() {
+        this.instances = [];
         this.ready = false;
         this.size = 1000;
 
@@ -44,38 +50,45 @@ export default class CargoShips {
             new THREE.Vector3( -34000, -1500, this.size * 10 ),
         ];
 
-        this.path = new YUKA.Path();
-        this.path.loop = true;
+    }
+
+    /**
+     * Paths
+     */
+    getPath() {
+        let path = new YUKA.Path();
+        path.loop = true;
+
+        // Add the union platform
+        const platform_location = l.current_scene.scene_objects.platform.mesh.position;
+        path.add( new YUKA.Vector3( platform_location.x, 0, platform_location.z ) );
+
+        l.current_scene.scene_objects.extractors.forEach( (extractor) => {
+            path.add( new YUKA.Vector3( extractor.position.x, 0, extractor.position.z ) );
+        });
+        path.add( new YUKA.Vector3( platform_location.x, 0, platform_location.z ) );
+
+        return path;
     }
 
     async getAll() {
-        /**
-         * Paths
-         */
-        // Add the union platform
-        const platform_location = l.current_scene.scene_objects.platform.mesh.position;
-        this.path.add( new YUKA.Vector3( platform_location.x, 0, platform_location.z ) );
+        
+        let path = this.getPath();
 
-        l.current_scene.scene_objects.extractors.forEach( (extractor) => {
-            this.path.add( new YUKA.Vector3( extractor.position.x, 0, extractor.position.z ) );
-            
-        });
-        this.path.add( new YUKA.Vector3( platform_location.x, 0, platform_location.z ) );
+        const path_points = [];
 
-        const position = [];
+        for ( let i = 0; i < path._waypoints.length; i ++ ) {
 
-        for ( let i = 0; i < this.path._waypoints.length; i ++ ) {
+            const waypoint = path._waypoints[ i ];
 
-            const waypoint = this.path._waypoints[ i ];
-
-            position.push( waypoint.x, waypoint.y, waypoint.z );
+            path_points.push( waypoint.x, waypoint.y, waypoint.z );
 
         }
 
         const lineGeometry = new THREE.BufferGeometry();
-        lineGeometry.setAttribute( 'position', new THREE.Float32BufferAttribute( position, 3 ) );
+        lineGeometry.setAttribute( 'position', new THREE.Float32BufferAttribute( path_points, 3 ) );
 
-        const lineMaterial = new THREE.LineBasicMaterial( { color: 0xffffff } );
+        const lineMaterial = new THREE.LineBasicMaterial( { color: 0xffff00 } );
         const lines = new THREE.LineLoop( lineGeometry, lineMaterial );
 
         this.pathLines = lines;
@@ -83,38 +96,43 @@ export default class CargoShips {
         /**
          * Load Meshes
          */
-        let meshes = [];
 
         await this.load();
 
         this.locations.forEach( async ( location, i ) => {
+            
             let mesh = this.mesh.clone();
+            mesh.userData.path = this.getPath();
+            
+            // Bump each starting point for the cargo ships
+            for ( let j = 0; j < i; j++) {
+                mesh.userData.path.advance();
+            }
 
-            mesh.position.x = location.x;
-            mesh.position.z = location.y;
+            mesh.position.copy( mesh.userData.path.current() );
             mesh.name = 'Cargo Ship #' + ( i + 1 );
 
             mesh.userData.vehicle = new YUKA.Vehicle();
-            mesh.userData.vehicle.position.z = mesh.position.z;
-            mesh.userData.vehicle.position.x = mesh.position.x;
-            mesh.userData.vehicle.maxSpeed = 15000;
-            mesh.userData.vehicle.boundingRadius = 2000;
+            mesh.userData.vehicle.position.copy( mesh.userData.path.current() );
+            mesh.userData.vehicle.maxSpeed = 150;
+            mesh.userData.vehicle.maxTurnRate = mesh.userData.vehicle.maxSpeed * Math.PI;
+            mesh.userData.vehicle.boundingRadius = this.size * Math.PI;
             mesh.userData.vehicle.setRenderComponent( mesh, this.sync );
-            //mesh.userData.vehicle.smoother = new YUKA.Smoother( 20 );
+            mesh.userData.vehicle.smoother = new YUKA.Smoother( 20 );
 
             l.scenograph.entityManager.add( mesh.userData.vehicle );
 
-            const followPathBehavior = new YUKA.FollowPathBehavior( this.path );
-            mesh.userData.vehicle.steering.add( followPathBehavior );
-            // const wanderBehavior = new YUKA.WanderBehavior();
-            // mesh.userData.vehicle.steering.add( wanderBehavior );
+            // Step forward in the path's internal pointers to the next point.
+            mesh.userData.path.advance();
+
+            const arriveBehavior = new YUKA.ArriveBehavior( mesh.userData.path.current(), 25., this.size * 2 );
+			mesh.userData.vehicle.steering.add( arriveBehavior );
 
             mesh.matrixAutoUpdate = false;
 
-            meshes.push( mesh );
+            this.instances.push( mesh );
         } );
 
-        return meshes;
     }
 
     async load() {
@@ -174,8 +192,24 @@ export default class CargoShips {
     sync( entity, renderComponent ) {
 
         renderComponent.matrix.copy( entity.worldMatrix );
+        renderComponent.position.copy( entity.position);
     
     }
     
+    animate() {
+
+        l.current_scene.scene_objects.cargo_ships.forEach( ( cargo_ship ) => {
+            
+            if ( cargo_ship.position.distanceTo(cargo_ship.userData.vehicle.steering.behaviors[0].target) < 2000 ) {
+                cargo_ship.userData.vehicle.steering.clear();
+                cargo_ship.userData.path.advance();
+
+                const arriveBehavior = new YUKA.ArriveBehavior( cargo_ship.userData.path.current(), 25., 2000 );
+			    cargo_ship.userData.vehicle.steering.add( arriveBehavior );
+
+            }
+        } );
+ 
+    }
     
 }

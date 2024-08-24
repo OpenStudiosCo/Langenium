@@ -60,7 +60,7 @@ export default class Ocean {
 
     animate( currentTime ) {
         // Iterate the sky uniforms to animate it.
-        l.current_scene.scene_objects.ocean.water.material.uniforms.time.value += 1.0 / 60;
+        l.current_scene.objects.ocean.water.material.uniforms.time.value += 1.0 / 60;
     }
 
 }

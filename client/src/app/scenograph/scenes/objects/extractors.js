@@ -188,7 +188,7 @@ export default class Extractor {
 
     animate( currentTime ) {
 
-        l.current_scene.scene_objects.extractors.forEach( ( extractor, i ) => {
+        l.current_scene.objects.extractors.forEach( ( extractor, i ) => {
             let inner = extractor.getObjectByName( 'inner' );
             let outer = extractor.getObjectByName( 'outer' );
             inner.material.uniforms.time.value += 0.0000025;

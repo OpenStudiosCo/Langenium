@@ -68,26 +68,24 @@ export default class Debugging_Tools {
             expanded: false,
         } );
 
-
-
         const shipState = tab.pages[ 2 ].addFolder( {
             title: 'Ship Controls',
             expanded: false,
         } );
 
-        shipState.addBinding( l.current_scene.scene_objects.player.state.controls, 'throttleUp', {
+        shipState.addBinding( l.current_scene.objects.player.state.controls, 'throttleUp', {
             readonly: true,
             interval: 200
         } )
-        shipState.addBinding( l.current_scene.scene_objects.player.state.controls, 'throttleDown', {
+        shipState.addBinding( l.current_scene.objects.player.state.controls, 'throttleDown', {
             readonly: true,
             interval: 200
         } )
-        shipState.addBinding( l.current_scene.scene_objects.player.state.controls, 'moveLeft', {
+        shipState.addBinding( l.current_scene.objects.player.state.controls, 'moveLeft', {
             readonly: true,
             interval: 200
         } )
-        shipState.addBinding( l.current_scene.scene_objects.player.state.controls, 'moveRight', {
+        shipState.addBinding( l.current_scene.objects.player.state.controls, 'moveRight', {
             readonly: true,
             interval: 200
         } )

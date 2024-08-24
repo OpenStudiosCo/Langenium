@@ -10,26 +10,27 @@ import l from '@/helpers/l.js';
 import SceneBase from "@/scenograph/scenes/base";
 
 /**
- * Scene assets
+ * Scene objects
  */
-import CargoShips from "@/scenograph/scenes/assets/cargo_ships";
-import Extractors from "@/scenograph/scenes/assets/extractors";
-import Ocean from "@/scenograph/scenes/assets/ocean";
-import Platform from "@/scenograph/scenes/assets/platform";
-import Refineries from "@/scenograph/scenes/assets/refineries";
-import Sky from "@/scenograph/scenes/assets/sky";
-import Player from "@/scenograph/scenes/assets/player";
-import Bot from "@/scenograph/scenes/assets/bot";
+import Bot from "@/scenograph/scenes/objects/bot";
+import CargoShips from "@/scenograph/scenes/objects/cargo_ships";
+import Extractors from "@/scenograph/scenes/objects/extractors";
+import Ocean from "@/scenograph/scenes/objects/ocean";
+import Platform from "@/scenograph/scenes/objects/platform";
+import Refineries from "@/scenograph/scenes/objects/refineries";
+import Sky from "@/scenograph/scenes/objects/sky";
+import Player from "@/scenograph/scenes/objects/player";
+
 
 /**
- * Preloader assets
+ * Preloader objects
  */
 import {
   createDoor,
   createOfficeRoom,
   doorHeight,
   doorWidth,
-} from "@/scenograph/scenes/assets/office_room";
+} from "@/scenograph/scenes/objects/office_room";
 
 /**
  * Scene controllers
@@ -48,7 +49,7 @@ export default class Overworld extends SceneBase {
   constructor() {
     super();
 
-    this.scene_objects.players = [];
+    this.objects.players = [];
   }
 
   async setup() {
@@ -58,31 +59,31 @@ export default class Overworld extends SceneBase {
 
     l.scenograph.effects.init();
 
-    l.current_scene.scene_objects.door = await createDoor();
-    l.current_scene.scene_objects.door.position.set(
+    l.current_scene.objects.door = await createDoor();
+    l.current_scene.objects.door.position.set(
       -doorWidth / 2,
       -5 + doorHeight / 2,
       -15 + l.current_scene.room_depth / 2
     );
-    l.current_scene.scene.add( l.current_scene.scene_objects.door );
+    l.current_scene.scene.add( l.current_scene.objects.door );
 
     // Setup skybox
-    l.current_scene.scene_objects.sky = new Sky();
+    l.current_scene.objects.sky = new Sky();
     l.current_scene.scene.add(
-      l.current_scene.scene_objects.sky.mesh
+      l.current_scene.objects.sky.mesh
     );
     l.current_scene.animation_queue.push(
-      l.current_scene.scene_objects.sky.animate
+      l.current_scene.objects.sky.animate
     );
 
     // Setup Player
-    l.current_scene.scene_objects.player = new Player();
-    await l.current_scene.scene_objects.player.load();
+    l.current_scene.objects.player = new Player();
+    await l.current_scene.objects.player.load();
     l.current_scene.scene.add(
-      l.current_scene.scene_objects.player.mesh
+      l.current_scene.objects.player.mesh
     );
     l.current_scene.animation_queue.push(
-      l.current_scene.scene_objects.player.animate
+      l.current_scene.objects.player.animate
     );
 
     // let scale = 500;
@@ -93,7 +94,7 @@ export default class Overworld extends SceneBase {
     //   visible: false
     // } );
 
-    // l.current_scene.scene_objects.boundaries = [];
+    // l.current_scene.objects.boundaries = [];
 
     // for (var i = 0; i < 4; i++) {
     //   let boundary = new THREE.Mesh( geometry, material.clone() );
@@ -129,41 +130,41 @@ export default class Overworld extends SceneBase {
     //     boxHelper
     //   );
 
-		// 	l.current_scene.scene_objects.boundaries.push( boundary );
+		// 	l.current_scene.objects.boundaries.push( boundary );
 
     // }
 
     // Setup Bot
     // @todo: refactor to support more
-    l.current_scene.scene_objects.bot = new Bot();
-    await l.current_scene.scene_objects.bot.load();
+    l.current_scene.objects.bot = new Bot();
+    await l.current_scene.objects.bot.load();
     l.current_scene.scene.add(
-      l.current_scene.scene_objects.bot.mesh
+      l.current_scene.objects.bot.mesh
     );
     l.current_scene.animation_queue.push(
-      l.current_scene.scene_objects.bot.animate
+      l.current_scene.objects.bot.animate
     );
 
 
     // Setup Platform
-    l.current_scene.scene_objects.platform = new Platform();
-    await l.current_scene.scene_objects.platform.load();
-    l.current_scene.scene_objects.platform.mesh.position.z = -65000;
-    l.current_scene.scene_objects.platform.mesh.position.x = -35000;
-    l.current_scene.scene_objects.platform.mesh.rotation.y = - Math.PI / 4;
+    l.current_scene.objects.platform = new Platform();
+    await l.current_scene.objects.platform.load();
+    l.current_scene.objects.platform.mesh.position.z = -65000;
+    l.current_scene.objects.platform.mesh.position.x = -35000;
+    l.current_scene.objects.platform.mesh.rotation.y = - Math.PI / 4;
     l.current_scene.scene.add(
-      l.current_scene.scene_objects.platform.mesh
+      l.current_scene.objects.platform.mesh
     );
     l.current_scene.animation_queue.push(
-      l.current_scene.scene_objects.platform.animate
+      l.current_scene.objects.platform.animate
     );
 
 
     // Setup Extractors.
     let extractors = new Extractors();
-    l.current_scene.scene_objects.extractors = await extractors.getAll();
+    l.current_scene.objects.extractors = await extractors.getAll();
 
-    l.current_scene.scene_objects.extractors.forEach( async ( extractor, i ) => {
+    l.current_scene.objects.extractors.forEach( async ( extractor, i ) => {
       l.current_scene.scene.add(
         extractor
       );
@@ -175,9 +176,9 @@ export default class Overworld extends SceneBase {
 
     // Setup Refineries.
     let refineries = new Refineries();
-    l.current_scene.scene_objects.refineries = await refineries.getAll();
+    l.current_scene.objects.refineries = await refineries.getAll();
 
-    l.current_scene.scene_objects.refineries.forEach( async ( refinery, i ) => {
+    l.current_scene.objects.refineries.forEach( async ( refinery, i ) => {
       l.current_scene.scene.add(
         refinery
       );
@@ -190,9 +191,9 @@ export default class Overworld extends SceneBase {
     // Setup Cargo Ships.
     let cargo_ships = new CargoShips();
     await cargo_ships.getAll();
-    l.current_scene.scene_objects.cargo_ships = cargo_ships.instances;
+    l.current_scene.objects.cargo_ships = cargo_ships.instances;
 
-    l.current_scene.scene_objects.cargo_ships.forEach( async ( cargo_ship, i ) => {
+    l.current_scene.objects.cargo_ships.forEach( async ( cargo_ship, i ) => {
       l.current_scene.scene.add(
         cargo_ship
       );
@@ -206,27 +207,27 @@ export default class Overworld extends SceneBase {
     );
 
     // Setup ocean
-    l.current_scene.scene_objects.ocean = new Ocean( extractors.extractorLocations );
+    l.current_scene.objects.ocean = new Ocean( extractors.extractorLocations );
     l.current_scene.scene.add(
-      l.current_scene.scene_objects.ocean.water
+      l.current_scene.objects.ocean.water
     );
     l.current_scene.animation_queue.push(
-      l.current_scene.scene_objects.ocean.animate
+      l.current_scene.objects.ocean.animate
     );
 
     // Adjust ambient light intensity
-    l.current_scene.scene_objects.ambientLight = new THREE.AmbientLight(
+    l.current_scene.objects.ambientLight = new THREE.AmbientLight(
       l.config.settings.fast ? 0x555555 : 0x444444
     ); // Dim ambient light color
-    l.current_scene.scene_objects.ambientLight.name = 'Main Light';
-    l.current_scene.scene_objects.ambientLight.intensity = Math.PI;
+    l.current_scene.objects.ambientLight.name = 'Main Light';
+    l.current_scene.objects.ambientLight.intensity = Math.PI;
     l.current_scene.scene.add(
-      l.current_scene.scene_objects.ambientLight
+      l.current_scene.objects.ambientLight
     );
 
-    l.current_scene.scene_objects.screens_loaded = 0;
-    l.current_scene.scene_objects.room = await createOfficeRoom();
-    l.current_scene.scene.add( l.current_scene.scene_objects.room );
+    l.current_scene.objects.screens_loaded = 0;
+    l.current_scene.objects.room = await createOfficeRoom();
+    l.current_scene.scene.add( l.current_scene.objects.room );
 
     // Setup triggers
     setupTriggers();
@@ -246,7 +247,7 @@ export default class Overworld extends SceneBase {
       if (
         loadersComplete &&
         // Check door sign is loaded up.
-        l.current_scene.scene_objects.door_sign
+        l.current_scene.objects.door_sign
       ) {
         l.current_scene.ready = true;
         clearTimeout( bootWaiter );

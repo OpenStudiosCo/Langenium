@@ -78,9 +78,9 @@ export async function createDoor() {
         rightSideFrame.position.set( ( doorWidth / 2 ) + frameWidth / 2, - 5 + ( doorHeight / 2 ) - frameWidth / 2, 0 );
         frameGroup.add( rightSideFrame );
 
-        l.current_scene.scene_objects.door_frame = frameGroup;
+        l.current_scene.objects.door_frame = frameGroup;
 
-        l.current_scene.scene.add( l.current_scene.scene_objects.door_frame );
+        l.current_scene.scene.add( l.current_scene.objects.door_frame );
 
         l.current_scene.loaders.stats.textures.loaded++;
         l.current_scene.scene.visible = true;
@@ -154,7 +154,7 @@ export async function createDoor() {
             }
 
         }
-        l.current_scene.scene_objects.door_sign = group;
+        l.current_scene.objects.door_sign = group;
 
         doorParent.add( group );
         // let backWallLogo = group.clone();
@@ -164,7 +164,7 @@ export async function createDoor() {
         // backWallLogo.position.z = 1.5;
         // backWallLogo.name = 'backWallLogo';
 
-        // l.current_scene.scene_objects.wallGroup.add(backWallLogo);
+        // l.current_scene.objects.wallGroup.add(backWallLogo);
 
         l.current_scene.loaders.stats.svg.loaded++;
     } );

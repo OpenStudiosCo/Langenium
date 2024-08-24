@@ -146,7 +146,7 @@ export default class Bot {
         const followPathBehavior = new YUKA.FollowPathBehavior( path );
         this.vehicle.steering.add( followPathBehavior );
 
-        // l.current_scene.scene_objects.boundaries.forEach( ( boundaryMesh ) => {
+        // l.current_scene.objects.boundaries.forEach( ( boundaryMesh ) => {
         //     const obstacle1 = new YUKA.GameEntity();
         //     obstacle1.position.copy( boundaryMesh.position );
             

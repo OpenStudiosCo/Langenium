@@ -118,7 +118,7 @@ function flickerEffect() {
      * Helper that runs several times to update sub object settings.
      */
     function updateFlickering( obj ) {
-        l.current_scene.scene_objects.door_sign.traverse( ( mesh ) => {
+        l.current_scene.objects.door_sign.traverse( ( mesh ) => {
             if ( mesh.isMesh ) {
                 // console.log(mesh);
                 // debugger;
@@ -218,7 +218,7 @@ function flickerEffect() {
  */
 function enterTheOffice() {
     let coords = { x: 15 + l.current_scene.room_depth / 2 }; // Start at (0, 0)
-    let targetZ = l.current_scene.scene_objects.player.default_camera_distance + l.current_scene.room_depth / 2;
+    let targetZ = l.current_scene.objects.player.default_camera_distance + l.current_scene.room_depth / 2;
     return new TWEEN.Tween( coords, false ) // Create a new tween that modifies 'coords'.
         .to( { x: targetZ }, l.config.settings.skipintro ? 0 : 1000 ) // Move to (300, 200) in 1 second.
         .easing( TWEEN.Easing.Quadratic.InOut ) // Use an easing function to make the animation smooth.
@@ -243,14 +243,14 @@ function enterTheOffice() {
             l.scenograph.cameras.player.updateProjectionMatrix();
         } )
         .onComplete( () => {
-            l.current_scene.scene_objects.room.material.forEach(
+            l.current_scene.objects.room.material.forEach(
                 ( material, i ) => {
                     if (
                         material.opacity > 0 &&
                         material.name != "floor" &&
                         material.name != "ceiling"
                     ) {
-                        l.current_scene.scene_objects.room.material.side =
+                        l.current_scene.objects.room.material.side =
                             THREE.BackSide;
                     }
                 }
@@ -295,7 +295,7 @@ function slideBack() {
  * Opens the door.
  */
 function openDoor( doorRotation ) {
-    return new TWEEN.Tween( l.current_scene.scene_objects.door.rotation )
+    return new TWEEN.Tween( l.current_scene.objects.door.rotation )
         .to( { y: doorRotation }, l.config.settings.skipintro ? 0 : 500 ) // Set the duration of the animation
         .onComplete( () => {
             l.current_scene.tweens.enterTheOffice.start();
@@ -311,7 +311,7 @@ function dollyUp() {
     return new TWEEN.Tween( l.scenograph.cameras.player.position )
         .to( { y: 10.775 }, l.config.settings.skipintro ? 0 : 500 ) // Set the duration of the animation
         .onUpdate( () => {
-            //l.scenograph.cameras.player.lookAt(l.current_scene.scene_objects.player.mesh.position);
+            //l.scenograph.cameras.player.lookAt(l.current_scene.objects.player.mesh.position);
             l.scenograph.cameras.player.updateProjectionMatrix();
         } )
         .onComplete( () => {
@@ -330,19 +330,19 @@ function dollyUp() {
  */
 function sinkOffice() {
     let coords = {
-        y: l.current_scene.scene_objects.room.position.y
+        y: l.current_scene.objects.room.position.y
     };
     return new TWEEN.Tween( coords )
         .to( { y: -50 }, l.config.settings.skipintro ? 0 : 10000 ) // Set the duration of the animation
         .onUpdate( () => {
-            l.current_scene.scene_objects.room.position.y = coords.y;
-            l.current_scene.scene_objects.door.position.y = coords.y;
-            l.current_scene.scene_objects.door_frame.position.y = coords.y;
+            l.current_scene.objects.room.position.y = coords.y;
+            l.current_scene.objects.door.position.y = coords.y;
+            l.current_scene.objects.door_frame.position.y = coords.y;
         } )
         .onComplete( () => {
-            l.current_scene.scene.remove( l.current_scene.scene_objects.room );
-            l.current_scene.scene.remove( l.current_scene.scene_objects.door );
-            l.current_scene.scene.remove( l.current_scene.scene_objects.door_frame );
+            l.current_scene.scene.remove( l.current_scene.objects.room );
+            l.current_scene.scene.remove( l.current_scene.objects.door );
+            l.current_scene.scene.remove( l.current_scene.objects.door_frame );
 
             if ( l.config.settings.debug ) {
                 l.ui.menus.scene_overview.buildTable();

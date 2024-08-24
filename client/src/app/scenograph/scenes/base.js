@@ -172,7 +172,7 @@ export default class SceneBase {
        * 
        * @memberof Object
        */
-      this.scene_objects = { };
+      this.objects = { };
       
       /**
        * Currently selected object.

@@ -8,7 +8,7 @@
  * Internal libs and helpers.
  */
 import l from '@/helpers/l.js';
-import { createOfficeRoom } from '@/scenograph/scenes/assets/office_room';
+import { createOfficeRoom } from '@/scenograph/scenes/objects/office_room';
 import { calculateAdjustedGapSize, setCameraFOV } from '@/helpers/math.js';
 
 export default class Events {
@@ -117,7 +117,7 @@ export default class Events {
         l.scenograph.cameras.player.updateProjectionMatrix();
     
         const newRoom = await createOfficeRoom();
-        l.current_scene.scene_objects.room.geometry = newRoom.geometry;
+        l.current_scene.objects.room.geometry = newRoom.geometry;
     
         if ( !l.current_scene.started ) {
             if ( l.scenograph.cameras.player.aspect < 0.88 ) {
@@ -129,8 +129,8 @@ export default class Events {
         }
         else {
     
-            l.current_scene.scene_objects.door.position.z = - 15 + ( l.current_scene.room_depth / 2 );
-            l.current_scene.scene_objects.door_frame.position.z = - 15 + ( l.current_scene.room_depth / 2 );
+            l.current_scene.objects.door.position.z = - 15 + ( l.current_scene.room_depth / 2 );
+            l.current_scene.objects.door_frame.position.z = - 15 + ( l.current_scene.room_depth / 2 );
         }
     }
 }

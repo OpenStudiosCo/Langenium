@@ -316,7 +316,7 @@ export default class Player {
             .to( target, l.config.settings.skipintro ? 0 : 2000 ) // Move to (300, 200) in 1 second.
             .easing( TWEEN.Easing.Circular.Out ) // Use an easing function to make the animation smooth.
             .onUpdate( () => {
-                l.current_scene.scene_objects.player.mesh.position.y = coords.y;
+                l.current_scene.objects.player.mesh.position.y = coords.y;
             } )
             .onComplete( () => {
                 //console.log('ready');
@@ -334,7 +334,7 @@ export default class Player {
 
                 // Called after tween.js updates 'coords'.
                 // Move 'box' to the position described by 'coords' with a CSS translation.
-                l.current_scene.scene_objects.player.mesh.position.z = coords.x;
+                l.current_scene.objects.player.mesh.position.z = coords.x;
 
             } )
             .onComplete( () => {
@@ -354,11 +354,11 @@ export default class Player {
                 }
 
                 // Set the ship as ready.
-                l.current_scene.scene_objects.player.ready = true;
-                l.current_scene.scene_objects.player.camera_distance = l.current_scene.scene_objects.player.default_camera_distance + ( l.current_scene.room_depth / 2 );
-                l.current_scene.scene_objects.player.state.position.x = l.current_scene.scene_objects.player.mesh.position.x;
-                l.current_scene.scene_objects.player.state.position.y = l.current_scene.scene_objects.player.mesh.position.y;
-                l.current_scene.scene_objects.player.state.position.z = l.current_scene.scene_objects.player.mesh.position.z;
+                l.current_scene.objects.player.ready = true;
+                l.current_scene.objects.player.camera_distance = l.current_scene.objects.player.default_camera_distance + ( l.current_scene.room_depth / 2 );
+                l.current_scene.objects.player.state.position.x = l.current_scene.objects.player.mesh.position.x;
+                l.current_scene.objects.player.state.position.y = l.current_scene.objects.player.mesh.position.y;
+                l.current_scene.objects.player.state.position.z = l.current_scene.objects.player.mesh.position.z;
             } );
     }
 
@@ -375,12 +375,12 @@ export default class Player {
         let changing = false;
         for ( const [ controlName, keyMapping ] of Object.entries( mappings ) ) {
             if ( l.scenograph.controls.keyboard.pressed( keyMapping ) ) {
-                l.current_scene.scene_objects.player.state.controls[ controlName ] = true;
+                l.current_scene.objects.player.state.controls[ controlName ] = true;
                 changing = true;
             }
             else {
 
-                l.current_scene.scene_objects.player.state.controls[ controlName ] = false;
+                l.current_scene.objects.player.state.controls[ controlName ] = false;
 
                 if ( l.scenograph.controls.touch ) {
                     // Check if any touchpad controls are being pressed
@@ -394,54 +394,54 @@ export default class Player {
                     ) {
                         changing = true;
                         if ( l.scenograph.controls.touch.controls.moveUp ) {
-                            l.current_scene.scene_objects.player.state.controls.moveUp = true;
+                            l.current_scene.objects.player.state.controls.moveUp = true;
                         }
                         if ( l.scenograph.controls.touch.controls.moveDown ) {
-                            l.current_scene.scene_objects.player.state.controls.moveDown = true;
+                            l.current_scene.objects.player.state.controls.moveDown = true;
                         }
                         if ( l.scenograph.controls.touch.controls.moveForward ) {
-                            l.current_scene.scene_objects.player.state.controls.throttleUp = true;
+                            l.current_scene.objects.player.state.controls.throttleUp = true;
                         }
                         if ( l.scenograph.controls.touch.controls.moveBackward ) {
-                            l.current_scene.scene_objects.player.state.controls.throttleDown = true;
+                            l.current_scene.objects.player.state.controls.throttleDown = true;
                         }
                         if ( l.scenograph.controls.touch.controls.moveLeft ) {
-                            l.current_scene.scene_objects.player.state.controls.moveLeft = true;
+                            l.current_scene.objects.player.state.controls.moveLeft = true;
                         }
                         if ( l.scenograph.controls.touch.controls.moveRight ) {
-                            l.current_scene.scene_objects.player.state.controls.moveRight = true;
+                            l.current_scene.objects.player.state.controls.moveRight = true;
                         }
                     }
 
                 }
             }
         }
-        l.current_scene.scene_objects.player.state.controls.changing = changing;
+        l.current_scene.objects.player.state.controls.changing = changing;
 
     }
 
     updateAnimation( delta ) {
-        if ( l.current_scene.scene_objects.player.mixer ) {
-            l.current_scene.scene_objects.player.mixer.update( delta );
+        if ( l.current_scene.objects.player.mixer ) {
+            l.current_scene.objects.player.mixer.update( delta );
         }
 
         // Rock the ship forward and back when moving horizontally
-        if ( l.current_scene.scene_objects.player.state.controls.throttleDown || l.current_scene.scene_objects.player.state.controls.throttleUp ) {
-            let pitchChange = l.current_scene.scene_objects.player.state.controls.throttleUp ? -1 : 1;
-            if ( Math.abs( l.current_scene.scene_objects.player.mesh.rotation.x ) < 1 / 4 ) {
-                l.current_scene.scene_objects.player.mesh.rotation.x += pitchChange / 10 / 180;
+        if ( l.current_scene.objects.player.state.controls.throttleDown || l.current_scene.objects.player.state.controls.throttleUp ) {
+            let pitchChange = l.current_scene.objects.player.state.controls.throttleUp ? -1 : 1;
+            if ( Math.abs( l.current_scene.objects.player.mesh.rotation.x ) < 1 / 4 ) {
+                l.current_scene.objects.player.mesh.rotation.x += pitchChange / 10 / 180;
             }
         }
 
         // Rock the ship forward and back when moving vertically
         if (
-            l.current_scene.scene_objects.player.state.controls.moveDown
+            l.current_scene.objects.player.state.controls.moveDown
             ||
-            l.current_scene.scene_objects.player.state.controls.moveUp
+            l.current_scene.objects.player.state.controls.moveUp
         ) {
-            let elevationChange = l.current_scene.scene_objects.player.state.controls.moveDown ? -1 : 1;
-            if ( Math.abs( l.current_scene.scene_objects.player.mesh.rotation.x ) < 1 / 8 ) {
-                l.current_scene.scene_objects.player.mesh.rotation.x += elevationChange / 10 / 180;
+            let elevationChange = l.current_scene.objects.player.state.controls.moveDown ? -1 : 1;
+            if ( Math.abs( l.current_scene.objects.player.mesh.rotation.x ) < 1 / 8 ) {
+                l.current_scene.objects.player.mesh.rotation.x += elevationChange / 10 / 180;
             }
 
             if ( Math.abs( l.scenograph.cameras.player.rotation.x ) < 1 / 8 ) {
@@ -457,77 +457,77 @@ export default class Player {
 
     // Update the position of the aircraft to spot determined by game logic.
     updateMesh() {
-        l.current_scene.scene_objects.player.mesh.position.x = l.current_scene.scene_objects.player.state.position.x;
-        l.current_scene.scene_objects.player.mesh.position.y = l.current_scene.scene_objects.player.state.position.y;
-        l.current_scene.scene_objects.player.mesh.position.z = l.current_scene.scene_objects.player.state.position.z;
+        l.current_scene.objects.player.mesh.position.x = l.current_scene.objects.player.state.position.x;
+        l.current_scene.objects.player.mesh.position.y = l.current_scene.objects.player.state.position.y;
+        l.current_scene.objects.player.mesh.position.z = l.current_scene.objects.player.state.position.z;
 
-        l.current_scene.scene_objects.player.mesh.rotation.x = l.current_scene.scene_objects.player.state.rotation.x;
-        l.current_scene.scene_objects.player.mesh.rotation.y = l.current_scene.scene_objects.player.state.rotation.y;
-        l.current_scene.scene_objects.player.mesh.rotation.z = l.current_scene.scene_objects.player.state.rotation.z;
+        l.current_scene.objects.player.mesh.rotation.x = l.current_scene.objects.player.state.rotation.x;
+        l.current_scene.objects.player.mesh.rotation.y = l.current_scene.objects.player.state.rotation.y;
+        l.current_scene.objects.player.mesh.rotation.z = l.current_scene.objects.player.state.rotation.z;
     }
 
     // Runs on the main animation loop
     animate( delta ) {
 
-        if ( l.current_scene.scene_objects.player.ready ) {
+        if ( l.current_scene.objects.player.ready ) {
 
             if ( l.current_scene.settings.game_controls ) {
                 // Detect keyboard input and pass it to the ship state model.
-                l.current_scene.scene_objects.player.updateControls();
+                l.current_scene.objects.player.updateControls();
 
                 if ( l.scenograph.modes.multiplayer.connected ) {
-                    l.scenograph.modes.multiplayer.socket.emit( 'input', l.current_scene.scene_objects.player.state.controls );
+                    l.scenograph.modes.multiplayer.socket.emit( 'input', l.current_scene.objects.player.state.controls );
                 }
             }
 
-            l.current_scene.scene_objects.player.updateAnimation( delta );
+            l.current_scene.objects.player.updateAnimation( delta );
 
             // Update the ships state model.
-            let [ rY, tY, tZ ] = l.current_scene.scene_objects.player.state.move( l.current_scene.stats.currentTime - l.current_scene.stats.lastTime );
-            l.current_scene.scene_objects.player.updateMesh();
+            let [ rY, tY, tZ ] = l.current_scene.objects.player.state.move( l.current_scene.stats.currentTime - l.current_scene.stats.lastTime );
+            l.current_scene.objects.player.updateMesh();
 
             l.scenograph.cameras.updatePlayer( rY, tY, tZ );
 
-            if ( l.current_scene.scene_objects.player.trail ) {
+            if ( l.current_scene.objects.player.trail ) {
 
                 // Fix the trail being too far behind.
                 let trailOffset = 0;
 
                 // Only offset the trail effect if we are going forward which is (z-1) in numerical terms
-                if ( l.current_scene.scene_objects.player.state.airSpeed < 0 ) {
+                if ( l.current_scene.objects.player.state.airSpeed < 0 ) {
 
                     // Update ship thruster
-                    l.current_scene.scene_objects.player.animateThruster( l.current_scene.scene_objects.player.state.airSpeed, l.current_scene.scene_objects.player.thruster.centralConeBurner, .5 );
-                    l.current_scene.scene_objects.player.animateThruster( l.current_scene.scene_objects.player.state.airSpeed, l.current_scene.scene_objects.player.thruster.outerCylBurner, .5 );
+                    l.current_scene.objects.player.animateThruster( l.current_scene.objects.player.state.airSpeed, l.current_scene.objects.player.thruster.centralConeBurner, .5 );
+                    l.current_scene.objects.player.animateThruster( l.current_scene.objects.player.state.airSpeed, l.current_scene.objects.player.thruster.outerCylBurner, .5 );
 
-                    l.current_scene.scene_objects.player.spinThruster( l.current_scene.scene_objects.player.state.airSpeed, l.current_scene.scene_objects.player.thruster.rearConeBurner, -1 );
-                    l.current_scene.scene_objects.player.spinThruster( l.current_scene.scene_objects.player.state.airSpeed, l.current_scene.scene_objects.player.thruster.centralConeBurner, 1 );
-                    l.current_scene.scene_objects.player.spinThruster( l.current_scene.scene_objects.player.state.airSpeed, l.current_scene.scene_objects.player.thruster.outerCylBurner, -1 );
-                    l.current_scene.scene_objects.player.spinThruster( l.current_scene.scene_objects.player.state.airSpeed, l.current_scene.scene_objects.player.thruster.innerCylBurner, 1 );
+                    l.current_scene.objects.player.spinThruster( l.current_scene.objects.player.state.airSpeed, l.current_scene.objects.player.thruster.rearConeBurner, -1 );
+                    l.current_scene.objects.player.spinThruster( l.current_scene.objects.player.state.airSpeed, l.current_scene.objects.player.thruster.centralConeBurner, 1 );
+                    l.current_scene.objects.player.spinThruster( l.current_scene.objects.player.state.airSpeed, l.current_scene.objects.player.thruster.outerCylBurner, -1 );
+                    l.current_scene.objects.player.spinThruster( l.current_scene.objects.player.state.airSpeed, l.current_scene.objects.player.thruster.innerCylBurner, 1 );
 
                     // Limit playback rate to 5x as large values freak out the browser.
-                    l.current_scene.scene_objects.player.thruster.videoElement.playbackRate = Math.min( 5, 0.25 + Math.abs( l.current_scene.scene_objects.player.state.airSpeed ) );
+                    l.current_scene.objects.player.thruster.videoElement.playbackRate = Math.min( 5, 0.25 + Math.abs( l.current_scene.objects.player.state.airSpeed ) );
 
-                    trailOffset += l.current_scene.scene_objects.player.trail_position_z - Math.abs( l.current_scene.scene_objects.player.state.airSpeed );
+                    trailOffset += l.current_scene.objects.player.trail_position_z - Math.abs( l.current_scene.objects.player.state.airSpeed );
 
-                    l.current_scene.scene_objects.player.trail.mesh.material.uniforms.headColor.value.set( 255 / 255, 212 / 255, 148 / 255, .8 ); // RGBA.                    
+                    l.current_scene.objects.player.trail.mesh.material.uniforms.headColor.value.set( 255 / 255, 212 / 255, 148 / 255, .8 ); // RGBA.                    
                 }
                 else {
-                    l.current_scene.scene_objects.player.trail.mesh.material.uniforms.headColor.value.set( 255 / 255, 212 / 255, 148 / 255, 0 ); // RGBA.
+                    l.current_scene.objects.player.trail.mesh.material.uniforms.headColor.value.set( 255 / 255, 212 / 255, 148 / 255, 0 ); // RGBA.
                 }
 
                 // Update the trail position based on above calculations.
-                l.current_scene.scene_objects.player.trail.targetObject.position.y = l.current_scene.scene_objects.player.trail_position_y + l.current_scene.scene_objects.player.state.verticalSpeed;
-                l.current_scene.scene_objects.player.trail.targetObject.position.z = trailOffset;
+                l.current_scene.objects.player.trail.targetObject.position.y = l.current_scene.objects.player.trail_position_y + l.current_scene.objects.player.state.verticalSpeed;
+                l.current_scene.objects.player.trail.targetObject.position.z = trailOffset;
 
                 if ( rY != 0 ) {
-                    l.current_scene.scene_objects.player.trail.targetObject.position.x = rY * l.current_scene.scene_objects.player.state.airSpeed;
-                    l.current_scene.scene_objects.player.trail.targetObject.position.y += Math.abs( l.current_scene.scene_objects.player.trail.targetObject.position.x ) / 4;
+                    l.current_scene.objects.player.trail.targetObject.position.x = rY * l.current_scene.objects.player.state.airSpeed;
+                    l.current_scene.objects.player.trail.targetObject.position.y += Math.abs( l.current_scene.objects.player.trail.targetObject.position.x ) / 4;
                 }
                 else {
-                    l.current_scene.scene_objects.player.trail.targetObject.position.x = 0;
+                    l.current_scene.objects.player.trail.targetObject.position.x = 0;
                 }
-                l.current_scene.scene_objects.player.trail.update();
+                l.current_scene.objects.player.trail.update();
             }
 
         }

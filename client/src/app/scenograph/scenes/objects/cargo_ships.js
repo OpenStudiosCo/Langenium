@@ -60,10 +60,10 @@ export default class CargoShips {
         path.loop = true;
 
         // Add the union platform
-        const platform_location = l.current_scene.scene_objects.platform.mesh.position;
+        const platform_location = l.current_scene.objects.platform.mesh.position;
         path.add( new YUKA.Vector3( platform_location.x, 0, platform_location.z ) );
 
-        l.current_scene.scene_objects.extractors.forEach( (extractor) => {
+        l.current_scene.objects.extractors.forEach( (extractor) => {
             path.add( new YUKA.Vector3( extractor.position.x, 0, extractor.position.z ) );
         });
         path.add( new YUKA.Vector3( platform_location.x, 0, platform_location.z ) );
@@ -198,7 +198,7 @@ export default class CargoShips {
     
     animate() {
 
-        l.current_scene.scene_objects.cargo_ships.forEach( ( cargo_ship ) => {
+        l.current_scene.objects.cargo_ships.forEach( ( cargo_ship ) => {
             
             if ( cargo_ship.position.distanceTo(cargo_ship.userData.vehicle.steering.behaviors[0].target) < 2000 ) {
                 cargo_ship.userData.vehicle.steering.clear();

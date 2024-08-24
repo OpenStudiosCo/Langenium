@@ -131,7 +131,7 @@ export default class Refineries {
 
     animate( delta ) {
 
-        l.current_scene.scene_objects.refineries.forEach( ( refinery, i ) => {
+        l.current_scene.objects.refineries.forEach( ( refinery, i ) => {
             let inner = refinery.getObjectByName( 'inner' );
             inner.material.uniforms.time.value += 0.00005;
         } );

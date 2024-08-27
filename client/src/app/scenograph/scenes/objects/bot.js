@@ -168,6 +168,7 @@ export default class Bot {
     sync( entity, renderComponent ) {
 
         renderComponent.matrix.copy( entity.worldMatrix );
+        renderComponent.position.copy( entity.position );
 
     }
 }

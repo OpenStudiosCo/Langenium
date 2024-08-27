@@ -25,6 +25,7 @@ import Controls from "@/scenograph/controls.js";
 import Effects from "@/scenograph/effects";
 import Events from "./scenograph/events";
 import Materials from "@/scenograph/materials.js";
+import Overlays from "@/scenograph/overlays.js";
 
 import Debugging from '@/scenograph/modes/debugging.js';
 import Fast from '@/scenograph/modes/fast.js';
@@ -57,6 +58,8 @@ export default class Scenograph {
     materials;
 
     modes;
+
+    overlays;
 
     /**
      * @instance YUKA.EntityManager;
@@ -96,6 +99,11 @@ export default class Scenograph {
          * Custom materials.
          */
         this.materials = new Materials();
+
+        /**
+         * Overlays.
+         */
+        this.overlays = new Overlays();
 
         /**
          * Setup the different game modes (controllers)

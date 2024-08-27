@@ -192,7 +192,7 @@ export default class CargoShips {
     sync( entity, renderComponent ) {
 
         renderComponent.matrix.copy( entity.worldMatrix );
-        renderComponent.position.copy( entity.position);
+        renderComponent.position.copy( entity.position );
     
     }
     

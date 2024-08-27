@@ -87,9 +87,22 @@ export default class Scanners {
                 - (y / window.innerHeight) * 2 + 1,
                 0.5 // Depth (Z) value, which can be adjusted based on distance
             );
-            
 
+            // Unproject vector to 3D world space
+            vector.unproject(l.scenograph.cameras.active);
+
+            // Update symbol position
             trackedObject.symbol.position.copy(trackedObject.mesh.position);
+
+            // Calculate distance from the camera
+            const distance = l.scenograph.cameras.active.position.distanceTo(trackedObject.mesh.position);
+
+            // Scale factor to keep the diamond size consistent
+            const scale = 1 - (100 / (distance * Math.abs(vector.z)));
+
+            // Apply scaling to the symbol
+            trackedObject.symbol.scale.set(scale, scale, scale);
+
             trackedObject.symbol.lookAt(l.scenograph.cameras.active.position);
         });
     }

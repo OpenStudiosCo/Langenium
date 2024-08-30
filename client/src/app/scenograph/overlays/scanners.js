@@ -31,12 +31,12 @@ export default class Scanners {
         // Create a test HTML element
         this.testElement = document.createElement('div');
         this.testElement.style.position = 'absolute';
-        this.testElement.style.border = 'solid 1px rgba(0, 255, 0, 0.5)';
+        this.testElement.style.border = 'solid 1px rgba(0, 255, 0, 1)';
         this.testElement.style.width = '10px';
         this.testElement.style.height = '10px';
         this.testElement.style.transform = 'rotate(45deg)';
         //this.testElement.style.borderRadius = '50%'; // Makes the element circular for visibility
-        this.testElement.style.zIndex = '9999'; // Ensures it's on top of other elements
+        this.testElement.style.zIndex = '2'; // Ensures it's on top of other elements
         document.body.appendChild(this.testElement);
     
     }
@@ -88,12 +88,24 @@ export default class Scanners {
      * @note All references within this method should be globally accessible.
     **/
     animate() {
+        const frustum = new THREE.Frustum()
+        const matrix = new THREE.Matrix4().multiplyMatrices(l.scenograph.cameras.active.projectionMatrix, l.scenograph.cameras.active.matrixWorldInverse)
+        frustum.setFromProjectionMatrix(matrix)
+        
         l.scenograph.cameras.active.updateProjectionMatrix();
         l.scenograph.overlays.scanners.trackedObjects.forEach(trackedObject => {
-            const [x, y, z] = l.scenograph.overlays.scanners.getSymbolPosition(trackedObject.mesh);
+            if (!frustum.containsPoint(trackedObject.mesh.position)) {
+                l.scenograph.overlays.scanners.testElement.style.display = `none`;
+            }
+            else {
+                const [x, y, z] = l.scenograph.overlays.scanners.getSymbolPosition(trackedObject.mesh);
 
-            l.scenograph.overlays.scanners.testElement.style.left = `${x-5}px`;
-            l.scenograph.overlays.scanners.testElement.style.top = `${y-5}px`;
+                l.scenograph.overlays.scanners.testElement.style.left = `${x-5}px`;
+                l.scenograph.overlays.scanners.testElement.style.top = `${y-5}px`;
+                l.scenograph.overlays.scanners.testElement.style.display = `inherit`;
+            }
+            
+            
 
             // // Convert screen coordinates to normalized device coordinates (NDC)
             // const vector = new THREE.Vector3(

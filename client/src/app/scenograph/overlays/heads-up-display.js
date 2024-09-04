@@ -30,16 +30,46 @@ export default class HeadsUpDisplay {
         this.lineElement.style.left = '17.5vw';
         this.lineElement.style.width = '65vw';
         this.lineElement.style.height = '65vh';
-        this.lineElement.style.borderRadius = '5%'; // Makes the element circular for visibility
+        this.lineElement.style.borderRadius = '10% / 50%'; // Makes the element circular for visibility
         this.lineElement.style.zIndex = '2'; // Ensures it's on top of other elements
         document.body.appendChild(this.lineElement);
 
         // Create the label to track air speed.
+        this.aspdElement = this.createLabel( 'aspd', 'AIRSPEED: 0km/h');
+        this.aspdElement.style.bottom = '12.5vh';
+        this.aspdElement.style.left = '12.5vw';
+        document.body.appendChild(this.aspdElement);
+
+        // Create the label to track vertical speed.
+        this.vspdElement = this.createLabel( 'vspd', 'VERT. SPD: 0km/h');
+        this.vspdElement.style.bottom = '12.5vh';
+        this.vspdElement.style.right = '12.5vw';
+        document.body.appendChild(this.vspdElement);
+
+        // Create the label to track air speed.
+        this.headingElement = this.createLabel( 'aspd', 'HEADING: 0°');
+        this.headingElement.style.top = '12.5vh';
+        this.headingElement.style.left = '12.5vw';
+        document.body.appendChild(this.headingElement);
+
+        // Create the label to track vertical speed.
+        this.elevationElement = this.createLabel( 'vspd', 'ELEVATION: 0m');
+        this.elevationElement.style.top = '12.5vh';
+        this.elevationElement.style.right = '12.5vw';
+        document.body.appendChild(this.elevationElement);
 
     }
 
     createLabel( keyName, labelText ) {
-        
+        let labelElement = document.createElement('div');
+        labelElement.innerHTML = labelText;
+        labelElement.id = 'overlay-hud-label-' + keyName;
+        labelElement.dataset.id = keyName;
+        labelElement.style.position = 'absolute';
+        labelElement.style.color = 'rgba(0, 255, 0, 1)';
+        labelElement.style.fontFamily = 'monospace';
+        labelElement.style.zIndex = '2'; // Ensures it's on top of other elements
+        return labelElement;
     }
 
     /**
@@ -54,7 +84,19 @@ export default class HeadsUpDisplay {
      * @note All references within this method should be globally accessible.
     **/
     animate() {
-        
+        const aspd = Math.round( l.current_scene.objects.player.state.airSpeed * - 100 ) / 10;
+        l.scenograph.overlays.hud.aspdElement.innerHTML = `AIRSPEED: ${aspd}km/h`;
+
+        const vspd = Math.round( l.current_scene.objects.player.state.verticalSpeed * 100 ) / 10;
+        l.scenograph.overlays.hud.vspdElement.innerHTML = `VERT. SPD: ${vspd}km/h`;
+
+        let heading = THREE.MathUtils.radToDeg( l.current_scene.objects.player.state.rotation.y );
+        heading = heading % 360;
+        if (heading < 0) {
+            heading += 360;
+        }
+        heading = Math.round(360 - heading);
+        l.scenograph.overlays.hud.headingElement.innerHTML = `HEADING: ${heading}°`;
     }
 
 }

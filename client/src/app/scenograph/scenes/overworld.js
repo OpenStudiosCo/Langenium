@@ -267,7 +267,7 @@ export default class Overworld extends SceneBase {
         startTweening();
 
         // Start overlays.
-        l.scenograph.overlays.addToScene( l.current_scene.scene );
+        l.scenograph.overlays.load();
 
         requestAnimationFrame( l.scenograph.animate );
       }

@@ -30,6 +30,7 @@ export default class Scanners {
 
         // Create a test HTML element
         this.testElement = document.createElement('div');
+        this.testElement.id = 'overlay-scanner';
         this.testElement.style.position = 'absolute';
         this.testElement.style.border = 'solid 1px rgba(0, 255, 0, 1)';
         this.testElement.style.width = '10px';
@@ -39,12 +40,6 @@ export default class Scanners {
         this.testElement.style.zIndex = '2'; // Ensures it's on top of other elements
         document.body.appendChild(this.testElement);
     
-    }
-
-    addToScene( scene ) {
-        // this.trackedObjects.forEach( ( trackedObject ) => {
-        //     scene.add( trackedObject.symbol );
-        // } );
     }
 
     getSymbolPosition ( object ) {

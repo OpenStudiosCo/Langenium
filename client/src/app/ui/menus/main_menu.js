@@ -37,7 +37,7 @@ export default class Main_Menu {
         this.buttons.exit_game.on( 'click', () => {
             console.log( 'Exit to Main Menu, closing game session' );
             l.scenograph.controls.deactivate()
-            l.ui.hide_flight_instruments();
+            //l.ui.hide_flight_instruments();
 
             // Show game mode buttons.
             this.buttons.single_player.hidden = false;
@@ -63,7 +63,7 @@ export default class Main_Menu {
         this.buttons.single_player.on( 'click', () => {
             console.log( 'Single player launched' );
             l.scenograph.controls.activate();
-            l.ui.show_flight_instruments();
+            //l.ui.show_flight_instruments();
 
             // Hide game mode buttons.
             this.buttons.single_player.hidden = true;
@@ -86,7 +86,7 @@ export default class Main_Menu {
         this.buttons.multi_player.on( 'click', () => {
             console.log( 'Multi player launched' );
             l.scenograph.controls.activate();
-            l.ui.show_flight_instruments();
+            //l.ui.show_flight_instruments();
 
             // Hide game mode buttons.
             this.buttons.single_player.hidden = true;

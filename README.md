@@ -77,7 +77,10 @@ All installation steps go here.
     * TBA
 
 * Server
-    * TBA
+    1. Change directory to /server
+    2. Install npm packages
+    3. Clone the .env.example file to create a .env file
+    4. Start the server using `npm ecosystem.config.js`
 
 ## Features and functionality
 This section breaks down how Langenium's game engine works.
@@ -96,7 +99,9 @@ TBA
 
 ## Contributing
 
-We'd love to have your helping hand on `Langenium`!
+We'd love to have your helping hand on `Langenium`! See the [issues list][issues] for the latest activity in the project.
+
+This is currently an indie passion project so all ideas are welcome. Feel free to lodge an issue, PR or get in touch to discuss how you would like to contribute. A project as ambitious as this needs all the help it can get!
 
 ## Versioning
 
@@ -132,3 +137,4 @@ For a full list please see the [credits][credits]
 [changelog]: https://github.com/OpenStudiosCo/Langenium/blob/master/CHANGELOG.md
 [credits]: https://github.com/OpenStudiosCo/Langenium/blob/master/CREDITS.md
 [license]: https://github.com/OpenStudiosCo/Langenium/blob/master/LICENSE
+[issues]: https://github.com/OpenStudiosCo/Langenium/issues

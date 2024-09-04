@@ -32,6 +32,7 @@ export default class HeadsUpDisplay {
         this.lineElement.style.height = '65vh';
         this.lineElement.style.borderRadius = '10% / 50%'; // Makes the element circular for visibility
         this.lineElement.style.zIndex = '2'; // Ensures it's on top of other elements
+        this.lineElement.style.pointerEvents = 'none';
         document.body.appendChild(this.lineElement);
 
         // Create the label to track air speed.
@@ -69,6 +70,7 @@ export default class HeadsUpDisplay {
         labelElement.style.color = 'rgba(0, 255, 0, 1)';
         labelElement.style.fontFamily = 'monospace';
         labelElement.style.zIndex = '2'; // Ensures it's on top of other elements
+        labelElement.style.pointerEvents = 'none';
         return labelElement;
     }
 
@@ -84,10 +86,10 @@ export default class HeadsUpDisplay {
      * @note All references within this method should be globally accessible.
     **/
     animate() {
-        const aspd = Math.round( l.current_scene.objects.player.state.airSpeed * - 100 ) / 10;
+        let aspd = -l.scenograph.overlays.hud.frameToSecond(l.current_scene.objects.player.state.airSpeed);
         l.scenograph.overlays.hud.aspdElement.innerHTML = `AIRSPEED: ${aspd}km/h`;
 
-        const vspd = Math.round( l.current_scene.objects.player.state.verticalSpeed * 100 ) / 10;
+        let vspd = l.scenograph.overlays.hud.frameToSecond(l.current_scene.objects.player.state.verticalSpeed);
         l.scenograph.overlays.hud.vspdElement.innerHTML = `VERT. SPD: ${vspd}km/h`;
 
         let heading = THREE.MathUtils.radToDeg( l.current_scene.objects.player.state.rotation.y );
@@ -97,6 +99,18 @@ export default class HeadsUpDisplay {
         }
         heading = Math.round(360 - heading);
         l.scenograph.overlays.hud.headingElement.innerHTML = `HEADING: ${heading}°`;
+
+        let elevation = Math.round( l.current_scene.objects.player.state.position.y * 100 ) / 100;
+        l.scenograph.overlays.hud.elevationElement.innerHTML = `ELEVATION: ${elevation}m`;
+    }
+
+    /**
+     * Converts velocity on a per frame basis to per second using FPS.
+     */
+    frameToSecond( metersPerFrame ) {
+        let metersPerSecond = metersPerFrame * l.current_scene.stats.fps;
+        metersPerSecond = Math.round( metersPerSecond * 100 ) / 100;
+        return metersPerSecond;
     }
 
 }

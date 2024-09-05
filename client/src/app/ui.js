@@ -14,6 +14,7 @@ import Alpine from 'alpinejs';
  */
 import l from '@/helpers/l.js';
 import Flight_Instruments from '@/ui/flight_instruments.js';
+import Targeting_Scanner from '@/ui/targeting_scanner.js';
 import Menus from '@/ui/menus.js';
 
 export default class UI {
@@ -23,6 +24,8 @@ export default class UI {
 
     // Control the menu pane, needed by touch controls which activate later.
     menus;
+
+    targeting_scanner;
 
     // Array of callbacks and data for updating UI
     update_queue;
@@ -36,6 +39,11 @@ export default class UI {
         Alpine.start();
 
         this.update_queue = [];
+
+        /**
+         * @todo: Move into a game mode activation function.
+         */
+        this.targeting_scanner = new Targeting_Scanner();
 
     }
 

@@ -30,7 +30,7 @@ export default class Scanners {
 
         document.body.appendChild(this.trackedObjects[0].symbol);
 
-        // this.trackedObjects.forEach()
+        l.ui.targeting_scanner.needsUpdate = true;
 
     }
 

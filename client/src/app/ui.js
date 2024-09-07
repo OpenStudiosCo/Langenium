@@ -45,6 +45,11 @@ export default class UI {
          */
         this.targeting_scanner = new Targeting_Scanner();
 
+        this.update_queue.push( {
+            callback: 'l.ui.targeting_scanner.update',
+            data: []
+        } );
+
     }
 
     /**

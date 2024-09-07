@@ -25,22 +25,13 @@ export default class Targeting_Scanner {
 
     constructor() {
 
+
+        this.container = document.getElementById( 'ui-targeting-container' );
+
+        this.item_template = document.getElementById( 'targeting_scanner__item_template' ).innerHTML;
+
         this.needsUpdate = false;
 
-        // Create the targetting scanner container
-        this.lineElement = document.createElement('div');
-        this.lineElement.id = 'ui-targeting-container';
-        this.lineElement.style.position = 'absolute';
-        this.lineElement.style.background = 'rgba(0, 0, 0, 0.25)';
-        this.lineElement.style.bottom = '1vh';
-        this.lineElement.style.left = '35vw';
-        this.lineElement.style.width = '30vw';
-        this.lineElement.style.height = '10vh';
-        this.lineElement.style.borderRadius = '1% / 5%'; // Makes the element circular for visibility
-        this.lineElement.style.zIndex = '2'; // Ensures it's on top of other elements
-        this.lineElement.style.pointerEvents = 'none';
-        this.lineElement.innerHTML = ''; // blank initially set 
-        document.body.appendChild(this.lineElement);
     }
 
     /**
@@ -56,10 +47,14 @@ export default class Targeting_Scanner {
         }
 
         l.scenograph.overlays.scanners.trackedObjects.forEach( target => {
-            let iconUrl = l.url + '/assets/ui/' + targetIcons[ target.mesh.name ];
-            //debugger;
-            targetsHTML += '<img width="20%" height="auto" src="' + iconUrl + '"/>';
-            //targetsHTML += iconUrl;
+            // targetsHTML += '<div>';
+            // let iconUrl = l.url + '/assets/ui/' + targetIcons[ target.mesh.name ];
+            // //debugger;
+            // targetsHTML += '<img style="display: block; filter: hue-rotate(73deg) brightness(4.0);" width="auto" height="50%" src="' + iconUrl + '"/>';
+            // targetsHTML += '<strong>' + target.mesh.name + '</strong><br>';
+            // targetsHTML += '100/100<br>';
+            // targetsHTML += '</div>';
+            targetsHTML += this.item_template;
         } );
 
         return targetsHTML;
@@ -80,7 +75,7 @@ export default class Targeting_Scanner {
         if ( l.ui.targeting_scanner.needsUpdate ) {  
 
             // Populate the current target lock icons HTML.
-            l.ui.targeting_scanner.lineElement.innerHTML = l.ui.targeting_scanner.getLockedTargets();
+            l.ui.targeting_scanner.container.innerHTML = l.ui.targeting_scanner.getLockedTargets();
 
             // Prevent re-run until next changes turn it back on.
             l.ui.targeting_scanner.needsUpdate = false;

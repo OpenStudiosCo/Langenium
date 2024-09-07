@@ -150,7 +150,9 @@ html(lang='en')
             script#scene_overview_table(type='html_template_in_a_script_tag')
                 include ./partials/ui/menus/scene_overview-table.pug
             script#scene_overview_row(type='html_template_in_a_script_tag')
-                include ./partials/ui/menus/scene_overview-row.pug
+                include ./partials/ui/menus/scene_overview-row.pug               
+            script#targeting_scanner__item_template(type='html_template_in_a_script_tag')
+                include ./partials/ui/targeting_scanner/target.pug
         #webgl-wrapper
             canvas#loader_symbols
             canvas#loader_image
@@ -161,6 +163,7 @@ html(lang='en')
                 img(src='/assets/images/tail-spin.svg' alt='Loading spinner')
             include ./partials/game_client/door_image.pug
             include ./partials/ui/flight_instruments.pug
+            include ./partials/ui/targeting_scanner.pug
             div#preview_materials
                 div(style='color:#FFF; margin: 1rem;') Previewing Procedural Materials
             #webgl

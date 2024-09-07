@@ -113,6 +113,7 @@ export default class CargoShips {
             mesh.name = 'Cargo Ship #' + ( i + 1 );
 
             mesh.userData.objectClass = 'cargoShip';
+            mesh.userData.targetable = true;
             mesh.userData.standing = 0;
             mesh.userData.vehicle = new YUKA.Vehicle();
             mesh.userData.vehicle.position.copy( mesh.userData.path.current() );

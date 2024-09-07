@@ -1,7 +1,7 @@
 /***
- * @name            Targeting Scanner
- * @description     Target list and management screen
- * @namespace       l.ui.targeting_scanner
+ * @name            Locked Targets UI
+ * @description     Target management
+ * @namespace       l.ui.targeting.locked
  * @memberof        l.ui
  * @global
  */
@@ -16,7 +16,7 @@ import l from '@/helpers/l.js';
  */
 import * as THREE from "three";
 
-export default class Targeting_Scanner {
+export default class Locked {
 
     /**
      * Flag to pause UI updates when they're not necessary.
@@ -25,10 +25,10 @@ export default class Targeting_Scanner {
 
     constructor() {
 
-        this.containerId = 'ui-targeting-container';
+        this.containerId = 'ui-targeting-locked';
         this.container = document.getElementById( this.containerId );
 
-        this.item_template = document.getElementById( 'targeting_scanner__item_template' ).innerHTML;
+        this.item_template = document.getElementById( 'targeting_locked__item_template' ).innerHTML;
 
         this.needsUpdate = false;
 
@@ -44,12 +44,16 @@ export default class Targeting_Scanner {
 
         const targetIcons = {
             'bot': 'pirate-icon.png',
-            'cargoShip': 'cargo-ship-icon.png'
+            'cargoShip': 'cargo-ship-icon.png',
+            'city': 'city-icon.png',
+            'extractors': 'extractor-icon.png',
+            'player': 'mercenary-icon.png',
+            'refineries': 'refinery-icon.png',
         }
 
         l.scenograph.overlays.scanners.trackedObjects.forEach( target => {
 
-            let item = JSON.parse( JSON.stringify( l.ui.targeting_scanner.item_template ) );
+            let item = JSON.parse( JSON.stringify( l.ui.targeting.locked.item_template ) );
 
             let icon_class = '';
 
@@ -69,7 +73,7 @@ export default class Targeting_Scanner {
     }
 
     updateTargets() {
-        let targetIcons = document.querySelectorAll( '#' + l.ui.targeting_scanner.containerId + ' .target' );
+        let targetIcons = document.querySelectorAll( '#' + l.ui.targeting.locked.containerId + ' .target' );
         targetIcons.forEach( targetIcon => {
             let targetObject = l.current_scene.scene.getObjectByProperty( 'uuid', targetIcon.dataset.uuid);
 
@@ -93,24 +97,24 @@ export default class Targeting_Scanner {
      * HTML content to be updated at different rate than the 3D frame rate.
      * 
      * @method update
-     * @memberof Targeting_Scanner
+     * @memberof Locked
      * @global
      * @note All references within this method should be globally accessible.
     **/
     update() {
 
         // Check if we need to rebuild the target lock list HTML.
-        if ( l.ui.targeting_scanner.needsUpdate ) {  
+        if ( l.ui.targeting.locked.needsUpdate ) {  
 
             // Populate the current target lock icons HTML.
-            l.ui.targeting_scanner.container.innerHTML = l.ui.targeting_scanner.getTargets();
+            l.ui.targeting.locked.container.innerHTML = l.ui.targeting.locked.getTargets();
 
             // Prevent re-run until next changes turn it back on.
-            l.ui.targeting_scanner.needsUpdate = false;
+            l.ui.targeting.locked.needsUpdate = false;
         }
 
         // Update each of the targets info labels
-        l.ui.targeting_scanner.updateTargets()
+        l.ui.targeting.locked.updateTargets()
 
     }
 

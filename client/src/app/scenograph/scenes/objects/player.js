@@ -104,6 +104,9 @@ export default class Player {
         this.mesh.position.z = l.current_scene.room_depth;
         this.mesh.rotation.order = 'YXZ';
 
+        this.mesh.userData.targetable = true;
+        this.mesh.userData.objectClass = 'player';
+
         this.createThruster();
 
         this.mixer = new THREE.AnimationMixer( this.mesh );

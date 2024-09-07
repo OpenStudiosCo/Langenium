@@ -39,7 +39,7 @@ export default class Scanners {
             document.body.appendChild( trackedObject.symbol );
         } );
 
-        l.ui.targeting_scanner.needsUpdate = true;
+        l.ui.targeting.locked.needsUpdate = true;
 
     }
 

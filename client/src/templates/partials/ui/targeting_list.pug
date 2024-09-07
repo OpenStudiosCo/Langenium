@@ -1,12 +1,11 @@
 style.
-    #ui-targeting-container {
+    #ui-targeting-list {
         display: flex;
-        justify-content: center;
         position: absolute;
-        bottom: 1vh;
-        left: 20vw;
-        width: 60vw;
-        height: 10vh;
+        top: 1vh;
+        left: 1vw;
+        width: 20vw;
+        height: 5vh;
         border-radius: 1% / 5%;
         z-index: 2;
         pointer-events: none;
@@ -44,4 +43,8 @@ style.
         width: calc(100% + 0.5rem);
         height: 5px;
     }
-#ui-targeting-container
+#ui-targeting-list
+    .target(data-uuid="123")
+        img.icon(src="/assets/ui/pirate-icon.png" class='$icon_class')
+        .name Bot Ship 
+        .distance 3km

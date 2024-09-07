@@ -90,7 +90,7 @@ export default class UI {
     show_menus() {
         l.ui.menus = new Menus();
 
-        l.ui.updater = setInterval( this.update, 1 / 60 );
+        l.ui.updater = setInterval( this.update, 100 );
     }
 
     /**

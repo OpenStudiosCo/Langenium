@@ -10,7 +10,7 @@ esbuild
     .build( {
         entryPoints: [ './src/app/main.js' ],
         bundle: true,
-        minify: true,
+        minify: false,
         outdir: '../docs',
         target: 'es2018',
         alias: {

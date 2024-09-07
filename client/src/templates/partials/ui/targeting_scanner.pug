@@ -2,10 +2,9 @@ style.
     #ui-targeting-container {
         display: flex;
         position: absolute;
-        background: rgba(0, 0, 0, 0.25);
         bottom: 1vh;
-        left: 35vw;
-        width: 30vw;
+        left: 20vw;
+        width: 60vw;
         height: 10vh;
         border-radius: 1% / 5%;
         z-index: 2;
@@ -13,6 +12,18 @@ style.
     }
 
     .target {
+        color: rgba(0,0,0,0.5);
+        font-family: monospace;
+        margin: 0.25rem;
+    }
 
+    .target .icon {
+        width: auto;
+        height: 50%;
+    }
+
+    .target .icon.neutral {
+        display: block;
+        filter: hue-rotate(73deg) brightness(4.0);
     }
 #ui-targeting-container

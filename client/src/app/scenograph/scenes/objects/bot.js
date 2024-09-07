@@ -98,6 +98,8 @@ export default class Bot {
 
         this.mesh = this.model.scene;
         this.mesh.name = 'Bot Ship';
+        this.mesh.userData.objectClass = 'bot';
+        this.mesh.userData.standing = -1;
         this.mesh.position.z = - l.current_scene.room_depth * 2;
         this.mesh.position.y = 200;
         this.mesh.rotation.order = 'YXZ';

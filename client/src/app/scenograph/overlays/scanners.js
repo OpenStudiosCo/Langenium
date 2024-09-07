@@ -28,7 +28,16 @@ export default class Scanners {
             symbol: this.getSymbolElement( 'diamond' ),
         });
 
-        document.body.appendChild(this.trackedObjects[0].symbol);
+        l.current_scene.objects.cargo_ships.forEach( async ( cargo_ship, i ) => {
+            this.trackedObjects.push({
+                mesh: cargo_ship,
+                symbol: this.getSymbolElement( 'diamond' ),
+            });
+          } );
+
+        this.trackedObjects.forEach( trackedObject => {
+            document.body.appendChild( trackedObject.symbol );
+        } );
 
         l.ui.targeting_scanner.needsUpdate = true;
 

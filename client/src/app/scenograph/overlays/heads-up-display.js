@@ -38,25 +38,25 @@ export default class HeadsUpDisplay {
         // Create the label to track air speed.
         this.aspdElement = this.createLabel( 'aspd', 'AIRSPEED: 0km/h');
         this.aspdElement.style.bottom = '12.5vh';
-        this.aspdElement.style.left = '12.5vw';
+        this.aspdElement.style.left = '25vw';
         document.body.appendChild(this.aspdElement);
 
         // Create the label to track vertical speed.
         this.vspdElement = this.createLabel( 'vspd', 'VERT. SPD: 0km/h');
         this.vspdElement.style.bottom = '12.5vh';
-        this.vspdElement.style.right = '12.5vw';
+        this.vspdElement.style.right = '25vw';
         document.body.appendChild(this.vspdElement);
 
         // Create the label to track air speed.
         this.headingElement = this.createLabel( 'aspd', 'HEADING: 0°');
         this.headingElement.style.top = '12.5vh';
-        this.headingElement.style.left = '12.5vw';
+        this.headingElement.style.left = '25vw';
         document.body.appendChild(this.headingElement);
 
         // Create the label to track vertical speed.
         this.elevationElement = this.createLabel( 'vspd', 'ELEVATION: 0m');
         this.elevationElement.style.top = '12.5vh';
-        this.elevationElement.style.right = '12.5vw';
+        this.elevationElement.style.right = '25vw';
         document.body.appendChild(this.elevationElement);
 
     }

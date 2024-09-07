@@ -43,17 +43,24 @@ export default class Targeting_Scanner {
         let targetsHTML = '';
 
         const targetIcons = {
-            'Bot Ship': 'pirate-icon.png'
+            'bot': 'pirate-icon.png',
+            'cargoShip': 'cargo-ship-icon.png'
         }
 
         l.scenograph.overlays.scanners.trackedObjects.forEach( target => {
 
             let item = JSON.parse( JSON.stringify( l.ui.targeting_scanner.item_template ) );
 
+            let icon_class = '';
+
+            // Add class of neutral of target stance is 0 (neutral)
+            icon_class = target.mesh.userData.standing == 0 ? 'neutral' : '';
+
             item = item
-                .replaceAll( '$uuid', target.mesh.uuid )    
+                .replaceAll( '$uuid', target.mesh.uuid )
                 .replaceAll( '$name', target.mesh.name )
-                .replaceAll( '$url', l.url + '/assets/ui/' + targetIcons[ target.mesh.name ] );
+                .replaceAll( '$icon_class', icon_class )
+                .replaceAll( '$url', l.url + '/assets/ui/' + targetIcons[ target.mesh.userData.objectClass ] );
 
             targetsHTML += item;
         } );
@@ -76,11 +83,7 @@ export default class Targeting_Scanner {
                 distance = Math.round(distance);
                 targetIcon.querySelector('.distance').innerHTML = distance + 'm';
             }
-            
-            
-
-        } );
-        
+        } );        
     }
 
     /**

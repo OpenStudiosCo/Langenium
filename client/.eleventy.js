@@ -4,6 +4,13 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy({"src/vendor": "vendor"});
   eleventyConfig.addPassthroughCopy("CNAME");
 
+  eleventyConfig.setPugOptions({
+    filters: {
+      stylus: require('pug-stylus')()
+    }
+  });
+
+
   eleventyConfig.addWatchTarget("./src/**/*");
   eleventyConfig.setServerOptions({
     https: {

@@ -1,4 +1,4 @@
-style.
+:stylus(wrap=true)
     #ui-targeting-locked {
         display: flex;
         justify-content: center;
@@ -10,38 +10,39 @@ style.
         border-radius: 1% / 5%;
         z-index: 2;
         pointer-events: none;
-    }
 
-    .target {
-        border: solid 1px rgba(0,0,0,0.125);
-        color: rgba(0,0,0,0.5);
-        font-family: monospace;
-        margin: 0.25rem;
-        padding: 0.25rem;
-        width: 8vw;
-        pointer-events: auto;
-    }
+        .target {
+            border: solid 1px rgba(0,0,0,0.125);
+            color: rgba(0,0,0,0.5);
+            font-family: monospace;
+            margin: 0.25rem;
+            padding: 0.25rem;
+            width: 8vw;
+            pointer-events: auto;
 
-    .target:hover {
-        border: solid 1px rgba(0,0,0,0.5);
-        color: #000;
-        cursor: pointer;
-    }
+            &:hover {
+                border: solid 1px rgba(0,0,0,0.5);
+                color: #000;
+                cursor: pointer;
+            }
 
-    .target .icon {
-        width: auto;
-        height: 60%;
-    }
+            .icon {
+                width: auto;
+                height: 60%;
 
-    .target .icon.neutral {
-        display: block;
-        filter: hue-rotate(73deg) brightness(4.0);
-    }
+                &.neutral {
+                    display: block;a
+                    filter: hue-rotate(73deg) brightness(4.0);
+                }
+            }
 
-    .target .health_bar {
-        margin: -.25rem;
-        background: #00FF00;
-        width: calc(100% + 0.5rem);
-        height: 5px;
+            .health_bar {
+                margin: -.25rem;
+                background: #00FF00;
+                width: calc(100% + 0.5rem);
+                height: 5px;
+            }
+        }
+        
     }
 #ui-targeting-locked

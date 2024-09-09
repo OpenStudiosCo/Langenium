@@ -15,7 +15,7 @@ export default class Main_Menu {
 
     constructor() {
 
-        this.default_title = "Langenium v" + l.version;
+        this.default_title = "Main Menu";//Langenium v" + l.version;
 
         this.buttons = {};
 

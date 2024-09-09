@@ -1,7 +1,7 @@
 /***
  * @name            List Targetable UI
  * @description     Target management
- * @namespace       l.ui.targeting.locked
+ * @namespace       l.ui.targeting.list
  * @memberof        l.ui
  * @global
  */
@@ -46,10 +46,20 @@ export default class List {
             'refineries': 'refinery-icon.png',
         }
 
+        const targetTypes = {
+            'bot': 'Pirate Aircraft',
+            'cargoShip': 'Cargo Ship',
+            'city': 'Union Platform City',
+            'extractors': 'Union Extractor',
+            'refinery': 'Union Refinery',
+        }
+
 
         l.current_scene.scene.traverse( mesh => {
+            
+            // Check if targetable and not the current player.
             let targetable = mesh.userData && mesh.userData.targetable ? true : false;
-            if ( targetable ) {
+            if ( targetable && mesh.uuid != l.current_scene.objects.player.mesh.uuid) {
                 let item = JSON.parse( JSON.stringify( l.ui.targeting.list.item_template ) );
 
                 let icon_class = '';
@@ -60,7 +70,7 @@ export default class List {
                 item = item
                     .replaceAll( '$uuid', mesh.uuid )
                     .replaceAll( '$name', mesh.name )
-                    .replaceAll( '$type', mesh.userData.objectClass )
+                    .replaceAll( '$type', targetTypes[ mesh.userData.objectClass ] )
                     .replaceAll( '$icon_class', icon_class )
                     .replaceAll( '$url', l.url + '/assets/ui/' + targetIcons[ mesh.userData.objectClass ] );
 
@@ -73,7 +83,6 @@ export default class List {
 
     updateTable() {
         let rows = document.querySelectorAll( l.ui.targeting.list.containerId + ' tr' );
-        console.log(rows);
         rows.forEach( targetIcon => {
             let targetObject = l.current_scene.scene.getObjectByProperty( 'uuid', targetIcon.dataset.uuid);
 

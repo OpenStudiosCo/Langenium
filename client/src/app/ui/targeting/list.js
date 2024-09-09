@@ -25,13 +25,69 @@ export default class List {
 
     constructor() {
 
-        this.containerId = 'ui-targeting-list';
-        this.container = document.getElementById( this.containerId );
+        this.containerId = '#ui-targeting-list tbody';
+        this.container = document.querySelector( this.containerId );
 
         this.item_template = document.getElementById( 'targeting_list__item_template' ).innerHTML;
 
-        this.needsUpdate = false;
+        this.needsUpdate = true;
 
+    }
+
+    getTable() {
+        let html = '';
+
+        const targetIcons = {
+            'bot': 'pirate-icon.png',
+            'cargoShip': 'cargo-ship-icon.png',
+            'city': 'city-icon.png',
+            'extractors': 'extractor-icon.png',
+            'player': 'mercenary-icon.png',
+            'refineries': 'refinery-icon.png',
+        }
+
+
+        l.current_scene.scene.traverse( mesh => {
+            let targetable = mesh.userData && mesh.userData.targetable ? true : false;
+            if ( targetable ) {
+                let item = JSON.parse( JSON.stringify( l.ui.targeting.list.item_template ) );
+
+                let icon_class = '';
+
+                // Add class of neutral of target stance is 0 (neutral)
+                icon_class = mesh.userData.standing == 0 ? 'neutral' : '';
+
+                item = item
+                    .replaceAll( '$uuid', mesh.uuid )
+                    .replaceAll( '$name', mesh.name )
+                    .replaceAll( '$type', mesh.userData.objectClass )
+                    .replaceAll( '$icon_class', icon_class )
+                    .replaceAll( '$url', l.url + '/assets/ui/' + targetIcons[ mesh.userData.objectClass ] );
+
+                html += item;
+            }
+        } );
+
+        return html;
+    }
+
+    updateTable() {
+        let rows = document.querySelectorAll( l.ui.targeting.list.containerId + ' tr' );
+        console.log(rows);
+        rows.forEach( targetIcon => {
+            let targetObject = l.current_scene.scene.getObjectByProperty( 'uuid', targetIcon.dataset.uuid);
+
+            // Update the distance to target.
+            let distance = targetObject.position.distanceTo( l.current_scene.objects.player.mesh.position );
+            if ( distance > 1000 ) {
+                distance = Math.round(Math.round(distance) / 10) / 100;
+                targetIcon.querySelector('.distance').innerHTML = distance + 'km';
+            }
+            else {
+                distance = Math.round(distance);
+                targetIcon.querySelector('.distance').innerHTML = distance + 'm';
+            }
+        } );    
     }
 
 
@@ -52,14 +108,14 @@ export default class List {
         if ( l.ui.targeting.list.needsUpdate ) {  
 
             // Populate the current target lock icons HTML.
-            //l.ui.targeting.list.container.innerHTML = l.ui.targeting.list.getTargets();
+            l.ui.targeting.list.container.innerHTML = l.ui.targeting.list.getTable();
 
             // Prevent re-run until next changes turn it back on.
             l.ui.targeting.list.needsUpdate = false;
         }
 
         // Update each of the targets info labels
-        //l.ui.targeting.list.updateTargets()
+        l.ui.targeting.list.updateTable()
 
     }
 

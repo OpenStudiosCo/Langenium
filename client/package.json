@@ -12,10 +12,12 @@
     "build": "cross-env NODE_ENV=production npm-run-all clean -p build:*",
     "build:11ty": "eleventy --quiet",
     "build:esbuild": "node build.mjs",
+    "build:stylus": "node_modules/.bin/stylus src/styles/game_client.styl --out ../docs/assets/game_client.css",
     "clean": "rimraf dist",
     "dev": "npm-run-all clean build:* -p dev:*",
     "dev:11ty": "eleventy --serve --quiet",
-    "dev:esbuild": "node watch.mjs"
+    "dev:esbuild": "node watch.mjs",
+    "dev:stylus": "node_modules/.bin/stylus -w src/styles/game_client.styl --out ../docs/assets/game_client.css"
   },
   "devDependencies": {
     "@11ty/eleventy": "^2.0.1",

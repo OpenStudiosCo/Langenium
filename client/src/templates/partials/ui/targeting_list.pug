@@ -1,53 +1,57 @@
 :stylus(wrap=true)
     #ui-targeting-list {
-        display: flex;
         position: absolute;
         top: 1vh;
         left: 1vw;
-        width: 40vw;
-        border-radius: 1% / 5%;
-        z-index: 2;
-        pointer-events: none;
+        z-index: 4;
+        font-family: monospace;
+        text-shadow: 1px 1px grey;
+        background: rgba(0,0,0,0.25);
+        padding: 0.5rem 1rem;
+        resize: both;
+        overflow: auto;
+        color: #CCC;
+        pointer-events: bounding-box;
+        backdrop-filter: blur(2px);
+        border: solid 1px rgba(0,0,0,0.25);
 
-        .target {
-            border: solid 1px rgba(0,0,0,0.0);
-            color: rgba(0,0,0,0.5);
+        .header {
             display: flex;
-            font-family: monospace;
-            margin: 0.25rem;
-            padding: 0.25rem;
-            width: 8vw;
+            padding: .5rem 0;
+            img {
+                margin: 0 1rem 0 0.5rem;
+            }
+            
+        }
+
+        button {
+            background: rgba(1,1,1,0.1);
+            border-radius: 16px;
+            padding: 0.125rem 0.25rem 0;
             pointer-events: auto;
-
-            &:hover {
-                border: solid 1px rgba(0,0,0,0.5);
-                color: #000;
-                cursor: pointer;
-            }
-
-            .icon {
-                width: 32px;
-                height: auto;
-                margin-right: 8px;
-
-                &.neutral {
-                    display: block;a
-                    filter: hue-rotate(73deg) brightness(4.0);
-                }
-            }
-
-            .health_bar {
-                margin: -.25rem;
-                background: #00FF00;
-                width: calc(100% + 0.5rem);
-                height: 5px;
-            }
         }
         
     }
 #ui-targeting-list
-    .target(data-uuid="123")
-        img.icon(src="/assets/ui/pirate-icon.png" class='$icon_class')
-        .info
-            .name Bot Ship 
-            .distance 3km
+    .header
+        img(src='/assets/ui/satellite-dish-solid.svg' width='16' height='16')
+        strong Sensors
+    table
+        thead
+            tr
+                td Name
+                td Type
+                td Distance
+                td 
+        tbody
+            include ./targeting/list_target.pug
+            include ./targeting/list_target.pug
+            include ./targeting/list_target.pug
+            include ./targeting/list_target.pug
+            include ./targeting/list_target.pug
+            include ./targeting/list_target.pug
+            include ./targeting/list_target.pug
+            include ./targeting/list_target.pug
+            include ./targeting/list_target.pug
+            include ./targeting/list_target.pug
+            include ./targeting/list_target.pug

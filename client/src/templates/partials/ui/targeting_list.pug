@@ -24,6 +24,8 @@
             strong {
                 margin: 0 1rem;
             }
+
+            
         }
 
         .header:hover {
@@ -39,6 +41,11 @@
             thead {
                 background: rgba(0,0,0,0.25);
                 color: #FFFFFF;
+
+                a {
+                    text-decoration: none;
+                    color: white;
+                }
             }
 
             &, td {
@@ -102,8 +109,11 @@
         thead
             tr
                 td
-                td Name
-                td Type
-                td Distance
+                td
+                    a(href='#' onclick="l.ui.targeting.list.sortTable(1)") Name
+                td
+                    a(href='#' onclick="l.ui.targeting.list.sortTable(2)") Type
+                td
+                    a(href='#' onclick="l.ui.targeting.list.sortTable(3)") Distance
                 td 
         tbody

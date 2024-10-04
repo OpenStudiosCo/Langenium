@@ -38,12 +38,12 @@ export default class List {
         let html = '';
 
         const targetIcons = {
-            'bot': 'pirate-icon.png',
-            'cargoShip': 'cargo-ship-icon.png',
-            'city': 'city-icon.png',
-            'extractors': 'extractor-icon.png',
-            'player': 'mercenary-icon.png',
-            'refineries': 'refinery-icon.png',
+            'bot': 'aircraft.svg',
+            'cargoShip': 'ship.svg',
+            'city': 'structure.svg',
+            'extractors': 'structure.svg',
+            'player': 'aircraft.svg',
+            'refinery': 'structure.svg',
         }
 
         const targetTypes = {
@@ -71,7 +71,7 @@ export default class List {
                     .replaceAll( '$name', mesh.name )
                     .replaceAll( '$type', targetTypes[ mesh.userData.objectClass ] )
                     .replaceAll( '$icon_class', icon_class )
-                    .replaceAll( '$url', l.url + '/assets/ui/' + targetIcons[ mesh.userData.objectClass ] );
+                    .replaceAll( '$url', l.url + '/assets/ui/targeting/list/' + targetIcons[ mesh.userData.objectClass ] );
 
                 html += item;
             }

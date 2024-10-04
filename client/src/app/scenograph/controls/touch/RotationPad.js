@@ -25,7 +25,7 @@ class RotationPad {
         this.container.append(this.padElement)
 
         // Aligning pad:
-        let canvas = container.getElementsByTagName('canvas')[0]
+        let canvas = document.querySelectorAll('#webgl canvas')[0]
         this.alignAndConfigPad(canvas)
 
         // events

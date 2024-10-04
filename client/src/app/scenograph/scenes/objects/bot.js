@@ -33,7 +33,7 @@ export default class Bot {
     vehicle;
 
     constructor() {
-        this.default_camera_distance = window.innerWidth < window.innerHeight ? -70 : -35;
+        this.default_camera_distance = l.scenograph.width < l.scenograph.height ? -70 : -35;
         this.trail_position_y = 1.2;
         this.trail_position_z = 1.5;
         this.camera_distance = 0;

@@ -72,8 +72,8 @@ export default class Scanners {
         object.getWorldPosition(vector);
         vector.project(l.scenograph.cameras.active);
 
-        const x = (vector.x * 0.5 + 0.5) * window.innerWidth;
-        const y = (1 - (vector.y * 0.5 + 0.5)) * window.innerHeight;
+        const x = (vector.x * 0.5 + 0.5) * l.scenograph.width;
+        const y = (1 - (vector.y * 0.5 + 0.5)) * l.scenograph.height;
         return [ x, y ];
     }
 

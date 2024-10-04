@@ -32,8 +32,8 @@ const ctx2 = canvas2.getContext('2d', {
     willReadFrequently: true
 });
 
-let w = canvas.width = canvas2.width = window.innerWidth;
-let h = canvas.height = canvas2.height = window.innerHeight;
+let w = canvas.width = canvas2.width = document.documentElement.clientWidth || window.innerWidth;
+let h = canvas.height = canvas2.height = document.documentElement.clientHeight || window.innerHeight;
 
 const largeScreen = canvas.width * canvas.height < 2000000;
 const portraitMode = canvas.width < canvas.height;
@@ -288,8 +288,8 @@ function randomInt(min, max) {
 }
 
 function handleViewportChange() {
-    w = canvas.width = canvas2.width = window.innerWidth;
-    h = canvas.height = canvas2.height = window.innerHeight;
+    w = canvas.width = canvas2.width = l.scenograph.width;
+    h = canvas.height = canvas2.height = l.scenograph.height;
     cols = Math.floor(w / fontSize * 1.5) + 1;
     ypos = Array(cols).fill(0);
 

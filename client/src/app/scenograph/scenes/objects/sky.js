@@ -39,7 +39,7 @@ export default class Sky {
         let skyGeometry = new THREE.SphereGeometry( l.scale, 32, 64 );
 
         let skyMaterials = new THREE.ShaderMaterial( {
-            side          :  THREE.DoubleSide,
+            side          :  THREE.BackSide,
             uniforms      :  this.uniforms,
             vertexShader  :  document.getElementById( 'skyVertShader' ).textContent,
             fragmentShader:  document.getElementById( 'skyFragShader' ).textContent

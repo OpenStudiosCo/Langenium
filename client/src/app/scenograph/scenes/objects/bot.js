@@ -33,7 +33,7 @@ export default class Bot {
     vehicle;
 
     constructor() {
-        this.default_camera_distance = window.innerWidth < window.innerHeight ? -70 : -35;
+        this.default_camera_distance = l.scenograph.width < l.scenograph.height ? -70 : -35;
         this.trail_position_y = 1.2;
         this.trail_position_z = 1.5;
         this.camera_distance = 0;
@@ -98,8 +98,11 @@ export default class Bot {
 
         this.mesh = this.model.scene;
         this.mesh.name = 'Bot Ship';
+        this.mesh.userData.targetable = true;
+        this.mesh.userData.objectClass = 'bot';
+        this.mesh.userData.standing = -1;
         this.mesh.position.z = - l.current_scene.room_depth * 2;
-        this.mesh.position.y = 20;
+        this.mesh.position.y = 200;
         this.mesh.rotation.order = 'YXZ';
 
         // const vehicleGeometry = new THREE.ConeGeometry( 5, 20, 32 );
@@ -132,10 +135,10 @@ export default class Bot {
         const loopDistance = 1500;
         const path = new YUKA.Path();
 			path.loop = true;
-			path.add( new YUKA.Vector3( loopDistance, 20, loopDistance ) );
-			path.add( new YUKA.Vector3( loopDistance, 20, - loopDistance ) );
-			path.add( new YUKA.Vector3( - loopDistance, 20, - loopDistance ) );
-			path.add( new YUKA.Vector3( - loopDistance, 20, loopDistance ) );
+			path.add( new YUKA.Vector3( loopDistance, 200, loopDistance ) );
+			path.add( new YUKA.Vector3( loopDistance, 200, - loopDistance ) );
+			path.add( new YUKA.Vector3( - loopDistance, 200, - loopDistance ) );
+			path.add( new YUKA.Vector3( - loopDistance, 200, loopDistance ) );
 
         // const wanderBehavior = new YUKA.WanderBehavior();
         // // wanderBehavior.distance = 100;

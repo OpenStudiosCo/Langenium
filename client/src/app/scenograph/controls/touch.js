@@ -34,6 +34,10 @@ export default class TouchControls {
 
     activate() {
         this.controls.enabled = true;
+        l.scenograph.controls.touch.controls.movementPad.padElement.style.filter = 'invert(1)';
+        l.scenograph.controls.touch.controls.rotationPad.padElement.style.filter = 'invert(1)';
+        l.scenograph.controls.touch.controls.sliderStick.stickElement.style.filter = 'invert(1)';
+
         l.scenograph.controls.touch.controls.movementPad.padElement.style.display = '';
         l.scenograph.controls.touch.controls.rotationPad.padElement.style.display = '';
         l.scenograph.controls.touch.controls.sliderStick.stickElement.style.display = '';

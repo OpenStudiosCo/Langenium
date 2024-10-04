@@ -71,6 +71,10 @@ export default class Scenograph {
      */
     time;
 
+    // Pixel dimensions of the main renderer.
+    height;
+    width;
+
     constructor() {
 
         this.modes = {};
@@ -155,6 +159,8 @@ export default class Scenograph {
         // Size
         l.current_scene.settings.adjusted_gap = calculateAdjustedGapSize();
         l.current_scene.room_depth = 8 * l.current_scene.settings.adjusted_gap;
+
+        l.scenograph.setViewportSize();
 
         // Setup renderers.
         l.scenograph.setupRenderers();
@@ -261,12 +267,17 @@ export default class Scenograph {
         } );
         l.current_scene.renderers.webgl.setPixelRatio( window.devicePixelRatio );
         l.current_scene.renderers.webgl.setSize(
-            window.innerWidth,
-            window.innerHeight
+            l.scenograph.width,
+            l.scenograph.height,
         );
         document
             .querySelector( "#webgl" )
             .appendChild( l.current_scene.renderers.webgl.domElement );
+    }
+
+    setViewportSize() {
+        l.scenograph.width = document.documentElement.clientWidth || window.innerWidth;
+        l.scenograph.height = document.documentElement.clientHeight  || window.innerHeight;
     }
 
 

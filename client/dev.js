@@ -7,6 +7,7 @@ function run (script) {
 }
 
 run('dev:11ty');
+run('dev:stylus');
 run('build:esbuild');
 
 chokidar.watch(['src', '../game'], { }).on('all', (event, path) => {

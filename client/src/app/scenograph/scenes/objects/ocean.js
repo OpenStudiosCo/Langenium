@@ -37,7 +37,7 @@ export default class Ocean {
                 sunColor       :  0xffffff,
                 waterColor     :  0x0066DD,
                 distortionScale:  20.0,
-                side           :  THREE.DoubleSide,
+                side           :  THREE.FrontSide,
                 // Submerged objects that need transparency where they are located
                 // Coordinates have to be pre-entered before shader compilation due to GLSL being inflexible with array sizes
                 submergedObjects:  submergedObjects

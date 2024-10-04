@@ -64,8 +64,8 @@ export default class Cameras {
 
     createCamera( cameraName ) {
 
-        var width = window.innerWidth;
-        var height = window.innerHeight;
+        var width = l.scenograph.width;
+        var height = l.scenograph.height;
         var aspect = width / height;
         var fov = setCameraFOV( aspect );
 

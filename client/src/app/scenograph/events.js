@@ -25,9 +25,9 @@ export default class Events {
             // (-1 to +1) for both components
 
             l.current_scene.pointer.x =
-                ( event.clientX / window.innerWidth ) * 2 - 1;
+                ( event.clientX / l.scenograph.width ) * 2 - 1;
             l.current_scene.pointer.y =
-                -( event.clientY / window.innerHeight ) * 2 + 1;
+                -( event.clientY / l.scenograph.height ) * 2 + 1;
         }
 
         l.current_scene.renderers.webgl.domElement.addEventListener(
@@ -40,9 +40,9 @@ export default class Events {
                 event.preventDefault();
 
                 l.current_scene.pointer.x =
-                    ( event.changedTouches[ 0 ].clientX / window.innerWidth ) * 2 - 1;
+                    ( event.changedTouches[ 0 ].clientX / l.scenograph.width ) * 2 - 1;
                 l.current_scene.pointer.y =
-                    -( event.changedTouches[ 0 ].clientY / window.innerHeight ) * 2 + 1;
+                    -( event.changedTouches[ 0 ].clientY / l.scenograph.height ) * 2 + 1;
                 l.current_scene.pointer.z = 1; // previously mouseDown = true
             }
         }
@@ -51,9 +51,9 @@ export default class Events {
                 event.preventDefault();
 
                 l.current_scene.pointer.x =
-                    ( event.changedTouches[ 0 ].clientX / window.innerWidth ) * 2 - 1;
+                    ( event.changedTouches[ 0 ].clientX / l.scenograph.width ) * 2 - 1;
                 l.current_scene.pointer.y =
-                    -( event.changedTouches[ 0 ].clientY / window.innerHeight ) * 2 + 1;
+                    -( event.changedTouches[ 0 ].clientY / l.scenograph.height ) * 2 + 1;
                 l.current_scene.pointer.z = 0; // previously mouseDown = false
             }
         }
@@ -92,13 +92,15 @@ export default class Events {
 
     async handleViewportChange () {
 
+        l.scenograph.setViewportSize();
+
         // Determine the new room gap size.
         l.current_scene.settings.adjusted_gap = calculateAdjustedGapSize();
         l.current_scene.room_depth = 8 * l.current_scene.settings.adjusted_gap;
     
         // Grab the new width and height.
-        var width = window.innerWidth;
-        var height = window.innerHeight;
+        var width = l.scenograph.width;
+        var height = l.scenograph.height;
     
         // Update the renderer dimensions.
         l.current_scene.renderers.webgl.setSize( width, height );

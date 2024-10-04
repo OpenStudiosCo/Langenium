@@ -78,16 +78,48 @@
                 display: block;
             }
         }
-
-        
-
-        
-
+       
     }
     #ui-targeting-list {
         top: 1vh;
         left: 1vw;
+    }
 
+    #ui-active-target {
+        bottom: 1vh;
+        left: 1vh;
+
+        .card {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .left {
+            width: 175px;
+        }
+        .right {
+            width: 275px;
+        }
+
+        .target_icon {
+            width: calc(100% - 2rem);
+            padding: 1rem;
+            height: auto;
+        }
+
+        table {
+            border: 0px none;
+            padding: 4rem;
+        }
+
+        table td {
+            border: 0px none;
+            padding: 0.5rem 0.25rem; 
+        }
+    }
+
+    #ui-active-target,
+    #ui-targeting-list {
         button {
             background: rgba(1,1,1,0.1);
             border-radius: 16px;
@@ -96,6 +128,7 @@
             color: #FFF;
         }
     }
+
 #ui-targeting-list.modal.expanded
     .header
         img(src='/assets/ui/satellite-dish-solid.svg' width='16' height='16')
@@ -117,3 +150,35 @@
                     a(href='#' onclick="l.ui.targeting.list.sortTable(3)") Distance
                 td 
         tbody
+
+#ui-active-target.modal.expanded
+    .header
+        img(src='/assets/ui/circle-dot-regular.svg' width='16' height='16')
+        strong Selected Target
+        .modal_controls
+            a(href='#')
+                img(src='/assets/ui/window-minimize-solid.svg' width='13' height='13')
+            a(href='#')
+                img(src='/assets/ui/up-down-left-right-solid.svg' width='13' height='13')
+    .card
+        .left
+            img.target_icon(src='/assets/ui/pirate-icon.png')
+        .right
+            table
+                tbody
+                    tr
+                        td Name:
+                        td
+                            strong Bot Ship
+                    tr
+                        td Type:
+                        td 
+                            strong Pirate Aircraft
+                    tr
+                        td Distance:
+                        td 
+                            strong 70.1km
+                    tr
+                        td Health:
+                        td 
+                            strong 100 / 100

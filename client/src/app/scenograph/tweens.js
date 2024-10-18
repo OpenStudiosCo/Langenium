@@ -309,7 +309,7 @@ function openDoor( doorRotation ) {
  */
 function dollyUp() {
     return new TWEEN.Tween( l.scenograph.cameras.player.position )
-        .to( { y: 10.775 }, l.config.settings.skipintro ? 0 : 500 ) // Set the duration of the animation
+        .to( { y: l.scenograph.cameras.playerY }, l.config.settings.skipintro ? 0 : 500 ) // Set the duration of the animation
         .onUpdate( () => {
             //l.scenograph.cameras.player.lookAt(l.current_scene.objects.player.mesh.position);
             l.scenograph.cameras.player.updateProjectionMatrix();
@@ -372,7 +372,7 @@ export function resetReusables() {
     let cameraRotationX = -( Math.PI / 30 ) * l.scenograph.cameras.player.aspect;
     let cameraDefaultPosition = {
         x: 0,
-        y: 18,
+        y: l.scenograph.cameras.playerY,
         z: -20 + l.current_scene.room_depth / 2,
     },
         cameraDefaultRotation = { x: cameraRotationX, y: 0, z: 0 };

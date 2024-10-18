@@ -17,10 +17,13 @@ import l from '@/helpers/l.js';
 import * as THREE from "three";
 
 export default class Scanners {
+    container;
 
     trackedObjects;
 
     constructor() {
+        this.container = document.querySelector('#game_overlay #scanner_targets');
+
         this.trackedObjects = [];
 
         this.trackedObjects.push({
@@ -36,7 +39,7 @@ export default class Scanners {
           } );
 
         this.trackedObjects.forEach( trackedObject => {
-            document.body.appendChild( trackedObject.symbol );
+            this.container.appendChild( trackedObject.symbol );
         } );
 
         //l.ui.targeting.locked.needsUpdate = true;
@@ -50,14 +53,14 @@ export default class Scanners {
      */
     getSymbolElement( symbol ) {
         let element = document.createElement('div');
-        element.id = 'overlay-scanner';
+        element.class = 'scanner-target';
         element.style.position = 'absolute';
         element.style.border = 'solid 1px rgba(0, 255, 0, 1)';
         element.style.width = '10px';
         element.style.height = '10px';
         element.style.transform = 'rotate(45deg)';
         //this.testElement.style.borderRadius = '50%'; // Makes the element circular for visibility
-        element.style.zIndex = '2'; // Ensures it's on top of other elements
+        element.style.zIndex = '0'; // Ensures it's on top of other elements
         return element;
     }
 
@@ -95,30 +98,45 @@ export default class Scanners {
         
         l.scenograph.cameras.active.updateProjectionMatrix();
         l.scenograph.overlays.scanners.trackedObjects.forEach(trackedObject => {
-            if (!frustum.containsPoint(trackedObject.mesh.position)) {
-                trackedObject.symbol.style.display = `none`;
-            }
-            else {
-                const [ x, y ] = l.scenograph.overlays.scanners.getSymbolPosition(trackedObject.mesh);
+            let [ x, y ] = l.scenograph.overlays.scanners.getSymbolPosition(trackedObject.mesh);
 
-                // Check if the object is within the scanner area.
-                // @todo: Move scanner logic to aircraft equipment update code.
-                if ( 
-                    x > l.scenograph.width * 0.375 &&
-                    x < l.scenograph.width * 0.625 &&
-                    y > l.scenograph.height * 0.375 &&
-                    y < l.scenograph.height * 0.625
-                ) {
-                    trackedObject.symbol.style.border = 'solid 1px rgba(255, 255, 0, 1)';
+            if (!frustum.containsPoint(trackedObject.mesh.position)) {
+                if ( x < l.scenograph.width / 2 ) {
+                    x = 30;
                 }
                 else {
-                    trackedObject.symbol.style.border = 'solid 1px rgba(0, 255, 0, 1)';
+                    x = l.scenograph.width - 30;
+                }
+            }
+            else {
+                if ( x < 30 ) {
+                    x = 30;
                 }
 
-                trackedObject.symbol.style.left = `${x-5}px`;
+                if ( y < 30 ) {
+                    y = 30;
+                }
+            }
+
+            // Check if the object is within the scanner area.
+            // @todo: Move scanner logic to aircraft equipment update code.
+            if ( 
+                x > l.scenograph.width * 0.375 &&
+                x < l.scenograph.width * 0.625 &&
+                y > l.scenograph.height * 0.375 &&
+                y < l.scenograph.height * 0.625
+            ) {
+                trackedObject.symbol.style.background = 'rgba(200, 0, 200, 0.5)';
+                trackedObject.symbol.style.border = 'solid 2px rgba(200, 0, 200, 1)';
+            }
+            else {
+                trackedObject.symbol.style.background = 'none';
+                trackedObject.symbol.style.border = 'solid 1px rgba(0, 0, 200, 1)';
+            }
+
+            trackedObject.symbol.style.left = `${x-5}px`;
                 trackedObject.symbol.style.top = `${y-5}px`;
                 trackedObject.symbol.style.display = `inherit`;
-            }
 
         });
     }

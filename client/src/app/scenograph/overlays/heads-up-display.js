@@ -21,12 +21,14 @@ export default class HeadsUpDisplay {
     constructor() {
         const size = 25;
 
+        this.colour = 'rgba(0,0,100, 1)';
+
         // Create the vertical lines
         this.lineElement = document.createElement('div');
         this.lineElement.id = 'overlay-hud-lines';
         this.lineElement.style.position = 'absolute';
-        this.lineElement.style.borderLeft = 'solid 1px rgba(0, 255, 0, 1)';
-        this.lineElement.style.borderRight = 'solid 1px rgba(0, 255, 0, 1)';
+        this.lineElement.style.borderLeft = 'solid 1px ' + this.colour;
+        this.lineElement.style.borderRight = 'solid 1px ' + this.colour;
         this.lineElement.style.top = (size * 1.5) + 'vh';
         this.lineElement.style.left = (size * 1.5) + 'vw';
         this.lineElement.style.width = size + 'vw';
@@ -68,7 +70,7 @@ export default class HeadsUpDisplay {
         labelElement.id = 'overlay-hud-label-' + keyName;
         labelElement.dataset.id = keyName;
         labelElement.style.position = 'absolute';
-        labelElement.style.color = 'rgba(0, 255, 0, 1)';
+        labelElement.style.color = this.colour;
         labelElement.style.fontFamily = 'monospace';
         labelElement.style.zIndex = '2'; // Ensures it's on top of other elements
         labelElement.style.pointerEvents = 'none';

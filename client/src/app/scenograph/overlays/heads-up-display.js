@@ -19,6 +19,7 @@ import * as THREE from "three";
 export default class HeadsUpDisplay {
 
     constructor() {
+        const size = 25;
 
         // Create the vertical lines
         this.lineElement = document.createElement('div');
@@ -26,10 +27,10 @@ export default class HeadsUpDisplay {
         this.lineElement.style.position = 'absolute';
         this.lineElement.style.borderLeft = 'solid 1px rgba(0, 255, 0, 1)';
         this.lineElement.style.borderRight = 'solid 1px rgba(0, 255, 0, 1)';
-        this.lineElement.style.top = '17.5vh';
-        this.lineElement.style.left = '17.5vw';
-        this.lineElement.style.width = '65vw';
-        this.lineElement.style.height = '65vh';
+        this.lineElement.style.top = (size * 1.5) + 'vh';
+        this.lineElement.style.left = (size * 1.5) + 'vw';
+        this.lineElement.style.width = size + 'vw';
+        this.lineElement.style.height = size + 'vh';
         this.lineElement.style.borderRadius = '10% / 50%'; // Makes the element circular for visibility
         this.lineElement.style.zIndex = '2'; // Ensures it's on top of other elements
         this.lineElement.style.pointerEvents = 'none';
@@ -37,26 +38,26 @@ export default class HeadsUpDisplay {
 
         // Create the label to track air speed.
         this.aspdElement = this.createLabel( 'aspd', 'AIRSPEED: 0km/h');
-        this.aspdElement.style.bottom = '12.5vh';
-        this.aspdElement.style.left = '25vw';
+        this.aspdElement.style.bottom = (size * 1.25) + 'vh';
+        this.aspdElement.style.left = (size * 1.25) + 'vw';
         document.body.appendChild(this.aspdElement);
 
         // Create the label to track vertical speed.
         this.vspdElement = this.createLabel( 'vspd', 'VERT. SPD: 0km/h');
-        this.vspdElement.style.bottom = '12.5vh';
-        this.vspdElement.style.right = '25vw';
+        this.vspdElement.style.bottom = (size * 1.25) + 'vh';
+        this.vspdElement.style.right = (size * 1.25) + 'vw';
         document.body.appendChild(this.vspdElement);
 
         // Create the label to track air speed.
         this.headingElement = this.createLabel( 'aspd', 'HEADING: 0°');
-        this.headingElement.style.top = '12.5vh';
-        this.headingElement.style.left = '25vw';
+        this.headingElement.style.top = (size * 1.25) + 'vh';
+        this.headingElement.style.left = (size * 1.25) + 'vw';
         document.body.appendChild(this.headingElement);
 
         // Create the label to track vertical speed.
         this.elevationElement = this.createLabel( 'vspd', 'ELEVATION: 0m');
-        this.elevationElement.style.top = '12.5vh';
-        this.elevationElement.style.right = '25vw';
+        this.elevationElement.style.top = (size * 1.25) + 'vh';
+        this.elevationElement.style.right = (size * 1.25) + 'vw';
         document.body.appendChild(this.elevationElement);
 
     }

@@ -41,15 +41,15 @@ export default class UI {
 
         this.update_queue = [];
 
-        /**
-         * @todo: Move into a game mode activation function.
-         */
-        this.targeting = new Targeting();
+        // /**
+        //  * @todo: Move into a game mode activation function.
+        //  */
+        // this.targeting = new Targeting();
 
-        this.update_queue.push( {
-            callback: 'l.ui.targeting.update',
-            data: []
-        } );
+        // this.update_queue.push( {
+        //     callback: 'l.ui.targeting.update',
+        //     data: []
+        // } );
 
     }
 

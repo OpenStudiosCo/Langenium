@@ -28,10 +28,6 @@ html(lang='en')
                 include ./partials/ui/menus/scene_overview-table.pug
             script#scene_overview_row(type='html_template_in_a_script_tag')
                 include ./partials/ui/menus/scene_overview-row.pug               
-            template#targeting_locked__item_template(type='html_template_in_a_script_tag')
-                include ./partials/ui/targeting/locked_target.pug
-            template#targeting_list__item_template(type='html_template_in_a_script_tag')
-                include ./partials/ui/targeting/list_target.pug
         #webgl-wrapper
             canvas#loader_symbols
             canvas#loader_image
@@ -46,5 +42,3 @@ html(lang='en')
             #webgl
             include ./partials/game_client/scripts.pug
         include ./partials/ui/flight_instruments.pug
-        include ./partials/ui/targeting_locked.pug
-        include ./partials/ui/targeting_list.pug

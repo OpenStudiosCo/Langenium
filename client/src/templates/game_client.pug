@@ -23,6 +23,8 @@ html(lang='en')
             #main_menu
             #object_editor
             #scene_overview
+            #preview_materials
+                div(style='color:#FFF; margin: 1rem;') Previewing Procedural Materials
         #game_overlay
             #hud
             #scanner_targets
@@ -30,7 +32,9 @@ html(lang='en')
             script#scene_overview_table(type='html_template_in_a_script_tag')
                 include ./partials/ui/menus/scene_overview-table.pug
             script#scene_overview_row(type='html_template_in_a_script_tag')
-                include ./partials/ui/menus/scene_overview-row.pug               
+                include ./partials/ui/menus/scene_overview-row.pug
+            template#overlays_scanner_target
+                include ./partials/overlays/scanner-target.pug
         #webgl-wrapper
             canvas#loader_symbols
             canvas#loader_image
@@ -40,8 +44,6 @@ html(lang='en')
                 div Loading
                 img(src='/assets/images/tail-spin.svg' alt='Loading spinner')
             include ./partials/game_client/door_image.pug
-            div#preview_materials
-                div(style='color:#FFF; margin: 1rem;') Previewing Procedural Materials
             #webgl
             include ./partials/game_client/scripts.pug
         include ./partials/ui/flight_instruments.pug

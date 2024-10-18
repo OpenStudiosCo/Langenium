@@ -30,5 +30,16 @@
 }
 
 #game_overlay {
-    z-index: 4
+    z-index: 4;
+    .scanner-target {
+        position: absolute;
+        z-index: 0;
+        .symbol {
+            border: solid 1px rgba(0, 255, 0, 1);
+            width: 10px;
+            height: 10px;
+            transform: rotate(45deg);
+        }
+    }
 }
+

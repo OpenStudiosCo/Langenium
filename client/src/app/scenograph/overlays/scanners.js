@@ -25,6 +25,8 @@ export default class Scanners {
         this.offset = 10;
         this.container = document.querySelector('#game_overlay #scanner_targets');
 
+        this.item_template = document.getElementById( 'overlays_scanner_target' ).innerHTML;
+
         this.trackedObjects = [];
 
         this.trackedObjects.push({
@@ -54,15 +56,8 @@ export default class Scanners {
      */
     getSymbolElement( symbol ) {
         let element = document.createElement('div');
-        element.class = 'scanner-target';
-        element.style.position = 'absolute';
-        element.style.border = 'solid 1px rgba(0, 255, 0, 1)';
-        element.style.width = '10px';
-        element.style.height = '10px';
-        element.style.transform = 'rotate(45deg)';
-        //this.testElement.style.borderRadius = '50%'; // Makes the element circular for visibility
-        element.style.zIndex = '0'; // Ensures it's on top of other elements
-        return element;
+        element.innerHTML = this.item_template;
+        return element.firstChild;
     }
 
     /**
@@ -99,6 +94,7 @@ export default class Scanners {
         
         l.scenograph.cameras.active.updateProjectionMatrix();
         l.scenograph.overlays.scanners.trackedObjects.forEach(trackedObject => {
+            let symbol = trackedObject.symbol.querySelector('.symbol');
             let [ x, y ] = l.scenograph.overlays.scanners.getSymbolPosition(trackedObject.mesh);
 
             if ( x < l.scenograph.overlays.scanners.offset ) {
@@ -152,17 +148,16 @@ export default class Scanners {
                 y > l.scenograph.height * 0.375 &&
                 y < l.scenograph.height * 0.625
             ) {
-                trackedObject.symbol.style.background = 'rgba(200, 0, 200, 0.5)';
-                trackedObject.symbol.style.border = 'solid 2px rgba(200, 0, 200, 1)';
+                symbol.style.background = 'rgba(200, 0, 200, 0.5)';
+                symbol.style.border = 'solid 2px rgba(200, 0, 200, 1)';
             }
             else {
-                trackedObject.symbol.style.background = 'none';
-                trackedObject.symbol.style.border = 'solid 1px rgba(0, 0, 200, 1)';
+                symbol.style.background = 'none';
+                symbol.style.border = 'solid 1px rgba(0, 0, 200, 1)';
             }
 
             trackedObject.symbol.style.left = `${x-5}px`;
-                trackedObject.symbol.style.top = `${y-5}px`;
-                trackedObject.symbol.style.display = `inherit`;
+            trackedObject.symbol.style.top = `${y-5}px`;
 
         });
     }

@@ -101,6 +101,20 @@ export default class Scanners {
             else {
                 const [ x, y ] = l.scenograph.overlays.scanners.getSymbolPosition(trackedObject.mesh);
 
+                // Check if the object is within the scanner area.
+                // @todo: Move scanner logic to aircraft equipment update code.
+                if ( 
+                    x > l.scenograph.width * 0.375 &&
+                    x < l.scenograph.width * 0.625 &&
+                    y > l.scenograph.height * 0.375 &&
+                    y < l.scenograph.height * 0.625
+                ) {
+                    trackedObject.symbol.style.border = 'solid 1px rgba(255, 255, 0, 1)';
+                }
+                else {
+                    trackedObject.symbol.style.border = 'solid 1px rgba(0, 255, 0, 1)';
+                }
+
                 trackedObject.symbol.style.left = `${x-5}px`;
                 trackedObject.symbol.style.top = `${y-5}px`;
                 trackedObject.symbol.style.display = `inherit`;

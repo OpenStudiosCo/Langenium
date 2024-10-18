@@ -21,6 +21,8 @@ export default class HeadsUpDisplay {
     constructor() {
         const size = 25;
 
+        this.container = document.querySelector('#game_overlay #hud');
+
         this.colour = 'rgba(0,0,100, 1)';
 
         // Create the vertical lines
@@ -36,31 +38,31 @@ export default class HeadsUpDisplay {
         this.lineElement.style.borderRadius = '10% / 50%'; // Makes the element circular for visibility
         this.lineElement.style.zIndex = '2'; // Ensures it's on top of other elements
         this.lineElement.style.pointerEvents = 'none';
-        document.body.appendChild(this.lineElement);
+        this.container.appendChild(this.lineElement);
 
         // Create the label to track air speed.
         this.aspdElement = this.createLabel( 'aspd', 'AIRSPEED: 0km/h');
         this.aspdElement.style.bottom = (size * 1.25) + 'vh';
         this.aspdElement.style.left = (size * 1.25) + 'vw';
-        document.body.appendChild(this.aspdElement);
+        this.container.appendChild(this.aspdElement);
 
         // Create the label to track vertical speed.
         this.vspdElement = this.createLabel( 'vspd', 'VERT. SPD: 0km/h');
         this.vspdElement.style.bottom = (size * 1.25) + 'vh';
         this.vspdElement.style.right = (size * 1.25) + 'vw';
-        document.body.appendChild(this.vspdElement);
+        this.container.appendChild(this.vspdElement);
 
         // Create the label to track air speed.
         this.headingElement = this.createLabel( 'aspd', 'HEADING: 0°');
         this.headingElement.style.top = (size * 1.25) + 'vh';
         this.headingElement.style.left = (size * 1.25) + 'vw';
-        document.body.appendChild(this.headingElement);
+        this.container.appendChild(this.headingElement);
 
         // Create the label to track vertical speed.
         this.elevationElement = this.createLabel( 'vspd', 'ELEVATION: 0m');
         this.elevationElement.style.top = (size * 1.25) + 'vh';
         this.elevationElement.style.right = (size * 1.25) + 'vw';
-        document.body.appendChild(this.elevationElement);
+        this.container.appendChild(this.elevationElement);
 
     }
 

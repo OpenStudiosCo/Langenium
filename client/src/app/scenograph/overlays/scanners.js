@@ -22,6 +22,7 @@ export default class Scanners {
     trackedObjects;
 
     constructor() {
+        this.offset = 10;
         this.container = document.querySelector('#game_overlay #scanner_targets');
 
         this.trackedObjects = [];
@@ -100,23 +101,48 @@ export default class Scanners {
         l.scenograph.overlays.scanners.trackedObjects.forEach(trackedObject => {
             let [ x, y ] = l.scenograph.overlays.scanners.getSymbolPosition(trackedObject.mesh);
 
+            if ( x < l.scenograph.overlays.scanners.offset ) {
+                x = l.scenograph.overlays.scanners.offset;
+            }
+
+            if ( y < l.scenograph.overlays.scanners.offset ) {
+                y = l.scenograph.overlays.scanners.offset;
+            }
+
+            if ( x > l.scenograph.width - l.scenograph.overlays.scanners.offset ) {
+                x = l.scenograph.width - l.scenograph.overlays.scanners.offset;
+            }
+
+            if ( y > l.scenograph.height - l.scenograph.overlays.scanners.offset ) {
+                y = l.scenograph.height - l.scenograph.overlays.scanners.offset;
+            }
+
             if (!frustum.containsPoint(trackedObject.mesh.position)) {
-                if ( x < l.scenograph.width / 2 ) {
-                    x = 30;
+
+                let diffX = (l.scenograph.width / 2) - x ;
+                let diffZ = (l.scenograph.height / 2) - y ;
+
+                if (Math.abs(diffX) > Math.abs(diffZ)) {
+                    if ( diffX < 0 ) {
+                        x = l.scenograph.width - l.scenograph.overlays.scanners.offset;
+                    }
+                    else {
+                        x = l.scenograph.overlays.scanners.offset;
+                    }
                 }
                 else {
-                    x = l.scenograph.width - 30;
-                }
-            }
-            else {
-                if ( x < 30 ) {
-                    x = 30;
+                    if ( diffZ < 0 ) {
+                        y = l.scenograph.height - l.scenograph.overlays.scanners.offset;
+                    }
+                    else {
+                        y = l.scenograph.overlays.scanners.offset;
+                    }
                 }
 
-                if ( y < 30 ) {
-                    y = 30;
-                }
             }
+            //else {
+                
+            //}
 
             // Check if the object is within the scanner area.
             // @todo: Move scanner logic to aircraft equipment update code.

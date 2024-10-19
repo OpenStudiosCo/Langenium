@@ -87,6 +87,50 @@
         }
 
     }
+
+    #hud {
+        &-lines {
+            position: absolute;
+            border-left: 4px ridge rgb(0, 0, 100);
+            border-right: 4px ridge rgb(0, 0, 100);
+            top: 37.5vh;
+            left: 37.5vw;
+            width: 25vw;
+            height: 25vh;
+            border-radius: 10% / 50%;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        &-aspd,
+        &-vspd,
+        &-head,
+        &-elev {
+            position: absolute;
+            color: rgb(0, 0, 100);
+            font-family: monospace;
+            z-index: 2;
+            pointer-events: none;
+        }
+        &-aspd {
+            bottom: 31.25vh;
+            left: 31.25vw;
+        }
+        &-vspd {
+            bottom: 31.25vh;
+            right: 31.25vw;
+        }
+        &-head {
+            top: 31.25vh;
+            left: 31.25vw;
+        }
+        &-elev {
+            top: 31.25vh;
+            right: 31.25vw;
+        }
+    }
+
+
 }
 
 @keyframes rotate {

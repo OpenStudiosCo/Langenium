@@ -19,49 +19,28 @@ import * as THREE from "three";
 export default class HeadsUpDisplay {
 
     constructor() {
-        const size = 25;
 
         this.container = document.querySelector('#game_overlay #hud');
 
-        this.colour = 'rgba(0,0,100, 1)';
-
         // Create the vertical lines
         this.lineElement = document.createElement('div');
-        this.lineElement.id = 'overlay-hud-lines';
-        this.lineElement.style.position = 'absolute';
-        this.lineElement.style.borderLeft = 'ridge 4px ' + this.colour;
-        this.lineElement.style.borderRight = 'ridge 4px ' + this.colour;
-        this.lineElement.style.top = (size * 1.5) + 'vh';
-        this.lineElement.style.left = (size * 1.5) + 'vw';
-        this.lineElement.style.width = size + 'vw';
-        this.lineElement.style.height = size + 'vh';
-        this.lineElement.style.borderRadius = '10% / 50%'; // Makes the element circular for visibility
-        this.lineElement.style.zIndex = '2'; // Ensures it's on top of other elements
-        this.lineElement.style.pointerEvents = 'none';
+        this.lineElement.id = 'hud-lines';
         this.container.appendChild(this.lineElement);
 
         // Create the label to track air speed.
         this.aspdElement = this.createLabel( 'aspd', 'AIRSPEED: 0km/h');
-        this.aspdElement.style.bottom = (size * 1.25) + 'vh';
-        this.aspdElement.style.left = (size * 1.25) + 'vw';
         this.container.appendChild(this.aspdElement);
 
         // Create the label to track vertical speed.
         this.vspdElement = this.createLabel( 'vspd', 'VERT. SPD: 0km/h');
-        this.vspdElement.style.bottom = (size * 1.25) + 'vh';
-        this.vspdElement.style.right = (size * 1.25) + 'vw';
         this.container.appendChild(this.vspdElement);
 
         // Create the label to track air speed.
-        this.headingElement = this.createLabel( 'aspd', 'HEADING: 0°');
-        this.headingElement.style.top = (size * 1.25) + 'vh';
-        this.headingElement.style.left = (size * 1.25) + 'vw';
+        this.headingElement = this.createLabel( 'head', 'HEADING: 0°');
         this.container.appendChild(this.headingElement);
 
         // Create the label to track vertical speed.
-        this.elevationElement = this.createLabel( 'vspd', 'ELEVATION: 0m');
-        this.elevationElement.style.top = (size * 1.25) + 'vh';
-        this.elevationElement.style.right = (size * 1.25) + 'vw';
+        this.elevationElement = this.createLabel( 'elev', 'ELEVATION: 0m');
         this.container.appendChild(this.elevationElement);
 
     }
@@ -69,13 +48,8 @@ export default class HeadsUpDisplay {
     createLabel( keyName, labelText ) {
         let labelElement = document.createElement('div');
         labelElement.innerHTML = labelText;
-        labelElement.id = 'overlay-hud-label-' + keyName;
+        labelElement.id = 'hud-' + keyName;
         labelElement.dataset.id = keyName;
-        labelElement.style.position = 'absolute';
-        labelElement.style.color = this.colour;
-        labelElement.style.fontFamily = 'monospace';
-        labelElement.style.zIndex = '2'; // Ensures it's on top of other elements
-        labelElement.style.pointerEvents = 'none';
         return labelElement;
     }
 

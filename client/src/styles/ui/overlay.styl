@@ -40,8 +40,8 @@
             width: 40px;
             height: 40px;
             position: absolute;
-            right: -12px;
-            bottom: -12px;
+            right: -11px;
+            bottom: -11px;
             animation: scale 0.6s infinite ease-in-out;
 
             ^[-1].tracking ^[2..2] {
@@ -130,6 +130,15 @@
         }
     }
 
+    #map {
+        position: absolute;
+        height: @css{ max(12.5vw, 12.5vh) };
+        width: @css{ max(12.5vw, 12.5vh) };
+        background: radial-gradient(rgba(#333, 0.15) 5%, rgba(#333, 0.35) 95%);
+        border-radius: 100%;
+        top: @css{ min(2.5vw, 2.5vh) };
+        left: @css{ min(2.5vw, 2.5vh) };
+    }
 
 }
 

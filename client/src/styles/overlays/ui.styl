@@ -1,0 +1,24 @@
+
+#ui_overlay > div {
+    pointer-events: all;
+}
+
+#ui_overlay #main_menu .tp-rotv {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+}
+
+#ui_overlay #main_menu .tp-rotv-expanded {
+    position: relative;
+    font-size: 20px;
+    --cnt-hp: var(--tp-container-horizontal-padding, 10px);
+    --cnt-vp: var(--tp-container-vertical-padding, 10px);
+    --cnt-usp: var(--tp-container-unit-spacing, 10px);
+    --cnt-usz: var(--tp-container-unit-size, 40px);
+}
+
+@import "ui/common.styl";
+@import "ui/debugging_tools.styl";
+@import "ui/object_editor.styl";
+@import "ui/scene_overview.styl";

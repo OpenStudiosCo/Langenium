@@ -11,6 +11,7 @@
  */
 import l from '@/helpers/l.js';
 import HeadsUpDisplay from '@/scenograph/overlays/heads-up-display.js';
+import Map from '@/scenograph/overlays/map.js';
 import Scanners from '@/scenograph/overlays/scanners.js';
 
 export default class Overlays {
@@ -25,6 +26,12 @@ export default class Overlays {
         l.scenograph.overlays.hud = new HeadsUpDisplay();
         l.current_scene.animation_queue.push(
             l.scenograph.overlays.hud.animate
+        );
+
+        // Mini Map.
+        l.scenograph.overlays.map = new Map();
+        l.current_scene.animation_queue.push(
+            l.scenograph.overlays.map.animate
         );
 
         // Scanners.

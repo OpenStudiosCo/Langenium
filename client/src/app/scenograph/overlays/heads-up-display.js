@@ -29,8 +29,8 @@ export default class HeadsUpDisplay {
         this.lineElement = document.createElement('div');
         this.lineElement.id = 'overlay-hud-lines';
         this.lineElement.style.position = 'absolute';
-        this.lineElement.style.borderLeft = 'solid 1px ' + this.colour;
-        this.lineElement.style.borderRight = 'solid 1px ' + this.colour;
+        this.lineElement.style.borderLeft = 'ridge 4px ' + this.colour;
+        this.lineElement.style.borderRight = 'ridge 4px ' + this.colour;
         this.lineElement.style.top = (size * 1.5) + 'vh';
         this.lineElement.style.left = (size * 1.5) + 'vw';
         this.lineElement.style.width = size + 'vw';

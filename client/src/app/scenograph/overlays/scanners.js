@@ -95,6 +95,7 @@ export default class Scanners {
         l.scenograph.cameras.active.updateProjectionMatrix();
         l.scenograph.overlays.scanners.trackedObjects.forEach(trackedObject => {
             let symbol = trackedObject.symbol.querySelector('.symbol');
+            let targetingEffect = trackedObject.symbol.querySelector('.targeting-effect');
             let [ x, y ] = l.scenograph.overlays.scanners.getSymbolPosition(trackedObject.mesh);
 
             if ( x < l.scenograph.overlays.scanners.offset ) {
@@ -150,10 +151,12 @@ export default class Scanners {
             ) {
                 symbol.style.background = 'rgba(200, 0, 200, 0.5)';
                 symbol.style.border = 'solid 2px rgba(200, 0, 200, 1)';
+                targetingEffect.style.display = 'block';
             }
             else {
                 symbol.style.background = 'none';
                 symbol.style.border = 'solid 1px rgba(0, 0, 200, 1)';
+                targetingEffect.style.display = 'none';
             }
 
             trackedObject.symbol.style.left = `${x-5}px`;

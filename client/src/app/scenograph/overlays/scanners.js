@@ -31,13 +31,19 @@ export default class Scanners {
 
         this.trackedObjects.push({
             mesh: l.current_scene.objects.bot.mesh,
-            domElement: this.getSymbolElement( 'diamond' )
+            domElement: this.getSymbolElement( 'diamond' ),
+            locked: false,
+            scanTime: 0,
+            lostTime: 0
         });
 
         l.current_scene.objects.cargo_ships.forEach( async ( cargo_ship, i ) => {
             this.trackedObjects.push({
                 mesh: cargo_ship,
-                domElement: this.getSymbolElement( 'diamond' )
+                domElement: this.getSymbolElement( 'diamond' ),
+                locked: false,
+                scanTime: 0,
+                lostTime: 0
             });
           } );
 
@@ -66,7 +72,7 @@ export default class Scanners {
      * @global
      * @note All references within this method should be globally accessible.
      */
-    animateSymbolPosition ( object, frustum ) {
+    getScreenCoordinates ( object, frustum ) {
         const vector = new THREE.Vector3();
         object.getWorldPosition(vector);
         vector.project(l.scenograph.cameras.active);
@@ -117,27 +123,6 @@ export default class Scanners {
         return [ x, y ];
     }
 
-    /**
-     * Animates the tracked object.
-     * 
-     * @param {*} trackedObject 
-     * @param {*} frustum 
-     */
-    animateTrackedObject( trackedObject, frustum ) {
-        let [ x, y ] = l.scenograph.overlays.scanners.animateSymbolPosition(trackedObject.mesh, frustum);
-
-        // Check if the object is within the scanner area.
-        if ( l.scenograph.overlays.scanners.getTargetLock( x, y ) ) {
-            trackedObject.domElement.classList.add('active');
-        }
-        else {
-            trackedObject.domElement.classList.remove('active');
-        }
-
-        trackedObject.domElement.style.left = `${x-5}px`;
-        trackedObject.domElement.style.top = `${y-5}px`;
-    }
-
     // @todo: Move scanner logic to aircraft equipment update code.
     getTargetLock( x, y ) {
         if ( 
@@ -153,8 +138,74 @@ export default class Scanners {
         }
     }
 
-    animateTarget() {
+    animateTarget( delta, trackedObject, frustum ) {
+        let [ x, y ] = l.scenograph.overlays.scanners.getScreenCoordinates(trackedObject.mesh, frustum);
+        let targetLock = l.scenograph.overlays.scanners.getTargetLock( x, y );
 
+        // Check if the object is within the scanner area.
+        if ( targetLock ) {
+            trackedObject.domElement.classList.add('tracking');
+            trackedObject.scanTime += delta;
+            trackedObject.lostTime = 0;
+
+            if ( trackedObject.scanTime >= 1 ) {
+                if ( trackedObject.scanTime >= 3 ) {
+                    trackedObject.domElement.classList.remove('locking');
+                    trackedObject.domElement.classList.add('locked');
+                }
+                else {
+                    trackedObject.domElement.classList.add('locking');
+                    trackedObject.domElement.classList.remove('locked');
+                }
+            }
+            else {
+                trackedObject.domElement.classList.remove('locking');
+                trackedObject.domElement.classList.remove('locked');
+            }
+
+        }
+        else {
+            trackedObject.lostTime += delta;
+
+            if ( trackedObject.scanTime < 1 ) {
+                trackedObject.domElement.classList.remove('tracking');
+                trackedObject.scanTime = 0;
+                trackedObject.lostTime = 0;
+            }
+            else {
+                // Allow 3 seconds before a target is downgraded when locked.
+                if ( trackedObject.lostTime >= 3 && trackedObject.domElement.classList.contains('locked') ) {
+                    trackedObject.domElement.classList.add('locking');
+                    trackedObject.domElement.classList.remove('locked');
+
+                    trackedObject.lostTime = 0;
+                }
+                else {
+                    // Allow 1 seconds before a target is downgraded when locking.
+                    if ( trackedObject.lostTime >= 1 && trackedObject.domElement.classList.contains('locking') ) {
+                        trackedObject.domElement.classList.remove('locking');
+
+                        trackedObject.lostTime = 0;
+                    }
+                }
+
+                // Allow 1 seconds before a target is lost when tracking.
+                if ( 
+                    trackedObject.lostTime >= 1 &&
+                    trackedObject.domElement.classList.contains('tracking') &&
+                    ! trackedObject.domElement.classList.contains('locked') &&
+                    ! trackedObject.domElement.classList.contains('locking') 
+                ) {
+                    trackedObject.domElement.classList.remove('tracking');
+                    trackedObject.scanTime = 0;
+                    trackedObject.lostTime = 0;
+                }
+
+            }
+        }
+
+        trackedObject.domElement.style.left = `${x-5}px`;
+        trackedObject.domElement.style.top = `${y-5}px`;
     }
 
     /**
@@ -168,14 +219,14 @@ export default class Scanners {
      * @global
      * @note All references within this method should be globally accessible.
     **/
-    animate() {
+    animate( delta ) {
         const frustum = new THREE.Frustum()
         const matrix = new THREE.Matrix4().multiplyMatrices(l.scenograph.cameras.active.projectionMatrix, l.scenograph.cameras.active.matrixWorldInverse)
         frustum.setFromProjectionMatrix(matrix)
         
         l.scenograph.cameras.active.updateProjectionMatrix();
         l.scenograph.overlays.scanners.trackedObjects.forEach(trackedObject => {
-            l.scenograph.overlays.scanners.animateTrackedObject(trackedObject, frustum);
+            l.scenograph.overlays.scanners.animateTarget(delta, trackedObject, frustum);
         });
     }
 

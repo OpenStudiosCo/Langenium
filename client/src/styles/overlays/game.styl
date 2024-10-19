@@ -108,6 +108,17 @@
         border-radius: 100%;
         top: @css{ min(2.5vw, 2.5vh) };
         left: @css{ min(2.5vw, 2.5vh) };
+
+        #map-fov {
+            --p: 3.5px; /* control the shape (can be percentage) */
+            height: 10px;
+            aspect-ratio: 3/2;
+            clip-path: polygon(var(--p) 100%,calc(100% - var(--p)) 100%,100% 0,0 0);
+            background: radial-gradient(rgba(#FFF, 0.35) 5%, rgba(#FFF, 0.5) 95%);
+            position: absolute;
+            left: calc( 50% - 6.5px );
+            top: calc( 50% - 5px );
+        }
     }
 
 }

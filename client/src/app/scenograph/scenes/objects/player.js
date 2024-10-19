@@ -43,7 +43,7 @@ export default class Player {
     trail;
 
     constructor() {
-        this.default_camera_distance = window.innerWidth < window.innerHeight ? -70 : -35;
+        this.default_camera_distance = l.scenograph.width < l.scenograph.height ? -70 : -35;
         this.trail_position_y = 1.2;
         this.trail_position_z = 1.5;
         this.camera_distance = 0;
@@ -104,6 +104,9 @@ export default class Player {
         this.mesh.position.z = l.current_scene.room_depth;
         this.mesh.rotation.order = 'YXZ';
 
+        this.mesh.userData.targetable = true;
+        this.mesh.userData.objectClass = 'player';
+
         this.createThruster();
 
         this.mixer = new THREE.AnimationMixer( this.mesh );
@@ -122,7 +125,7 @@ export default class Player {
         this.trail = new TrailRenderer( l.current_scene.scene, false );
 
         // set how often a new trail node will be added and existing nodes will be updated
-        this.trail.setAdvanceFrequency( 60 );
+        this.trail.setAdvanceFrequency( 30 );
 
         // create material for the trail renderer
         const trailMaterial = TrailRenderer.createBaseMaterial();
@@ -132,15 +135,15 @@ export default class Player {
         trailMaterial.depthBiasConstant = 0; // Adjust depth bias constant term if necessary
         trailMaterial.depthBiasSlope = 0; // Adjust depth bias slope term if necessary
 
-        trailMaterial.side = THREE.DoubleSide;
+        //trailMaterial.side = THREE.DoubleSide;
 
-        trailMaterial.transparent = true;
+        //trailMaterial.transparent = true;
 
         trailMaterial.uniforms.headColor.value.set( 255 / 255, 212 / 255, 148 / 255, 1. ); // RGBA.
         trailMaterial.uniforms.tailColor.value.set( 132 / 255, 42 / 255, 36 / 255, 1. ); // RGBA.
 
         // specify length of trail
-        const trailLength = 4;
+        const trailLength = 2;
 
         const trailContainer = new THREE.Object3D();
         trailContainer.position.set( 0, this.trail_position_y, this.trail_position_z );

@@ -10,17 +10,25 @@
  * Internal libs and helpers.
  */
 import l from '@/helpers/l.js';
+import HeadsUpDisplay from '@/scenograph/overlays/heads-up-display.js';
 import Scanners from '@/scenograph/overlays/scanners.js';
 
 export default class Overlays {
+    hud;
+
     scanners;
 
     constructor() {}
 
-    addToScene( scene ) {
+    load() {
+        // Heads Up Display (HUD).
+        l.scenograph.overlays.hud = new HeadsUpDisplay();
+        l.current_scene.animation_queue.push(
+            l.scenograph.overlays.hud.animate
+        );
+
         // Scanners.
         l.scenograph.overlays.scanners = new Scanners();
-        l.scenograph.overlays.scanners.addToScene( scene );
         l.current_scene.animation_queue.push(
             l.scenograph.overlays.scanners.animate
         );

@@ -25,7 +25,7 @@ class SliderStick {
         this.container.append(this.stickElement)
 
         // Aligning pad:
-        let canvas = container.getElementsByTagName('canvas')[0]
+        let canvas = document.querySelectorAll('#webgl canvas')[0]
         this.alignAndConfigPad(canvas)
 
         // events

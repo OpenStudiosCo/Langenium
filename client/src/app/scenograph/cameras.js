@@ -38,6 +38,8 @@ export default class Cameras {
         this.orbit = this.createCamera( 'orbit' );
         this.player = this.createCamera( 'player' );
 
+        this.playerY = 14;
+
         // Check if we're in debug mode and set the active camera accordingly.
         this.active = l.config.settings.debug ? this.orbit : this.player;
     }
@@ -64,8 +66,8 @@ export default class Cameras {
 
     createCamera( cameraName ) {
 
-        var width = window.innerWidth;
-        var height = window.innerHeight;
+        var width = l.scenograph.width;
+        var height = l.scenograph.height;
         var aspect = width / height;
         var fov = setCameraFOV( aspect );
 

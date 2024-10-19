@@ -117,6 +117,8 @@ export default class Extractor {
         this.mesh = new THREE.Object3D();
         this.mesh.add( result );
         this.mesh.add( innerMesh2 );
+        this.mesh.userData.targetable = true;
+        this.mesh.userData.objectClass = 'extractors';
 
         // Storage tanks.
         // this.mesh.add(this.getStorageTanks());

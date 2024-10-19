@@ -50,8 +50,8 @@ export function mapRange( value, inMin, inMax, outMin, outMax ) {
  * Used to determine office room dimensions on different screen sizes/aspect ratios.
  */
 export function calculateAdjustedGapSize() {
-    var width = window.innerWidth;
-    var height = window.innerHeight;
+    var width = l.scenograph.width;
+    var height = l.scenograph.height;
 
     // Adjust gap size based on the aspect ratio
     var adjustedGapSize =

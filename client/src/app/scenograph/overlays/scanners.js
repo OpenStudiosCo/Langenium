@@ -17,63 +17,195 @@ import l from '@/helpers/l.js';
 import * as THREE from "three";
 
 export default class Scanners {
+    container;
 
     trackedObjects;
 
     constructor() {
+        this.offset = 10;
+        this.container = document.querySelector('#game_overlay #scanner_targets');
+
+        this.item_template = document.getElementById( 'overlays_scanner_target' ).innerHTML;
+
         this.trackedObjects = [];
 
         this.trackedObjects.push({
             mesh: l.current_scene.objects.bot.mesh,
-            symbol: this.createDiamond(),
+            domElement: this.getSymbolElement( 'diamond' ),
+            locked: false,
+            scanTime: 0,
+            lostTime: 0
         });
 
-        // Create a test HTML element
-        this.testElement = document.createElement('div');
-        this.testElement.style.position = 'absolute';
-        this.testElement.style.border = 'solid 1px rgba(0, 255, 0, 1)';
-        this.testElement.style.width = '10px';
-        this.testElement.style.height = '10px';
-        this.testElement.style.transform = 'rotate(45deg)';
-        //this.testElement.style.borderRadius = '50%'; // Makes the element circular for visibility
-        this.testElement.style.zIndex = '2'; // Ensures it's on top of other elements
-        document.body.appendChild(this.testElement);
-    
+        l.current_scene.objects.cargo_ships.forEach( async ( cargo_ship, i ) => {
+            this.trackedObjects.push({
+                mesh: cargo_ship,
+                domElement: this.getSymbolElement( 'diamond' ),
+                locked: false,
+                scanTime: 0,
+                lostTime: 0
+            });
+          } );
+
+        this.trackedObjects.forEach( trackedObject => {
+            this.container.appendChild( trackedObject.domElement );
+        } );
+
     }
 
-    addToScene( scene ) {
-        // this.trackedObjects.forEach( ( trackedObject ) => {
-        //     scene.add( trackedObject.symbol );
-        // } );
+    /**
+     * 
+     * @param {*} symbol 
+     * @returns custom HTMLElement
+     */
+    getSymbolElement( symbol ) {
+        let element = document.createElement('div');
+        element.innerHTML = this.item_template;
+        return element.firstChild;
     }
 
-    getSymbolPosition ( object ) {
+    /**
+     * Obtains the 2D screen co-ordinate for a 3D object target.
+     * 
+     * @param {*} THREE.Object3D currently in the scene
+     * @returns [x,y] screen space coordinates
+     * @global
+     * @note All references within this method should be globally accessible.
+     */
+    getScreenCoordinates ( object, frustum ) {
         const vector = new THREE.Vector3();
         object.getWorldPosition(vector);
         vector.project(l.scenograph.cameras.active);
 
-        const x = (vector.x * 0.5 + 0.5) * window.innerWidth;
-        const y = (1 - (vector.y * 0.5 + 0.5)) * window.innerHeight;
-        const z = 0;
-        return [ x, y, vector.z ];
+        let x = (vector.x * 0.5 + 0.5) * l.scenograph.width;
+        let y = (1 - (vector.y * 0.5 + 0.5)) * l.scenograph.height;
+
+        if ( x < l.scenograph.overlays.scanners.offset ) {
+            x = l.scenograph.overlays.scanners.offset;
+        }
+
+        if ( y < l.scenograph.overlays.scanners.offset ) {
+            y = l.scenograph.overlays.scanners.offset;
+        }
+
+        if ( x > l.scenograph.width - l.scenograph.overlays.scanners.offset ) {
+            x = l.scenograph.width - l.scenograph.overlays.scanners.offset;
+        }
+
+        if ( y > l.scenograph.height - l.scenograph.overlays.scanners.offset ) {
+            y = l.scenograph.height - l.scenograph.overlays.scanners.offset;
+        }
+
+        if (!frustum.containsPoint(object.position)) {
+
+            let diffX = (l.scenograph.width / 2) - x ;
+            let diffZ = (l.scenograph.height / 2) - y ;
+
+            if (Math.abs(diffX) > Math.abs(diffZ)) {
+                if ( diffX < 0 ) {
+                    x = l.scenograph.width - l.scenograph.overlays.scanners.offset;
+                }
+                else {
+                    x = l.scenograph.overlays.scanners.offset;
+                }
+            }
+            else {
+                if ( diffZ < 0 ) {
+                    y = l.scenograph.height - l.scenograph.overlays.scanners.offset;
+                }
+                else {
+                    y = l.scenograph.overlays.scanners.offset;
+                }
+            }
+
+        }
+
+        return [ x, y ];
     }
 
-    createDiamond() {
-        const material = new THREE.LineBasicMaterial({
-            color: 0x00ff00
-        });
-        
-        const points = [];
-        points.push( new THREE.Vector3( 0, 10, 0 ) );
-        points.push( new THREE.Vector3( -10, 0, 0 ) );
-        points.push( new THREE.Vector3( 0, -10, 0 ) );
-        points.push( new THREE.Vector3( 10, 0, 0 ) );
-        points.push( new THREE.Vector3( 0, 10, 0 ) );
-        
-        const geometry = new THREE.BufferGeometry().setFromPoints( points );
-        
-        const line = new THREE.Line( geometry, material );
-        return line;
+    // @todo: Move scanner logic to aircraft equipment update code.
+    getTargetLock( x, y ) {
+        if ( 
+            x > l.scenograph.width * 0.375 &&
+            x < l.scenograph.width * 0.625 &&
+            y > l.scenograph.height * 0.375 &&
+            y < l.scenograph.height * 0.625
+        ) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    animateTarget( delta, trackedObject, frustum ) {
+        let [ x, y ] = l.scenograph.overlays.scanners.getScreenCoordinates(trackedObject.mesh, frustum);
+        let targetLock = l.scenograph.overlays.scanners.getTargetLock( x, y );
+
+        // Check if the object is within the scanner area.
+        if ( targetLock ) {
+            trackedObject.domElement.classList.add('tracking');
+            trackedObject.scanTime += delta;
+            trackedObject.lostTime = 0;
+
+            if ( trackedObject.scanTime >= 1 ) {
+                if ( trackedObject.scanTime >= 3 ) {
+                    trackedObject.domElement.classList.remove('locking');
+                    trackedObject.domElement.classList.add('locked');
+                }
+                else {
+                    trackedObject.domElement.classList.add('locking');
+                    trackedObject.domElement.classList.remove('locked');
+                }
+            }
+            else {
+                trackedObject.domElement.classList.remove('locking');
+                trackedObject.domElement.classList.remove('locked');
+            }
+
+        }
+        else {
+            trackedObject.lostTime += delta;
+
+            if ( trackedObject.scanTime < 1 ) {
+                trackedObject.domElement.classList.remove('tracking');
+                trackedObject.scanTime = 0;
+                trackedObject.lostTime = 0;
+            }
+            else {
+                // Allow 3 seconds before a target is downgraded when locked.
+                if ( trackedObject.lostTime >= 3 && trackedObject.domElement.classList.contains('locked') ) {
+                    trackedObject.domElement.classList.add('locking');
+                    trackedObject.domElement.classList.remove('locked');
+
+                    trackedObject.lostTime = 0;
+                }
+                else {
+                    // Allow 1 seconds before a target is downgraded when locking.
+                    if ( trackedObject.lostTime >= 1 && trackedObject.domElement.classList.contains('locking') ) {
+                        trackedObject.domElement.classList.remove('locking');
+
+                        trackedObject.lostTime = 0;
+                    }
+                }
+
+                // Allow 1 seconds before a target is lost when tracking.
+                if ( 
+                    trackedObject.lostTime >= 1 &&
+                    trackedObject.domElement.classList.contains('tracking') &&
+                    ! trackedObject.domElement.classList.contains('locked') &&
+                    ! trackedObject.domElement.classList.contains('locking') 
+                ) {
+                    trackedObject.domElement.classList.remove('tracking');
+                    trackedObject.scanTime = 0;
+                    trackedObject.lostTime = 0;
+                }
+
+            }
+        }
+
+        trackedObject.domElement.style.left = `${x-5}px`;
+        trackedObject.domElement.style.top = `${y-5}px`;
     }
 
     /**
@@ -87,60 +219,14 @@ export default class Scanners {
      * @global
      * @note All references within this method should be globally accessible.
     **/
-    animate() {
+    animate( delta ) {
         const frustum = new THREE.Frustum()
         const matrix = new THREE.Matrix4().multiplyMatrices(l.scenograph.cameras.active.projectionMatrix, l.scenograph.cameras.active.matrixWorldInverse)
         frustum.setFromProjectionMatrix(matrix)
         
         l.scenograph.cameras.active.updateProjectionMatrix();
         l.scenograph.overlays.scanners.trackedObjects.forEach(trackedObject => {
-            if (!frustum.containsPoint(trackedObject.mesh.position)) {
-                l.scenograph.overlays.scanners.testElement.style.display = `none`;
-            }
-            else {
-                const [x, y, z] = l.scenograph.overlays.scanners.getSymbolPosition(trackedObject.mesh);
-
-                l.scenograph.overlays.scanners.testElement.style.left = `${x-5}px`;
-                l.scenograph.overlays.scanners.testElement.style.top = `${y-5}px`;
-                l.scenograph.overlays.scanners.testElement.style.display = `inherit`;
-            }
-            
-            
-
-            // // Convert screen coordinates to normalized device coordinates (NDC)
-            // const vector = new THREE.Vector3(
-            //     (x / window.innerWidth) * 2 - 1,
-            //     - (y / window.innerHeight) * 2 + 1,
-            //     0.5 // Depth (Z) value, which can be adjusted based on distance
-            // );
-
-            // // Unproject vector to 3D world space
-            // vector.unproject(l.scenograph.cameras.active);
-
-            // // Update symbol position
-            // trackedObject.symbol.position.copy(trackedObject.mesh.position);
-
-            // // Calculate distance from the camera
-            // const distance = l.scenograph.cameras.active.position.distanceTo(trackedObject.mesh.position);
-
-            // // Scale factor to keep the diamond size consistent
-            // const scale = 1 - (100 / (distance * Math.abs(vector.z)));
-
-            // console.log( distance );
-
-            // if (distance > 2500) {
-            //     l.scenograph.overlays.scanners.testElement.style.display ='block';
-            //     trackedObject.symbol.visible = false;
-            // }
-            // else {
-            //     l.scenograph.overlays.scanners.testElement.style.display ='none';
-            //     trackedObject.symbol.visible = true;
-            // }
-
-            // // Apply scaling to the symbol
-            // trackedObject.symbol.scale.set(scale, scale, scale);
-
-            // trackedObject.symbol.lookAt(l.scenograph.cameras.active.position);
+            l.scenograph.overlays.scanners.animateTarget(delta, trackedObject, frustum);
         });
     }
 

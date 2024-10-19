@@ -19,6 +19,7 @@ import Ocean from "@/scenograph/scenes/objects/ocean";
 import Platform from "@/scenograph/scenes/objects/platform";
 import Refineries from "@/scenograph/scenes/objects/refineries";
 import Sky from "@/scenograph/scenes/objects/sky";
+import Sky2 from "@/scenograph/scenes/objects/sky2";
 import Player from "@/scenograph/scenes/objects/player";
 
 
@@ -75,6 +76,16 @@ export default class Overworld extends SceneBase {
     l.current_scene.animation_queue.push(
       l.current_scene.objects.sky.animate
     );
+
+    // Setup skybox
+    // l.current_scene.objects.sky = new Sky2();
+    // l.current_scene.scene.add(
+    //   l.current_scene.objects.sky.sky
+    // );
+    // l.current_scene.objects.sky.updateSettings();
+    // l.current_scene.animation_queue.push(
+    //   l.current_scene.objects.sky.animate
+    // );
 
     // Setup Player
     l.current_scene.objects.player = new Player();
@@ -256,7 +267,7 @@ export default class Overworld extends SceneBase {
         startTweening();
 
         // Start overlays.
-        l.scenograph.overlays.addToScene( l.current_scene.scene );
+        l.scenograph.overlays.load();
 
         requestAnimationFrame( l.scenograph.animate );
       }

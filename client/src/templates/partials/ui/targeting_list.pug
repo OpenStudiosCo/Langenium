@@ -1,0 +1,184 @@
+:stylus(wrap=true)
+    .modal {
+        position: absolute;
+        z-index: 4;
+        font-family: monospace;
+        text-shadow: 1px 1px grey;
+        background: rgba(0,0,0,0.4);
+        resize: both;
+        overflow: auto;
+        color: #EFE;
+        pointer-events: bounding-box;
+        backdrop-filter: blur(2px);
+        border: solid 1px rgba(0,0,0,0.25);
+
+        .header {
+            background: rgba(0,0,0,0.25);
+            display: flex;
+            justify-content: space-between;
+            padding: .5rem 0;
+            img {
+                margin: 0 .5rem 0 0.75rem;
+                filter: invert(1);
+            }
+            strong {
+                margin: 0 1rem;
+            }
+
+            
+        }
+
+        .header:hover {
+            background: rgba(0,0,0,0.5);
+            cursor: pointer;
+        }
+
+        table {
+            margin: 0.5rem;
+            width: calc(100% - 1rem);
+            transition: all 0.4s ease-in-out;
+
+            thead {
+                background: rgba(0,0,0,0.25);
+                color: #FFFFFF;
+
+                a {
+                    text-decoration: none;
+                    color: white;
+                }
+            }
+
+            &, td {
+                border: 1px solid rgba(0,0,0,0.25);
+                border-collapse: collapse;
+            }
+            
+
+            td {
+                padding: 0.125rem 0.5rem;
+            }
+        }
+
+        table,
+        .modal_controls {
+            display: none;
+        }
+
+        &.expanded {
+
+            .header:hover {
+                background: rgba(0,0,0,0.25);
+                cursor: default;
+            }
+
+            table {
+                display: table;
+            }
+            .modal_controls {
+                display: block;
+            }
+        }
+       
+    }
+    #ui-targeting-list {
+        top: 1vh;
+        left: 1vh;
+    }
+
+    #ui-active-target {
+        top: 380px;
+        left: 1vh;
+
+        .card {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .left {
+            width: 150px;
+            padding: 0 0 0 1rem;
+        }
+        .right {
+            width: 250px;
+            padding: 1rem;
+        }
+
+        .target_icon {
+            width: 100%;
+            height: auto;
+        }
+
+        table {
+            border: 0px none;
+        }
+
+        table td {
+            border: 0px none;
+            padding: 0.5rem 0.25rem; 
+        }
+    }
+
+    #ui-active-target,
+    #ui-targeting-list {
+        button {
+            background: rgba(1,1,1,0.1);
+            border-radius: 16px;
+            padding: 0.125rem 0.25rem 0;
+            pointer-events: auto;
+            color: #FFF;
+        }
+    }
+
+#ui-targeting-list.modal.expanded
+    .header
+        img(src='/assets/ui/satellite-dish-solid.svg' width='16' height='16')
+        strong Sensors
+        .modal_controls
+            a(href='#')
+                img(src='/assets/ui/window-minimize-solid.svg' width='13' height='13')
+            a(href='#')
+                img(src='/assets/ui/up-down-left-right-solid.svg' width='13' height='13')
+    table
+        thead
+            tr
+                td
+                td
+                    a(href='#' onclick="l.ui.targeting.list.sortTable(1)") Name
+                td
+                    a(href='#' onclick="l.ui.targeting.list.sortTable(2)") Type
+                td
+                    a(href='#' onclick="l.ui.targeting.list.sortTable(3)") Distance
+                td 
+        tbody
+
+#ui-active-target.modal.expanded
+    .header
+        img(src='/assets/ui/circle-dot-regular.svg' width='16' height='16')
+        strong Selected Target
+        .modal_controls
+            a(href='#')
+                img(src='/assets/ui/window-minimize-solid.svg' width='13' height='13')
+            a(href='#')
+                img(src='/assets/ui/up-down-left-right-solid.svg' width='13' height='13')
+    .card
+        .left
+            img.target_icon(src='/assets/ui/pirate-icon.png')
+        .right
+            table
+                tbody
+                    tr
+                        td Name:
+                        td
+                            strong Bot Ship
+                    tr
+                        td Type:
+                        td 
+                            strong Pirate Aircraft
+                    tr
+                        td Distance:
+                        td 
+                            strong 70.1km
+                    tr
+                        td Health:
+                        td 
+                            strong 100 / 100

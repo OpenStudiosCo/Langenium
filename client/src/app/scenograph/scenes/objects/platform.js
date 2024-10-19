@@ -106,6 +106,8 @@ export default class Platform {
         this.mesh.scale.multiplyScalar( 2000 );
         this.mesh.rotation.order = 'YXZ';
         this.mesh.name = 'Union Platform City';
+        this.mesh.userData.targetable = true;
+        this.mesh.userData.objectClass = 'city';
         this.ready = true;
     }
 

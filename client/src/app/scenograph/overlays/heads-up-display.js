@@ -22,6 +22,8 @@ export default class HeadsUpDisplay {
 
         this.container = document.querySelector('#game_overlay #hud');
 
+        this.portraitMode = l.scenograph.cameras.player.aspect < 0.88;
+
         // Create the vertical lines
         this.lineElement = document.createElement('div');
         this.lineElement.id = 'hud-lines';
@@ -65,6 +67,16 @@ export default class HeadsUpDisplay {
      * @note All references within this method should be globally accessible.
     **/
     animate() {
+
+        l.scenograph.overlays.hud.portraitMode = l.scenograph.cameras.player.aspect < 0.88;
+
+        if ( l.scenograph.overlays.hud.portraitMode ) {
+            l.scenograph.overlays.hud.container.classList.add('portrait');
+        }
+        else {
+            l.scenograph.overlays.hud.container.classList.remove('portrait');
+        }
+
         let aspd = -l.scenograph.overlays.hud.frameToSecond(l.current_scene.objects.player.state.airSpeed);
         l.scenograph.overlays.hud.aspdElement.innerHTML = `AIRSPEED: ${aspd}km/h`;
 

@@ -22,32 +22,19 @@ export default class Map {
 
         this.container = document.querySelector('#game_overlay #map');
 
-        // Visibility range in meters.
-        this.zoom = 1000;
+        // Mapping distance / visibility range.
+        this.distance = 2000;
 
         // Reusable icon SVGs
         this.icons = this.getIconSVGs();
+
+        // Map markers, keyed by uuid
+        this.markers = {};
 
         // Create the fov icon
         this.fov = document.createElement('div');
         this.fov.id = 'map-fov';
         this.container.appendChild(this.fov);
-
-        // // Create the label to track air speed.
-        // this.aspdElement = this.createLabel( 'aspd', 'AIRSPEED: 0km/h');
-        // this.container.appendChild(this.aspdElement);
-
-        // // Create the label to track vertical speed.
-        // this.vspdElement = this.createLabel( 'vspd', 'VERT. SPD: 0km/h');
-        // this.container.appendChild(this.vspdElement);
-
-        // // Create the label to track air speed.
-        // this.headingElement = this.createLabel( 'head', 'HEADING: 0°');
-        // this.container.appendChild(this.headingElement);
-
-        // // Create the label to track vertical speed.
-        // this.elevationElement = this.createLabel( 'elev', 'ELEVATION: 0m');
-        // this.container.appendChild(this.elevationElement);
 
     }
 
@@ -65,16 +52,100 @@ export default class Map {
     }
 
     /**
-     * Adds and removes icons from the map based on proximity and zoom level.
+     * Adds marker to the map.
      */
-    updateMapIcons() {
+    addMarker( trackedObject ) {
+        let marker = {
+            domElement: false,
+        };
+
+        // Object icon look up table.
+        const objectIcons = {
+            'bot': 'aircraft',
+            'cargoShip': 'ship',
+            'city': 'structure',
+            'extractors': 'structure',
+            'player': 'aircraft',
+            'refinery': 'structure',
+        }
+
+        let iconName = objectIcons[ trackedObject.mesh.userData.objectClass ];
+
+        marker.domElement = document.createElement('div');
+        marker.domElement.classList.add('marker');
+        marker.domElement.innerHTML = l.scenograph.overlays.map.icons[ iconName];
+
+        l.scenograph.overlays.map.container.appendChild( marker.domElement );
+
+        return marker;
 
     }
 
     /**
-     * Animates the mini map position of symbol
+     * Removes marker from the map.
      */
-    animateMapIcons() {
+    removeMarker( uuid, marker ) {
+        l.scenograph.overlays.map.container.removeChild( marker.domElement );
+        delete l.scenograph.overlays.map.markers[ uuid ];
+    }
+
+    /**
+     * Animates the markers.
+     */
+    animateMarkers( ) {
+
+        let mapSize = l.scenograph.overlays.map.container.offsetWidth;
+        let offset = mapSize / l.scenograph.overlays.map.distance;  // Pixels per world unit
+        let halfMapSize = mapSize / 2;  // Half the map size to center objects
+
+        let leftEdge = l.current_scene.objects.player.mesh.position.x - l.scenograph.overlays.map.distance / 2;
+        let topEdge = l.current_scene.objects.player.mesh.position.z - l.scenograph.overlays.map.distance / 2;
+
+        l.scenograph.overlays.scanners.trackedObjects.forEach( trackedObject => {
+            let distance = trackedObject.mesh.position.distanceTo( l.current_scene.objects.player.mesh.position );
+            
+            // Check if the object is within the mapping distance.
+            if ( distance <= l.scenograph.overlays.map.distance * 100 ) {
+                
+                // Check if the object is already present on the map, move it if so
+                if ( trackedObject.mesh.uuid in l.scenograph.overlays.map.markers ) {
+
+                    let diffX = ( trackedObject.mesh.position.x - leftEdge ) * offset;
+                    let diffZ = ( trackedObject.mesh.position.z - topEdge ) * offset;
+
+                     // Calculate the distance from the center of the minimap
+                    let dx = diffX - halfMapSize;
+                    let dy = diffZ - halfMapSize;
+                    let distFromCenter = Math.sqrt(dx * dx + dy * dy);
+
+                    // Check if the marker is outside the circle (clamp if necessary)
+                    if (distFromCenter > halfMapSize) {
+                        // Clamp the position to the edge of the circle
+                        let clampedX = halfMapSize + (dx * halfMapSize) / distFromCenter;
+                        let clampedY = halfMapSize + (dy * halfMapSize) / distFromCenter;
+
+                        diffX = clampedX;
+                        diffZ = clampedY;
+                    }
+
+                    // Update position.
+                    l.scenograph.overlays.map.markers[ trackedObject.mesh.uuid ].domElement.style.left = `${diffX-5}px`;
+                    l.scenograph.overlays.map.markers[ trackedObject.mesh.uuid ].domElement.style.top = `${diffZ-5}px`;
+
+                }
+                else {
+                    // Add the object to the map
+                    l.scenograph.overlays.map.markers[ trackedObject.mesh.uuid ] = l.scenograph.overlays.map.addMarker( trackedObject );
+                }
+
+            }
+            else {
+                // Check if the object is already present on the map, remove it if so
+                if ( trackedObject.mesh.uuid in l.scenograph.overlays.map.markers ) {
+                    l.scenograph.overlays.map.removeMarker( trackedObject.mesh.uuid, l.scenograph.overlays.map.markers[ trackedObject.mesh.uuid ] );
+                }
+            }
+        } );
 
     }
 
@@ -97,7 +168,9 @@ export default class Map {
         }
         heading = Math.round(360 - heading);
 
-        l.scenograph.overlays.map.container.style.transform = 'rotate(' + heading + 'deg)';
+        l.scenograph.overlays.map.fov.style.transform = 'rotate(' + heading + 'deg)';
+
+        l.scenograph.overlays.map.animateMarkers( )
     }
 
 }

@@ -21,6 +21,7 @@ export default class Map {
     constructor() {
 
         this.container = document.querySelector('#game_overlay #map');
+        this.container.style.display = 'block';
 
         // Mapping distance / visibility range.
         this.distance = 2000;

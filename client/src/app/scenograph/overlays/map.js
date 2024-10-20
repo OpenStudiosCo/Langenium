@@ -96,7 +96,7 @@ export default class Map {
 
         let mapSize = l.scenograph.overlays.map.container.offsetWidth;
         let offset = mapSize / l.scenograph.overlays.map.distance;  // Pixels per world unit
-        let halfMapSize = mapSize / 2;  // Half the map size to center objects
+        let halfMapSize = (mapSize / 2) - 2.5;  // Half the map size to center objects
 
         let leftEdge = l.current_scene.objects.player.mesh.position.x - l.scenograph.overlays.map.distance / 2;
         let topEdge = l.current_scene.objects.player.mesh.position.z - l.scenograph.overlays.map.distance / 2;

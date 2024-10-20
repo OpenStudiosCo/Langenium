@@ -34,6 +34,7 @@ export default class Map {
         // Create the fov icon
         this.fov = document.createElement('div');
         this.fov.id = 'map-fov';
+        this.fov.innerHTML = this.icons.fov;
         this.container.appendChild(this.fov);
 
     }
@@ -44,6 +45,7 @@ export default class Map {
         iconTemplate.innerHTML = document.querySelector('#templates #map_icons').innerHTML;
 
         icons.aircraft = iconTemplate.querySelector('.aircraft').innerHTML;
+        icons.fov = iconTemplate.querySelector('.fov').innerHTML;
         icons.ship = iconTemplate.querySelector('.ship').innerHTML;
         icons.special = iconTemplate.querySelector('.special').innerHTML;
         icons.structure = iconTemplate.querySelector('.structure').innerHTML;

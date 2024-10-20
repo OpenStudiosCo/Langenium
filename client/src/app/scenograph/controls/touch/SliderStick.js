@@ -76,9 +76,9 @@ class SliderStick {
     }
 
     alignAndConfigPad(canvas){
-        this.stickElement.style.top = canvas.height + this.container.getBoundingClientRect().top
-                                    - this.region.offsetHeight - 175 + 'px'
-        this.stickElement.style.left = canvas.offsetWidth - this.region.offsetWidth - 20 + 'px'
+        // this.stickElement.style.top = canvas.height + this.container.getBoundingClientRect().top
+        //                             - this.region.offsetHeight - 175 + 'px'
+        // this.stickElement.style.left = canvas.offsetWidth - this.region.offsetWidth - 20 + 'px'
 
         this.regionData.width = this.region.offsetWidth
         this.regionData.height = this.region.offsetHeight

@@ -11,18 +11,21 @@
 }
 
 .movement-pad {
+    bottom: calc( 100px + @css{ min(2.5vw, 2.5vh) } );
+    left: @css{ min(2.5vw, 2.5vh) };
     z-index: 2;
-    left: 1vw !important;
 }
 
 .rotation-pad {
     z-index: 2;
-    left: calc(100% - 115px) !important;
+    bottom: calc( 100px + @css{ min(2.5vw, 2.5vh) } );
+    right: calc( 100px + @css{ min(2.5vw, 2.5vh) } );
 }
 
 .slider-stick {
     z-index: 2;
-    left: calc(100% - 115px) !important;
+    bottom: calc( 300px + @css{ min(7.5vw, 7.5vh) } );
+    right: calc( 100px + @css{ min(2.5vw, 2.5vh) } );
 }
 
 .rotation-pad {

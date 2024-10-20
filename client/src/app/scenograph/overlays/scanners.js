@@ -126,8 +126,16 @@ export default class Scanners {
     // @todo: Move scanner logic to aircraft equipment update code.
     getTargetLock( x, y ) {
         if ( 
-            x > l.scenograph.width * 0.375 &&
-            x < l.scenograph.width * 0.625 &&
+            ((
+                ! l.scenograph.overlays.hud.portraitMode &&
+                x > l.scenograph.width * 0.375 &&
+                x < l.scenograph.width * 0.625
+            ) ||  (
+                l.scenograph.overlays.hud.portraitMode &&
+                x > l.scenograph.width * 0.1875 &&
+                x < l.scenograph.width * 0.8125
+            ) ) &&
+            
             y > l.scenograph.height * 0.375 &&
             y < l.scenograph.height * 0.625
         ) {

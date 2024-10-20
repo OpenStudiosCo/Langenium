@@ -1,0 +1,165 @@
+
+#game_overlay {
+    z-index: 4;
+    .scanner-target {
+        position: absolute;
+        z-index: 0;
+        
+        .targeting-effect {
+            display: none;
+            width: 40px;
+            height: 40px;
+            position: absolute;
+            right: -11px;
+            bottom: -11px;
+            animation: scale 0.6s infinite ease-in-out;
+
+            ^[-1].tracking ^[2..2] {
+                display: block;
+            }
+
+            ^[-1].locking ^[2..2] {
+                animation: scale 0.3s infinite ease-in-out;
+            }
+
+            ^[-1].locked ^[2..2] {
+                animation: none;
+            }
+
+            .border {
+                border-radius: 100%;
+                border: dashed 1px rgba(200, 0, 200, 1);
+                width: 100%;
+                height: 100%;
+                animation: rotate 5s infinite linear;
+
+                ^[-2].locking ^[3..3] {
+                    animation: rotate 2.5s infinite linear;
+                }
+                ^[-2].locked ^[3..3] {
+                    border: ridge 2px rgba(200, 0, 200, 1);
+                    animation: none;
+                }
+            }
+
+        }
+        .symbol {
+            background: none;
+            border: solid 1px rgba(0, 0, 200, 1);
+            width: 10px;
+            height: 10px;
+            transform: rotate(45deg);
+
+            ^[-1].tracking ^[2..2] {
+                background: rgba(200, 0, 200, 0.5);
+                border: solid 2px rgba(200, 0, 200, 1);
+            }
+        }
+
+    }
+
+    #hud {
+        &-lines {
+            position: absolute;
+            border-left: 4px ridge rgb(0, 0, 100);
+            border-right: 4px ridge rgb(0, 0, 100);
+            top: 37.5vh;
+            left: 37.5vw;
+            width: 25vw;
+            height: 25vh;
+            border-radius: 10% / 50%;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        &-aspd,
+        &-vspd,
+        &-head,
+        &-elev {
+            position: absolute;
+            color: rgb(0, 0, 100);
+            font-family: monospace;
+            z-index: 2;
+            pointer-events: none;
+        }
+        &-aspd {
+            bottom: 31.25vh;
+            left: 31.25vw;
+        }
+        &-vspd {
+            bottom: 31.25vh;
+            right: 31.25vw;
+        }
+        &-head {
+            top: 31.25vh;
+            left: 31.25vw;
+        }
+        &-elev {
+            top: 31.25vh;
+            right: 31.25vw;
+        }
+        
+        // Portrait mode styles
+        ^[1].portrait ^[1..1]-lines {
+            left: calc(37.5vw / 2);
+            width: 62.5vw;
+        }
+
+        ^[1].portrait ^[1..1]-aspd {
+            left: 15.625vw;
+        }
+        ^[1].portrait ^[1..1]-vspd {
+            right: 15.625vw;
+        }
+        ^[1].portrait ^[1..1]-head {
+            left: 15.625vw;
+        }
+        ^[1].portrait ^[1..1]-elev {
+            right: 15.625vw;
+        }
+        
+    }
+
+    #map {
+        display: none;
+        position: absolute;
+        height: @css{ max(12.5vw, 12.5vh) };
+        width: @css{ max(12.5vw, 12.5vh) };
+        background: radial-gradient(rgba(#333, 0.15) 5%, rgba(#333, 0.35) 95%);
+        border-radius: 100%;
+        top: @css{ min(2.5vw, 2.5vh) };
+        left: @css{ min(2.5vw, 2.5vh) };
+
+        #map-fov {
+            height: 15px;
+            position: absolute;
+            left: calc( 50% - 7.5px );
+            top: calc( 50% - 7.5px );
+        }
+
+        .marker {
+            width: 10px;
+            height: 10px;
+            position: absolute;
+        }
+    }
+
+}
+
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes scale {
+    0%, 100% {
+        transform: scale(0.8);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+}

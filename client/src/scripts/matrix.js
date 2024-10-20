@@ -7,7 +7,7 @@
  */
 
 // Check if we should skip the loading animation.
-let url = new URL(window.location.href);
+let url = new URL(location.href);
 let skipintro = false;
 
 if (url.searchParams.has("skipintro")) {
@@ -32,8 +32,8 @@ const ctx2 = canvas2.getContext('2d', {
     willReadFrequently: true
 });
 
-let w = canvas.width = canvas2.width = window.innerWidth;
-let h = canvas.height = canvas2.height = window.innerHeight;
+let w = canvas.width = canvas2.width = document.documentElement.clientWidth || window.innerWidth;
+let h = canvas.height = canvas2.height = document.documentElement.clientHeight || window.innerHeight;
 
 const largeScreen = canvas.width * canvas.height < 2000000;
 const portraitMode = canvas.width < canvas.height;
@@ -166,11 +166,11 @@ window.matrix_scene = {
     // Updates the scene
     updateStage: function () {
         if (window.matrix_scene.stage == 0) {
-            if (skipintro || (window.l.current_scene && (Date.now() - window.matrix_scene.stageStarted > 100))) {
+            if (skipintro || (l.current_scene && (Date.now() - window.matrix_scene.stageStarted > 100))) {
                 window.matrix_scene.stage = 1;
                 window.matrix_scene.stageStarted = Date.now();
-                for (var measure in window.l.current_scene.loaders.stats) {
-                    window.matrix_scene.loaded_target += window.l.current_scene.loaders.stats[measure].target;
+                for (var measure in l.current_scene.loaders.stats) {
+                    window.matrix_scene.loaded_target += l.current_scene.loaders.stats[measure].target;
                 }
 
                 const pageWrapper = document.getElementById('page-wrapper');
@@ -184,8 +184,8 @@ window.matrix_scene = {
         }
         if (window.matrix_scene.stage == 1) {
             window.matrix_scene.loaded_done = 0;
-            for (var measure in window.l.current_scene.loaders.stats) {
-                window.matrix_scene.loaded_done += window.l.current_scene.loaders.stats[measure].loaded;
+            for (var measure in l.current_scene.loaders.stats) {
+                window.matrix_scene.loaded_done += l.current_scene.loaders.stats[measure].loaded;
             }
 
             if (
@@ -198,9 +198,9 @@ window.matrix_scene = {
         }
         if (window.matrix_scene.stage == 2) {
             if (
-                (skipintro && window.l.current_scene.ready == true) || 
+                (skipintro && l.current_scene.ready == true) || 
                 (
-                    window.l.current_scene.ready == true &&
+                    l.current_scene.ready == true &&
                     (Date.now() - window.matrix_scene.stageStarted > 100)
                 )
             ) {
@@ -288,8 +288,8 @@ function randomInt(min, max) {
 }
 
 function handleViewportChange() {
-    w = canvas.width = canvas2.width = window.innerWidth;
-    h = canvas.height = canvas2.height = window.innerHeight;
+    w = canvas.width = canvas2.width = l.scenograph.width;
+    h = canvas.height = canvas2.height = l.scenograph.height;
     cols = Math.floor(w / fontSize * 1.5) + 1;
     ypos = Array(cols).fill(0);
 

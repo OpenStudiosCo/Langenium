@@ -1,0 +1,63 @@
+// Shaders
+script(type='x-shader/x-fragment' id='brickGLSL')
+    include ../../../shaders/common/brick.glsl
+script(type='x-shader/x-fragment' id='gradientGLSL')
+    include ../../../shaders/common/gradient.glsl
+script(type='x-shader/x-fragment' id='normalGLSL')
+    include ../../../shaders/common/normal.glsl
+script(type='x-shader/x-fragment' id='voronoiGLSL')
+    include ../../../shaders/common/voronoi.glsl
+script(type='x-shader/x-vertex' id='skyVertShader')
+    include ../../../shaders/sky.vert
+script(type='x-shader/x-fragment' id='skyFragShader')
+    include ../../../shaders/sky.frag
+script(type='x-shader/x-vertex' id='proceduralBuildingVertShader')
+    include ../../../shaders/proceduralBuilding.vert
+script(type='x-shader/x-fragment' id='proceduralBuildingFragShader')
+    include ../../../shaders/proceduralBuilding.frag
+script(type='x-shader/x-vertex' id='proceduralMetalVertShader')
+    include ../../../shaders/proceduralMetal.vert
+script(type='x-shader/x-fragment' id='proceduralMetalFragShader')
+    include ../../../shaders/proceduralMetal.frag
+script(type='x-shader/x-vertex' id='proceduralMetal2VertShader')
+    include ../../../shaders/proceduralMetal2.vert
+script(type='x-shader/x-fragment' id='proceduralMetal2FragShader')
+    include ../../../shaders/proceduralMetal2.frag
+script(type='x-shader/x-vertex' id='proceduralSolarPanelVertShader')
+    include ../../../shaders/proceduralSolarPanel.vert
+script(type='x-shader/x-fragment' id='proceduralSolarPanelFragShader')
+    include ../../../shaders/proceduralSolarPanel.frag
+script#vertexshader(type='x-shader/x-vertex').
+    varying vec2 vUv;
+    void main() {
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+    }
+script#fragmentshader(type='x-shader/x-fragment').
+    // Kudos to https://github.com/mrdoob/three.js/issues/14104#issuecomment-1536582334
+    uniform sampler2D baseTexture;
+    uniform sampler2D bloomTexture;
+    varying vec2 vUv;
+    void main() {
+        vec4 base_color = texture2D(baseTexture, vUv);
+        vec4 bloom_color = texture2D(bloomTexture, vUv);
+        float lum = 0.21 * bloom_color.r + 0.71 * bloom_color.g + 0.07 * bloom_color.b;
+        gl_FragColor = vec4(base_color.rgb + bloom_color.rgb, max(base_color.a, lum));
+    }
+
+script
+    include ../../../scripts/l.js
+script
+    include ../../../scripts/matrix.js
+script.
+    var _paq = window._paq = window._paq || [];
+    /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+    _paq.push(['trackPageView']);
+    _paq.push(['enableLinkTracking']);
+    (function() {
+    var u="https://analytics.openstudios.xyz/";
+    _paq.push(['setTrackerUrl', u+'matomo.php']);
+    _paq.push(['setSiteId', '9']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+    })();

@@ -1,12 +1,21 @@
 //build.js
-import esbuild from 'esbuild'
+import { fileURLToPath } from 'url';
+import { dirname, resolve } from 'path';
+import esbuild from 'esbuild';
+
+const __filename = fileURLToPath( import.meta.url );
+const __dirname = dirname( __filename );
 
 esbuild
-    .build({
-        entryPoints: ['./src/app/main.js'],
+    .build( {
+        entryPoints: [ './src/app/main.js' ],
         bundle: true,
-        minify: true,
+        minify: false,
         outdir: '../docs',
-        target: 'es2018'
-    })
-    .catch(() => process.exit(1))
+        target: 'es2018',
+        alias: {
+            '@': resolve( __dirname, 'src/app' ),
+            '#': resolve( __dirname, '..' ),
+        },
+    } )
+    .catch( () => process.exit( 1 ) )

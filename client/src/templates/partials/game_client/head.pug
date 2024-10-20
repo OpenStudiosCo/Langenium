@@ -1,0 +1,26 @@
+//- Favicon
+link(rel='apple-touch-icon' sizes='180x180' href='./assets/favicon/apple-touch-icon.png')
+link(rel='icon' type='image/png' sizes='32x32' href='/assets/favicon/favicon-32x32.png')
+link(rel='icon' type='image/png' sizes='16x16' href='/assets/favicon/favicon-16x16.png')
+link(rel='manifest' href='/assets/favicon/site.webmanifest' crossorigin='use-credentials')
+link(rel='mask-icon' href='/assets/favicon/safari-pinned-tab.svg' color='#5bbad5')
+meta(name='msapplication-TileColor' content='#da532c')
+meta(name='theme-color' content='#000000')
+
+//- Captcha
+script(src="https://www.google.com/recaptcha/api.js")
+
+//- SEO
+link(rel="canonical" href='https://langenium.com' + page.url.replace('/iframes',''))
+meta(property='og:title' content=title)
+meta(property='og:description' content=description || title )
+meta(property='og:type' content='article')
+meta(property='og:image' content=cover || 'https://langenium.com/assets/images/virtual_office.jpg')
+meta(property='og:image:width' content='1024')
+meta(property='og:image:height' content='768')
+
+//- Twitter
+meta(name='twitter:title' content=title)
+meta(name='twitter:card' content='summary_large_image')
+meta(name='twitter:description' content=description || title)
+meta(name='twitter:image' content=cover || 'https://langenium.com/assets/images/virtual_office.jpg')

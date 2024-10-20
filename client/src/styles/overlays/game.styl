@@ -100,11 +100,24 @@
         }
         
         // Portrait mode styles
-
         ^[1].portrait ^[1..1]-lines {
             left: calc(37.5vw / 2);
             width: 62.5vw;
         }
+
+        ^[1].portrait ^[1..1]-aspd {
+            left: 15.625vw;
+        }
+        ^[1].portrait ^[1..1]-vspd {
+            right: 15.625vw;
+        }
+        ^[1].portrait ^[1..1]-head {
+            left: 15.625vw;
+        }
+        ^[1].portrait ^[1..1]-elev {
+            right: 15.625vw;
+        }
+        
     }
 
     #map {

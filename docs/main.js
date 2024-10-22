@@ -48498,8 +48498,6 @@ void main() {
       this.resetHandlePosition();
     }
     alignAndConfigPad(canvas) {
-      this.padElement.style.top = canvas.height + this.container.getBoundingClientRect().top - this.region.offsetHeight - 10 + "px";
-      this.padElement.style.left = canvas.offsetWidth - this.region.offsetWidth - 20 + "px";
       this.regionData.width = this.region.offsetWidth;
       this.regionData.height = this.region.offsetHeight;
       this.regionData.position = {
@@ -48627,8 +48625,6 @@ void main() {
       this.resetHandlePosition();
     }
     alignAndConfigPad(canvas) {
-      this.padElement.style.top = canvas.height + this.container.getBoundingClientRect().top - this.region.offsetHeight - 10 + "px";
-      this.padElement.style.left = "20px";
       this.regionData.width = this.region.offsetWidth;
       this.regionData.height = this.region.offsetHeight;
       this.regionData.position = {
@@ -48758,8 +48754,6 @@ void main() {
       this.resetHandlePosition();
     }
     alignAndConfigPad(canvas) {
-      this.stickElement.style.top = canvas.height + this.container.getBoundingClientRect().top - this.region.offsetHeight - 175 + "px";
-      this.stickElement.style.left = canvas.offsetWidth - this.region.offsetWidth - 20 + "px";
       this.regionData.width = this.region.offsetWidth;
       this.regionData.height = this.region.offsetHeight;
       this.regionData.position = {
@@ -57952,7 +57946,7 @@ bool _bvhIntersectFirstHit(
       __publicField(this, "thruster");
       // TrailRenderer effect showing a trailing effect on the thruster.
       __publicField(this, "trail");
-      this.default_camera_distance = l_default.scenograph.width < l_default.scenograph.height ? -70 : -35;
+      this.default_camera_distance = -35;
       this.trail_position_y = 1.2;
       this.trail_position_z = 1.5;
       this.camera_distance = 0;

@@ -69,16 +69,19 @@ body {
   margin-bottom: 1vh;
 }
 .movement-pad {
+  bottom: calc(100px +  min(2.5vw, 2.5vh));
+  left: min(2.5vw, 2.5vh);
   z-index: 2;
-  left: 1vw !important;
 }
 .rotation-pad {
   z-index: 2;
-  left: calc(100% - 115px) !important;
+  bottom: calc(100px +  min(2.5vw, 2.5vh));
+  right: calc(100px +  min(2.5vw, 2.5vh));
 }
 .slider-stick {
   z-index: 2;
-  left: calc(100% - 115px) !important;
+  bottom: calc(300px +  min(7.5vw, 7.5vh));
+  right: calc(100px +  min(2.5vw, 2.5vh));
 }
 .rotation-pad {
   position: absolute;
@@ -167,8 +170,8 @@ body {
   position: absolute;
   z-index: 5;
   display: flex;
-  width: 100vw;
-  height: 100vh;
+  width: 100dvw;
+  height: 100dvh;
   pointer-events: none;
   align-items: center;
   justify-content: center;
@@ -227,10 +230,10 @@ body {
   position: absolute;
   border-left: 4px ridge #000064;
   border-right: 4px ridge #000064;
-  top: 37.5vh;
-  left: 37.5vw;
-  width: 25vw;
-  height: 25vh;
+  top: 37.5dvh;
+  left: 37.5dvw;
+  width: 25dvw;
+  height: 25dvh;
   border-radius: 10%/50%;
   z-index: 2;
   pointer-events: none;
@@ -246,46 +249,46 @@ body {
   pointer-events: none;
 }
 #game_overlay #hud-aspd {
-  bottom: 31.25vh;
-  left: 31.25vw;
+  bottom: 31.25dvh;
+  left: 31.25dvw;
 }
 #game_overlay #hud-vspd {
-  bottom: 31.25vh;
-  right: 31.25vw;
+  bottom: 31.25dvh;
+  right: 31.25dvw;
 }
 #game_overlay #hud-head {
-  top: 31.25vh;
-  left: 31.25vw;
+  top: 31.25dvh;
+  left: 31.25dvw;
 }
 #game_overlay #hud-elev {
-  top: 31.25vh;
-  right: 31.25vw;
+  top: 31.25dvh;
+  right: 31.25dvw;
 }
 #game_overlay #hud.portrait #hud-lines {
-  left: calc(37.5vw / 2);
-  width: 62.5vw;
+  left: calc(37.5dvw / 2);
+  width: 62.5dvw;
 }
 #game_overlay #hud.portrait #hud-aspd {
-  left: 15.625vw;
+  left: 15.625dvw;
 }
 #game_overlay #hud.portrait #hud-vspd {
-  right: 15.625vw;
+  right: 15.625dvw;
 }
 #game_overlay #hud.portrait #hud-head {
-  left: 15.625vw;
+  left: 15.625dvw;
 }
 #game_overlay #hud.portrait #hud-elev {
-  right: 15.625vw;
+  right: 15.625dvw;
 }
 #game_overlay #map {
   display: none;
   position: absolute;
-  height: max(12.5vw, 12.5vh);
-  width: max(12.5vw, 12.5vh);
+  height: max(12.5dvw, 12.5dvh);
+  width: max(12.5dvw, 12.5dvh);
   background: radial-gradient(rgba(51,51,51,0.15) 5%, rgba(51,51,51,0.35) 95%);
   border-radius: 100%;
-  top: min(2.5vw, 2.5vh);
-  left: min(2.5vw, 2.5vh);
+  top: min(2.5dvw, 2.5dvh);
+  left: min(2.5dvw, 2.5dvh);
 }
 #game_overlay #map #map-fov {
   height: 15px;

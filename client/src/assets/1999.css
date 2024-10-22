@@ -122,7 +122,7 @@ form button:hover {
 #page-wrapper {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  min-height: 100dvh;
   overflow-x: hidden;
 }
 
@@ -139,7 +139,7 @@ form button:hover {
   position: absolute;
   left: 0;
   right: 0;
-  min-height: max( 1080px, 100vh);
+  min-height: max( 1080px, 100dvh);
   z-index: 0;
 }
 
@@ -169,7 +169,7 @@ form button:hover {
   background: rgb(0, 0, 0);
   background: radial-gradient(circle, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 0) 60%);
   height: auto;
-  max-width: 50vw;
+  max-width: 50dvw;
   animation: fadeInOut 2s infinite alternate;
 }
 
@@ -213,7 +213,7 @@ form button:hover {
 
 .content_container {
   position: relative;
-  width: 100vw;
+  width: 100dvw;
 }
 
 .content_container .content {
@@ -229,7 +229,7 @@ form button:hover {
   height: 100%;
   mix-blend-mode: screen;
   position: absolute;
-  width: 100vw;
+  width: 100dvw;
   z-index: 0;
 }
 
@@ -257,8 +257,8 @@ form button:hover {
 }
 
 .content_container.newsletter .content {
-  padding-top: min(100px, 10vh);
-  padding-bottom: min(100px, 10vh);
+  padding-top: min(100px, 10dvh);
+  padding-bottom: min(100px, 10dvh);
 }
 
 .content_container.footer::before {
@@ -266,7 +266,7 @@ form button:hover {
   background-position: bottom;
   background-size: 100%;
   padding: 0 2rem 0;
-  width: calc(100vw - 4rem);
+  width: calc(100dvw - 4rem);
 }
 
 .content_container.footer .narrow-column a {
@@ -328,8 +328,8 @@ form button:hover {
 }
 
 .content_container.footer .content {
-  padding-top: min(80px, 2.5vh);
-  padding-bottom: min(135px, 7.5vh);
+  padding-top: min(80px, 2.5dvh);
+  padding-bottom: min(135px, 7.5dvh);
 }
 
 @media screen and (min-width: 768px) {
@@ -342,8 +342,8 @@ form button:hover {
   }
 
   .content_container.footer .content {
-    padding-top: min(160px, 5vh);
-    padding-bottom: min(270px, 15vh);
+    padding-top: min(160px, 5dvh);
+    padding-bottom: min(270px, 15dvh);
   }
 }
 
@@ -369,7 +369,7 @@ form button:hover {
   .menu,
   .content,
   .footer {
-    width: 100vw;
+    width: 100dvw;
   }
 
   .content,
@@ -400,7 +400,7 @@ form button:hover {
   }
 
   .content_container .content {
-    padding-bottom: min(540px, 50vh);
+    padding-bottom: min(540px, 50dvh);
   }
 
   .content_container.bg_reverse .content {
@@ -412,14 +412,14 @@ form button:hover {
   }
 
   .content_container.footer .content {
-    padding-top: min(320px, 10vh);
-    padding-bottom: min(540px, 30vh);
+    padding-top: min(320px, 10dvh);
+    padding-bottom: min(540px, 30dvh);
   }
   
 }
 
 @media screen and (min-width: 2400px) {
   .content_container .content {
-    padding-bottom: min(1080px, 75vh);
+    padding-bottom: min(1080px, 75dvh);
   }
 }

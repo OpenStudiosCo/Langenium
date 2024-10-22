@@ -63,10 +63,10 @@
             position: absolute;
             border-left: 4px ridge rgb(0, 0, 100);
             border-right: 4px ridge rgb(0, 0, 100);
-            top: 37.5vh;
-            left: 37.5vw;
-            width: 25vw;
-            height: 25vh;
+            top: 37.5dvh;
+            left: 37.5dvw;
+            width: 25dvw;
+            height: 25dvh;
             border-radius: 10% / 50%;
             z-index: 2;
             pointer-events: none;
@@ -83,39 +83,39 @@
             pointer-events: none;
         }
         &-aspd {
-            bottom: 31.25vh;
-            left: 31.25vw;
+            bottom: 31.25dvh;
+            left: 31.25dvw;
         }
         &-vspd {
-            bottom: 31.25vh;
-            right: 31.25vw;
+            bottom: 31.25dvh;
+            right: 31.25dvw;
         }
         &-head {
-            top: 31.25vh;
-            left: 31.25vw;
+            top: 31.25dvh;
+            left: 31.25dvw;
         }
         &-elev {
-            top: 31.25vh;
-            right: 31.25vw;
+            top: 31.25dvh;
+            right: 31.25dvw;
         }
         
         // Portrait mode styles
         ^[1].portrait ^[1..1]-lines {
-            left: calc(37.5vw / 2);
-            width: 62.5vw;
+            left: calc(37.5dvw / 2);
+            width: 62.5dvw;
         }
 
         ^[1].portrait ^[1..1]-aspd {
-            left: 15.625vw;
+            left: 15.625dvw;
         }
         ^[1].portrait ^[1..1]-vspd {
-            right: 15.625vw;
+            right: 15.625dvw;
         }
         ^[1].portrait ^[1..1]-head {
-            left: 15.625vw;
+            left: 15.625dvw;
         }
         ^[1].portrait ^[1..1]-elev {
-            right: 15.625vw;
+            right: 15.625dvw;
         }
         
     }
@@ -123,12 +123,12 @@
     #map {
         display: none;
         position: absolute;
-        height: @css{ max(12.5vw, 12.5vh) };
-        width: @css{ max(12.5vw, 12.5vh) };
+        height: @css{ max(12.5dvw, 12.5dvh) };
+        width: @css{ max(12.5dvw, 12.5dvh) };
         background: radial-gradient(rgba(#333, 0.15) 5%, rgba(#333, 0.35) 95%);
         border-radius: 100%;
-        top: @css{ min(2.5vw, 2.5vh) };
-        left: @css{ min(2.5vw, 2.5vh) };
+        top: @css{ min(2.5dvw, 2.5dvh) };
+        left: @css{ min(2.5dvw, 2.5dvh) };
 
         #map-fov {
             height: 15px;

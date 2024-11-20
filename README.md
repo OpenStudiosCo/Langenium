@@ -74,28 +74,57 @@ All installation steps go here.
     3. Run either `npm run build` to compile once or `npm run dev` to compile, start a web server and watch for changes.
 
 * Game
-    * TBA
+    * No installation required, common game source code is imported by the client and server respectively.
 
 * Server
     1. Change directory to /server
     2. Install npm packages
     3. Clone the .env.example file to create a .env file
-    4. Start the server using `npm ecosystem.config.js`
+    4. Start the server using `npm run [dev|prod]`
 
 ## Features and functionality
 This section breaks down how Langenium's game engine works.
 
-### Client
-Langenium can be played singleplayer (offline) or as a multiplayer game by connecting to a server.
+### Dependencies
+The game client is a Single Page Application (SPA) that is written in Javascript.
 
-### Game
-TBA
+The game's logic and server code is written in TypeScript.
+
+### Modes
+Singleplayer (offline) or multiplayer (via server)
+
+### Game Client
+- Uncoupled boot-up script with built-in preloader screen
+- Scene graph management with a global application structure for adding new things to the animation loop
+- Procedurally generated scenery with boolean tools to create more assets
+- Shader based reusable material library recreating materials from Blender using custom GLSL
+- Support keyboard, mouse and touch based controls
+- Responsive cross platform UI with a simple API to extend it
+- Dynamic performance tuning to maintain FPS on less powerful devices
+
+### Client and Server
+- Configurable AI for bot pathfinding and custom behaviours
+- Shared codebase for game logic and data objects such as aircraft speed and damage calculations
 
 ### Server
-TBA
+- WebSockets and 
 
 ## Deployment
-TBA
+
+### Updating the live site
+The main Langenium site (langenium.com) is based on the `gh-pages` branch.
+
+Unlike the `master` branch, the `gh-pages` branch tracks build artefacts so they can be served statically on Github Pages.
+
+1. Checkout the gh-pages branch
+    - `git checkout gh-pages`
+2. Merge in the latest updates to go out
+    - `git merge master`
+3. Build the game client 
+    - `npm run build`
+
+### Updating Node dependencies
+We recommend using a tool like [NPM Check Updates](https://www.npmjs.com/package/npm-check-updates) to maintain package.json files 
 
 ## Contributing
 

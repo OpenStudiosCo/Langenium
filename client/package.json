@@ -15,12 +15,13 @@
     "build:stylus": "node_modules/.bin/stylus src/styles/game_client.styl --out ../docs/assets/game_client.css",
     "clean": "rimraf dist",
     "dev": "npm-run-all clean build:* -p dev:*",
-    "dev:11ty": "eleventy --serve --quiet",
+    "dev:11ty": "eleventy --serve",
     "dev:esbuild": "node watch.mjs",
     "dev:stylus": "node_modules/.bin/stylus -w src/styles/game_client.styl --out ../docs/assets/game_client.css"
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.0.0",
+    "@11ty/eleventy-plugin-pug": "^1.0.0",
     "alpinejs": "^3.14.3",
     "cross-env": "^7.0.3",
     "detect-gpu": "^5.0.57",
@@ -30,9 +31,9 @@
     "pug": "^3.0.3",
     "pug-stylus": "^0.0.5",
     "stylus": "^0.64.0",
-    "three": "^0.170.0",
+    "three": "^0.168.0",
     "three-bvh-csg": "^0.0.16",
-    "three-mesh-bvh": "^0.8.3",
+    "three-mesh-bvh": "^0.7.6",
     "tweakpane": "^4.0.5",
     "yuka": "^0.7.8"
   }

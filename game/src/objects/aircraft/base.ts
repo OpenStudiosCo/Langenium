@@ -5,7 +5,7 @@
  * - Add weight and wind resistance
  */
 
-import { normaliseSpeedDelta, easeOutExpo, easeInQuad, easeInOutExpo } from '../../../helpers';
+import { normaliseSpeedDelta, easeOutExpo, easeInQuad, easeInOutExpo } from '../../helpers';
 
 export default class BaseAircraft {
     public airSpeed:        number                              = 0;

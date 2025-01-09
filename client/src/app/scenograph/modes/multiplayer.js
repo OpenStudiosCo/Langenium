@@ -6,7 +6,7 @@
  * Internal libs and helpers.
  */
 import l from '@/helpers/l.js';
-import Player from "@/scenograph/scenes/objects/player";
+import Player from "@/scenograph/objects/player";
 
 export default class Multiplayer {
 

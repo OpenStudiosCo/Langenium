@@ -12,15 +12,15 @@ import SceneBase from "@/scenograph/scenes/base";
 /**
  * Scene objects
  */
-import Bot from "@/scenograph/scenes/objects/bot";
-import CargoShips from "@/scenograph/scenes/objects/cargo_ships";
-import Extractors from "@/scenograph/scenes/objects/extractors";
-import Ocean from "@/scenograph/scenes/objects/ocean";
-import Platform from "@/scenograph/scenes/objects/platform";
-import Refineries from "@/scenograph/scenes/objects/refineries";
-import Sky from "@/scenograph/scenes/objects/sky";
-import Sky2 from "@/scenograph/scenes/objects/sky2";
-import Player from "@/scenograph/scenes/objects/player";
+import Bot from "@/scenograph/objects/bot";
+import CargoShips from "@/scenograph/objects/cargo_ships";
+import Extractors from "@/scenograph/objects/extractors";
+import Ocean from "@/scenograph/objects/ocean";
+import Platform from "@/scenograph/objects/platform";
+import Refineries from "@/scenograph/objects/refineries";
+import Sky from "@/scenograph/objects/sky";
+import Sky2 from "@/scenograph/objects/sky2";
+import Player from "@/scenograph/objects/player";
 
 
 /**
@@ -31,7 +31,7 @@ import {
   createOfficeRoom,
   doorHeight,
   doorWidth,
-} from "@/scenograph/scenes/objects/office_room";
+} from "@/scenograph/objects/office_room";
 
 /**
  * Scene controllers

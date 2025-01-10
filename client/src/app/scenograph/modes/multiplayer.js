@@ -6,7 +6,7 @@
  * Internal libs and helpers.
  */
 import l from '@/helpers/l.js';
-import Player from "@/scenograph/objects/player";
+import Valiant from "@/scenograph/objects/aircraft/valiant";
 
 export default class Multiplayer {
 
@@ -80,7 +80,7 @@ export default class Multiplayer {
      * Add a new remote player to the client session.
      */
     async add_player( data ) {
-        let newPlayer = new Player();
+        let newPlayer = new Valiant();
         await newPlayer.load();
         newPlayer.socket_id = data.socket_id;
         newPlayer.mesh.position.x = 0;

@@ -10,9 +10,10 @@ import l from '@/helpers/l.js';
 import SceneBase from "@/scenograph/scenes/base";
 
 /**
- * Scene objects
+ * Objects
  */
-import Bot from "@/scenograph/objects/bot";
+
+// Scenery
 import CargoShips from "@/scenograph/objects/cargo_ships";
 import Extractors from "@/scenograph/objects/extractors";
 import Ocean from "@/scenograph/objects/ocean";
@@ -20,8 +21,10 @@ import Platform from "@/scenograph/objects/platform";
 import Refineries from "@/scenograph/objects/refineries";
 import Sky from "@/scenograph/objects/sky";
 import Sky2 from "@/scenograph/objects/sky2";
-import Player from "@/scenograph/objects/player";
 
+// Aircraft
+import Raven from "@/scenograph/objects/aircraft/raven";
+import Valiant from "@/scenograph/objects/aircraft/valiant";
 
 /**
  * Preloader objects
@@ -87,8 +90,8 @@ export default class Overworld extends SceneBase {
     //   l.current_scene.objects.sky.animate
     // );
 
-    // Setup Player
-    l.current_scene.objects.player = new Player();
+    // Setup Player, currently hardcoded to Valiant aircraft
+    l.current_scene.objects.player = new Valiant();
     await l.current_scene.objects.player.load();
     l.current_scene.scene.add(
       l.current_scene.objects.player.mesh
@@ -145,9 +148,8 @@ export default class Overworld extends SceneBase {
 
     // }
 
-    // Setup Bot
-    // @todo: refactor to support more
-    l.current_scene.objects.bot = new Bot();
+    // Setup Bot, currently hardcoded to Raven
+    l.current_scene.objects.bot = new Raven();
     await l.current_scene.objects.bot.load();
     l.current_scene.scene.add(
       l.current_scene.objects.bot.mesh

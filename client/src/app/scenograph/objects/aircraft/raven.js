@@ -1,7 +1,7 @@
 /**
  * Enemy bot.
  * 
- * Currently hardcoded to use the Pirate aircraft.
+ * Currently hardcoded to use the Raven aircraft.
  */
 import * as THREE from 'three';
 
@@ -11,9 +11,9 @@ import * as THREE from 'three';
 import l from '@/helpers/l.js';
 import { brightenMaterial, proceduralMetalMaterial } from '@/scenograph/materials.js';
 import Pirate from '#/game/src/actors/pirate';
-import Raven from '#/game/src/objects/aircraft/raven';
+import * as RavenBase from '#/game/src/objects/aircraft/raven';
 
-export default class Raven {
+export default class Raven extends RavenBase {
     // AI seeing distance.
     sight_radius;
 

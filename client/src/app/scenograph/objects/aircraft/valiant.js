@@ -1,7 +1,7 @@
 /**
  * Valiant Aircraft
  * 
- * Provides a valiant aircraft that can be added and updated in the game world.
+ * Provides a Valiant aircraft that can be added and updated in the game world.
  */
 
 import * as THREE from 'three';
@@ -12,9 +12,9 @@ import { TrailRenderer } from '@/../vendor/TrailRenderer.js';
  */
 import l from '@/helpers/l.js';
 import { brightenMaterial, proceduralMetalMaterial } from '@/scenograph/materials.js';
-import Valiant from '#/game/src/objects/aircraft/valiant.js';
+import * as ValiantBase from '#/game/src/objects/aircraft/valiant.js';
 
-export default class Player {
+export default class Valiant extends ValiantBase {
 
     // Camera distance.
     camera_distance;

@@ -1,8 +1,9 @@
 /**
- * Player
+ * Valiant Aircraft
  * 
- * Currently hardcoded to use the Valiant aircraft.
+ * Provides a valiant aircraft that can be added and updated in the game world.
  */
+
 import * as THREE from 'three';
 import { TrailRenderer } from '@/../vendor/TrailRenderer.js';
 

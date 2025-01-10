@@ -4,16 +4,16 @@
  * Currently hardcoded to use the Pirate aircraft.
  */
 import * as THREE from 'three';
-import * as YUKA from 'yuka';
 
 /**
  * Internal libs and helpers.
  */
 import l from '@/helpers/l.js';
 import { brightenMaterial, proceduralMetalMaterial } from '@/scenograph/materials.js';
-import Raven from '#/game/src/objects/aircraft/raven.js';
+import Pirate from '#/game/src/actors/pirate';
+import Raven from '#/game/src/objects/aircraft/raven';
 
-export default class Bot {
+export default class Raven {
     // AI seeing distance.
     sight_radius;
 
@@ -113,14 +113,8 @@ export default class Bot {
         // this.mesh.scale.set(100,100,100);
         this.mesh.matrixAutoUpdate = false;
 
-        this.vehicle = new YUKA.Vehicle();
-        this.vehicle.position.z = this.mesh.position.z;
-        this.vehicle.position.y = this.mesh.position.y;
-        this.vehicle.maxSpeed = 500;
-        this.vehicle.setRenderComponent( this.mesh, this.sync );
-        this.vehicle.boundingRadius = 20;
-        this.vehicle.smoother = new YUKA.Smoother( 20 );
-        this.vehicle.rotation.order = 'XYZ';
+        // @todo: Uncouple from the pirate actor when vehicle selection is introduced.
+        this.vehicle = new Pirate( this.mesh );
 
         l.scenograph.entityManager.add( this.vehicle );
 
@@ -168,11 +162,6 @@ export default class Bot {
         l.scenograph.entityManager.update( delta );
     }
 
-    sync( entity, renderComponent ) {
-
-        renderComponent.matrix.copy( entity.worldMatrix );
-        renderComponent.position.copy( entity.position );
-
-    }
+   
 }
 

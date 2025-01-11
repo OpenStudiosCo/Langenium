@@ -28,6 +28,7 @@ export default class Pirate {
             this.entity.boundingRadius = 20;
             this.entity.smoother = new YUKA.Smoother( 20 );
             this.entity.rotation.order = 'XYZ';
+            
         }
     }
 

@@ -115,30 +115,30 @@ export default class Multiplayer {
     move_ship( data ) {
         if ( data.socket_id == l.scenograph.modes.multiplayer.socket.id ) {
             // Update stored ship state, don't punch out as functions aren't transmitted.
-            l.current_scene.objects.player.state.airSpeed = data.airSpeed;
-            l.current_scene.objects.player.state.altitude = data.altitude;
-            l.current_scene.objects.player.state.heading = data.heading;
-            l.current_scene.objects.player.state.horizon = data.horizon;
-            l.current_scene.objects.player.state.position.x = data.position.x;
-            l.current_scene.objects.player.state.position.y = data.position.y;
-            l.current_scene.objects.player.state.position.z = data.position.z;
-            l.current_scene.objects.player.state.rotation = data.rotation;
-            l.current_scene.objects.player.state.verticalSpeed = data.verticalSpeed;
+            l.current_scene.objects.player.airSpeed = data.airSpeed;
+            l.current_scene.objects.player.altitude = data.altitude;
+            l.current_scene.objects.player.heading = data.heading;
+            l.current_scene.objects.player.horizon = data.horizon;
+            l.current_scene.objects.player.position.x = data.position.x;
+            l.current_scene.objects.player.position.y = data.position.y;
+            l.current_scene.objects.player.position.z = data.position.z;
+            l.current_scene.objects.player.rotation = data.rotation;
+            l.current_scene.objects.player.verticalSpeed = data.verticalSpeed;
         }
         else {
             l.current_scene.objects.players.forEach( ( ship ) => {
 
                 if ( ship.socket_id == data.socket_id ) {
                     // Update stored ship state, don't punch out as functions aren't transmitted.
-                    ship.state.airSpeed = data.airSpeed;
-                    ship.state.altitude = data.altitude;
-                    ship.state.heading = data.heading;
-                    ship.state.horizon = data.horizon;
-                    ship.state.position.x = data.position.x;
-                    ship.state.position.y = data.position.y;
-                    ship.state.position.z = data.position.z;
-                    ship.state.rotation = data.rotation;
-                    ship.state.verticalSpeed = data.verticalSpeed;
+                    ship.airSpeed = data.airSpeed;
+                    ship.altitude = data.altitude;
+                    ship.heading = data.heading;
+                    ship.horizon = data.horizon;
+                    ship.position.x = data.position.x;
+                    ship.position.y = data.position.y;
+                    ship.position.z = data.position.z;
+                    ship.rotation = data.rotation;
+                    ship.verticalSpeed = data.verticalSpeed;
 
                     ship.mesh.position.x = data.position.x;
                     ship.mesh.position.y = data.position.y;

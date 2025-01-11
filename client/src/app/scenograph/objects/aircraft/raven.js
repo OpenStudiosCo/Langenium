@@ -4,6 +4,7 @@
  * Currently hardcoded to use the Raven aircraft.
  */
 import * as THREE from 'three';
+import * as YUKA from 'yuka';
 
 /**
  * Internal libs and helpers.
@@ -11,7 +12,7 @@ import * as THREE from 'three';
 import l from '@/helpers/l.js';
 import { brightenMaterial, proceduralMetalMaterial } from '@/scenograph/materials.js';
 import Pirate from '#/game/src/actors/pirate';
-import * as RavenBase from '#/game/src/objects/aircraft/raven';
+import RavenBase from '#/game/src/objects/aircraft/raven';
 
 export default class Raven extends RavenBase {
     // AI seeing distance.
@@ -33,14 +34,13 @@ export default class Raven extends RavenBase {
     vehicle;
 
     constructor() {
+        super();
         this.default_camera_distance = l.scenograph.width < l.scenograph.height ? -70 : -35;
         this.trail_position_y = 1.2;
         this.trail_position_z = 1.5;
         this.camera_distance = 0;
 
         this.ready = false;
-
-        this.state = new Raven();
 
     }
 
@@ -114,9 +114,9 @@ export default class Raven extends RavenBase {
         this.mesh.matrixAutoUpdate = false;
 
         // @todo: Uncouple from the pirate actor when vehicle selection is introduced.
-        this.vehicle = new Pirate( this.mesh );
+        this.actor = new Pirate( this.mesh );
 
-        l.scenograph.entityManager.add( this.vehicle );
+        l.scenograph.entityManager.add( this.actor.entity );
 
         let obstacles = [];
  
@@ -141,7 +141,7 @@ export default class Raven extends RavenBase {
         // this.vehicle.steering.add( wanderBehavior );
 
         const followPathBehavior = new YUKA.FollowPathBehavior( path );
-        this.vehicle.steering.add( followPathBehavior );
+        this.actor.entity.steering.add( followPathBehavior );
 
         // l.current_scene.objects.boundaries.forEach( ( boundaryMesh ) => {
         //     const obstacle1 = new YUKA.GameEntity();

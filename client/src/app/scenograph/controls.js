@@ -104,7 +104,7 @@ export default class Controls {
         let target_object = l.current_scene.scene.getObjectById( object_id );
 
         if (target_object.name == 'Bot Ship') {
-            target_object = l.current_scene.objects.bot.vehicle;
+            target_object = l.current_scene.objects.bot.actor.entity;
         }
 
         l.scenograph.controls.orbitTarget = target_object.position.clone();

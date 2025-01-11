@@ -71,7 +71,7 @@ function createShipThruster (ship, scale, position) {
 
 function animateShipThrusters (delta) {
 	l.current_scene.effects.particles.shipThrusters.forEach(function(plasma, index){
-		const velocity = plasma.ship.state.airSpeed;
+		const velocity = plasma.ship.airSpeed;
 		plasma.sortParticles = true;
 
         const positions = plasma.geometry.getAttribute('position');

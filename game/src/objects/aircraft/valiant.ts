@@ -4,10 +4,12 @@
 
 import BaseAircraft from './base';
 
-export default class Valiant extends BaseAircraft {
+class Valiant extends BaseAircraft {
 
     constructor() {
         super(); // Call the constructor of the base class
     }
 
 }
+
+module.exports = Valiant;

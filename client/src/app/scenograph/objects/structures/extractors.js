@@ -102,8 +102,6 @@ export default class Extractor {
         csgEvaluator = new Evaluator();
         csgEvaluator.useGroups = true;
         csgEvaluator.evaluate( outerMesh, innerMesh, HOLLOW_SUBTRACTION, result );
-        result.receiveShadow = true;
-        result.layers.set( 11 );
         result.name = 'outer';
 
         let innerMesh2 = new THREE.Mesh( new THREE.CylinderGeometry( 7.5, 7.5, 100, 8, 1, true ), material.clone() );

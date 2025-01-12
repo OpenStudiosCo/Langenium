@@ -125,9 +125,6 @@ export default class Refineries {
         csgEvaluator.useGroups = false;
         csgEvaluator.evaluate( outerShell, horizontalSlice, INTERSECTION, result );
 
-        result.receiveShadow = true;
-        result.layers.set( 11 );
-
         return result;
     }
 

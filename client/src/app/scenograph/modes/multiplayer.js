@@ -6,7 +6,7 @@
  * Internal libs and helpers.
  */
 import l from '@/helpers/l.js';
-import Valiant from "@/scenograph/objects/aircraft/valiant";
+import Valiant from "@/scenograph/objects/vehicles/valiant";
 
 export default class Multiplayer {
 

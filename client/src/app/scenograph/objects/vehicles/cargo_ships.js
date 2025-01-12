@@ -63,8 +63,8 @@ export default class CargoShips {
         const platform_location = l.current_scene.objects.platform.mesh.position;
         path.add( new YUKA.Vector3( platform_location.x, 0, platform_location.z ) );
 
-        l.current_scene.objects.extractors.forEach( (extractor) => {
-            path.add( new YUKA.Vector3( extractor.position.x, 0, extractor.position.z ) );
+        this.destinations.forEach( ( destination ) => {
+            path.add( new YUKA.Vector3( destination.x, 0, destination.z ) );
         });
         path.add( new YUKA.Vector3( platform_location.x, 0, platform_location.z ) );
 
@@ -172,7 +172,7 @@ export default class CargoShips {
 
         let result = new THREE.Mesh(
             new THREE.BufferGeometry(),
-            new THREE.MeshStandardMaterial()
+            new THREE.MeshBasicMaterial()
         );
 
         // Constructive Solid Geometry (csg) Evaluator.
@@ -180,8 +180,6 @@ export default class CargoShips {
         csgEvaluator = new Evaluator();
         csgEvaluator.useGroups = true;
         csgEvaluator.evaluate( outerMesh, innerMesh, SUBTRACTION, result );
-        result.receiveShadow = true;
-        result.layers.set( 11 );
         result.name = 'outer';
 
         // Flip the object

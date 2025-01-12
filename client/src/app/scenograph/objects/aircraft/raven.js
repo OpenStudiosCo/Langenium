@@ -4,7 +4,6 @@
  * Currently hardcoded to use the Raven aircraft.
  */
 import * as THREE from 'three';
-import * as YUKA from 'yuka';
 
 /**
  * Internal libs and helpers.
@@ -119,42 +118,6 @@ export default class Raven extends RavenBase {
         this.actor = new Pirate( this.mesh );
 
         l.scenograph.entityManager.add( this.actor.entity );
-
-        let obstacles = [];
- 
-        // const boundaryHandler = new YUKA.ObstacleAvoidanceBehavior(
-        //     obstacles
-        // )
-        // this.vehicle.steering.add( boundaryHandler );
-
-
-        const loopDistance = 1500;
-        const path = new YUKA.Path();
-			path.loop = true;
-			path.add( new YUKA.Vector3( loopDistance, 200, loopDistance ) );
-			path.add( new YUKA.Vector3( loopDistance, 200, - loopDistance ) );
-			path.add( new YUKA.Vector3( - loopDistance, 200, - loopDistance ) );
-			path.add( new YUKA.Vector3( - loopDistance, 200, loopDistance ) );
-
-        // const wanderBehavior = new YUKA.WanderBehavior();
-        // // wanderBehavior.distance = 100;
-        // // wanderBehavior.jitter = 100;
-        // // wanderBehavior.radius = 1.5;
-        // this.vehicle.steering.add( wanderBehavior );
-
-        const followPathBehavior = new YUKA.FollowPathBehavior( path );
-        this.actor.entity.steering.add( followPathBehavior );
-
-        // l.current_scene.objects.boundaries.forEach( ( boundaryMesh ) => {
-        //     const obstacle1 = new YUKA.GameEntity();
-        //     obstacle1.position.copy( boundaryMesh.position );
-            
-        //     obstacle1.boundingRadius = boundaryMesh.geometry.boundingSphere.radius;
-            
-        //     l.scenograph.entityManager.add( obstacle1 );
-        //     obstacles.push(obstacle1);
-        // } );
-
 
     }
 

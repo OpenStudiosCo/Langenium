@@ -13,18 +13,20 @@ import SceneBase from "@/scenograph/scenes/base";
  * Objects
  */
 
-// Scenery
-import CargoShips from "@/scenograph/objects/cargo_ships";
-import Extractors from "@/scenograph/objects/extractors";
-import Ocean from "@/scenograph/objects/ocean";
-import Platform from "@/scenograph/objects/platform";
-import Refineries from "@/scenograph/objects/refineries";
-import Sky from "@/scenograph/objects/sky";
-import Sky2 from "@/scenograph/objects/sky2";
+// Environment
+import Ocean from "@/scenograph/objects/environment/ocean";
+import Sky from "@/scenograph/objects/environment/sky";
+import Sky2 from "@/scenograph/objects/environment/sky2";
 
-// Aircraft
-import Raven from "@/scenograph/objects/aircraft/raven";
-import Valiant from "@/scenograph/objects/aircraft/valiant";
+// Structures
+import Extractors from "@/scenograph/objects/structures/extractors";
+import Platform from "@/scenograph/objects/structures/platform";
+import Refineries from "@/scenograph/objects/structures/refineries";
+
+// Vehicles
+import CargoShips from "@/scenograph/objects/vehicles/cargo_ships";
+import Raven from "@/scenograph/objects/vehicles/raven";
+import Valiant from "@/scenograph/objects/vehicles/valiant";
 
 /**
  * Preloader objects
@@ -34,7 +36,7 @@ import {
   createOfficeRoom,
   doorHeight,
   doorWidth,
-} from "@/scenograph/objects/office_room";
+} from "@/scenograph/objects/structures/office_room";
 
 /**
  * Scene controllers

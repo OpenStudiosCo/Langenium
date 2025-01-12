@@ -347,7 +347,7 @@ export async function createOfficeRoom() {
 
     let result = new THREE.Mesh(
         new THREE.BufferGeometry(),
-        new THREE.MeshBasicMaterial()
+        new THREE.MeshStandardMaterial()
     );
 
     // Constructive Solid Geometry (csg) Evaluator.

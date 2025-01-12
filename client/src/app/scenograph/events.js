@@ -8,7 +8,7 @@
  * Internal libs and helpers.
  */
 import l from '@/helpers/l.js';
-import { createOfficeRoom } from '@/scenograph/objects/environment/office_room';
+import { createOfficeRoom } from '@/scenograph/objects/structures/office_room';
 import { calculateAdjustedGapSize, setCameraFOV } from '@/helpers/math.js';
 
 export default class Events {

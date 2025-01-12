@@ -172,7 +172,7 @@ export default class CargoShips {
 
         let result = new THREE.Mesh(
             new THREE.BufferGeometry(),
-            new THREE.MeshBasicMaterial()
+            new THREE.MeshStandardMaterial()
         );
 
         // Constructive Solid Geometry (csg) Evaluator.
@@ -198,10 +198,12 @@ export default class CargoShips {
         renderComponent.position.copy( entity.position );
     
     }
-    
+
     animate() {
 
         l.current_scene.objects.cargo_ships.forEach( ( cargo_ship ) => {
+
+            //cargo_ship.actor.animate();
             
             if ( cargo_ship.position.distanceTo(cargo_ship.userData.vehicle.steering.behaviors[0].target) < 2000 ) {
                 cargo_ship.userData.vehicle.steering.clear();

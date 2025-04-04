@@ -8,28 +8,20 @@
 
 import * as YUKA from 'yuka';
 
-export default class Player {
+import BaseActor from './base';
 
-    entity;
-
-    mesh;
-
-    type;
+export default class Player extends BaseActor {
 
     constructor( mesh, type = 'vehicle' ) {
-        this.mesh = mesh;
-
-        this.type = type;
+        super( mesh, type );
+    
          if ( this.type == 'vehicle' ) {
-            // formerly this.vehicle
-            this.entity = new YUKA.Vehicle();
             this.entity.position.z = this.mesh.position.z;
             this.entity.position.y = this.mesh.position.y;
             this.entity.maxSpeed = 500;
             this.entity.setRenderComponent( this.mesh, this.sync );
             this.entity.boundingRadius = 20;
             this.entity.smoother = new YUKA.Smoother( 20 );
-
          }
     }
 

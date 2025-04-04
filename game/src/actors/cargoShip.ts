@@ -6,20 +6,14 @@
 
 import * as YUKA from 'yuka';
 
-export default class cargoShip {
+import BaseActor from './base';
 
-    entity;
-
-    mesh;
-
-    type;
+export default class cargoShip extends BaseActor {
 
     constructor( mesh, type = 'vehicle' ) {
-        this.mesh = mesh;
-        this.type = type;
+        super( mesh, type );
 
         if ( this.type == 'vehicle' ) {
-            this.entity = new YUKA.Vehicle();
             this.entity.position.copy( this.mesh.userData.path.current() );
             this.entity.maxSpeed = 150;
             this.entity.maxTurnRate = this.entity.maxSpeed * Math.PI;
@@ -33,13 +27,6 @@ export default class cargoShip {
             const arriveBehavior = new YUKA.ArriveBehavior(this. mesh.userData.path.current(), 25., this.mesh.userData.size * 2 );
 			this.entity.steering.add( arriveBehavior );
         }
-    }
-
-    sync( entity, renderComponent ) {
-
-        renderComponent.matrix.copy( entity.worldMatrix );
-        renderComponent.position.copy( entity.position );
-
     }
 
     animate () {

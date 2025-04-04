@@ -6,30 +6,22 @@
 
 import * as YUKA from 'yuka';
 
-export default class Pirate {
+import BaseActor from './base';
 
-    entity;
+export default class Pirate extends BaseActor {
 
     follow;
 
     marker;
 
-    mesh;
-
     pursue;
 
-    type;
-
     constructor( mesh, type = 'vehicle' ) {
+        super( mesh, type );
+        
         this.marker = document.querySelector('#map .marker-bot svg path');
 
-        this.mesh = mesh;
-
-        this.type = type;
-
         if ( this.type == 'vehicle' ) {
-            // formerly this.vehicle
-            this.entity = new YUKA.Vehicle();
             this.entity.position.z = this.mesh.position.z;
             this.entity.position.y = this.mesh.position.y;
             this.entity.maxSpeed = 500;
@@ -59,13 +51,6 @@ export default class Pirate {
 			this.entity.steering.add( this.pursue );
 
         }
-    }
-
-    sync( entity, renderComponent ) {
-
-        renderComponent.matrix.copy( entity.worldMatrix );
-        renderComponent.position.copy( entity.position );
-
     }
 
     animate() {

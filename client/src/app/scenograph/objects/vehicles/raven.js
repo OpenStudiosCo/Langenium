@@ -121,8 +121,6 @@ export default class Raven extends RavenBase {
     // Runs on the main animation loop
     animate( delta ) {
 
-        l.scenograph.entityManager.update( delta );
-
         l.current_scene.objects.bot.actor.animate();
     }
 

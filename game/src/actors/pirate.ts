@@ -28,7 +28,7 @@ export default class Pirate {
             this.entity = new YUKA.Vehicle();
             this.entity.position.z = this.mesh.position.z;
             this.entity.position.y = this.mesh.position.y;
-            this.entity.maxSpeed = 300;
+            this.entity.maxSpeed = 500;
             this.entity.setRenderComponent( this.mesh, this.sync );
             this.entity.boundingRadius = 20;
             this.entity.smoother = new YUKA.Smoother( 20 );
@@ -43,15 +43,15 @@ export default class Pirate {
             path.add( new YUKA.Vector3( - loopDistance, this.mesh.position.y, loopDistance ) );
     
             const vision = new YUKA.Vision( this.entity );
-            vision.range = 750;
-            vision.fieldOfView = Math.PI * 0.95;
+            vision.range = 1500;
+            vision.fieldOfView = Math.PI * 2;
             this.entity.vision = vision;
     
-            // this.follow = new YUKA.FollowPathBehavior( path );
-            // this.entity.steering.add( this.follow );
+            this.follow = new YUKA.FollowPathBehavior( path );
+            this.entity.steering.add( this.follow );
 
             this.pursue = new YUKA.PursuitBehavior( l.current_scene.objects.player.actor.entity, 1 );
-            //this.pursue.active = false;
+            this.pursue.active = false;
 			this.entity.steering.add( this.pursue );
 
         }
@@ -65,17 +65,13 @@ export default class Pirate {
     }
 
     animate() {
-        if ( this.entity.vision.visible( l.current_scene.objects.player.position ) === true ) {
-            console.log('player sighted!');
-            
+        if ( this.entity.vision.visible( l.current_scene.objects.player.position ) === true ) {           
             this.pursue.active = true;
-            //this.follow.active = false;
+            this.follow.active = false;
 
         } else {
-            console.log('player not sighted!');
-
             this.pursue.active = false;
-            //this.follow.active = true;
+            this.follow.active = true;
             
         }
     }

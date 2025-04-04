@@ -17,6 +17,7 @@ Visit the [official website](https://langenium.com) to learn more or clone this 
     - [Client](#client)
     - [Game](#game)
     - [Server](#server)
+- [Development](#development)
 - [Deployment](#deployment)
 - [Contributing](#contributing)
 - [Versioning](#versioning)
@@ -32,37 +33,38 @@ The project is split into three main folders: Client, Game and Server.
 - /server contains the Express based server engine
 
 ```
-    Langenium
+    Langenium Repository Root/
     ├── .gitignore
     ├── CHANGELOG
     ├── LICENSE
     ├── README.md
-    ├── client                              # Eleventy / Three.js web client
-    │   ├── etc
-    │   ├── src
+    ├── client/                              # Eleventy / Three.js web client
+    │   ├── etc/
+    │   ├── src/
     │   ├── .eleventy.js
     │   ├── build.mjs
     │   ├── package.json
     │   ├── package-lock.json
     │   └── watch.mjs
-    ├── docs                                # Web client output folder, tracked on the gh-pages branch
-    ├── game                                # Game rules and shared code used by the client and server
-    │   └── TBA
-    └── server                              # Node.js / Express multiplayer server
-        └── TBA
+    ├── docs/                                # Web client output folder, tracked on the gh-pages branch
+    ├── game/                                # Game rules and shared code used by the client and server
+    │   └── src/
+    └── server/                              # Node.js / Express multiplayer server
+        └── etc/
+        └── src/
 ```
 
-### Tools Required
+### Software Tools Required
 
-Depending on whether your task is code or media oriented, you will need some combination of the following tools to develop Langenium:
+All Langenium development can be accomplished with Free and Open Source Software, but there are also commercial options that have been used due to personal preferences.
+
+Depending on whether your task is code or media oriented, you will need some combination of these software tools to develop Langenium:
 
 * Text editor or an IDE
 * Command line interface with Node.js
 * 3D modelling program
 * Bitmap and vector image editors
 * Digital Audio Workstation
-
-All of the above can be accomplished with Free and Open Source Software, but there are also commercial options that some people prefer.
 
 ### Installation
 
@@ -74,28 +76,75 @@ All installation steps go here.
     3. Run either `npm run build` to compile once or `npm run dev` to compile, start a web server and watch for changes.
 
 * Game
-    * TBA
+    * No installation required, common game source code is imported by the client and server respectively.
 
 * Server
     1. Change directory to /server
     2. Install npm packages
     3. Clone the .env.example file to create a .env file
-    4. Start the server using `npm ecosystem.config.js`
+    4. Start the server using `npm run [dev|prod]`
 
 ## Features and functionality
 This section breaks down how Langenium's game engine works.
 
-### Client
-Langenium can be played singleplayer (offline) or as a multiplayer game by connecting to a server.
+### Dependencies
+The game client is a Single Page Application (SPA) that is written in Javascript.
 
-### Game
-TBA
+The game's logic and server code is written in TypeScript.
+
+### Modes
+Singleplayer (offline) or multiplayer (via server)
+
+### Game Client
+- Uncoupled boot-up script with built-in preloader screen
+- Scene graph management with a global application structure for adding new things to the animation loop
+- Procedurally generated scenery with boolean tools to create more assets
+- Shader based reusable material library recreating materials from Blender using custom GLSL
+- Support keyboard, mouse and touch based controls
+- Responsive cross platform UI with a simple API to extend it
+- Dynamic performance tuning to maintain FPS on less powerful devices
+
+### Client and Server
+- Configurable AI for bot pathfinding and custom behaviours
+- Shared codebase for game logic and data objects such as aircraft speed and damage calculations
 
 ### Server
+- Dot Env file based configuration
+- Express application framework for routing and structure
+- Multiplayer using WebSockets ( socket.io )
+
+## Development
+
+### Setting up
+
+Depending on your needs, you may wish to setup just the game client or the game client and server.
+
+A free multiplayer server is currently hosted by [Open Studios](https://github.com/OpenStudiosCo), but it's the same one used for [langenium.com](https://langenium.com) and provided with no uptime guarantees.
+
+### Frontend
+
+TBA
+
+### Backend
+
 TBA
 
 ## Deployment
-TBA
+
+### Updating the live site
+The main Langenium site (langenium.com) is based on the `gh-pages` branch.
+
+Unlike the `master` branch, the `gh-pages` branch tracks build artefacts so they can be served statically on Github Pages.
+
+1. Checkout the gh-pages branch
+    - `git checkout gh-pages`
+2. Merge in the latest updates to go out
+    - `git merge master`
+3. Build the game client
+    - `npm run build`
+
+### Updating Node dependencies
+We recommend using a tool like [NPM Check Updates](https://www.npmjs.com/package/npm-check-updates) to maintain package.json files 
 
 ## Contributing
 

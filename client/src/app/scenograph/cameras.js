@@ -103,8 +103,8 @@ export default class Cameras {
         var radian = ( Math.PI / 180 );
 
         l.current_scene.objects.player.camera_distance = l.current_scene.objects.player.default_camera_distance + ( l.current_scene.room_depth / 2 );
-        if ( l.current_scene.objects.player.state.airSpeed < 0 ) {
-            l.current_scene.objects.player.camera_distance -= l.current_scene.objects.player.state.airSpeed * 4;
+        if ( l.current_scene.objects.player.airSpeed < 0 ) {
+            l.current_scene.objects.player.camera_distance -= l.current_scene.objects.player.airSpeed * 4;
         }
 
         let xDiff = l.current_scene.objects.player.mesh.position.x;

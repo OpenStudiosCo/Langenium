@@ -76,6 +76,9 @@ export default class Map {
 
         marker.domElement = document.createElement('div');
         marker.domElement.classList.add('marker');
+        marker.domElement.classList.add('marker-' + trackedObject.mesh.userData.objectClass);
+
+
         marker.domElement.innerHTML = l.scenograph.overlays.map.icons[ iconName];
 
         l.scenograph.overlays.map.container.appendChild( marker.domElement );
@@ -164,7 +167,7 @@ export default class Map {
      * @note All references within this method should be globally accessible.
     **/
     animate() {
-        let heading = THREE.MathUtils.radToDeg( l.current_scene.objects.player.state.rotation.y );
+        let heading = THREE.MathUtils.radToDeg( l.current_scene.objects.player.rotation.y );
         heading = heading % 360;
         if (heading < 0) {
             heading += 360;

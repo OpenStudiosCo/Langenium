@@ -224,6 +224,8 @@ export default class Scenograph {
                 }
             }
 
+            l.scenograph.entityManager.update( delta );
+
             updateTriggers( currentTime );
 
             updateTweens( currentTime );

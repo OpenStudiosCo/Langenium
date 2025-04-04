@@ -355,7 +355,6 @@ export async function createOfficeRoom() {
     csgEvaluator = new Evaluator();
     csgEvaluator.useGroups = true;
     csgEvaluator.evaluate( roomBrush, doorBrush, SUBTRACTION, result );
-    result.receiveShadow = true;
     result.layers.set( 11 );
     result.name = 'Office room';
 

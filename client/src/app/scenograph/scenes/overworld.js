@@ -10,18 +10,23 @@ import l from '@/helpers/l.js';
 import SceneBase from "@/scenograph/scenes/base";
 
 /**
- * Scene objects
+ * Objects
  */
-import Bot from "@/scenograph/scenes/objects/bot";
-import CargoShips from "@/scenograph/scenes/objects/cargo_ships";
-import Extractors from "@/scenograph/scenes/objects/extractors";
-import Ocean from "@/scenograph/scenes/objects/ocean";
-import Platform from "@/scenograph/scenes/objects/platform";
-import Refineries from "@/scenograph/scenes/objects/refineries";
-import Sky from "@/scenograph/scenes/objects/sky";
-import Sky2 from "@/scenograph/scenes/objects/sky2";
-import Player from "@/scenograph/scenes/objects/player";
 
+// Environment
+import Ocean from "@/scenograph/objects/environment/ocean";
+import Sky from "@/scenograph/objects/environment/sky";
+import Sky2 from "@/scenograph/objects/environment/sky2";
+
+// Structures
+import Extractors from "@/scenograph/objects/structures/extractors";
+import Platform from "@/scenograph/objects/structures/platform";
+import Refineries from "@/scenograph/objects/structures/refineries";
+
+// Vehicles
+import CargoShips from "@/scenograph/objects/vehicles/cargo_ships";
+import Raven from "@/scenograph/objects/vehicles/raven";
+import Valiant from "@/scenograph/objects/vehicles/valiant";
 
 /**
  * Preloader objects
@@ -31,7 +36,7 @@ import {
   createOfficeRoom,
   doorHeight,
   doorWidth,
-} from "@/scenograph/scenes/objects/office_room";
+} from "@/scenograph/objects/structures/office_room";
 
 /**
  * Scene controllers
@@ -87,8 +92,8 @@ export default class Overworld extends SceneBase {
     //   l.current_scene.objects.sky.animate
     // );
 
-    // Setup Player
-    l.current_scene.objects.player = new Player();
+    // Setup Player, currently hardcoded to Valiant aircraft
+    l.current_scene.objects.player = new Valiant();
     await l.current_scene.objects.player.load();
     l.current_scene.scene.add(
       l.current_scene.objects.player.mesh
@@ -145,9 +150,8 @@ export default class Overworld extends SceneBase {
 
     // }
 
-    // Setup Bot
-    // @todo: refactor to support more
-    l.current_scene.objects.bot = new Bot();
+    // Setup Bot, currently hardcoded to Raven
+    l.current_scene.objects.bot = new Raven();
     await l.current_scene.objects.bot.load();
     l.current_scene.scene.add(
       l.current_scene.objects.bot.mesh

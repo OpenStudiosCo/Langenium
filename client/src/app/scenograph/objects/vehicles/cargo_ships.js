@@ -14,6 +14,7 @@ import * as YUKA from 'yuka';
 import l from '@/helpers/l.js';
 import { proceduralMetalMaterial } from '@/scenograph/materials.js';
 import { SUBTRACTION, Brush, Evaluator } from 'three-bvh-csg';
+import cargoShip from '../../../../../../game/src/actors/cargoShip';
 
 export default class CargoShips {
 
@@ -30,6 +31,7 @@ export default class CargoShips {
     path;
 
     // Boolean flag to indicate whether this class is done loading.
+    ready;
 
     // The scale of the mesh.
     size;
@@ -42,7 +44,7 @@ export default class CargoShips {
         this.ready = false;
         this.size = 1000;
 
-        // Setup extractors
+        // Cargo ship start locations
         this.locations = [
             //new THREE.Vector3( 0, -500, this.size * 10 ),              // Test ship
             new THREE.Vector3( -35000, -2000, this.size * 10 ),
@@ -50,10 +52,18 @@ export default class CargoShips {
             new THREE.Vector3( -34000, -1500, this.size * 10 ),
         ];
 
+        // Cargo ship destinations, use the current scene's extractor positions.
+        this.destinations = [];
+        l.current_scene.objects.extractors.forEach( (extractor) => {
+            this.destinations.push( new THREE.Vector3( extractor.position.x, 0, extractor.position.z ) );
+        });
+
     }
 
     /**
      * Paths
+     * 
+     * @todo: Refactor into a common path setting and updating class.
      */
     getPath() {
         let path = new YUKA.Path();
@@ -63,8 +73,8 @@ export default class CargoShips {
         const platform_location = l.current_scene.objects.platform.mesh.position;
         path.add( new YUKA.Vector3( platform_location.x, 0, platform_location.z ) );
 
-        l.current_scene.objects.extractors.forEach( (extractor) => {
-            path.add( new YUKA.Vector3( extractor.position.x, 0, extractor.position.z ) );
+        this.destinations.forEach( ( destination ) => {
+            path.add( new YUKA.Vector3( destination.x, 0, destination.z ) );
         });
         path.add( new YUKA.Vector3( platform_location.x, 0, platform_location.z ) );
 
@@ -115,21 +125,10 @@ export default class CargoShips {
             mesh.userData.objectClass = 'cargoShip';
             mesh.userData.targetable = true;
             mesh.userData.standing = 0;
-            mesh.userData.vehicle = new YUKA.Vehicle();
-            mesh.userData.vehicle.position.copy( mesh.userData.path.current() );
-            mesh.userData.vehicle.maxSpeed = 150;
-            mesh.userData.vehicle.maxTurnRate = mesh.userData.vehicle.maxSpeed * Math.PI;
-            mesh.userData.vehicle.boundingRadius = this.size * Math.PI;
-            mesh.userData.vehicle.setRenderComponent( mesh, this.sync );
-            mesh.userData.vehicle.smoother = new YUKA.Smoother( 20 );
+            mesh.userData.size = this.size;
+            mesh.userData.actor = new cargoShip( mesh );
 
-            l.scenograph.entityManager.add( mesh.userData.vehicle );
-
-            // Step forward in the path's internal pointers to the next point.
-            mesh.userData.path.advance();
-
-            const arriveBehavior = new YUKA.ArriveBehavior( mesh.userData.path.current(), 25., this.size * 2 );
-			mesh.userData.vehicle.steering.add( arriveBehavior );
+            l.scenograph.entityManager.add( mesh.userData.actor.entity );
 
             mesh.matrixAutoUpdate = false;
 
@@ -180,8 +179,6 @@ export default class CargoShips {
         csgEvaluator = new Evaluator();
         csgEvaluator.useGroups = true;
         csgEvaluator.evaluate( outerMesh, innerMesh, SUBTRACTION, result );
-        result.receiveShadow = true;
-        result.layers.set( 11 );
         result.name = 'outer';
 
         // Flip the object
@@ -192,25 +189,13 @@ export default class CargoShips {
         this.mesh.add( result );
 
     }
-    sync( entity, renderComponent ) {
 
-        renderComponent.matrix.copy( entity.worldMatrix );
-        renderComponent.position.copy( entity.position );
-    
-    }
-    
     animate() {
 
         l.current_scene.objects.cargo_ships.forEach( ( cargo_ship ) => {
+
+            cargo_ship.userData.actor.animate();
             
-            if ( cargo_ship.position.distanceTo(cargo_ship.userData.vehicle.steering.behaviors[0].target) < 2000 ) {
-                cargo_ship.userData.vehicle.steering.clear();
-                cargo_ship.userData.path.advance();
-
-                const arriveBehavior = new YUKA.ArriveBehavior( cargo_ship.userData.path.current(), 25., 2000 );
-			    cargo_ship.userData.vehicle.steering.add( arriveBehavior );
-
-            }
         } );
  
     }

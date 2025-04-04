@@ -41,6 +41,11 @@ export default class BaseActor {
 
     sync( entity, renderComponent ) {
 
+        // "5" is the bot floor limit as they are a little unpredictable with elastic motion
+        if (entity.position.y < 5 ) {
+            entity.position.y = 5;
+        }
+
         renderComponent.matrix.copy( entity.worldMatrix );
         renderComponent.position.copy( entity.position );
 

@@ -69,19 +69,19 @@ body {
   margin-bottom: 1vh;
 }
 .movement-pad {
-  bottom: calc(100px +  min(2.5vw, 2.5vh));
-  left: min(2.5vw, 2.5vh);
+  bottom: calc(100px +  min(2.5dvw, 2.5dvh));
+  left: min(2.5dvw, 2.5dvh);
   z-index: 2;
 }
 .rotation-pad {
   z-index: 2;
-  bottom: calc(100px +  min(2.5vw, 2.5vh));
-  right: calc(100px +  min(2.5vw, 2.5vh));
+  bottom: calc(100px +  min(2.5dvw, 2.5dvh));
+  right: calc(100px +  min(2.5dvw, 2.5dvh));
 }
 .slider-stick {
   z-index: 2;
-  bottom: calc(300px +  min(7.5vw, 7.5vh));
-  right: calc(100px +  min(2.5vw, 2.5vh));
+  bottom: calc(300px +  min(7.5dvw, 7.5dvh));
+  right: calc(100px +  min(2.5dvw, 2.5dvh));
 }
 .rotation-pad {
   position: absolute;

@@ -76,6 +76,9 @@ export default class Map {
 
         marker.domElement = document.createElement('div');
         marker.domElement.classList.add('marker');
+        marker.domElement.classList.add('marker-' + trackedObject.mesh.userData.objectClass);
+
+
         marker.domElement.innerHTML = l.scenograph.overlays.map.icons[ iconName];
 
         l.scenograph.overlays.map.container.appendChild( marker.domElement );

@@ -12,6 +12,8 @@ export default class Pirate {
 
     follow;
 
+    marker;
+
     mesh;
 
     pursue;
@@ -19,6 +21,8 @@ export default class Pirate {
     type;
 
     constructor( mesh, type = 'vehicle' ) {
+        this.marker = document.querySelector('#map .marker-bot svg path');
+
         this.mesh = mesh;
 
         this.type = type;
@@ -65,14 +69,22 @@ export default class Pirate {
     }
 
     animate() {
+        if ( ! this.marker ) {
+            this.marker = document.querySelector('#map .marker-bot svg path');
+        }
+
         if ( this.entity.vision.visible( l.current_scene.objects.player.position ) === true ) {           
             this.pursue.active = true;
             this.follow.active = false;
 
+            if ( this.marker )
+                this.marker.style.stroke = 'rgb( 255, 0, 0 )';
         } else {
             this.pursue.active = false;
             this.follow.active = true;
             
+            if ( this.marker )
+                this.marker.style.stroke = 'rgb( 255, 255, 0 )';
         }
     }
 }

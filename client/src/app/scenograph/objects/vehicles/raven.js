@@ -1,21 +1,23 @@
 /**
  * Enemy bot.
  * 
- * Currently hardcoded to use the Pirate aircraft.
+ * Currently hardcoded to use the Raven aircraft.
  */
 import * as THREE from 'three';
-import * as YUKA from 'yuka';
 
 /**
  * Internal libs and helpers.
  */
 import l from '@/helpers/l.js';
 import { brightenMaterial, proceduralMetalMaterial } from '@/scenograph/materials.js';
-import Raven from '#/game/src/objects/aircraft/raven.js';
+import Pirate from '#/game/src/actors/pirate';
+import RavenBase from '#/game/src/objects/aircraft/raven';
 
-export default class Bot {
-    // AI seeing distance.
-    sight_radius;
+export default class Raven extends RavenBase {
+
+
+    // An actor containing AI behaviours.
+    actor;
 
     // Ship Model (gltf)
     model;
@@ -29,18 +31,14 @@ export default class Bot {
     // Aircraft flight sim data like airspeed.
     state;
 
-    // YUKA.Vehicle instance.
-    vehicle;
-
     constructor() {
+        super();
         this.default_camera_distance = l.scenograph.width < l.scenograph.height ? -70 : -35;
         this.trail_position_y = 1.2;
         this.trail_position_z = 1.5;
         this.camera_distance = 0;
 
         this.ready = false;
-
-        this.state = new Raven();
 
     }
 
@@ -101,7 +99,7 @@ export default class Bot {
         this.mesh.userData.targetable = true;
         this.mesh.userData.objectClass = 'bot';
         this.mesh.userData.standing = -1;
-        this.mesh.position.z = - l.current_scene.room_depth * 2;
+        this.mesh.position.z = -1500;
         this.mesh.position.y = 200;
         this.mesh.rotation.order = 'YXZ';
 
@@ -113,66 +111,19 @@ export default class Bot {
         // this.mesh.scale.set(100,100,100);
         this.mesh.matrixAutoUpdate = false;
 
-        this.vehicle = new YUKA.Vehicle();
-        this.vehicle.position.z = this.mesh.position.z;
-        this.vehicle.position.y = this.mesh.position.y;
-        this.vehicle.maxSpeed = 500;
-        this.vehicle.setRenderComponent( this.mesh, this.sync );
-        this.vehicle.boundingRadius = 20;
-        this.vehicle.smoother = new YUKA.Smoother( 20 );
-        this.vehicle.rotation.order = 'XYZ';
+        // @todo: Uncouple from the pirate actor when vehicle selection is introduced.
+        this.actor = new Pirate( this.mesh );
 
-        l.scenograph.entityManager.add( this.vehicle );
-
-        let obstacles = [];
- 
-        // const boundaryHandler = new YUKA.ObstacleAvoidanceBehavior(
-        //     obstacles
-        // )
-        // this.vehicle.steering.add( boundaryHandler );
-
-
-        const loopDistance = 1500;
-        const path = new YUKA.Path();
-			path.loop = true;
-			path.add( new YUKA.Vector3( loopDistance, 200, loopDistance ) );
-			path.add( new YUKA.Vector3( loopDistance, 200, - loopDistance ) );
-			path.add( new YUKA.Vector3( - loopDistance, 200, - loopDistance ) );
-			path.add( new YUKA.Vector3( - loopDistance, 200, loopDistance ) );
-
-        // const wanderBehavior = new YUKA.WanderBehavior();
-        // // wanderBehavior.distance = 100;
-        // // wanderBehavior.jitter = 100;
-        // // wanderBehavior.radius = 1.5;
-        // this.vehicle.steering.add( wanderBehavior );
-
-        const followPathBehavior = new YUKA.FollowPathBehavior( path );
-        this.vehicle.steering.add( followPathBehavior );
-
-        // l.current_scene.objects.boundaries.forEach( ( boundaryMesh ) => {
-        //     const obstacle1 = new YUKA.GameEntity();
-        //     obstacle1.position.copy( boundaryMesh.position );
-            
-        //     obstacle1.boundingRadius = boundaryMesh.geometry.boundingSphere.radius;
-            
-        //     l.scenograph.entityManager.add( obstacle1 );
-        //     obstacles.push(obstacle1);
-        // } );
-
+        l.scenograph.entityManager.add( this.actor.entity );
 
     }
 
     // Runs on the main animation loop
     animate( delta ) {
 
-        l.scenograph.entityManager.update( delta );
+        l.current_scene.objects.bot.actor.animate();
     }
 
-    sync( entity, renderComponent ) {
-
-        renderComponent.matrix.copy( entity.worldMatrix );
-        renderComponent.position.copy( entity.position );
-
-    }
+   
 }
 

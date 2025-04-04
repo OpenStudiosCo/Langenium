@@ -5,7 +5,7 @@
  * - Add weight and wind resistance
  */
 
-import { normaliseSpeedDelta, easeOutExpo, easeInQuad, easeInOutExpo } from '../../../helpers';
+import { normaliseSpeedDelta, easeOutExpo, easeInQuad, easeInOutExpo } from '../../helpers';
 
 export default class BaseAircraft {
     public airSpeed:        number                              = 0;
@@ -14,6 +14,7 @@ export default class BaseAircraft {
     public maxBackward:     number                              = 2.0;
     public maxUp:           number                              = 3.7 * 2.5;
     public maxDown:         number                              = 3.7 * 5;  // gravity?
+    // @todo: Introduce max turn speed for the vehicle
     public heading:         number                              = 0;
     public altitude:        number                              = 0;
     public horizon:         [number, number]                    = [0, 0];

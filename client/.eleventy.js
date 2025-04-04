@@ -1,15 +1,17 @@
-module.exports = function(eleventyConfig) {
+import pugPlugin from "@11ty/eleventy-plugin-pug";
+import pugStylus from "pug-stylus";
+
+export default function (eleventyConfig) {
 
   eleventyConfig.addPassthroughCopy({"src/assets": "assets"});
   eleventyConfig.addPassthroughCopy({"src/vendor": "vendor"});
   eleventyConfig.addPassthroughCopy("CNAME");
 
-  eleventyConfig.setPugOptions({
+  eleventyConfig.addPlugin( pugPlugin, {
     filters: {
-      stylus: require('pug-stylus')()
+      stylus: pugStylus()
     }
-  });
-
+  } );
 
   eleventyConfig.addWatchTarget("./src/**/*");
   eleventyConfig.setServerOptions({
@@ -19,11 +21,12 @@ module.exports = function(eleventyConfig) {
     }
   });
 
-  return {
-    dir: {
-      input:    'src/web',
-      layouts:  'src/templates',
-      output:   '../docs'
-    },
-  };
+};
+
+export const config = {
+  dir: {
+    input:    'src/web',
+    layouts:  '../templates',
+    output:   '../docs'
+  }
 };

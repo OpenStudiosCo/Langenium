@@ -21,7 +21,6 @@ export default class Pirate {
     constructor( mesh, type = 'vehicle' ) {
         this.mesh = mesh;
 
-        this.targetSighted = false;
         this.type = type;
 
         if ( this.type == 'vehicle' ) {
@@ -29,7 +28,7 @@ export default class Pirate {
             this.entity = new YUKA.Vehicle();
             this.entity.position.z = this.mesh.position.z;
             this.entity.position.y = this.mesh.position.y;
-            this.entity.maxSpeed = 500;
+            this.entity.maxSpeed = 300;
             this.entity.setRenderComponent( this.mesh, this.sync );
             this.entity.boundingRadius = 20;
             this.entity.smoother = new YUKA.Smoother( 20 );
@@ -51,8 +50,8 @@ export default class Pirate {
             // this.follow = new YUKA.FollowPathBehavior( path );
             // this.entity.steering.add( this.follow );
 
-            this.pursue = new YUKA.PursuitBehavior( l.current_scene.objects.player.actor.entity, 2 );
-            this.pursue.active = false;
+            this.pursue = new YUKA.PursuitBehavior( l.current_scene.objects.player.actor.entity, 1 );
+            //this.pursue.active = false;
 			this.entity.steering.add( this.pursue );
 
         }

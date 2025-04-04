@@ -29,15 +29,15 @@ export default class Player {
             this.entity.setRenderComponent( this.mesh, this.sync );
             this.entity.boundingRadius = 20;
             this.entity.smoother = new YUKA.Smoother( 20 );
-            this.entity.rotation.order = 'XYZ';
+
          }
     }
 
-    
+    // NOTE: This syncs in reverse as we are not using YUKA to pilot, just capture info.
     sync( entity, renderComponent ) {
 
-        renderComponent.matrix.copy( entity.worldMatrix );
-        renderComponent.position.copy( entity.position );
+        entity.worldMatrix.copy( renderComponent.matrix );
+        entity.position.copy( renderComponent.position );
 
     }
 }

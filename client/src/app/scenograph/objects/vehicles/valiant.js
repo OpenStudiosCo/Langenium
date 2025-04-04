@@ -162,6 +162,7 @@ export default class Valiant extends ValiantBase {
         this.trail.activate();
 
         this.actor = new Player( this.mesh );
+        this.actor.entity.active = false;
 
         l.scenograph.entityManager.add( this.actor.entity );
     }

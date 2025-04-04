@@ -16,8 +16,6 @@ export default class Pirate {
 
     pursue;
 
-    targetSighted;
-
     type;
 
     constructor( mesh, type = 'vehicle' ) {
@@ -39,21 +37,22 @@ export default class Pirate {
 
             const loopDistance = -1000;
             const path = new YUKA.Path();
-                path.loop = true;
-                path.add( new YUKA.Vector3( loopDistance, this.mesh.position.y, loopDistance ) );
-                path.add( new YUKA.Vector3( loopDistance, this.mesh.position.y, - loopDistance ) );
-                path.add( new YUKA.Vector3( - loopDistance, this.mesh.position.y, - loopDistance ) );
-                path.add( new YUKA.Vector3( - loopDistance, this.mesh.position.y, loopDistance ) );
+            path.loop = true;
+            path.add( new YUKA.Vector3( loopDistance, this.mesh.position.y, loopDistance ) );
+            path.add( new YUKA.Vector3( loopDistance, this.mesh.position.y, - loopDistance ) );
+            path.add( new YUKA.Vector3( - loopDistance, this.mesh.position.y, - loopDistance ) );
+            path.add( new YUKA.Vector3( - loopDistance, this.mesh.position.y, loopDistance ) );
     
             const vision = new YUKA.Vision( this.entity );
             vision.range = 750;
             vision.fieldOfView = Math.PI * 0.95;
             this.entity.vision = vision;
     
-            // const followPathBehavior = new YUKA.FollowPathBehavior( path );
-            // this.entity.steering.add( followPathBehavior );
+            // this.follow = new YUKA.FollowPathBehavior( path );
+            // this.entity.steering.add( this.follow );
 
             this.pursue = new YUKA.PursuitBehavior( l.current_scene.objects.player.actor.entity, 2 );
+            this.pursue.active = false;
 			this.entity.steering.add( this.pursue );
 
         }
@@ -69,18 +68,15 @@ export default class Pirate {
     animate() {
         if ( this.entity.vision.visible( l.current_scene.objects.player.position ) === true ) {
             console.log('player sighted!');
-
-            this.targetSighted = true;
             
-            // this.pursue = new YUKA.PursuitBehavior( l.current_scene.objects.player.actor.entity, 2 );
-            // this.entity.steering.add(this.pursue);
+            this.pursue.active = true;
+            //this.follow.active = false;
 
         } else {
             console.log('player not sighted!');
 
-            this.targetSighted = false;
-
-            // this.entity.steering.remove(this.pursue);
+            this.pursue.active = false;
+            //this.follow.active = true;
             
         }
     }

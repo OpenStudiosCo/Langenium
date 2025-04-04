@@ -10,12 +10,20 @@ export default class Pirate {
 
     entity;
 
+    follow;
+
     mesh;
+
+    pursue;
+
+    targetSighted;
 
     type;
 
     constructor( mesh, type = 'vehicle' ) {
         this.mesh = mesh;
+
+        this.targetSighted = false;
         this.type = type;
 
         if ( this.type == 'vehicle' ) {
@@ -29,22 +37,25 @@ export default class Pirate {
             this.entity.smoother = new YUKA.Smoother( 20 );
             this.entity.rotation.order = 'XYZ';
 
-            const loopDistance = 1500;
+            const loopDistance = -1000;
             const path = new YUKA.Path();
                 path.loop = true;
-                path.add( new YUKA.Vector3( loopDistance, 200, loopDistance ) );
-                path.add( new YUKA.Vector3( loopDistance, 200, - loopDistance ) );
-                path.add( new YUKA.Vector3( - loopDistance, 200, - loopDistance ) );
-                path.add( new YUKA.Vector3( - loopDistance, 200, loopDistance ) );
+                path.add( new YUKA.Vector3( loopDistance, this.mesh.position.y, loopDistance ) );
+                path.add( new YUKA.Vector3( loopDistance, this.mesh.position.y, - loopDistance ) );
+                path.add( new YUKA.Vector3( - loopDistance, this.mesh.position.y, - loopDistance ) );
+                path.add( new YUKA.Vector3( - loopDistance, this.mesh.position.y, loopDistance ) );
     
-            // const wanderBehavior = new YUKA.WanderBehavior();
-            // // wanderBehavior.distance = 100;
-            // // wanderBehavior.jitter = 100;
-            // // wanderBehavior.radius = 1.5;
-            // this.vehicle.steering.add( wanderBehavior );
+            const vision = new YUKA.Vision( this.entity );
+            vision.range = 750;
+            vision.fieldOfView = Math.PI * 0.95;
+            this.entity.vision = vision;
     
-            const followPathBehavior = new YUKA.FollowPathBehavior( path );
-            this.entity.steering.add( followPathBehavior );
+            // const followPathBehavior = new YUKA.FollowPathBehavior( path );
+            // this.entity.steering.add( followPathBehavior );
+
+            this.pursue = new YUKA.PursuitBehavior( l.current_scene.objects.player.actor.entity, 2 );
+			this.entity.steering.add( this.pursue );
+
         }
     }
 
@@ -53,5 +64,24 @@ export default class Pirate {
         renderComponent.matrix.copy( entity.worldMatrix );
         renderComponent.position.copy( entity.position );
 
+    }
+
+    animate() {
+        if ( this.entity.vision.visible( l.current_scene.objects.player.position ) === true ) {
+            console.log('player sighted!');
+
+            this.targetSighted = true;
+            
+            // this.pursue = new YUKA.PursuitBehavior( l.current_scene.objects.player.actor.entity, 2 );
+            // this.entity.steering.add(this.pursue);
+
+        } else {
+            console.log('player not sighted!');
+
+            this.targetSighted = false;
+
+            // this.entity.steering.remove(this.pursue);
+            
+        }
     }
 }

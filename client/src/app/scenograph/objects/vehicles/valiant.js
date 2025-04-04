@@ -12,9 +12,12 @@ import { TrailRenderer } from '@/../vendor/TrailRenderer.js';
  */
 import l from '@/helpers/l.js';
 import { brightenMaterial, proceduralMetalMaterial } from '@/scenograph/materials.js';
+import Player from '#/game/src/actors/player';
 import ValiantBase from '#/game/src/objects/aircraft/valiant.js';
 
 export default class Valiant extends ValiantBase {
+
+    actor;
 
     // Camera distance.
     camera_distance;
@@ -158,6 +161,9 @@ export default class Valiant extends ValiantBase {
         // activate the trail
         this.trail.activate();
 
+        this.actor = new Player( this.mesh );
+
+        l.scenograph.entityManager.add( this.actor.entity );
     }
 
     createTrailCircle() {

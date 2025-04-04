@@ -28,9 +28,6 @@ export default class Raven extends RavenBase {
     // Model is loaded and the Bot is ready to be used.
     ready;
 
-    // AI seeing distance.
-    sight_radius;
-
     // Aircraft flight sim data like airspeed.
     state;
 

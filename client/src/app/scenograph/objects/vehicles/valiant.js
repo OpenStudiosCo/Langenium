@@ -2,6 +2,8 @@
  * Valiant Aircraft
  * 
  * Provides a Valiant aircraft that can be added and updated in the game world.
+ * 
+ * @todo: Uncouple player actor from this ship class.
  */
 
 import * as THREE from 'three';

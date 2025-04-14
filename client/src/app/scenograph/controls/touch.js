@@ -9,9 +9,12 @@
  */
 import l from '@/helpers/l.js';
 import TouchControlUI from '@/scenograph/controls/touch/TouchControlUI';
+import WeaponControls from '@/scenograph/controls/touch/weapons';
 
 export default class TouchControls {
     controls;
+
+    weapons;
 
     constructor() {
         // Controls
@@ -30,6 +33,9 @@ export default class TouchControls {
         this.controls.rotationPad.padElement.style.display = 'none';
         this.controls.sliderStick.stickElement.style.display = 'none';
 
+        this.weapons = new WeaponControls();
+        this.weapons.container.style.display = 'none';
+
     }
 
     activate() {
@@ -41,6 +47,8 @@ export default class TouchControls {
         l.scenograph.controls.touch.controls.movementPad.padElement.style.display = '';
         l.scenograph.controls.touch.controls.rotationPad.padElement.style.display = '';
         l.scenograph.controls.touch.controls.sliderStick.stickElement.style.display = '';
+
+        l.scenograph.controls.touch.weapons.container.style.display = '';
     }
 
     deactivate() {
@@ -48,5 +56,6 @@ export default class TouchControls {
         l.scenograph.controls.touch.controls.movementPad.padElement.style.display = 'none';
         l.scenograph.controls.touch.controls.rotationPad.padElement.style.display = 'none';
         l.scenograph.controls.touch.controls.sliderStick.stickElement.style.display = 'none';
+        l.scenograph.controls.touch.weapons.container.style.display = 'none';
     }
 }

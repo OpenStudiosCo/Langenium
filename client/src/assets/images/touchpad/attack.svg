@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+  <g id="Layer-1" transform="matrix(1,0,0,1,-336.877,-72.8836)">
+    <g style="transform-origin: 364.057px 139.708px;" transform="matrix(0.862613, -0.231136, 0.231136, 0.862613, 18.951231, -17.91704)">
+      <path d="M 364.854 78.071 L 365.854 78.172 L 364.854 78.071 Z M 374.123 116.15 L 370.769 181.397 L 365.854 181.397 L 365.854 78.172 L 374.123 116.15 Z M 359.917 181.397 L 356.563 116.15 L 364.854 78.071 L 364.854 181.397 L 359.917 181.397 Z M 364.854 181.397 L 365.854 181.397 L 364.854 181.397 Z" style="stroke-opacity: 0; stroke: rgba(255, 255, 255, 0); fill: rgb(218, 227, 232); transform-origin: 365.154px 140.622px;" transform="matrix(0.868139, -0.496321, 0.496321, 0.868139, 0.000008, 0.000015)"/>
+      <rect x="352.228" y="182.487" width="25.851" height="5.803" style="stroke: rgb(0, 0, 0); stroke-opacity: 0; fill: rgb(218, 227, 232); transform-origin: 365.154px 140.622px;" transform="matrix(0.868139, -0.496321, 0.496321, 0.868139, -0.000449, -0.000187)"/>
+      <rect x="359.816" y="196.683" width="11.347" height="2.745" style="stroke: rgb(0, 0, 0); stroke-opacity: 0; fill: rgb(218, 227, 232); transform-origin: 365.154px 140.622px;" transform="matrix(0.868139, -0.496321, 0.496321, 0.868139, -0.000449, -0.000187)"/>
+      <rect x="359.87" y="200.429" width="11.347" height="2.745" style="stroke: rgb(0, 0, 0); stroke-opacity: 0; fill: rgb(218, 227, 232); transform-origin: 365.154px 140.622px;" transform="matrix(0.868139, -0.496321, 0.496321, 0.868139, -0.000449, -0.000187)"/>
+      <rect x="359.769" y="189.489" width="11.347" height="2.745" style="stroke: rgb(0, 0, 0); stroke-opacity: 0; fill: rgb(218, 227, 232); transform-origin: 365.154px 140.622px;" transform="matrix(0.868139, -0.496321, 0.496321, 0.868139, -0.000449, -0.000187)"/>
+      <rect x="359.823" y="193.235" width="11.347" height="2.745" style="stroke: rgb(0, 0, 0); stroke-opacity: 0; fill: rgb(218, 227, 232); transform-origin: 365.154px 140.622px;" transform="matrix(0.868139, -0.496321, 0.496321, 0.868139, -0.000449, -0.000187)"/>
+    </g>
+  </g>
+</svg>

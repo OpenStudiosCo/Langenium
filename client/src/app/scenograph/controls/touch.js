@@ -48,7 +48,7 @@ export default class TouchControls {
         l.scenograph.controls.touch.controls.rotationPad.padElement.style.display = '';
         l.scenograph.controls.touch.controls.sliderStick.stickElement.style.display = '';
 
-        l.scenograph.controls.touch.weapons.container.style.display = '';
+        l.scenograph.controls.touch.weapons.container.style.display = 'flex';
     }
 
     deactivate() {

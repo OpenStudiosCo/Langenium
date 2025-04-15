@@ -47,7 +47,6 @@ export default class WeaponControls {
             );
         }
 
-        console.log(timeRemaining);
         if ( timeRemaining == 0 ) {
             button.disabled = false;
             button.innerHTML = '';

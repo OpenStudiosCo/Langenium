@@ -34,7 +34,12 @@ export default class Weapons extends BaseSystem {
                     object.locked && object.mesh.userData.standing < 0
                 ) {
                     this.lastAttack = currentTime;
-                    console.log('Firing missile!');
+                    l.current_scene.objects.projectiles.missile.fireMissile(
+                        l.current_scene.objects.player.mesh,
+                        l.current_scene.objects.player.mesh.position,
+                        l.current_scene.objects.bot.mesh,
+                        l.current_scene.objects.bot.mesh.position
+                    );
                 }
 
             } );

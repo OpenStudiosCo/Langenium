@@ -160,15 +160,18 @@ export default class Scanners {
                 if ( trackedObject.scanTime >= 3 ) {
                     trackedObject.domElement.classList.remove('locking');
                     trackedObject.domElement.classList.add('locked');
+                    trackedObject.locked = true;
                 }
                 else {
                     trackedObject.domElement.classList.add('locking');
                     trackedObject.domElement.classList.remove('locked');
+                    trackedObject.locked = false;
                 }
             }
             else {
                 trackedObject.domElement.classList.remove('locking');
                 trackedObject.domElement.classList.remove('locked');
+                trackedObject.locked = false;
             }
 
         }
@@ -185,6 +188,7 @@ export default class Scanners {
                 if ( trackedObject.lostTime >= 3 && trackedObject.domElement.classList.contains('locked') ) {
                     trackedObject.domElement.classList.add('locking');
                     trackedObject.domElement.classList.remove('locked');
+                    trackedObject.locked = false;
 
                     trackedObject.lostTime = 0;
                 }
@@ -207,6 +211,7 @@ export default class Scanners {
                     trackedObject.domElement.classList.remove('tracking');
                     trackedObject.scanTime = 0;
                     trackedObject.lostTime = 0;
+                    trackedObject.locked = false;
                 }
 
             }

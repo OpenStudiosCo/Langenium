@@ -35,4 +35,28 @@ export default class WeaponControls {
 
     }
 
+    // Updater, runs on setInterval
+    update() {
+        const button = l.scenograph.controls.touch.weapons.container.querySelector('button');
+
+        let timeRemaining = 0;
+
+        if ( parseInt(l.current_scene.stats.currentTime) < parseInt(l.current_scene.objects.player.actor.weapons.lastAttack) + parseInt(l.current_scene.objects.player.actor.weapons.timeout) ) {
+            timeRemaining = parseInt(l.current_scene.objects.player.actor.weapons.timeout) - (
+                parseInt(l.current_scene.stats.currentTime) - parseInt(l.current_scene.objects.player.actor.weapons.lastAttack)
+            );
+        }
+
+        console.log(timeRemaining);
+        if ( timeRemaining == 0 ) {
+            button.disabled = false;
+            button.innerHTML = '';
+        }
+        else {
+            button.disabled = true;
+            button.innerHTML = timeRemaining + ' ms';
+        }
+
+    }
+
 }

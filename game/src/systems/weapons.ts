@@ -24,8 +24,21 @@ export default class Weapons extends BaseSystem {
     animate ( currentTime ) {
 
         if ( parseInt(currentTime) >= parseInt(this.lastAttack) + parseInt(this.timeout) ) {
-            console.log('missile fired');
-            this.lastAttack = currentTime;
+
+            // Check scanners for objects to shoot at.
+            // @todo: Move scanners into a game subsystem class.
+            l.scenograph.overlays.scanners.trackedObjects.forEach( ( object ) => {
+                
+                if (
+                    // Check if the object is target locked and not friendly.
+                    object.locked && object.mesh.userData.standing < 0
+                ) {
+                    this.lastAttack = currentTime;
+                    console.log('Firing missile!');
+                }
+
+            } );
+
         }
 
     }

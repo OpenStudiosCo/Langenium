@@ -56,7 +56,6 @@ export default class Extractor {
         this.mesh.userData.targetable = true;
         this.mesh.userData.objectClass = 'missiles';
 
-
         this.mesh.add(this.getMissileBody());
 
     }

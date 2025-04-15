@@ -15,7 +15,7 @@ import { TrailRenderer } from '@/../vendor/TrailRenderer.js';
 import l from '@/helpers/l.js';
 import { brightenMaterial, proceduralMetalMaterial } from '@/scenograph/materials.js';
 import Player from '#/game/src/actors/player';
-import ValiantBase from '#/game/src/objects/aircraft/valiant.js';
+import ValiantBase from '#/game/src/objects/aircraft/valiant';
 
 export default class Valiant extends ValiantBase {
 
@@ -490,6 +490,7 @@ export default class Valiant extends ValiantBase {
                 if ( l.scenograph.modes.multiplayer.connected ) {
                     l.scenograph.modes.multiplayer.socket.emit( 'input', l.current_scene.objects.player.controls );
                 }
+
             }
 
             l.current_scene.objects.player.updateAnimation( delta );
@@ -542,6 +543,7 @@ export default class Valiant extends ValiantBase {
                 l.current_scene.objects.player.trail.update();
             }
 
+            l.current_scene.objects.player.actor.weapons.animate( l.current_scene.stats.currentTime );
         }
     }
 

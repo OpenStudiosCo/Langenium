@@ -17,7 +17,7 @@ export default class Weapons extends BaseSystem {
 
         if ( type == 'missile' ) {
             this.lastAttack = 0;
-            this.timeout = 3000; // in milliseconds
+            this.timeout = 1000; // in milliseconds
         }
     }
 

@@ -114,6 +114,7 @@ export default class Missile {
         return capsule;
     }
 
+    // @todo: This has to be simulated on the server somehow..
     animate( currentTime ) {
         l.current_scene.objects.projectiles.missile.active.forEach( ( missile, index ) => {
             // Check if it's been 10 seconds since the missile was fired, self destruct if so
@@ -123,8 +124,11 @@ export default class Missile {
             }
             // Otherwise keep flying forward.
             else {
+                
+                let missileAge = parseFloat( missile.userData.created ) - parseFloat(l.current_scene.stats.currentTime );
+                let missileSpeed = 1 + 4 * Math.min( ( missileAge / 2000 ), 1 );
                 missile.lookAt( missile.userData.destMesh.position );
-                missile.translateZ(5); // 5 meters per frame at 60fps is approx 432km per hour
+                missile.translateZ(-missileSpeed); // 5 meters per frame at 60fps is approx 432km per hour
             }
         } );
     }

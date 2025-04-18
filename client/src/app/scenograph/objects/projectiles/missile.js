@@ -6,6 +6,7 @@
  * Vendor libs
  */
 import * as THREE from 'three';
+import { TrailRenderer } from '@/../vendor/TrailRenderer.js';
 
 /**
  * Internal libs and helpers.
@@ -92,6 +93,12 @@ export default class Missile {
 
         // Add missile to the active missiles array (for animation etc)
         l.current_scene.objects.projectiles.missile.active.push( newMissile );
+
+        // specify points to create planar trail-head geometry
+        const trailHeadGeometry = l.current_scene.effects.trail.createTrailCircle();
+
+        // Add a trail to the missile.
+        newMissile.userData.trail = l.current_scene.effects.trail.createTrail( newMissile, 0, 0, -1.5 );
     }
 
     // getMissileHead
@@ -121,6 +128,8 @@ export default class Missile {
             if ( parseFloat(l.current_scene.stats.currentTime ) >= parseFloat( missile.userData.created ) + 10000 ) {
                 l.current_scene.objects.projectiles.missile.active.splice( index, 1 );
                 l.current_scene.scene.remove( missile );
+                missile.userData.trail.destroyMesh();
+                missile.userData.trail.deactivate();
             }
             // Otherwise keep flying forward.
             else {
@@ -129,6 +138,7 @@ export default class Missile {
                 let missileSpeed = 1 + 4 * Math.min( ( missileAge / 2000 ), 1 );
                 missile.lookAt( missile.userData.destMesh.position );
                 missile.translateZ(-missileSpeed); // 5 meters per frame at 60fps is approx 432km per hour
+                missile.userData.trail.update();
             }
         } );
     }

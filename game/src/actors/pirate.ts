@@ -24,7 +24,7 @@ export default class Pirate extends BaseActor {
         if ( this.type == 'vehicle' ) {
             this.entity.position.z = this.mesh.position.z;
             this.entity.position.y = this.mesh.position.y;
-            this.entity.maxSpeed = 500;
+            this.entity.maxSpeed = 400;
             this.entity.setRenderComponent( this.mesh, this.sync );
             this.entity.boundingRadius = 20;
             this.entity.smoother = new YUKA.Smoother( 20 );

@@ -68,14 +68,12 @@ export default class Missile {
 
         this.mesh.add(this.getMissileBody());
 
-        // // Instantiate the video element for reuse
-        // this.explosionMesh = await this.loadExplosion();
     }
 
     async loadExplosion( position ) {
         const explosionVideo = document.getElementById( 'explosion' );
         explosionVideo.play();
-        explosionVideo.playbackRate = 0.25;
+        explosionVideo.playbackRate = 1;
 
         const texture = new THREE.VideoTexture( explosionVideo );
         texture.colorSpace = THREE.SRGBColorSpace;
@@ -85,25 +83,28 @@ export default class Missile {
         texture.rotation = - Math.PI / 2;
 
         const parameters = {
-            depthWrite: false,
             map: texture,
             transparent: true,
+            blending : THREE.CustomBlending,
+            blendSrc : THREE.SrcAlphaFactor,
+            blendDst : THREE.OneFactor,
+            blendEquation : THREE.AddEquation,
+            depthWrite: false,
+            dithering: true
         };
 
-        const material = new THREE.MeshBasicMaterial( parameters );
+        const material = new THREE.SpriteMaterial( parameters );
 
-        material.blending = THREE.CustomBlending;
-        material.blendSrc = THREE.SrcAlphaFactor;
-        material.blendDst = THREE.OneFactor;
-        material.blendEquation = THREE.AddEquation;
 
-        const geometry = new THREE.PlaneGeometry( 10, 10, 2, 2);
+        const mesh = new THREE.Sprite( material );
 
-        const mesh = new THREE.Mesh( geometry, material );
+        mesh.scale.set( 30, 30, 30 );
 
         mesh.userData.created = l.current_scene.stats.currentTime;
 
         mesh.position.copy( position );
+
+        mesh.material.rotation = Math.random() * Math.PI + Math.PI;
 
         l.current_scene.scene.add( mesh );
 
@@ -141,9 +142,6 @@ export default class Missile {
         // Add missile to the active missiles array (for animation etc)
         l.current_scene.objects.projectiles.missile.active.push( newMissile );
 
-        // specify points to create planar trail-head geometry
-        const trailHeadGeometry = l.current_scene.effects.trail.createTrailCircle();
-
         // Add a trail to the missile.
         newMissile.userData.trail = l.current_scene.effects.trail.createTrail( newMissile, 0, 0, -1.5 );
     }
@@ -171,13 +169,20 @@ export default class Missile {
     // @todo: This has to be simulated on the server somehow..
     animate( currentTime ) {
         l.current_scene.objects.projectiles.missile.active.forEach( ( missile, index ) => {
-            // Check if it's been 10 seconds since the missile was fired, self destruct if so
-            if ( parseFloat( l.current_scene.stats.currentTime ) >= parseFloat( missile.userData.created ) + 10000 ) {
+            
+            if (
+                // Check if
+                // - it's been 10 seconds OR
+                // - the missile has collided
+                // since the missile was fired, explode if so
+                ( parseFloat( l.current_scene.stats.currentTime ) >= parseFloat( missile.userData.created ) + 10000 ) ||
+                ( missile.position.distanceTo( missile.userData.destMesh.position ) <= 2 )
+            ) {
                 l.current_scene.objects.projectiles.missile.active.splice( index, 1 );
                 l.current_scene.scene.remove( missile );
                 missile.userData.trail.destroyMesh();
                 missile.userData.trail.deactivate();
-                l.current_scene.objects.projectiles.missile.loadExplosion( missile.position );
+                l.current_scene.objects.projectiles.missile.loadExplosion( missile.userData.destMesh.position );
             }
             // Otherwise keep flying forward.
             else {
@@ -196,11 +201,8 @@ export default class Missile {
                 l.current_scene.objects.projectiles.missile.explosions.splice( index, 1 );
                 l.current_scene.scene.remove( explosion );
             }
-            // Otherwise rotate to the active camera.
             else {
-                
-                explosion.lookAt( l.scenograph.cameras.active.position );
-
+                explosion.material.rotation *= 0.996;
             }
         } );
     }

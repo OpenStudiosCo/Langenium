@@ -95,8 +95,9 @@ export default class Missile {
 
         const material = new THREE.SpriteMaterial( parameters );
 
-
         const mesh = new THREE.Sprite( material );
+
+        mesh.renderOrder = 999;
 
         mesh.scale.set( 30, 30, 30 );
 

@@ -44,6 +44,8 @@ export default class Ocean {
             }
         );
 
+        this.water.renderOrder = 1;
+
         this.water.material.transparent = true;
 
         // this.water.material = new THREE.MeshBasicMaterial( {

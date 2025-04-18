@@ -7,7 +7,6 @@
  */
 
 import * as THREE from 'three';
-import { TrailRenderer } from '@/../vendor/TrailRenderer.js';
 
 /**
  * Internal libs and helpers.

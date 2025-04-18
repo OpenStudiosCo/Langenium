@@ -44,6 +44,8 @@ export default class Trail {
 
         trail.mesh.name = mesh.name + ' Trail';
 
+        trail.mesh.renderOrder = 999;
+
         // activate the trail
         trail.activate();
 
@@ -70,14 +72,9 @@ export default class Trail {
         // create material for the trail renderer
         const trailMaterial = TrailRenderer.createBaseMaterial();
 
-        trailMaterial.depthWrite = true;
-        trailMaterial.depthBias = -0.0001; // Adjust depth bias as needed
-        trailMaterial.depthBiasConstant = 0; // Adjust depth bias constant term if necessary
-        trailMaterial.depthBiasSlope = 0; // Adjust depth bias slope term if necessary
+        trailMaterial.side = THREE.DoubleSide;
 
-        //trailMaterial.side = THREE.DoubleSide;
-
-        //trailMaterial.transparent = true;
+        trailMaterial.transparent = true;
 
         trailMaterial.uniforms.headColor.value.set( 255 / 255, 212 / 255, 148 / 255, 1. ); // RGBA.
         trailMaterial.uniforms.tailColor.value.set( 132 / 255, 42 / 255, 36 / 255, 1. ); // RGBA.

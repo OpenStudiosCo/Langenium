@@ -49048,7 +49048,7 @@ void main() {
     }
   };
 
-  // src/app/scenograph/controls/touch/utils.js
+  // src/app/scenograph/controls/touch/TouchControlUI/utils.js
   var PI_2 = Math.PI / 2;
   function getOffset(el) {
     const rect = el.getBoundingClientRect();
@@ -49060,7 +49060,7 @@ void main() {
     };
   }
 
-  // src/app/scenograph/controls/touch/RotationPad.js
+  // src/app/scenograph/controls/touch/TouchControlUI/RotationPad.js
   var RotationPad = class {
     constructor(container) {
       __publicField(this, "container");
@@ -49187,7 +49187,7 @@ void main() {
   };
   var RotationPad_default = RotationPad;
 
-  // src/app/scenograph/controls/touch/MovementPad.js
+  // src/app/scenograph/controls/touch/TouchControlUI/MovementPad.js
   var MovementPad = class {
     constructor(container) {
       __publicField(this, "container");
@@ -49316,7 +49316,7 @@ void main() {
   };
   var MovementPad_default = MovementPad;
 
-  // src/app/scenograph/controls/touch/SliderStick.js
+  // src/app/scenograph/controls/touch/TouchControlUI/SliderStick.js
   var SliderStick = class {
     constructor(container) {
       __publicField(this, "container");
@@ -49585,10 +49585,47 @@ void main() {
   };
   var TouchControlUI_default = TouchControlUI;
 
+  // src/app/scenograph/controls/touch/weapons.js
+  var WeaponControls = class {
+    constructor() {
+      __publicField(this, "attack");
+      __publicField(this, "autoAttack");
+      __publicField(this, "container");
+      this.attack = false;
+      this.autoAttack = true;
+      this.container = document.getElementById("weapon_controls");
+      this.container.querySelector(".switch input").onchange = () => {
+        l_default.scenograph.controls.touch.weapons.autoAttack = l_default.scenograph.controls.touch.weapons.container.querySelector(".switch input").checked;
+      };
+      this.container.querySelector("button").onclick = () => {
+        l_default.scenograph.controls.touch.weapons.attack = true;
+      };
+      this.container.querySelector("button").onblur = () => {
+        l_default.scenograph.controls.touch.weapons.attack = false;
+      };
+    }
+    // Updater, runs on setInterval
+    update() {
+      const button = l_default.scenograph.controls.touch.weapons.container.querySelector("button");
+      let timeRemaining = 0;
+      if (parseInt(l_default.current_scene.stats.currentTime) < parseInt(l_default.current_scene.objects.player.actor.weapons.lastAttack) + parseInt(l_default.current_scene.objects.player.actor.weapons.timeout)) {
+        timeRemaining = parseInt(l_default.current_scene.objects.player.actor.weapons.timeout) - (parseInt(l_default.current_scene.stats.currentTime) - parseInt(l_default.current_scene.objects.player.actor.weapons.lastAttack));
+      }
+      if (timeRemaining == 0) {
+        button.disabled = false;
+        button.innerHTML = "";
+      } else {
+        button.disabled = true;
+        button.innerHTML = timeRemaining + " ms";
+      }
+    }
+  };
+
   // src/app/scenograph/controls/touch.js
   var TouchControls = class {
     constructor() {
       __publicField(this, "controls");
+      __publicField(this, "weapons");
       let options = {
         delta: 0.75,
         // coefficient of movement
@@ -49607,6 +49644,8 @@ void main() {
       this.controls.movementPad.padElement.style.display = "none";
       this.controls.rotationPad.padElement.style.display = "none";
       this.controls.sliderStick.stickElement.style.display = "none";
+      this.weapons = new WeaponControls();
+      this.weapons.container.style.display = "none";
     }
     activate() {
       this.controls.enabled = true;
@@ -49616,12 +49655,14 @@ void main() {
       l_default.scenograph.controls.touch.controls.movementPad.padElement.style.display = "";
       l_default.scenograph.controls.touch.controls.rotationPad.padElement.style.display = "";
       l_default.scenograph.controls.touch.controls.sliderStick.stickElement.style.display = "";
+      l_default.scenograph.controls.touch.weapons.container.style.display = "flex";
     }
     deactivate() {
       this.controls.enabled = false;
       l_default.scenograph.controls.touch.controls.movementPad.padElement.style.display = "none";
       l_default.scenograph.controls.touch.controls.rotationPad.padElement.style.display = "none";
       l_default.scenograph.controls.touch.controls.sliderStick.stickElement.style.display = "none";
+      l_default.scenograph.controls.touch.weapons.container.style.display = "none";
     }
   };
 
@@ -49703,6 +49744,651 @@ void main() {
     debug_off() {
       this.orbit.dispose();
       this.orbit = false;
+    }
+  };
+
+  // src/vendor/TrailRenderer.js
+  var _TrailRenderer = class _TrailRenderer extends Object3D {
+    constructor(scene, orientToMovement) {
+      super();
+      __publicField(this, "advance", function() {
+        const tempMatrix4 = new Matrix4();
+        return function advance() {
+          this.targetObject.updateMatrixWorld();
+          tempMatrix4.copy(this.targetObject.matrixWorld);
+          this.advanceWithTransform(tempMatrix4);
+          this.updateUniforms();
+        };
+      }());
+      __publicField(this, "advanceGeometry", /* @__PURE__ */ function() {
+        return function advanceGeometry(positionAndOrientation, transformMatrix) {
+          const nextIndex = this.currentEnd + 1 >= this.length ? 0 : this.currentEnd + 1;
+          if (transformMatrix) {
+            this.updateNodePositionsFromTransformMatrix(nextIndex, transformMatrix);
+          } else {
+            this.updateNodePositionsFromOrientationTangent(nextIndex, positionAndOrientation.position, positionAndOrientation.tangent);
+          }
+          if (this.currentLength >= 1) {
+            this.connectNodes(this.currentEnd, nextIndex);
+            if (this.currentLength >= this.length) {
+              const disconnectIndex = this.currentEnd + 1 >= this.length ? 0 : this.currentEnd + 1;
+              this.disconnectNodes(disconnectIndex);
+            }
+          }
+          if (this.currentLength < this.length) {
+            this.currentLength++;
+          }
+          this.currentEnd++;
+          if (this.currentEnd >= this.length) {
+            this.currentEnd = 0;
+          }
+          if (this.currentLength >= 1) {
+            if (this.currentLength < this.length) {
+              this.geometry.setDrawRange(0, (this.currentLength - 1) * this.FaceIndicesPerNode);
+            } else {
+              this.geometry.setDrawRange(0, this.currentLength * this.FaceIndicesPerNode);
+            }
+          }
+          this.updateNodeID(this.currentEnd, this.currentNodeID);
+          this.currentNodeID++;
+        };
+      }());
+      __publicField(this, "updateHead", function() {
+        const tempMatrix4 = new Matrix4();
+        return function updateHead() {
+          if (this.currentEnd < 0) return;
+          this.targetObject.updateMatrixWorld();
+          tempMatrix4.copy(this.targetObject.matrixWorld);
+          this.updateNodePositionsFromTransformMatrix(this.currentEnd, tempMatrix4);
+        };
+      }());
+      __publicField(this, "updateNodePositionsFromOrientationTangent", function() {
+        const tempQuaternion = new Quaternion();
+        const tempOffset = new Vector3();
+        const tempLocalHeadGeometry = [];
+        for (let i2 = 0; i2 < _TrailRenderer.MaxHeadVertices; i2++) {
+          const vertex2 = new Vector3();
+          tempLocalHeadGeometry.push(vertex2);
+        }
+        return function updateNodePositionsFromOrientationTangent(nodeIndex, nodeCenter, orientationTangent) {
+          const positions = this.geometry.getAttribute("position");
+          this.updateNodeCenter(nodeIndex, nodeCenter);
+          tempOffset.copy(nodeCenter);
+          tempOffset.sub(_TrailRenderer.LocalHeadOrigin);
+          tempQuaternion.setFromUnitVectors(_TrailRenderer.LocalOrientationTangent, orientationTangent);
+          for (let i2 = 0; i2 < this.localHeadGeometry.length; i2++) {
+            const vertex2 = tempLocalHeadGeometry[i2];
+            vertex2.copy(this.localHeadGeometry[i2]);
+            vertex2.applyQuaternion(tempQuaternion);
+            vertex2.add(tempOffset);
+          }
+          for (let i2 = 0; i2 < this.localHeadGeometry.length; i2++) {
+            const positionIndex = (this.VerticesPerNode * nodeIndex + i2) * _TrailRenderer.PositionComponentCount;
+            const transformedHeadVertex = tempLocalHeadGeometry[i2];
+            positions.array[positionIndex] = transformedHeadVertex.x;
+            positions.array[positionIndex + 1] = transformedHeadVertex.y;
+            positions.array[positionIndex + 2] = transformedHeadVertex.z;
+          }
+          positions.needsUpdate = true;
+        };
+      }());
+      __publicField(this, "updateNodePositionsFromTransformMatrix", function() {
+        const tempMatrix3 = new Matrix3();
+        const tempQuaternion = new Quaternion();
+        const tempPosition = new Vector3();
+        const tempOffset = new Vector3();
+        const worldOrientation = new Vector3();
+        const tempDirection = new Vector3();
+        const tempLocalHeadGeometry = [];
+        for (let i2 = 0; i2 < _TrailRenderer.MaxHeadVertices; i2++) {
+          const vertex2 = new Vector3();
+          tempLocalHeadGeometry.push(vertex2);
+        }
+        function getMatrix3FromMatrix4(matrix3, matrix4) {
+          const e2 = matrix4.elements;
+          matrix3.set(
+            e2[0],
+            e2[1],
+            e2[2],
+            e2[4],
+            e2[5],
+            e2[6],
+            e2[8],
+            e2[9],
+            e2[10]
+          );
+        }
+        return function updateNodePositionsFromTransformMatrix(nodeIndex, transformMatrix) {
+          const positions = this.geometry.getAttribute("position");
+          tempPosition.set(0, 0, 0);
+          tempPosition.applyMatrix4(transformMatrix);
+          this.updateNodeCenter(nodeIndex, tempPosition);
+          for (let i2 = 0; i2 < this.localHeadGeometry.length; i2++) {
+            const vertex2 = tempLocalHeadGeometry[i2];
+            vertex2.copy(this.localHeadGeometry[i2]);
+          }
+          for (let i2 = 0; i2 < this.localHeadGeometry.length; i2++) {
+            const vertex2 = tempLocalHeadGeometry[i2];
+            vertex2.applyMatrix4(transformMatrix);
+          }
+          if (this.lastNodeCenter && this.orientToMovement) {
+            getMatrix3FromMatrix4(tempMatrix3, transformMatrix);
+            worldOrientation.set(0, 0, -1);
+            worldOrientation.applyMatrix3(tempMatrix3);
+            tempDirection.copy(this.currentNodeCenter);
+            tempDirection.sub(this.lastNodeCenter);
+            tempDirection.normalize();
+            if (tempDirection.lengthSq() <= 1e-4 && this.lastOrientationDir) {
+              tempDirection.copy(this.lastOrientationDir);
+            }
+            if (tempDirection.lengthSq() > 1e-4) {
+              if (!this.lastOrientationDir) this.lastOrientationDir = new Vector3();
+              tempQuaternion.setFromUnitVectors(worldOrientation, tempDirection);
+              tempOffset.copy(this.currentNodeCenter);
+              for (let i2 = 0; i2 < this.localHeadGeometry.length; i2++) {
+                const vertex2 = tempLocalHeadGeometry[i2];
+                vertex2.sub(tempOffset);
+                vertex2.applyQuaternion(tempQuaternion);
+                vertex2.add(tempOffset);
+              }
+            }
+          }
+          for (let i2 = 0; i2 < this.localHeadGeometry.length; i2++) {
+            const positionIndex = (this.VerticesPerNode * nodeIndex + i2) * _TrailRenderer.PositionComponentCount;
+            const transformedHeadVertex = tempLocalHeadGeometry[i2];
+            positions.array[positionIndex] = transformedHeadVertex.x;
+            positions.array[positionIndex + 1] = transformedHeadVertex.y;
+            positions.array[positionIndex + 2] = transformedHeadVertex.z;
+          }
+          positions.needsUpdate = true;
+          positions.updateRanges.start = nodeIndex * this.VerticesPerNode * _TrailRenderer.PositionComponentCount;
+          positions.updateRanges.count = this.VerticesPerNode * _TrailRenderer.PositionComponentCount;
+        };
+      }());
+      __publicField(this, "connectNodes", /* @__PURE__ */ function() {
+        const returnObj = {
+          "attribute": null,
+          "offset": 0,
+          "count": -1
+        };
+        return function connectNodes(srcNodeIndex, destNodeIndex) {
+          const indices = this.geometry.getIndex();
+          for (let i2 = 0; i2 < this.localHeadGeometry.length - 1; i2++) {
+            const srcVertexIndex = this.VerticesPerNode * srcNodeIndex + i2;
+            const destVertexIndex = this.VerticesPerNode * destNodeIndex + i2;
+            const faceIndex = (srcNodeIndex * this.FacesPerNode + i2 * _TrailRenderer.FacesPerQuad) * _TrailRenderer.IndicesPerFace;
+            indices.array[faceIndex] = srcVertexIndex;
+            indices.array[faceIndex + 1] = destVertexIndex;
+            indices.array[faceIndex + 2] = srcVertexIndex + 1;
+            indices.array[faceIndex + 3] = destVertexIndex;
+            indices.array[faceIndex + 4] = destVertexIndex + 1;
+            indices.array[faceIndex + 5] = srcVertexIndex + 1;
+          }
+          indices.needsUpdate = true;
+          indices.clearUpdateRanges();
+          returnObj.attribute = indices;
+          returnObj.offset = srcNodeIndex * this.FacesPerNode * _TrailRenderer.IndicesPerFace;
+          returnObj.count = this.FacesPerNode * _TrailRenderer.IndicesPerFace;
+          return returnObj;
+        };
+      }());
+      __publicField(this, "disconnectNodes", /* @__PURE__ */ function() {
+        const returnObj = {
+          "attribute": null,
+          "offset": 0,
+          "count": -1
+        };
+        return function disconnectNodes(srcNodeIndex) {
+          const indices = this.geometry.getIndex();
+          for (let i2 = 0; i2 < this.localHeadGeometry.length - 1; i2++) {
+            const faceIndex = (srcNodeIndex * this.FacesPerNode + i2 * _TrailRenderer.FacesPerQuad) * _TrailRenderer.IndicesPerFace;
+            indices.array[faceIndex] = 0;
+            indices.array[faceIndex + 1] = 0;
+            indices.array[faceIndex + 2] = 0;
+            indices.array[faceIndex + 3] = 0;
+            indices.array[faceIndex + 4] = 0;
+            indices.array[faceIndex + 5] = 0;
+          }
+          indices.needsUpdate = true;
+          indices.clearUpdateRanges();
+          returnObj.attribute = indices;
+          returnObj.offset = srcNodeIndex * this.FacesPerNode * _TrailRenderer.IndicesPerFace;
+          returnObj.count = this.FacesPerNode * _TrailRenderer.IndicesPerFace;
+          return returnObj;
+        };
+      }());
+      this.active = false;
+      this.orientToMovement = false;
+      if (orientToMovement) this.orientToMovement = true;
+      this.scene = scene;
+      this.geometry = null;
+      this.mesh = null;
+      this.nodeCenters = null;
+      this.lastNodeCenter = null;
+      this.currentNodeCenter = null;
+      this.lastOrientationDir = null;
+      this.nodeIDs = null;
+      this.currentLength = 0;
+      this.currentEnd = 0;
+      this.currentNodeID = 0;
+      this.advanceFrequency = 60;
+      this.advancePeriod = 1 / this.advanceFrequency;
+      this.lastAdvanceTime = 0;
+      this.paused = false;
+      this.pauseAdvanceUpdateTimeDiff = 0;
+    }
+    setAdvanceFrequency(advanceFrequency) {
+      this.advanceFrequency = advanceFrequency;
+      this.advancePeriod = 1 / this.advanceFrequency;
+    }
+    initialize(material, length, dragTexture, localHeadWidth, localHeadGeometry, targetObject) {
+      this.deactivate();
+      this.destroyMesh();
+      this.length = length > 0 ? length + 1 : 0;
+      this.dragTexture = !dragTexture ? 0 : 1;
+      this.targetObject = targetObject;
+      this.initializeLocalHeadGeometry(localHeadWidth, localHeadGeometry);
+      this.nodeIDs = [];
+      this.nodeCenters = [];
+      for (let i2 = 0; i2 < this.length; i2++) {
+        this.nodeIDs[i2] = -1;
+        this.nodeCenters[i2] = new Vector3();
+      }
+      this.material = material;
+      this.initializeGeometry();
+      this.initializeMesh();
+      this.material.uniforms.trailLength.value = 0;
+      this.material.uniforms.minID.value = 0;
+      this.material.uniforms.maxID.value = 0;
+      this.material.uniforms.dragTexture.value = this.dragTexture;
+      this.material.uniforms.maxTrailLength.value = this.length;
+      this.material.uniforms.verticesPerNode.value = this.VerticesPerNode;
+      this.material.uniforms.textureTileFactor.value = new Vector2(1, 1);
+      this.reset();
+    }
+    initializeLocalHeadGeometry(localHeadWidth, localHeadGeometry) {
+      this.localHeadGeometry = [];
+      if (!localHeadGeometry) {
+        const halfWidth = (localHeadWidth || 1) / 2;
+        this.localHeadGeometry.push(new Vector3(-halfWidth, 0, 0));
+        this.localHeadGeometry.push(new Vector3(halfWidth, 0, 0));
+        this.VerticesPerNode = 2;
+      } else {
+        this.VerticesPerNode = 0;
+        for (let i2 = 0; i2 < localHeadGeometry.length && i2 < _TrailRenderer.MaxHeadVertices; i2++) {
+          const vertex2 = localHeadGeometry[i2];
+          if (vertex2 && vertex2 instanceof Vector3) {
+            const vertexCopy = new Vector3();
+            vertexCopy.copy(vertex2);
+            this.localHeadGeometry.push(vertexCopy);
+            this.VerticesPerNode++;
+          }
+        }
+      }
+      this.FacesPerNode = (this.VerticesPerNode - 1) * 2;
+      this.FaceIndicesPerNode = this.FacesPerNode * 3;
+    }
+    initializeGeometry() {
+      this.vertexCount = this.length * this.VerticesPerNode;
+      this.faceCount = this.length * this.FacesPerNode;
+      const geometry = new BufferGeometry();
+      const nodeIDs = new Float32Array(this.vertexCount);
+      const nodeVertexIDs = new Float32Array(this.vertexCount * this.VerticesPerNode);
+      const positions = new Float32Array(this.vertexCount * _TrailRenderer.PositionComponentCount);
+      const nodeCenters = new Float32Array(this.vertexCount * _TrailRenderer.PositionComponentCount);
+      const uvs = new Float32Array(this.vertexCount * _TrailRenderer.UVComponentCount);
+      const indices = new Uint32Array(this.faceCount * _TrailRenderer.IndicesPerFace);
+      const nodeIDAttribute = new BufferAttribute(nodeIDs, 1);
+      nodeIDAttribute.dynamic = true;
+      geometry.setAttribute("nodeID", nodeIDAttribute);
+      const nodeVertexIDAttribute = new BufferAttribute(nodeVertexIDs, 1);
+      nodeVertexIDAttribute.dynamic = true;
+      geometry.setAttribute("nodeVertexID", nodeVertexIDAttribute);
+      const nodeCenterAttribute = new BufferAttribute(nodeCenters, _TrailRenderer.PositionComponentCount);
+      nodeCenterAttribute.dynamic = true;
+      geometry.setAttribute("nodeCenter", nodeCenterAttribute);
+      const positionAttribute = new BufferAttribute(positions, _TrailRenderer.PositionComponentCount);
+      positionAttribute.dynamic = true;
+      geometry.setAttribute("position", positionAttribute);
+      const uvAttribute = new BufferAttribute(uvs, _TrailRenderer.UVComponentCount);
+      uvAttribute.dynamic = true;
+      geometry.setAttribute("uv", uvAttribute);
+      const indexAttribute = new BufferAttribute(indices, 1);
+      indexAttribute.dynamic = true;
+      geometry.setIndex(indexAttribute);
+      this.geometry = geometry;
+    }
+    zeroVertices() {
+      const positions = this.geometry.getAttribute("position");
+      for (let i2 = 0; i2 < this.vertexCount; i2++) {
+        const index = i2 * 3;
+        positions.array[index] = 0;
+        positions.array[index + 1] = 0;
+        positions.array[index + 2] = 0;
+      }
+      positions.needsUpdate = true;
+      positions.clearUpdateRanges();
+    }
+    zeroIndices() {
+      const indices = this.geometry.getIndex();
+      for (let i2 = 0; i2 < this.faceCount; i2++) {
+        const index = i2 * 3;
+        indices.array[index] = 0;
+        indices.array[index + 1] = 0;
+        indices.array[index + 2] = 0;
+      }
+      indices.needsUpdate = true;
+      indices.clearUpdateRanges();
+    }
+    formInitialFaces() {
+      this.zeroIndices();
+      const indices = this.geometry.getIndex();
+      for (let i2 = 0; i2 < this.length - 1; i2++) {
+        this.connectNodes(i2, i2 + 1);
+      }
+      indices.needsUpdate = true;
+      indices.clearUpdateRanges();
+    }
+    initializeMesh() {
+      this.mesh = new Mesh(this.geometry, this.material);
+      this.mesh.dynamic = true;
+      this.mesh.matrixAutoUpdate = false;
+    }
+    destroyMesh() {
+      if (this.mesh) {
+        this.scene.remove(this.mesh);
+        this.mesh = null;
+      }
+    }
+    reset() {
+      this.currentLength = 0;
+      this.currentEnd = -1;
+      this.lastNodeCenter = null;
+      this.currentNodeCenter = null;
+      this.lastOrientationDir = null;
+      this.currentNodeID = 0;
+      this.formInitialFaces();
+      this.zeroVertices();
+      this.geometry.setDrawRange(0, 0);
+    }
+    updateUniforms() {
+      if (this.currentLength < this.length) {
+        this.material.uniforms.minID.value = 0;
+      } else {
+        this.material.uniforms.minID.value = this.currentNodeID - this.length;
+      }
+      this.material.uniforms.maxID.value = this.currentNodeID;
+      this.material.uniforms.trailLength.value = this.currentLength;
+      this.material.uniforms.maxTrailLength.value = this.length;
+      this.material.uniforms.verticesPerNode.value = this.VerticesPerNode;
+    }
+    advanceWithPositionAndOrientation(nextPosition, orientationTangent) {
+      this.advanceGeometry({ position: nextPosition, tangent: orientationTangent }, null);
+    }
+    advanceWithTransform(transformMatrix) {
+      this.advanceGeometry(null, transformMatrix);
+    }
+    currentTime() {
+      return performance.now() / 1e3;
+    }
+    pause() {
+      if (!this.paused) {
+        this.paused = true;
+        this.pauseAdvanceUpdateTimeDiff = this.currentTime() - this.lastAdvanceTime;
+      }
+    }
+    resume() {
+      if (this.paused) {
+        this.paused = false;
+        this.lastAdvanceTime = this.currentTime() - this.pauseAdvanceUpdateTimeDiff;
+      }
+    }
+    update() {
+      if (!this.paused) {
+        const time = this.currentTime();
+        if (!this.lastAdvanceTime) this.lastAdvanceTime = time;
+        if (time - this.lastAdvanceTime > this.advancePeriod) {
+          this.advance();
+          this.geometry.computeBoundingSphere();
+          this.lastAdvanceTime = time;
+        } else {
+          this.updateHead();
+        }
+      }
+    }
+    updateNodeID(nodeIndex, id) {
+      this.nodeIDs[nodeIndex] = id;
+      const nodeIDs = this.geometry.getAttribute("nodeID");
+      const nodeVertexIDs = this.geometry.getAttribute("nodeVertexID");
+      for (let i2 = 0; i2 < this.VerticesPerNode; i2++) {
+        const baseIndex = nodeIndex * this.VerticesPerNode + i2;
+        nodeIDs.array[baseIndex] = id;
+        nodeVertexIDs.array[baseIndex] = i2;
+      }
+      nodeIDs.needsUpdate = true;
+      nodeVertexIDs.needsUpdate = true;
+      nodeIDs.updateRanges.start = nodeIndex * this.VerticesPerNode;
+      nodeIDs.updateRanges.count = this.VerticesPerNode;
+      nodeVertexIDs.updateRanges.start = nodeIndex * this.VerticesPerNode;
+      nodeVertexIDs.updateRanges.count = this.VerticesPerNode;
+    }
+    updateNodeCenter(nodeIndex, nodeCenter) {
+      this.lastNodeCenter = this.currentNodeCenter;
+      this.currentNodeCenter = this.nodeCenters[nodeIndex];
+      this.currentNodeCenter.copy(nodeCenter);
+      const nodeCenters = this.geometry.getAttribute("nodeCenter");
+      for (let i2 = 0; i2 < this.VerticesPerNode; i2++) {
+        const baseIndex = (nodeIndex * this.VerticesPerNode + i2) * 3;
+        nodeCenters.array[baseIndex] = nodeCenter.x;
+        nodeCenters.array[baseIndex + 1] = nodeCenter.y;
+        nodeCenters.array[baseIndex + 2] = nodeCenter.z;
+      }
+      nodeCenters.needsUpdate = true;
+      nodeCenters.updateRanges.start = nodeIndex * this.VerticesPerNode * _TrailRenderer.PositionComponentCount;
+      nodeCenters.updateRanges.count = this.VerticesPerNode * _TrailRenderer.PositionComponentCount;
+    }
+    deactivate() {
+      if (this.isActive) {
+        this.scene.remove(this.mesh);
+        this.isActive = false;
+      }
+    }
+    activate() {
+      if (!this.isActive) {
+        this.scene.add(this.mesh);
+        this.isActive = true;
+      }
+    }
+    static createMaterial(vertexShader, fragmentShader, customUniforms) {
+      customUniforms = customUniforms || {};
+      customUniforms.trailLength = { type: "f", value: null };
+      customUniforms.verticesPerNode = { type: "f", value: null };
+      customUniforms.minID = { type: "f", value: null };
+      customUniforms.maxID = { type: "f", value: null };
+      customUniforms.dragTexture = { type: "f", value: null };
+      customUniforms.maxTrailLength = { type: "f", value: null };
+      customUniforms.textureTileFactor = { type: "v2", value: null };
+      customUniforms.headColor = { type: "v4", value: new Vector4() };
+      customUniforms.tailColor = { type: "v4", value: new Vector4() };
+      vertexShader = vertexShader || _TrailRenderer.Shader.BaseVertexShader;
+      fragmentShader = fragmentShader || _TrailRenderer.Shader.BaseFragmentShader;
+      return new ShaderMaterial({
+        uniforms: customUniforms,
+        vertexShader,
+        fragmentShader,
+        transparent: true,
+        alphaTest: 0.5,
+        blending: CustomBlending,
+        blendSrc: SrcAlphaFactor,
+        blendDst: OneMinusSrcAlphaFactor,
+        blendEquation: AddEquation,
+        depthTest: true,
+        depthWrite: false,
+        side: DoubleSide
+      });
+    }
+    static createBaseMaterial(customUniforms) {
+      return _TrailRenderer.createMaterial(_TrailRenderer.Shader.BaseVertexShader, _TrailRenderer.Shader.BaseFragmentShader, customUniforms);
+    }
+    static createTexturedMaterial(customUniforms) {
+      customUniforms = {};
+      customUniforms.trailTexture = { type: "t", value: null };
+      return _TrailRenderer.createMaterial(_TrailRenderer.Shader.TexturedVertexShader, _TrailRenderer.Shader.TexturedFragmentShader, customUniforms);
+    }
+    static get MaxHeadVertices() {
+      return 128;
+    }
+    static get LocalOrientationTangent() {
+      return _LocalOrientationTangent;
+    }
+    static get LocalHeadOrigin() {
+      return _LocalHeadOrigin;
+    }
+    static get PositionComponentCount() {
+      return 3;
+    }
+    static get UVComponentCount() {
+      return 2;
+    }
+    static get IndicesPerFace() {
+      return 3;
+    }
+    static get FacesPerQuad() {
+      return 2;
+    }
+  };
+  __publicField(_TrailRenderer, "_LocalOrientationTangent", new Vector3(1, 0, 0));
+  __publicField(_TrailRenderer, "_LocalHeadOrigin", new Vector3(0, 0, 0));
+  __publicField(_TrailRenderer, "Shader", {
+    get BaseVertexVars() {
+      return [
+        "attribute float nodeID;",
+        "attribute float nodeVertexID;",
+        "attribute vec3 nodeCenter;",
+        "uniform float minID;",
+        "uniform float maxID;",
+        "uniform float trailLength;",
+        "uniform float maxTrailLength;",
+        "uniform float verticesPerNode;",
+        "uniform vec2 textureTileFactor;",
+        "uniform vec4 headColor;",
+        "uniform vec4 tailColor;",
+        "varying vec4 vColor;"
+      ].join("\n");
+    },
+    get TexturedVertexVars() {
+      return [
+        this.BaseVertexVars,
+        "varying vec2 vUV;",
+        "uniform float dragTexture;"
+      ].join("\n");
+    },
+    BaseFragmentVars: [
+      "varying vec4 vColor;",
+      "uniform sampler2D trailTexture;"
+    ].join("\n"),
+    get TexturedFragmentVars() {
+      return [
+        this.BaseFragmentVars,
+        "varying vec2 vUV;"
+      ].join("\n");
+    },
+    get VertexShaderCore() {
+      return [
+        "float fraction = (maxID - nodeID) / (maxID - minID);",
+        "vColor = (1.0 - fraction) * headColor + fraction * tailColor;",
+        "vec4 realPosition = vec4((1.0 - fraction) * position.xyz + fraction * nodeCenter.xyz, 1.0); "
+      ].join("\n");
+    },
+    get BaseVertexShader() {
+      return [
+        this.BaseVertexVars,
+        "void main() { ",
+        this.VertexShaderCore,
+        "gl_Position = projectionMatrix * viewMatrix * realPosition;",
+        "}"
+      ].join("\n");
+    },
+    get BaseFragmentShader() {
+      return [
+        this.BaseFragmentVars,
+        "void main() { ",
+        "gl_FragColor = vColor;",
+        "}"
+      ].join("\n");
+    },
+    get TexturedVertexShader() {
+      return [
+        this.TexturedVertexVars,
+        "void main() { ",
+        this.VertexShaderCore,
+        "float s = 0.0;",
+        "float t = 0.0;",
+        "if (dragTexture == 1.0) { ",
+        "   s = fraction *  textureTileFactor.s; ",
+        "     t = (nodeVertexID / verticesPerNode) * textureTileFactor.t;",
+        "} else { ",
+        "    s = nodeID / maxTrailLength * textureTileFactor.s;",
+        "     t = (nodeVertexID / verticesPerNode) * textureTileFactor.t;",
+        "}",
+        "vUV = vec2(s, t); ",
+        "gl_Position = projectionMatrix * viewMatrix * realPosition;",
+        "}"
+      ].join("\n");
+    },
+    get TexturedFragmentShader() {
+      return [
+        this.TexturedFragmentVars,
+        "void main() { ",
+        "vec4 textureColor = texture2D(trailTexture, vUV);",
+        "gl_FragColor = vColor * textureColor;",
+        "}"
+      ].join("\n");
+    }
+  });
+  var TrailRenderer = _TrailRenderer;
+
+  // src/app/scenograph/effects/trail.js
+  var Trail = class {
+    constructor() {
+    }
+    createTrail(mesh, trail_position_x, trail_position_y, trail_position_z) {
+      const trailHeadGeometry = l_default.current_scene.effects.trail.createTrailCircle();
+      const trail = new TrailRenderer(l_default.current_scene.scene, false);
+      trail.setAdvanceFrequency(30);
+      const trailMaterial = l_default.current_scene.effects.trail.createTrailMaterial();
+      const trailLength = 2;
+      const trailContainer = new Object3D();
+      trailContainer.position.set(trail_position_x, trail_position_y, trail_position_z);
+      mesh.add(trailContainer);
+      trail.initialize(trailMaterial, trailLength, false, 0, trailHeadGeometry, trailContainer);
+      trail.mesh.name = mesh.name + " Trail";
+      trail.activate();
+      return trail;
+    }
+    createTrailCircle() {
+      let circlePoints = [];
+      const twoPI = Math.PI * 2;
+      let index = 0;
+      const scale = 0.25;
+      const inc = twoPI / 32;
+      for (let i2 = 0; i2 <= twoPI + inc; i2 += inc) {
+        const vector3 = new Vector3();
+        vector3.set(Math.cos(i2) * scale, Math.sin(i2) * scale, 0);
+        circlePoints[index] = vector3;
+        index++;
+      }
+      return circlePoints;
+    }
+    createTrailMaterial() {
+      const trailMaterial = TrailRenderer.createBaseMaterial();
+      trailMaterial.depthWrite = true;
+      trailMaterial.depthBias = -1e-4;
+      trailMaterial.depthBiasConstant = 0;
+      trailMaterial.depthBiasSlope = 0;
+      trailMaterial.uniforms.headColor.value.set(255 / 255, 212 / 255, 148 / 255, 1);
+      trailMaterial.uniforms.tailColor.value.set(132 / 255, 42 / 255, 36 / 255, 1);
+      return trailMaterial;
     }
   };
 
@@ -49791,6 +50477,7 @@ void main() {
     }
     init() {
       l_default.current_scene.effects.particles = setupParticles();
+      l_default.current_scene.effects.trail = new Trail();
       l_default.current_scene.animation_queue.push(
         l_default.current_scene.effects.particles.animateShipThrusters
       );
@@ -57658,13 +58345,16 @@ bool _bvhIntersectFirstHit(
           if (trackedObject.scanTime >= 3) {
             trackedObject.domElement.classList.remove("locking");
             trackedObject.domElement.classList.add("locked");
+            trackedObject.locked = true;
           } else {
             trackedObject.domElement.classList.add("locking");
             trackedObject.domElement.classList.remove("locked");
+            trackedObject.locked = false;
           }
         } else {
           trackedObject.domElement.classList.remove("locking");
           trackedObject.domElement.classList.remove("locked");
+          trackedObject.locked = false;
         }
       } else {
         trackedObject.lostTime += delta;
@@ -57676,6 +58366,7 @@ bool _bvhIntersectFirstHit(
           if (trackedObject.lostTime >= 3 && trackedObject.domElement.classList.contains("locked")) {
             trackedObject.domElement.classList.add("locking");
             trackedObject.domElement.classList.remove("locked");
+            trackedObject.locked = false;
             trackedObject.lostTime = 0;
           } else {
             if (trackedObject.lostTime >= 1 && trackedObject.domElement.classList.contains("locking")) {
@@ -57687,6 +58378,7 @@ bool _bvhIntersectFirstHit(
             trackedObject.domElement.classList.remove("tracking");
             trackedObject.scanTime = 0;
             trackedObject.lostTime = 0;
+            trackedObject.locked = false;
           }
         }
       }
@@ -57734,6 +58426,10 @@ bool _bvhIntersectFirstHit(
       l_default.current_scene.animation_queue.push(
         l_default.scenograph.overlays.scanners.animate
       );
+      l_default.ui.update_queue.push({
+        callback: "l.scenograph.controls.touch.weapons.update",
+        data: []
+      });
     }
     deactivate() {
       l_default.scenograph.overlays.hud.container.innerHTML = "";
@@ -57811,607 +58507,6 @@ bool _bvhIntersectFirstHit(
       this.active = false;
     }
   };
-
-  // src/vendor/TrailRenderer.js
-  var _TrailRenderer = class _TrailRenderer extends Object3D {
-    constructor(scene, orientToMovement) {
-      super();
-      __publicField(this, "advance", function() {
-        const tempMatrix4 = new Matrix4();
-        return function advance() {
-          this.targetObject.updateMatrixWorld();
-          tempMatrix4.copy(this.targetObject.matrixWorld);
-          this.advanceWithTransform(tempMatrix4);
-          this.updateUniforms();
-        };
-      }());
-      __publicField(this, "advanceGeometry", /* @__PURE__ */ function() {
-        return function advanceGeometry(positionAndOrientation, transformMatrix) {
-          const nextIndex = this.currentEnd + 1 >= this.length ? 0 : this.currentEnd + 1;
-          if (transformMatrix) {
-            this.updateNodePositionsFromTransformMatrix(nextIndex, transformMatrix);
-          } else {
-            this.updateNodePositionsFromOrientationTangent(nextIndex, positionAndOrientation.position, positionAndOrientation.tangent);
-          }
-          if (this.currentLength >= 1) {
-            this.connectNodes(this.currentEnd, nextIndex);
-            if (this.currentLength >= this.length) {
-              const disconnectIndex = this.currentEnd + 1 >= this.length ? 0 : this.currentEnd + 1;
-              this.disconnectNodes(disconnectIndex);
-            }
-          }
-          if (this.currentLength < this.length) {
-            this.currentLength++;
-          }
-          this.currentEnd++;
-          if (this.currentEnd >= this.length) {
-            this.currentEnd = 0;
-          }
-          if (this.currentLength >= 1) {
-            if (this.currentLength < this.length) {
-              this.geometry.setDrawRange(0, (this.currentLength - 1) * this.FaceIndicesPerNode);
-            } else {
-              this.geometry.setDrawRange(0, this.currentLength * this.FaceIndicesPerNode);
-            }
-          }
-          this.updateNodeID(this.currentEnd, this.currentNodeID);
-          this.currentNodeID++;
-        };
-      }());
-      __publicField(this, "updateHead", function() {
-        const tempMatrix4 = new Matrix4();
-        return function updateHead() {
-          if (this.currentEnd < 0) return;
-          this.targetObject.updateMatrixWorld();
-          tempMatrix4.copy(this.targetObject.matrixWorld);
-          this.updateNodePositionsFromTransformMatrix(this.currentEnd, tempMatrix4);
-        };
-      }());
-      __publicField(this, "updateNodePositionsFromOrientationTangent", function() {
-        const tempQuaternion = new Quaternion();
-        const tempOffset = new Vector3();
-        const tempLocalHeadGeometry = [];
-        for (let i2 = 0; i2 < _TrailRenderer.MaxHeadVertices; i2++) {
-          const vertex2 = new Vector3();
-          tempLocalHeadGeometry.push(vertex2);
-        }
-        return function updateNodePositionsFromOrientationTangent(nodeIndex, nodeCenter, orientationTangent) {
-          const positions = this.geometry.getAttribute("position");
-          this.updateNodeCenter(nodeIndex, nodeCenter);
-          tempOffset.copy(nodeCenter);
-          tempOffset.sub(_TrailRenderer.LocalHeadOrigin);
-          tempQuaternion.setFromUnitVectors(_TrailRenderer.LocalOrientationTangent, orientationTangent);
-          for (let i2 = 0; i2 < this.localHeadGeometry.length; i2++) {
-            const vertex2 = tempLocalHeadGeometry[i2];
-            vertex2.copy(this.localHeadGeometry[i2]);
-            vertex2.applyQuaternion(tempQuaternion);
-            vertex2.add(tempOffset);
-          }
-          for (let i2 = 0; i2 < this.localHeadGeometry.length; i2++) {
-            const positionIndex = (this.VerticesPerNode * nodeIndex + i2) * _TrailRenderer.PositionComponentCount;
-            const transformedHeadVertex = tempLocalHeadGeometry[i2];
-            positions.array[positionIndex] = transformedHeadVertex.x;
-            positions.array[positionIndex + 1] = transformedHeadVertex.y;
-            positions.array[positionIndex + 2] = transformedHeadVertex.z;
-          }
-          positions.needsUpdate = true;
-        };
-      }());
-      __publicField(this, "updateNodePositionsFromTransformMatrix", function() {
-        const tempMatrix3 = new Matrix3();
-        const tempQuaternion = new Quaternion();
-        const tempPosition = new Vector3();
-        const tempOffset = new Vector3();
-        const worldOrientation = new Vector3();
-        const tempDirection = new Vector3();
-        const tempLocalHeadGeometry = [];
-        for (let i2 = 0; i2 < _TrailRenderer.MaxHeadVertices; i2++) {
-          const vertex2 = new Vector3();
-          tempLocalHeadGeometry.push(vertex2);
-        }
-        function getMatrix3FromMatrix4(matrix3, matrix4) {
-          const e2 = matrix4.elements;
-          matrix3.set(
-            e2[0],
-            e2[1],
-            e2[2],
-            e2[4],
-            e2[5],
-            e2[6],
-            e2[8],
-            e2[9],
-            e2[10]
-          );
-        }
-        return function updateNodePositionsFromTransformMatrix(nodeIndex, transformMatrix) {
-          const positions = this.geometry.getAttribute("position");
-          tempPosition.set(0, 0, 0);
-          tempPosition.applyMatrix4(transformMatrix);
-          this.updateNodeCenter(nodeIndex, tempPosition);
-          for (let i2 = 0; i2 < this.localHeadGeometry.length; i2++) {
-            const vertex2 = tempLocalHeadGeometry[i2];
-            vertex2.copy(this.localHeadGeometry[i2]);
-          }
-          for (let i2 = 0; i2 < this.localHeadGeometry.length; i2++) {
-            const vertex2 = tempLocalHeadGeometry[i2];
-            vertex2.applyMatrix4(transformMatrix);
-          }
-          if (this.lastNodeCenter && this.orientToMovement) {
-            getMatrix3FromMatrix4(tempMatrix3, transformMatrix);
-            worldOrientation.set(0, 0, -1);
-            worldOrientation.applyMatrix3(tempMatrix3);
-            tempDirection.copy(this.currentNodeCenter);
-            tempDirection.sub(this.lastNodeCenter);
-            tempDirection.normalize();
-            if (tempDirection.lengthSq() <= 1e-4 && this.lastOrientationDir) {
-              tempDirection.copy(this.lastOrientationDir);
-            }
-            if (tempDirection.lengthSq() > 1e-4) {
-              if (!this.lastOrientationDir) this.lastOrientationDir = new Vector3();
-              tempQuaternion.setFromUnitVectors(worldOrientation, tempDirection);
-              tempOffset.copy(this.currentNodeCenter);
-              for (let i2 = 0; i2 < this.localHeadGeometry.length; i2++) {
-                const vertex2 = tempLocalHeadGeometry[i2];
-                vertex2.sub(tempOffset);
-                vertex2.applyQuaternion(tempQuaternion);
-                vertex2.add(tempOffset);
-              }
-            }
-          }
-          for (let i2 = 0; i2 < this.localHeadGeometry.length; i2++) {
-            const positionIndex = (this.VerticesPerNode * nodeIndex + i2) * _TrailRenderer.PositionComponentCount;
-            const transformedHeadVertex = tempLocalHeadGeometry[i2];
-            positions.array[positionIndex] = transformedHeadVertex.x;
-            positions.array[positionIndex + 1] = transformedHeadVertex.y;
-            positions.array[positionIndex + 2] = transformedHeadVertex.z;
-          }
-          positions.needsUpdate = true;
-          positions.updateRanges.start = nodeIndex * this.VerticesPerNode * _TrailRenderer.PositionComponentCount;
-          positions.updateRanges.count = this.VerticesPerNode * _TrailRenderer.PositionComponentCount;
-        };
-      }());
-      __publicField(this, "connectNodes", /* @__PURE__ */ function() {
-        const returnObj = {
-          "attribute": null,
-          "offset": 0,
-          "count": -1
-        };
-        return function connectNodes(srcNodeIndex, destNodeIndex) {
-          const indices = this.geometry.getIndex();
-          for (let i2 = 0; i2 < this.localHeadGeometry.length - 1; i2++) {
-            const srcVertexIndex = this.VerticesPerNode * srcNodeIndex + i2;
-            const destVertexIndex = this.VerticesPerNode * destNodeIndex + i2;
-            const faceIndex = (srcNodeIndex * this.FacesPerNode + i2 * _TrailRenderer.FacesPerQuad) * _TrailRenderer.IndicesPerFace;
-            indices.array[faceIndex] = srcVertexIndex;
-            indices.array[faceIndex + 1] = destVertexIndex;
-            indices.array[faceIndex + 2] = srcVertexIndex + 1;
-            indices.array[faceIndex + 3] = destVertexIndex;
-            indices.array[faceIndex + 4] = destVertexIndex + 1;
-            indices.array[faceIndex + 5] = srcVertexIndex + 1;
-          }
-          indices.needsUpdate = true;
-          indices.clearUpdateRanges();
-          returnObj.attribute = indices;
-          returnObj.offset = srcNodeIndex * this.FacesPerNode * _TrailRenderer.IndicesPerFace;
-          returnObj.count = this.FacesPerNode * _TrailRenderer.IndicesPerFace;
-          return returnObj;
-        };
-      }());
-      __publicField(this, "disconnectNodes", /* @__PURE__ */ function() {
-        const returnObj = {
-          "attribute": null,
-          "offset": 0,
-          "count": -1
-        };
-        return function disconnectNodes(srcNodeIndex) {
-          const indices = this.geometry.getIndex();
-          for (let i2 = 0; i2 < this.localHeadGeometry.length - 1; i2++) {
-            const faceIndex = (srcNodeIndex * this.FacesPerNode + i2 * _TrailRenderer.FacesPerQuad) * _TrailRenderer.IndicesPerFace;
-            indices.array[faceIndex] = 0;
-            indices.array[faceIndex + 1] = 0;
-            indices.array[faceIndex + 2] = 0;
-            indices.array[faceIndex + 3] = 0;
-            indices.array[faceIndex + 4] = 0;
-            indices.array[faceIndex + 5] = 0;
-          }
-          indices.needsUpdate = true;
-          indices.clearUpdateRanges();
-          returnObj.attribute = indices;
-          returnObj.offset = srcNodeIndex * this.FacesPerNode * _TrailRenderer.IndicesPerFace;
-          returnObj.count = this.FacesPerNode * _TrailRenderer.IndicesPerFace;
-          return returnObj;
-        };
-      }());
-      this.active = false;
-      this.orientToMovement = false;
-      if (orientToMovement) this.orientToMovement = true;
-      this.scene = scene;
-      this.geometry = null;
-      this.mesh = null;
-      this.nodeCenters = null;
-      this.lastNodeCenter = null;
-      this.currentNodeCenter = null;
-      this.lastOrientationDir = null;
-      this.nodeIDs = null;
-      this.currentLength = 0;
-      this.currentEnd = 0;
-      this.currentNodeID = 0;
-      this.advanceFrequency = 60;
-      this.advancePeriod = 1 / this.advanceFrequency;
-      this.lastAdvanceTime = 0;
-      this.paused = false;
-      this.pauseAdvanceUpdateTimeDiff = 0;
-    }
-    setAdvanceFrequency(advanceFrequency) {
-      this.advanceFrequency = advanceFrequency;
-      this.advancePeriod = 1 / this.advanceFrequency;
-    }
-    initialize(material, length, dragTexture, localHeadWidth, localHeadGeometry, targetObject) {
-      this.deactivate();
-      this.destroyMesh();
-      this.length = length > 0 ? length + 1 : 0;
-      this.dragTexture = !dragTexture ? 0 : 1;
-      this.targetObject = targetObject;
-      this.initializeLocalHeadGeometry(localHeadWidth, localHeadGeometry);
-      this.nodeIDs = [];
-      this.nodeCenters = [];
-      for (let i2 = 0; i2 < this.length; i2++) {
-        this.nodeIDs[i2] = -1;
-        this.nodeCenters[i2] = new Vector3();
-      }
-      this.material = material;
-      this.initializeGeometry();
-      this.initializeMesh();
-      this.material.uniforms.trailLength.value = 0;
-      this.material.uniforms.minID.value = 0;
-      this.material.uniforms.maxID.value = 0;
-      this.material.uniforms.dragTexture.value = this.dragTexture;
-      this.material.uniforms.maxTrailLength.value = this.length;
-      this.material.uniforms.verticesPerNode.value = this.VerticesPerNode;
-      this.material.uniforms.textureTileFactor.value = new Vector2(1, 1);
-      this.reset();
-    }
-    initializeLocalHeadGeometry(localHeadWidth, localHeadGeometry) {
-      this.localHeadGeometry = [];
-      if (!localHeadGeometry) {
-        const halfWidth = (localHeadWidth || 1) / 2;
-        this.localHeadGeometry.push(new Vector3(-halfWidth, 0, 0));
-        this.localHeadGeometry.push(new Vector3(halfWidth, 0, 0));
-        this.VerticesPerNode = 2;
-      } else {
-        this.VerticesPerNode = 0;
-        for (let i2 = 0; i2 < localHeadGeometry.length && i2 < _TrailRenderer.MaxHeadVertices; i2++) {
-          const vertex2 = localHeadGeometry[i2];
-          if (vertex2 && vertex2 instanceof Vector3) {
-            const vertexCopy = new Vector3();
-            vertexCopy.copy(vertex2);
-            this.localHeadGeometry.push(vertexCopy);
-            this.VerticesPerNode++;
-          }
-        }
-      }
-      this.FacesPerNode = (this.VerticesPerNode - 1) * 2;
-      this.FaceIndicesPerNode = this.FacesPerNode * 3;
-    }
-    initializeGeometry() {
-      this.vertexCount = this.length * this.VerticesPerNode;
-      this.faceCount = this.length * this.FacesPerNode;
-      const geometry = new BufferGeometry();
-      const nodeIDs = new Float32Array(this.vertexCount);
-      const nodeVertexIDs = new Float32Array(this.vertexCount * this.VerticesPerNode);
-      const positions = new Float32Array(this.vertexCount * _TrailRenderer.PositionComponentCount);
-      const nodeCenters = new Float32Array(this.vertexCount * _TrailRenderer.PositionComponentCount);
-      const uvs = new Float32Array(this.vertexCount * _TrailRenderer.UVComponentCount);
-      const indices = new Uint32Array(this.faceCount * _TrailRenderer.IndicesPerFace);
-      const nodeIDAttribute = new BufferAttribute(nodeIDs, 1);
-      nodeIDAttribute.dynamic = true;
-      geometry.setAttribute("nodeID", nodeIDAttribute);
-      const nodeVertexIDAttribute = new BufferAttribute(nodeVertexIDs, 1);
-      nodeVertexIDAttribute.dynamic = true;
-      geometry.setAttribute("nodeVertexID", nodeVertexIDAttribute);
-      const nodeCenterAttribute = new BufferAttribute(nodeCenters, _TrailRenderer.PositionComponentCount);
-      nodeCenterAttribute.dynamic = true;
-      geometry.setAttribute("nodeCenter", nodeCenterAttribute);
-      const positionAttribute = new BufferAttribute(positions, _TrailRenderer.PositionComponentCount);
-      positionAttribute.dynamic = true;
-      geometry.setAttribute("position", positionAttribute);
-      const uvAttribute = new BufferAttribute(uvs, _TrailRenderer.UVComponentCount);
-      uvAttribute.dynamic = true;
-      geometry.setAttribute("uv", uvAttribute);
-      const indexAttribute = new BufferAttribute(indices, 1);
-      indexAttribute.dynamic = true;
-      geometry.setIndex(indexAttribute);
-      this.geometry = geometry;
-    }
-    zeroVertices() {
-      const positions = this.geometry.getAttribute("position");
-      for (let i2 = 0; i2 < this.vertexCount; i2++) {
-        const index = i2 * 3;
-        positions.array[index] = 0;
-        positions.array[index + 1] = 0;
-        positions.array[index + 2] = 0;
-      }
-      positions.needsUpdate = true;
-      positions.clearUpdateRanges();
-    }
-    zeroIndices() {
-      const indices = this.geometry.getIndex();
-      for (let i2 = 0; i2 < this.faceCount; i2++) {
-        const index = i2 * 3;
-        indices.array[index] = 0;
-        indices.array[index + 1] = 0;
-        indices.array[index + 2] = 0;
-      }
-      indices.needsUpdate = true;
-      indices.clearUpdateRanges();
-    }
-    formInitialFaces() {
-      this.zeroIndices();
-      const indices = this.geometry.getIndex();
-      for (let i2 = 0; i2 < this.length - 1; i2++) {
-        this.connectNodes(i2, i2 + 1);
-      }
-      indices.needsUpdate = true;
-      indices.clearUpdateRanges();
-    }
-    initializeMesh() {
-      this.mesh = new Mesh(this.geometry, this.material);
-      this.mesh.dynamic = true;
-      this.mesh.matrixAutoUpdate = false;
-    }
-    destroyMesh() {
-      if (this.mesh) {
-        this.scene.remove(this.mesh);
-        this.mesh = null;
-      }
-    }
-    reset() {
-      this.currentLength = 0;
-      this.currentEnd = -1;
-      this.lastNodeCenter = null;
-      this.currentNodeCenter = null;
-      this.lastOrientationDir = null;
-      this.currentNodeID = 0;
-      this.formInitialFaces();
-      this.zeroVertices();
-      this.geometry.setDrawRange(0, 0);
-    }
-    updateUniforms() {
-      if (this.currentLength < this.length) {
-        this.material.uniforms.minID.value = 0;
-      } else {
-        this.material.uniforms.minID.value = this.currentNodeID - this.length;
-      }
-      this.material.uniforms.maxID.value = this.currentNodeID;
-      this.material.uniforms.trailLength.value = this.currentLength;
-      this.material.uniforms.maxTrailLength.value = this.length;
-      this.material.uniforms.verticesPerNode.value = this.VerticesPerNode;
-    }
-    advanceWithPositionAndOrientation(nextPosition, orientationTangent) {
-      this.advanceGeometry({ position: nextPosition, tangent: orientationTangent }, null);
-    }
-    advanceWithTransform(transformMatrix) {
-      this.advanceGeometry(null, transformMatrix);
-    }
-    currentTime() {
-      return performance.now() / 1e3;
-    }
-    pause() {
-      if (!this.paused) {
-        this.paused = true;
-        this.pauseAdvanceUpdateTimeDiff = this.currentTime() - this.lastAdvanceTime;
-      }
-    }
-    resume() {
-      if (this.paused) {
-        this.paused = false;
-        this.lastAdvanceTime = this.currentTime() - this.pauseAdvanceUpdateTimeDiff;
-      }
-    }
-    update() {
-      if (!this.paused) {
-        const time = this.currentTime();
-        if (!this.lastAdvanceTime) this.lastAdvanceTime = time;
-        if (time - this.lastAdvanceTime > this.advancePeriod) {
-          this.advance();
-          this.geometry.computeBoundingSphere();
-          this.lastAdvanceTime = time;
-        } else {
-          this.updateHead();
-        }
-      }
-    }
-    updateNodeID(nodeIndex, id) {
-      this.nodeIDs[nodeIndex] = id;
-      const nodeIDs = this.geometry.getAttribute("nodeID");
-      const nodeVertexIDs = this.geometry.getAttribute("nodeVertexID");
-      for (let i2 = 0; i2 < this.VerticesPerNode; i2++) {
-        const baseIndex = nodeIndex * this.VerticesPerNode + i2;
-        nodeIDs.array[baseIndex] = id;
-        nodeVertexIDs.array[baseIndex] = i2;
-      }
-      nodeIDs.needsUpdate = true;
-      nodeVertexIDs.needsUpdate = true;
-      nodeIDs.updateRanges.start = nodeIndex * this.VerticesPerNode;
-      nodeIDs.updateRanges.count = this.VerticesPerNode;
-      nodeVertexIDs.updateRanges.start = nodeIndex * this.VerticesPerNode;
-      nodeVertexIDs.updateRanges.count = this.VerticesPerNode;
-    }
-    updateNodeCenter(nodeIndex, nodeCenter) {
-      this.lastNodeCenter = this.currentNodeCenter;
-      this.currentNodeCenter = this.nodeCenters[nodeIndex];
-      this.currentNodeCenter.copy(nodeCenter);
-      const nodeCenters = this.geometry.getAttribute("nodeCenter");
-      for (let i2 = 0; i2 < this.VerticesPerNode; i2++) {
-        const baseIndex = (nodeIndex * this.VerticesPerNode + i2) * 3;
-        nodeCenters.array[baseIndex] = nodeCenter.x;
-        nodeCenters.array[baseIndex + 1] = nodeCenter.y;
-        nodeCenters.array[baseIndex + 2] = nodeCenter.z;
-      }
-      nodeCenters.needsUpdate = true;
-      nodeCenters.updateRanges.start = nodeIndex * this.VerticesPerNode * _TrailRenderer.PositionComponentCount;
-      nodeCenters.updateRanges.count = this.VerticesPerNode * _TrailRenderer.PositionComponentCount;
-    }
-    deactivate() {
-      if (this.isActive) {
-        this.scene.remove(this.mesh);
-        this.isActive = false;
-      }
-    }
-    activate() {
-      if (!this.isActive) {
-        this.scene.add(this.mesh);
-        this.isActive = true;
-      }
-    }
-    static createMaterial(vertexShader, fragmentShader, customUniforms) {
-      customUniforms = customUniforms || {};
-      customUniforms.trailLength = { type: "f", value: null };
-      customUniforms.verticesPerNode = { type: "f", value: null };
-      customUniforms.minID = { type: "f", value: null };
-      customUniforms.maxID = { type: "f", value: null };
-      customUniforms.dragTexture = { type: "f", value: null };
-      customUniforms.maxTrailLength = { type: "f", value: null };
-      customUniforms.textureTileFactor = { type: "v2", value: null };
-      customUniforms.headColor = { type: "v4", value: new Vector4() };
-      customUniforms.tailColor = { type: "v4", value: new Vector4() };
-      vertexShader = vertexShader || _TrailRenderer.Shader.BaseVertexShader;
-      fragmentShader = fragmentShader || _TrailRenderer.Shader.BaseFragmentShader;
-      return new ShaderMaterial({
-        uniforms: customUniforms,
-        vertexShader,
-        fragmentShader,
-        transparent: true,
-        alphaTest: 0.5,
-        blending: CustomBlending,
-        blendSrc: SrcAlphaFactor,
-        blendDst: OneMinusSrcAlphaFactor,
-        blendEquation: AddEquation,
-        depthTest: true,
-        depthWrite: false,
-        side: DoubleSide
-      });
-    }
-    static createBaseMaterial(customUniforms) {
-      return _TrailRenderer.createMaterial(_TrailRenderer.Shader.BaseVertexShader, _TrailRenderer.Shader.BaseFragmentShader, customUniforms);
-    }
-    static createTexturedMaterial(customUniforms) {
-      customUniforms = {};
-      customUniforms.trailTexture = { type: "t", value: null };
-      return _TrailRenderer.createMaterial(_TrailRenderer.Shader.TexturedVertexShader, _TrailRenderer.Shader.TexturedFragmentShader, customUniforms);
-    }
-    static get MaxHeadVertices() {
-      return 128;
-    }
-    static get LocalOrientationTangent() {
-      return _LocalOrientationTangent;
-    }
-    static get LocalHeadOrigin() {
-      return _LocalHeadOrigin;
-    }
-    static get PositionComponentCount() {
-      return 3;
-    }
-    static get UVComponentCount() {
-      return 2;
-    }
-    static get IndicesPerFace() {
-      return 3;
-    }
-    static get FacesPerQuad() {
-      return 2;
-    }
-  };
-  __publicField(_TrailRenderer, "_LocalOrientationTangent", new Vector3(1, 0, 0));
-  __publicField(_TrailRenderer, "_LocalHeadOrigin", new Vector3(0, 0, 0));
-  __publicField(_TrailRenderer, "Shader", {
-    get BaseVertexVars() {
-      return [
-        "attribute float nodeID;",
-        "attribute float nodeVertexID;",
-        "attribute vec3 nodeCenter;",
-        "uniform float minID;",
-        "uniform float maxID;",
-        "uniform float trailLength;",
-        "uniform float maxTrailLength;",
-        "uniform float verticesPerNode;",
-        "uniform vec2 textureTileFactor;",
-        "uniform vec4 headColor;",
-        "uniform vec4 tailColor;",
-        "varying vec4 vColor;"
-      ].join("\n");
-    },
-    get TexturedVertexVars() {
-      return [
-        this.BaseVertexVars,
-        "varying vec2 vUV;",
-        "uniform float dragTexture;"
-      ].join("\n");
-    },
-    BaseFragmentVars: [
-      "varying vec4 vColor;",
-      "uniform sampler2D trailTexture;"
-    ].join("\n"),
-    get TexturedFragmentVars() {
-      return [
-        this.BaseFragmentVars,
-        "varying vec2 vUV;"
-      ].join("\n");
-    },
-    get VertexShaderCore() {
-      return [
-        "float fraction = (maxID - nodeID) / (maxID - minID);",
-        "vColor = (1.0 - fraction) * headColor + fraction * tailColor;",
-        "vec4 realPosition = vec4((1.0 - fraction) * position.xyz + fraction * nodeCenter.xyz, 1.0); "
-      ].join("\n");
-    },
-    get BaseVertexShader() {
-      return [
-        this.BaseVertexVars,
-        "void main() { ",
-        this.VertexShaderCore,
-        "gl_Position = projectionMatrix * viewMatrix * realPosition;",
-        "}"
-      ].join("\n");
-    },
-    get BaseFragmentShader() {
-      return [
-        this.BaseFragmentVars,
-        "void main() { ",
-        "gl_FragColor = vColor;",
-        "}"
-      ].join("\n");
-    },
-    get TexturedVertexShader() {
-      return [
-        this.TexturedVertexVars,
-        "void main() { ",
-        this.VertexShaderCore,
-        "float s = 0.0;",
-        "float t = 0.0;",
-        "if (dragTexture == 1.0) { ",
-        "   s = fraction *  textureTileFactor.s; ",
-        "     t = (nodeVertexID / verticesPerNode) * textureTileFactor.t;",
-        "} else { ",
-        "    s = nodeID / maxTrailLength * textureTileFactor.s;",
-        "     t = (nodeVertexID / verticesPerNode) * textureTileFactor.t;",
-        "}",
-        "vUV = vec2(s, t); ",
-        "gl_Position = projectionMatrix * viewMatrix * realPosition;",
-        "}"
-      ].join("\n");
-    },
-    get TexturedFragmentShader() {
-      return [
-        this.TexturedFragmentVars,
-        "void main() { ",
-        "vec4 textureColor = texture2D(trailTexture, vUV);",
-        "gl_FragColor = vColor * textureColor;",
-        "}"
-      ].join("\n");
-    }
-  });
-  var TrailRenderer = _TrailRenderer;
 
   // ../game/node_modules/yuka/build/yuka.module.js
   var Logger2 = class _Logger {
@@ -65783,16 +65878,57 @@ bool _bvhIntersectFirstHit(
   var lineSegment2 = new LineSegment2();
   var closestNormalPoint2 = new Vector33();
 
+  // ../game/src/systems/base.ts
+  var BaseSystem = class {
+    constructor(type = "missile") {
+      __publicField(this, "type");
+      this.type = type;
+    }
+  };
+
+  // ../game/src/systems/weapons.ts
+  var Weapons = class extends BaseSystem {
+    constructor(type = "missile") {
+      super(type);
+      __publicField(this, "lastAttack");
+      __publicField(this, "timeout");
+      if (type == "missile") {
+        this.lastAttack = 0;
+        this.timeout = 1e3;
+      }
+    }
+    animate(currentTime) {
+      if (parseInt(currentTime) >= parseInt(this.lastAttack) + parseInt(this.timeout)) {
+        l.scenograph.overlays.scanners.trackedObjects.forEach((object) => {
+          if (
+            // Check if the object is target locked and not friendly.
+            object.locked && object.mesh.userData.standing < 0
+          ) {
+            this.lastAttack = currentTime;
+            l.current_scene.objects.projectiles.missile.fireMissile(
+              l.current_scene.objects.player.mesh,
+              l.current_scene.objects.player.mesh.position,
+              l.current_scene.objects.bot.mesh,
+              l.current_scene.objects.bot.mesh.position
+            );
+          }
+        });
+      }
+    }
+  };
+
   // ../game/src/actors/base.ts
   var BaseActor = class {
     constructor(mesh, type = "vehicle") {
       __publicField(this, "entity");
       __publicField(this, "mesh");
       __publicField(this, "type");
+      __publicField(this, "weapons");
       this.mesh = mesh;
       this.type = type;
       if (this.type == "vehicle") {
         this.entity = new Vehicle2();
+        this.weapons = new Weapons();
       }
     }
     sync(entity, renderComponent) {
@@ -65904,39 +66040,9 @@ bool _bvhIntersectFirstHit(
       this.mixer.clipAction(this.model.animations[1]).play();
       l_default.current_scene.tweens.shipEnterY = this.shipEnterY();
       l_default.current_scene.tweens.shipEnterZ = this.shipEnterZ();
-      const trailHeadGeometry = this.createTrailCircle();
-      this.trail = new TrailRenderer(l_default.current_scene.scene, false);
-      this.trail.setAdvanceFrequency(30);
-      const trailMaterial = TrailRenderer.createBaseMaterial();
-      trailMaterial.depthWrite = true;
-      trailMaterial.depthBias = -1e-4;
-      trailMaterial.depthBiasConstant = 0;
-      trailMaterial.depthBiasSlope = 0;
-      trailMaterial.uniforms.headColor.value.set(255 / 255, 212 / 255, 148 / 255, 1);
-      trailMaterial.uniforms.tailColor.value.set(132 / 255, 42 / 255, 36 / 255, 1);
-      const trailLength = 2;
-      const trailContainer = new Object3D();
-      trailContainer.position.set(0, this.trail_position_y, this.trail_position_z);
-      this.mesh.add(trailContainer);
-      this.trail.initialize(trailMaterial, trailLength, false, 0, trailHeadGeometry, trailContainer);
-      this.trail.mesh.name = "Player Ship Trail";
-      this.trail.activate();
+      this.trail = l_default.current_scene.effects.trail.createTrail(this.mesh, 0, this.trail_position_y, this.trail_position_z);
       this.actor = new Player(this.mesh);
       l_default.scenograph.entityManager.add(this.actor.entity);
-    }
-    createTrailCircle() {
-      let circlePoints = [];
-      const twoPI = Math.PI * 2;
-      let index = 0;
-      const scale = 0.25;
-      const inc = twoPI / 32;
-      for (let i2 = 0; i2 <= twoPI + inc; i2 += inc) {
-        const vector3 = new Vector3();
-        vector3.set(Math.cos(i2) * scale, Math.sin(i2) * scale, 0);
-        circlePoints[index] = vector3;
-        index++;
-      }
-      return circlePoints;
     }
     createThrusterMesh(options) {
       let geometry = false, texture = false, material = false, mesh = false;
@@ -66166,6 +66272,7 @@ bool _bvhIntersectFirstHit(
           if (l_default.scenograph.modes.multiplayer.connected) {
             l_default.scenograph.modes.multiplayer.socket.emit("input", l_default.current_scene.objects.player.controls);
           }
+          l_default.current_scene.objects.player.actor.weapons.animate(l_default.current_scene.stats.currentTime);
         }
         l_default.current_scene.objects.player.updateAnimation(delta);
         let [rY, tY, tZ] = l_default.current_scene.objects.player.move(l_default.current_scene.stats.currentTime - l_default.current_scene.stats.lastTime);
@@ -67452,6 +67559,146 @@ bool _bvhIntersectFirstHit(
     }
   };
 
+  // src/app/scenograph/objects/projectiles/missile.js
+  var Missile = class {
+    constructor() {
+      // Array of active missiles on the scene
+      __publicField(this, "active");
+      // Reusable video texture sprite of an explosion when a missile terminates.
+      __publicField(this, "explosionMesh");
+      // THREE.Mesh
+      __publicField(this, "mesh");
+      // The scale of the mesh.
+      __publicField(this, "size");
+      this.ready = false;
+      this.size = 10;
+      this.active = [];
+      this.explosions = [];
+    }
+    async load() {
+      const material = proceduralBuilding({
+        uniforms: {
+          time: { value: 0 },
+          scale: { value: 5e-3 },
+          // Scale
+          lacunarity: { value: 2 },
+          // Lacunarity
+          randomness: { value: 1 },
+          // Randomness
+          emitColour1: { value: new Vector4(0.2, 0.2, 0.2, 0.25) },
+          // Emission gradient colour 1
+          emitColour2: { value: new Vector4(0.158, 1, 1, 0.9) },
+          // Emission gradient colour 2
+          shadowFactor: { value: 0.03 },
+          shadowOffset: { value: 0.1 }
+        }
+      });
+      window.missile = {};
+      window.missile.outer = material;
+      this.mesh = new Object3D();
+      this.mesh.name = "Missile";
+      this.mesh.userData.targetable = true;
+      this.mesh.userData.objectClass = "missiles";
+      this.mesh.add(this.getMissileBody());
+    }
+    async loadExplosion(position) {
+      const explosionVideo = document.getElementById("explosion");
+      explosionVideo.play();
+      explosionVideo.playbackRate = 0.25;
+      const texture = new VideoTexture(explosionVideo);
+      texture.colorSpace = SRGBColorSpace;
+      texture.wrapS = RepeatWrapping;
+      texture.wrapT = RepeatWrapping;
+      texture.repeat.set(1, 1);
+      texture.rotation = -Math.PI / 2;
+      const parameters = {
+        depthWrite: false,
+        map: texture,
+        transparent: true
+      };
+      const material = new MeshBasicMaterial(parameters);
+      material.blending = CustomBlending;
+      material.blendSrc = SrcAlphaFactor;
+      material.blendDst = OneFactor;
+      material.blendEquation = AddEquation;
+      const geometry = new PlaneGeometry(10, 10, 2, 2);
+      const mesh = new Mesh(geometry, material);
+      mesh.userData.created = l_default.current_scene.stats.currentTime;
+      mesh.position.copy(position);
+      l_default.current_scene.scene.add(mesh);
+      l_default.current_scene.objects.projectiles.missile.explosions.push(mesh);
+    }
+    /**
+     * Fires a missile at a target.
+     *
+     * @param {*} originMesh Missile origin mesh
+     * @param {*} originCoords Missile origin coordinates (at time of firing)
+     * @param {*} destMesh Missile destination mesh (for collision detection)
+     * @param {*} destCoords Destination coordinates for flight path
+     */
+    async fireMissile(originMesh, originCoords, destMesh, destCoords) {
+      let newMissile = l_default.current_scene.objects.projectiles.missile.mesh.clone();
+      newMissile.userData.created = l_default.current_scene.stats.currentTime;
+      newMissile.userData.originMesh = originMesh;
+      newMissile.userData.originCoords = originCoords;
+      newMissile.userData.destMesh = destMesh;
+      newMissile.userData.destCoords = destCoords;
+      newMissile.position.x = originCoords.x;
+      newMissile.position.y = originCoords.y;
+      newMissile.position.z = originCoords.z;
+      newMissile.lookAt(destCoords);
+      l_default.current_scene.scene.add(newMissile);
+      l_default.current_scene.objects.projectiles.missile.active.push(newMissile);
+      const trailHeadGeometry = l_default.current_scene.effects.trail.createTrailCircle();
+      newMissile.userData.trail = l_default.current_scene.effects.trail.createTrail(newMissile, 0, 0, -1.5);
+    }
+    // getMissileHead
+    // getMissileTail
+    getMissileBody() {
+      const geometry = new CapsuleGeometry(1, 40, 8, 16);
+      const material = proceduralMetalMaterial2({
+        uniforms: {
+          scale: { value: 0.75 },
+          // Scale
+          lacunarity: { value: 2 },
+          // Lacunarity
+          randomness: { value: 0.5 }
+          // Randomness
+        }
+      });
+      const capsule = new Mesh(geometry, material);
+      capsule.scale.setScalar(0.05);
+      capsule.rotation.x = Math.PI / 2;
+      return capsule;
+    }
+    // @todo: This has to be simulated on the server somehow..
+    animate(currentTime) {
+      l_default.current_scene.objects.projectiles.missile.active.forEach((missile, index) => {
+        if (parseFloat(l_default.current_scene.stats.currentTime) >= parseFloat(missile.userData.created) + 1e4) {
+          l_default.current_scene.objects.projectiles.missile.active.splice(index, 1);
+          l_default.current_scene.scene.remove(missile);
+          missile.userData.trail.destroyMesh();
+          missile.userData.trail.deactivate();
+          l_default.current_scene.objects.projectiles.missile.loadExplosion(missile.position);
+        } else {
+          let missileAge = parseFloat(missile.userData.created) - parseFloat(l_default.current_scene.stats.currentTime);
+          let missileSpeed = 1 + 4 * Math.min(missileAge / 2e3, 1);
+          missile.lookAt(missile.userData.destMesh.position);
+          missile.translateZ(-missileSpeed);
+          missile.userData.trail.update();
+        }
+      });
+      l_default.current_scene.objects.projectiles.missile.explosions.forEach((explosion, index) => {
+        if (parseFloat(l_default.current_scene.stats.currentTime) >= parseFloat(explosion.userData.created) + 2e3) {
+          l_default.current_scene.objects.projectiles.missile.explosions.splice(index, 1);
+          l_default.current_scene.scene.remove(explosion);
+        } else {
+          explosion.lookAt(l_default.scenograph.cameras.active.position);
+        }
+      });
+    }
+  };
+
   // src/app/scenograph/triggers.js
   function setupTriggers() {
   }
@@ -67690,12 +67937,19 @@ bool _bvhIntersectFirstHit(
   var Overworld = class extends SceneBase {
     constructor() {
       super();
+      this.objects.projectiles = {
+        missile: new Missile()
+      };
       this.objects.players = [];
     }
     async setup() {
       l_default.current_scene.scene = new Scene();
       l_default.current_scene.scene.visible = false;
       l_default.scenograph.effects.init();
+      await l_default.current_scene.objects.projectiles.missile.load();
+      l_default.current_scene.animation_queue.push(
+        l_default.current_scene.objects.projectiles.missile.animate
+      );
       l_default.current_scene.objects.door = await createDoor();
       l_default.current_scene.objects.door.position.set(
         -doorWidth / 2,

@@ -41,6 +41,8 @@ html(lang='en')
         #webgl-wrapper
             canvas#loader_symbols
             canvas#loader_image
+            video#explosion( autoplay="true" muted="muted" loop crossOrigin="anonymous" playsinline style="display:none")
+                source( src="/assets/textures/explosion.mp4" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"')
             video#thruster( autoplay="true" muted="muted" loop crossOrigin="anonymous" playsinline style="display:none")
                 source( src="/assets/textures/thruster.mp4" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"')
             h1#loadingSign
@@ -50,3 +52,4 @@ html(lang='en')
             #webgl
             include ./partials/game_client/scripts.pug
         include ./partials/ui/flight_instruments.pug
+        include ./partials/ui/weapon_controls.pug

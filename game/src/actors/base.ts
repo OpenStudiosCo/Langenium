@@ -8,11 +8,14 @@
 
 import * as YUKA from 'yuka';
 
+import Weapons from '../systems/weapons.ts';
+
 export default class BaseActor {
 
     entity;
     mesh;
     type;
+    weapons;
 
     constructor( mesh, type = 'vehicle' ) {
         /**
@@ -36,6 +39,8 @@ export default class BaseActor {
              * @public
              */
             this.entity = new YUKA.Vehicle();
+
+            this.weapons = new Weapons();
         }
     }
 

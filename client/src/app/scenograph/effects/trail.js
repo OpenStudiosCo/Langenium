@@ -42,7 +42,7 @@ export default class Trail {
         // initialize the trail
         trail.initialize( trailMaterial, trailLength, false, 0, trailHeadGeometry, trailContainer );
 
-        trail.mesh.name = 'Player Ship Trail';
+        trail.mesh.name = mesh.name + ' Trail';
 
         // activate the trail
         trail.activate();

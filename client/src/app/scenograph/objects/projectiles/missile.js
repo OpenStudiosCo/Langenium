@@ -19,6 +19,9 @@ export default class Missile {
     // Array of active missiles on the scene
     active;
 
+    // Reusable video texture sprite of an explosion when a missile terminates.
+    explosionMesh;
+
     // THREE.Mesh
     mesh;
 
@@ -32,6 +35,10 @@ export default class Missile {
 
         // Setup active missile array.
         this.active = [];
+
+        // Track active explosions.
+        this.explosions = [];
+
     }
 
     async load() {
@@ -61,6 +68,46 @@ export default class Missile {
 
         this.mesh.add(this.getMissileBody());
 
+        // // Instantiate the video element for reuse
+        // this.explosionMesh = await this.loadExplosion();
+    }
+
+    async loadExplosion( position ) {
+        const explosionVideo = document.getElementById( 'explosion' );
+        explosionVideo.play();
+        explosionVideo.playbackRate = 0.25;
+
+        const texture = new THREE.VideoTexture( explosionVideo );
+        texture.colorSpace = THREE.SRGBColorSpace;
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = THREE.RepeatWrapping;
+        texture.repeat.set( 1, 1 );
+        texture.rotation = - Math.PI / 2;
+
+        const parameters = {
+            depthWrite: false,
+            map: texture,
+            transparent: true,
+        };
+
+        const material = new THREE.MeshBasicMaterial( parameters );
+
+        material.blending = THREE.CustomBlending;
+        material.blendSrc = THREE.SrcAlphaFactor;
+        material.blendDst = THREE.OneFactor;
+        material.blendEquation = THREE.AddEquation;
+
+        const geometry = new THREE.PlaneGeometry( 10, 10, 2, 2);
+
+        const mesh = new THREE.Mesh( geometry, material );
+
+        mesh.userData.created = l.current_scene.stats.currentTime;
+
+        mesh.position.copy( position );
+
+        l.current_scene.scene.add( mesh );
+
+        l.current_scene.objects.projectiles.missile.explosions.push( mesh );
     }
 
     /**
@@ -125,11 +172,12 @@ export default class Missile {
     animate( currentTime ) {
         l.current_scene.objects.projectiles.missile.active.forEach( ( missile, index ) => {
             // Check if it's been 10 seconds since the missile was fired, self destruct if so
-            if ( parseFloat(l.current_scene.stats.currentTime ) >= parseFloat( missile.userData.created ) + 10000 ) {
+            if ( parseFloat( l.current_scene.stats.currentTime ) >= parseFloat( missile.userData.created ) + 10000 ) {
                 l.current_scene.objects.projectiles.missile.active.splice( index, 1 );
                 l.current_scene.scene.remove( missile );
                 missile.userData.trail.destroyMesh();
                 missile.userData.trail.deactivate();
+                l.current_scene.objects.projectiles.missile.loadExplosion( missile.position );
             }
             // Otherwise keep flying forward.
             else {
@@ -139,6 +187,20 @@ export default class Missile {
                 missile.lookAt( missile.userData.destMesh.position );
                 missile.translateZ(-missileSpeed); // 5 meters per frame at 60fps is approx 432km per hour
                 missile.userData.trail.update();
+            }
+        } );
+
+        l.current_scene.objects.projectiles.missile.explosions.forEach( ( explosion, index ) => {
+            // Check if it's been 2 seconds since the explosion started, remove if so
+            if ( parseFloat( l.current_scene.stats.currentTime ) >= parseFloat( explosion.userData.created ) + 2000 ) {
+                l.current_scene.objects.projectiles.missile.explosions.splice( index, 1 );
+                l.current_scene.scene.remove( explosion );
+            }
+            // Otherwise rotate to the active camera.
+            else {
+                
+                explosion.lookAt( l.scenograph.cameras.active.position );
+
             }
         } );
     }

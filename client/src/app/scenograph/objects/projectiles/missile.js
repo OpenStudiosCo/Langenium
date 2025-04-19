@@ -71,9 +71,9 @@ export default class Missile {
     }
 
     async loadExplosion( position ) {
-        const explosionVideo = document.getElementById( 'explosion' );
+        const explosionVideo = document.getElementById( 'explosion' );//.cloneNode(true);;
         explosionVideo.play();
-        explosionVideo.playbackRate = 1;
+        explosionVideo.playbackRate = 1.5;
 
         const texture = new THREE.VideoTexture( explosionVideo );
         texture.colorSpace = THREE.SRGBColorSpace;
@@ -82,18 +82,44 @@ export default class Missile {
         texture.repeat.set( 1, 1 );
         texture.rotation = - Math.PI / 2;
 
-        const parameters = {
-            map: texture,
-            transparent: true,
-            blending : THREE.CustomBlending,
-            blendSrc : THREE.SrcAlphaFactor,
-            blendDst : THREE.OneFactor,
-            blendEquation : THREE.AddEquation,
-            depthWrite: false,
-            dithering: true
-        };
+        const material = new THREE.ShaderMaterial({
+            uniforms: {
+                map: { value: texture },
+                color: { value: new THREE.Color(0xffffff) },
+                threshold: { value: 0.55 },
+                smoothness: { value: 0.05 }
+            },
+            vertexShader: `
+                varying vec2 vUv;
+                void main() {
+                    vUv = uv;
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+            `,
+            fragmentShader: `
+                uniform sampler2D map;
+                uniform vec3 color;
+                uniform float threshold;
+                uniform float smoothness;
+                varying vec2 vUv;
 
-        const material = new THREE.SpriteMaterial( parameters );
+                void main() {
+                    vec4 tex = texture2D(map, vUv);
+                    float brightness = dot(tex.rgb, vec3(0.299, 0.587, 0.114));
+
+                    // Create smooth alpha edge
+                    float alpha = smoothstep(threshold, threshold + smoothness, brightness);
+
+                    vec4 finalColor = vec4(tex.rgb * color, alpha * tex.a);
+
+                    if (finalColor.r < threshold) discard;
+                    
+                    gl_FragColor = finalColor;
+                }
+            `,
+            transparent: true,
+            depthWrite: false
+        });
 
         const mesh = new THREE.Sprite( material );
 
@@ -204,6 +230,12 @@ export default class Missile {
             }
             else {
                 explosion.material.rotation *= 0.996;
+
+                if ( parseFloat( l.current_scene.stats.currentTime ) >= parseFloat( explosion.userData.created ) + 500 ) {
+                    explosion.scale.x *= 0.996;
+                    explosion.scale.y *= 0.996;
+                    explosion.scale.z *= 0.996;
+                }
             }
         } );
     }

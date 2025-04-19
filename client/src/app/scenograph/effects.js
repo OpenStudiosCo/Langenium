@@ -8,6 +8,7 @@
  * Internal libs and helpers.
  */
 import l from '@/helpers/l.js';
+import Trail from '@/scenograph/effects/trail.js';
 import setupParticles from '@/scenograph/effects/particles.js';
 import setupPostProcessing from '@/scenograph/effects/postprocessing.js';
 
@@ -17,6 +18,8 @@ export default class Effects {
 
     init() {
         l.current_scene.effects.particles = setupParticles();
+
+        l.current_scene.effects.trail = new Trail();
 
         l.current_scene.animation_queue.push(
             l.current_scene.effects.particles.animateShipThrusters

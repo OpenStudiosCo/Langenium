@@ -28,6 +28,9 @@ import CargoShips from "@/scenograph/objects/vehicles/cargo_ships";
 import Raven from "@/scenograph/objects/vehicles/raven";
 import Valiant from "@/scenograph/objects/vehicles/valiant";
 
+// Projectiles
+import Missile from "@/scenograph/objects/projectiles/missile";
+
 /**
  * Preloader objects
  */
@@ -55,6 +58,10 @@ export default class Overworld extends SceneBase {
   constructor() {
     super();
 
+    this.objects.projectiles = {
+      missile: new Missile()
+    };
+
     this.objects.players = [];
   }
 
@@ -64,6 +71,11 @@ export default class Overworld extends SceneBase {
     l.current_scene.scene.visible = false;
 
     l.scenograph.effects.init();
+
+    await l.current_scene.objects.projectiles.missile.load();
+    l.current_scene.animation_queue.push(
+      l.current_scene.objects.projectiles.missile.animate
+    );
 
     l.current_scene.objects.door = await createDoor();
     l.current_scene.objects.door.position.set(

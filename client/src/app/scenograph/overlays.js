@@ -39,6 +39,11 @@ export default class Overlays {
         l.current_scene.animation_queue.push(
             l.scenograph.overlays.scanners.animate
         );
+        l.ui.update_queue.push( {
+            callback: 'l.scenograph.controls.touch.weapons.update',
+            data: []
+        } );
+
     }
 
     deactivate() {

@@ -1,8 +1,8 @@
 import * as THREE from 'three'
-import * as utils from './utils.js'
-import RotationPad from './RotationPad.js'
-import MovementPad from './MovementPad.js'
-import SliderStick from './SliderStick.js'
+import * as utils from './TouchControlUI/utils.js'
+import RotationPad from './TouchControlUI/RotationPad.js'
+import MovementPad from './TouchControlUI/MovementPad.js'
+import SliderStick from './TouchControlUI/SliderStick.js'
 
 /**
  * Adapted from https://github.com/mese79/TouchControls

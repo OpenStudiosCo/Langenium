@@ -1,6 +1,6 @@
 /***
  * @name            Scanners
- * @description     Draws shapes that track the positions of other craft.
+ * @description     Draws shapes that track the players scanners.
  * @namespace       l.scenograph.overlays.scanners
  * @memberof        l.scenograph.overlays
  * @global
@@ -146,6 +146,13 @@ export default class Scanners {
         }
     }
 
+    /**
+     * Animate the target in the UI overlay
+     * 
+     * @param {*} delta 
+     * @param {*} trackedObject 
+     * @param {*} frustum 
+     */
     animateTarget( delta, trackedObject, frustum ) {
         let [ x, y ] = l.scenograph.overlays.scanners.getScreenCoordinates(trackedObject.mesh, frustum);
         let targetLock = l.scenograph.overlays.scanners.getTargetLock( x, y );
@@ -160,15 +167,18 @@ export default class Scanners {
                 if ( trackedObject.scanTime >= 3 ) {
                     trackedObject.domElement.classList.remove('locking');
                     trackedObject.domElement.classList.add('locked');
+                    trackedObject.locked = true;
                 }
                 else {
                     trackedObject.domElement.classList.add('locking');
                     trackedObject.domElement.classList.remove('locked');
+                    trackedObject.locked = false;
                 }
             }
             else {
                 trackedObject.domElement.classList.remove('locking');
                 trackedObject.domElement.classList.remove('locked');
+                trackedObject.locked = false;
             }
 
         }
@@ -185,6 +195,7 @@ export default class Scanners {
                 if ( trackedObject.lostTime >= 3 && trackedObject.domElement.classList.contains('locked') ) {
                     trackedObject.domElement.classList.add('locking');
                     trackedObject.domElement.classList.remove('locked');
+                    trackedObject.locked = false;
 
                     trackedObject.lostTime = 0;
                 }
@@ -207,6 +218,7 @@ export default class Scanners {
                     trackedObject.domElement.classList.remove('tracking');
                     trackedObject.scanTime = 0;
                     trackedObject.lostTime = 0;
+                    trackedObject.locked = false;
                 }
 
             }
@@ -228,6 +240,7 @@ export default class Scanners {
      * @note All references within this method should be globally accessible.
     **/
     animate( delta ) {
+        
         const frustum = new THREE.Frustum()
         const matrix = new THREE.Matrix4().multiplyMatrices(l.scenograph.cameras.active.projectionMatrix, l.scenograph.cameras.active.matrixWorldInverse)
         frustum.setFromProjectionMatrix(matrix)

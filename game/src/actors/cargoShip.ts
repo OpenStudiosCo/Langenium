@@ -10,8 +10,8 @@ import BaseActor from './base';
 
 export default class cargoShip extends BaseActor {
 
-    constructor( mesh, type = 'vehicle' ) {
-        super( mesh, type );
+    constructor( mesh, scene ) {
+        super( mesh, scene );
 
         if ( this.type == 'vehicle' ) {
             this.entity.position.copy( this.mesh.userData.path.current() );

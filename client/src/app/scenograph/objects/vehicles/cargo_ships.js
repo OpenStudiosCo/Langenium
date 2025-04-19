@@ -126,7 +126,7 @@ export default class CargoShips {
             mesh.userData.targetable = true;
             mesh.userData.standing = 0;
             mesh.userData.size = this.size;
-            mesh.userData.actor = new cargoShip( mesh );
+            mesh.userData.actor = new cargoShip( mesh, l.current_scene.scene );
 
             l.scenograph.entityManager.add( mesh.userData.actor.entity );
 
@@ -194,7 +194,7 @@ export default class CargoShips {
 
         l.current_scene.objects.cargo_ships.forEach( ( cargo_ship ) => {
 
-            cargo_ship.userData.actor.animate();
+            cargo_ship.userData.actor.animate( l.current_scene.stats.currentTime );
             
         } );
  

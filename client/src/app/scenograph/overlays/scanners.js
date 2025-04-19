@@ -1,6 +1,6 @@
 /***
  * @name            Scanners
- * @description     Draws shapes that track the positions of other craft.
+ * @description     Draws shapes that track the players scanners.
  * @namespace       l.scenograph.overlays.scanners
  * @memberof        l.scenograph.overlays
  * @global
@@ -146,6 +146,13 @@ export default class Scanners {
         }
     }
 
+    /**
+     * Animate the target in the UI overlay
+     * 
+     * @param {*} delta 
+     * @param {*} trackedObject 
+     * @param {*} frustum 
+     */
     animateTarget( delta, trackedObject, frustum ) {
         let [ x, y ] = l.scenograph.overlays.scanners.getScreenCoordinates(trackedObject.mesh, frustum);
         let targetLock = l.scenograph.overlays.scanners.getTargetLock( x, y );
@@ -233,6 +240,7 @@ export default class Scanners {
      * @note All references within this method should be globally accessible.
     **/
     animate( delta ) {
+        
         const frustum = new THREE.Frustum()
         const matrix = new THREE.Matrix4().multiplyMatrices(l.scenograph.cameras.active.projectionMatrix, l.scenograph.cameras.active.matrixWorldInverse)
         frustum.setFromProjectionMatrix(matrix)

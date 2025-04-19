@@ -8,6 +8,7 @@
 
 import * as YUKA from 'yuka';
 
+import Scanners from '../systems/scanners.ts';
 import Weapons from '../systems/weapons.ts';
 
 export default class BaseActor {
@@ -15,9 +16,10 @@ export default class BaseActor {
     entity;
     mesh;
     type;
+    scanners;
     weapons;
 
-    constructor( mesh, type = 'vehicle' ) {
+    constructor( mesh, scene, type = 'vehicle' ) {
         /**
          * The Actor's Mesh/3D Object
          * @type {THREE.Object3D}
@@ -40,6 +42,7 @@ export default class BaseActor {
              */
             this.entity = new YUKA.Vehicle();
 
+            this.scanners = new Scanners( this.entity, this.mesh, scene );
             this.weapons = new Weapons();
         }
     }
@@ -54,6 +57,11 @@ export default class BaseActor {
         renderComponent.matrix.copy( entity.worldMatrix );
         renderComponent.position.copy( entity.position );
 
+    }
+
+    animate( delta ) {
+        this.scanners.animate( delta );
+        this.weapons.animate( delta );
     }
 
 }

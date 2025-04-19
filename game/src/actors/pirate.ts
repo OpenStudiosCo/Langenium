@@ -16,8 +16,8 @@ export default class Pirate extends BaseActor {
 
     pursue;
 
-    constructor( mesh, type = 'vehicle' ) {
-        super( mesh, type );
+    constructor( mesh, scene ) {
+        super( mesh, scene );
         
         this.marker = document.querySelector('#map .marker-bot svg path');
 
@@ -38,10 +38,7 @@ export default class Pirate extends BaseActor {
             path.add( new YUKA.Vector3( - loopDistance, this.mesh.position.y, - loopDistance ) );
             path.add( new YUKA.Vector3( - loopDistance, this.mesh.position.y, loopDistance ) );
     
-            const vision = new YUKA.Vision( this.entity );
-            vision.range = 1500;
-            vision.fieldOfView = Math.PI * 2;
-            this.entity.vision = vision;
+            
     
             this.follow = new YUKA.FollowPathBehavior( path );
             this.entity.steering.add( this.follow );
@@ -53,12 +50,14 @@ export default class Pirate extends BaseActor {
         }
     }
 
-    animate() {
+    animate( delta ) {
+        super.animate( delta );
+
         if ( ! this.marker ) {
             this.marker = document.querySelector('#map .marker-bot svg path');
         }
 
-        if ( this.entity.vision.visible( l.current_scene.objects.player.position ) === true ) {           
+        if ( this.entity.vision.visible( l.current_scene.objects.player.position ) === true ) {
             this.pursue.active = true;
             this.follow.active = false;
 

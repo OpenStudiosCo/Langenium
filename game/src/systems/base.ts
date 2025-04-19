@@ -1,16 +1,21 @@
 /**
  * Base Systems
  * 
- * Defines an interface that fires a vehicles weapons.
+ * Scaffold for subsystems that attach to other objects like vehicles.
  */
 
 
 export default class BaseSystem {
 
-    type;
+    // Timestamp of the last system run.
+    last;
+    
+    // Delay between system runs.
+    timeout;
 
-    constructor( type = 'missile' ) {
-        this.type = type;
+    constructor( ) {
+        this.last = 0;
+        this.timeout = 0;
     }
 
 }

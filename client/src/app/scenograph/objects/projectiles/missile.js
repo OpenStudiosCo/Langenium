@@ -19,8 +19,8 @@ export default class Missile {
     // Array of active missiles on the scene
     active;
 
-    // Reusable video texture sprite of an explosion when a missile terminates.
-    explosionMesh;
+    // Array of active explosions on the scene
+    explosions;
 
     // THREE.Mesh
     mesh;
@@ -71,7 +71,7 @@ export default class Missile {
     }
 
     async loadExplosion( position ) {
-        const explosionVideo = document.getElementById( 'explosion' ).cloneNode(true);;
+        const explosionVideo = document.getElementById( 'explosion' ).cloneNode(true);
         explosionVideo.play();
         explosionVideo.playbackRate = 1.5;
 

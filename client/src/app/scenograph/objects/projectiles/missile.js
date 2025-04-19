@@ -71,7 +71,7 @@ export default class Missile {
     }
 
     async loadExplosion( position ) {
-        const explosionVideo = document.getElementById( 'explosion' );//.cloneNode(true);;
+        const explosionVideo = document.getElementById( 'explosion' ).cloneNode(true);;
         explosionVideo.play();
         explosionVideo.playbackRate = 1.5;
 
@@ -79,7 +79,7 @@ export default class Missile {
         texture.colorSpace = THREE.SRGBColorSpace;
         texture.wrapS = THREE.RepeatWrapping;
         texture.wrapT = THREE.RepeatWrapping;
-        texture.repeat.set( 1, 1 );
+        texture.repeat.set( 16/9, 1 );
         texture.rotation = - Math.PI / 2;
 
         const material = new THREE.ShaderMaterial({
@@ -128,6 +128,8 @@ export default class Missile {
         mesh.scale.set( 30, 30, 30 );
 
         mesh.userData.created = l.current_scene.stats.currentTime;
+        mesh.userData.texture = texture;
+        mesh.userData.video = explosionVideo;
 
         mesh.position.copy( position );
 
@@ -225,11 +227,25 @@ export default class Missile {
         l.current_scene.objects.projectiles.missile.explosions.forEach( ( explosion, index ) => {
             // Check if it's been 2 seconds since the explosion started, remove if so
             if ( parseFloat( l.current_scene.stats.currentTime ) >= parseFloat( explosion.userData.created ) + 2000 ) {
+                // Tidy up the explosion video element.
+                explosion.userData.video.pause();
+                explosion.userData.video.src = '';
+                explosion.userData.video.removeAttribute('src'); // Sometimes needed for Safari
+                explosion.userData.video.load();                 // Ensures src is cleared
+
+                if (explosion.userData.video.parentNode) explosion.userData.video.parentNode.removeChild(explosion.userData.video);
+
+                explosion.userData.texture.dispose();
+                
+                // Remove the explosion from the scene.
                 l.current_scene.objects.projectiles.missile.explosions.splice( index, 1 );
                 l.current_scene.scene.remove( explosion );
+                explosion.material.dispose();
             }
             else {
                 explosion.material.rotation *= 0.996;
+
+                explosion.lookAt( l.scenograph.cameras.active.position );
 
                 if ( parseFloat( l.current_scene.stats.currentTime ) >= parseFloat( explosion.userData.created ) + 500 ) {
                     explosion.scale.x *= 0.996;

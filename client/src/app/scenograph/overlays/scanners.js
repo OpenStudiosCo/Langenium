@@ -32,7 +32,8 @@ export default class Scanners {
     }
 
     /**
-     * 
+     * Get the marker symbol.
+     *
      * @param {*} symbol 
      * @returns custom HTMLElement
      */
@@ -101,111 +102,6 @@ export default class Scanners {
         return [ x, y ];
     }
 
-    // @todo: Move scanner logic to aircraft equipment update code.
-    getTargetLock( x, y ) {
-        if ( 
-            ((
-                ! l.scenograph.overlays.hud.portraitMode &&
-                x > l.scenograph.width * 0.375 &&
-                x < l.scenograph.width * 0.625
-            ) ||  (
-                l.scenograph.overlays.hud.portraitMode &&
-                x > l.scenograph.width * 0.1875 &&
-                x < l.scenograph.width * 0.8125
-            ) ) &&
-            
-            y > l.scenograph.height * 0.375 &&
-            y < l.scenograph.height * 0.625
-        ) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-
-    /**
-     * Animate the target in the UI overlay
-     * 
-     * @param {*} delta 
-     * @param {*} trackedObject 
-     * @param {*} frustum 
-     */
-    animateTarget( delta, trackedObject, frustum ) {
-        let [ x, y ] = l.scenograph.overlays.scanners.getScreenCoordinates(trackedObject.mesh, frustum);
-        let targetLock = l.scenograph.overlays.scanners.getTargetLock( x, y );
-
-        // Check if the object is within the scanner area.
-        if ( targetLock ) {
-            trackedObject.domElement.classList.add('tracking');
-            trackedObject.scanTime += delta;
-            trackedObject.lostTime = 0;
-
-            if ( trackedObject.scanTime >= 1 ) {
-                if ( trackedObject.scanTime >= 3 ) {
-                    trackedObject.domElement.classList.remove('locking');
-                    trackedObject.domElement.classList.add('locked');
-                    trackedObject.locked = true;
-                }
-                else {
-                    trackedObject.domElement.classList.add('locking');
-                    trackedObject.domElement.classList.remove('locked');
-                    trackedObject.locked = false;
-                }
-            }
-            else {
-                trackedObject.domElement.classList.remove('locking');
-                trackedObject.domElement.classList.remove('locked');
-                trackedObject.locked = false;
-            }
-
-        }
-        else {
-            trackedObject.lostTime += delta;
-
-            if ( trackedObject.scanTime < 1 ) {
-                trackedObject.domElement.classList.remove('tracking');
-                trackedObject.scanTime = 0;
-                trackedObject.lostTime = 0;
-            }
-            else {
-                // Allow 3 seconds before a target is downgraded when locked.
-                if ( trackedObject.lostTime >= 3 && trackedObject.domElement.classList.contains('locked') ) {
-                    trackedObject.domElement.classList.add('locking');
-                    trackedObject.domElement.classList.remove('locked');
-                    trackedObject.locked = false;
-
-                    trackedObject.lostTime = 0;
-                }
-                else {
-                    // Allow 1 seconds before a target is downgraded when locking.
-                    if ( trackedObject.lostTime >= 1 && trackedObject.domElement.classList.contains('locking') ) {
-                        trackedObject.domElement.classList.remove('locking');
-
-                        trackedObject.lostTime = 0;
-                    }
-                }
-
-                // Allow 1 seconds before a target is lost when tracking.
-                if ( 
-                    trackedObject.lostTime >= 1 &&
-                    trackedObject.domElement.classList.contains('tracking') &&
-                    ! trackedObject.domElement.classList.contains('locked') &&
-                    ! trackedObject.domElement.classList.contains('locking') 
-                ) {
-                    trackedObject.domElement.classList.remove('tracking');
-                    trackedObject.scanTime = 0;
-                    trackedObject.lostTime = 0;
-                    trackedObject.locked = false;
-                }
-
-            }
-        }
-
-        trackedObject.domElement.style.left = `${x-5}px`;
-        trackedObject.domElement.style.top = `${y-5}px`;
-    }
-
     /**
      * Animate hook.
      * 
@@ -225,13 +121,20 @@ export default class Scanners {
         l.scenograph.cameras.active.updateProjectionMatrix();
 
         // Use the players scanners to update the overlays.
-        l.current_scene.objects.player.actor.scanners.targets.forEach( target => l.scenograph.overlays.scanners.animateTarget2( delta, target, frustum ) );
+        l.current_scene.objects.player.actor.scanners.targets.forEach( target => l.scenograph.overlays.scanners.animateTarget( delta, target, frustum ) );
 
         l.scenograph.overlays.scanners.removeOldTargets();
 
     }
 
-    animateTarget2( delta, target, frustum ) {
+    /**
+     * Animate the target in the UI overlay
+     * 
+     * @param {*} delta 
+     * @param {*} trackedObject 
+     * @param {*} frustum 
+     */
+    animateTarget( delta, target, frustum ) {
         let [ x, y ] = l.scenograph.overlays.scanners.getScreenCoordinates( target.mesh, frustum );
         let domElement = l.scenograph.overlays.scanners.getTargetDomElement( target );
 
@@ -263,6 +166,9 @@ export default class Scanners {
         domElement.style.top = `${y-5}px`;
     }
 
+    /**
+     * Remove markers for objects no longer in the scene.
+     */
     removeOldTargets() {
 
         for ( const uuid in l.scenograph.overlays.scanners.trackedObjects ) {

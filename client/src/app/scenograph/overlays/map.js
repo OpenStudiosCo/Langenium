@@ -108,66 +108,6 @@ export default class Map {
         let leftEdge = l.current_scene.objects.player.mesh.position.x - l.scenograph.overlays.map.distance / 2;
         let topEdge = l.current_scene.objects.player.mesh.position.z - l.scenograph.overlays.map.distance / 2;
 
-        l.scenograph.overlays.scanners.trackedObjects.forEach( trackedObject => {
-            let distance = trackedObject.mesh.position.distanceTo( l.current_scene.objects.player.mesh.position );
-            
-            // Check if the object is within the mapping distance.
-            if ( distance <= l.scenograph.overlays.map.distance * 100 ) {
-                
-                // Check if the object is already present on the map, move it if so
-                if ( trackedObject.mesh.uuid in l.scenograph.overlays.map.markers ) {
-
-                    let diffX = ( trackedObject.mesh.position.x - leftEdge ) * offset;
-                    let diffZ = ( trackedObject.mesh.position.z - topEdge ) * offset;
-
-                     // Calculate the distance from the center of the minimap
-                    let dx = diffX - halfMapSize;
-                    let dy = diffZ - halfMapSize;
-                    let distFromCenter = Math.sqrt(dx * dx + dy * dy);
-
-                    // Check if the marker is outside the circle (clamp if necessary)
-                    if (distFromCenter > halfMapSize) {
-                        // Clamp the position to the edge of the circle
-                        let clampedX = halfMapSize + (dx * halfMapSize) / distFromCenter;
-                        let clampedY = halfMapSize + (dy * halfMapSize) / distFromCenter;
-
-                        diffX = clampedX;
-                        diffZ = clampedY;
-                    }
-
-                    // Update position.
-                    l.scenograph.overlays.map.markers[ trackedObject.mesh.uuid ].domElement.style.left = `${diffX-5}px`;
-                    l.scenograph.overlays.map.markers[ trackedObject.mesh.uuid ].domElement.style.top = `${diffZ-5}px`;
-
-                }
-                else {
-                    // Add the object to the map
-                    l.scenograph.overlays.map.markers[ trackedObject.mesh.uuid ] = l.scenograph.overlays.map.addMarker( trackedObject );
-                }
-
-            }
-            else {
-                // Check if the object is already present on the map, remove it if so
-                if ( trackedObject.mesh.uuid in l.scenograph.overlays.map.markers ) {
-                    l.scenograph.overlays.map.removeMarker( trackedObject.mesh.uuid, l.scenograph.overlays.map.markers[ trackedObject.mesh.uuid ] );
-                }
-            }
-        } );
-
-    }
-
-    /**
-     * Animates the markers.
-     */
-    animateMarkers2( ) {
-
-        let mapSize = l.scenograph.overlays.map.container.offsetWidth;
-        let offset = mapSize / l.scenograph.overlays.map.distance;  // Pixels per world unit
-        let halfMapSize = (mapSize / 2) - 2.5;  // Half the map size to center objects
-
-        let leftEdge = l.current_scene.objects.player.mesh.position.x - l.scenograph.overlays.map.distance / 2;
-        let topEdge = l.current_scene.objects.player.mesh.position.z - l.scenograph.overlays.map.distance / 2;
-
 
         l.current_scene.objects.player.actor.scanners.targets.forEach( target => {
             let distance = target.mesh.position.distanceTo( l.current_scene.objects.player.mesh.position );
@@ -239,7 +179,7 @@ export default class Map {
 
         l.scenograph.overlays.map.fov.style.transform = 'rotate(' + heading + 'deg)';
 
-        l.scenograph.overlays.map.animateMarkers2( );
+        l.scenograph.overlays.map.animateMarkers( );
     }
 
 }

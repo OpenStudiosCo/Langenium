@@ -190,11 +190,11 @@ export default class CargoShips {
 
     }
 
-    animate() {
+    animate( delta ) {
 
         l.current_scene.objects.cargo_ships.forEach( ( cargo_ship ) => {
 
-            cargo_ship.userData.actor.animate( l.current_scene.stats.currentTime );
+            cargo_ship.userData.actor.animate( delta );
             
         } );
  

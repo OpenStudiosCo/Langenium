@@ -27,7 +27,7 @@ export default class Scanners extends BaseSystem {
 
         this.targets = [];
 
-        this.timeout = 500;
+        this.timeout = 5000;
 
         const vision = new YUKA.Vision( this.entity );
         vision.range = 1500;
@@ -50,9 +50,22 @@ export default class Scanners extends BaseSystem {
     }
 
     scan( delta ) {
+        let currentTargets = this.getTargetable();
+
+        // Check if we are already tracking this target.
+        this.targets.forEach( ( target, index ) => {
+            
+            let trackingObject = currentTargets.filter( object => (object.uuid == target.mesh.uuid ) );
+            trackingObject = trackingObject.length > 0 ? trackingObject[0] : false;
+
+            // Remove tracking if object no longer in the scene.
+            if ( ! trackingObject ) {
+                this.targets.splice( index, 1 );
+            }
+        } );
 
         // Update targets tracked in the array.
-        for ( const target of this.getTargetable() ) {
+        for ( const target of currentTargets ) {
 
             // Skip self.
             if ( target.uuid === this.mesh.uuid ) {
@@ -60,7 +73,7 @@ export default class Scanners extends BaseSystem {
             }
 
             // Check if we are already tracking this target.
-            let trackingObject = this.targets.filter( object => object.mesh.uuid === target.uuid );
+            let trackingObject = this.targets.filter( object => (object.mesh.uuid == target.uuid ) );
             trackingObject = trackingObject.length > 0 ? trackingObject[0] : false;
         
             if ( ! trackingObject ) {
@@ -76,6 +89,7 @@ export default class Scanners extends BaseSystem {
             }
             
         }
+
         this.targets.forEach( ( target, index ) => {
             const targetVisible = this.entity.vision.visible( target.mesh.position ) === true;
 
@@ -139,7 +153,7 @@ export default class Scanners extends BaseSystem {
                 }
             }
         } );
-        console.log(this.targets);
+
     }
 
 

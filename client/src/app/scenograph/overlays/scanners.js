@@ -27,29 +27,7 @@ export default class Scanners {
 
         this.item_template = document.getElementById( 'overlays_scanner_target' ).innerHTML;
 
-        this.trackedObjects = [];
-
-        this.trackedObjects.push({
-            mesh: l.current_scene.objects.bot.mesh,
-            domElement: this.getSymbolElement( 'diamond' ),
-            locked: false,
-            scanTime: 0,
-            lostTime: 0
-        });
-
-        l.current_scene.objects.cargo_ships.forEach( async ( cargo_ship, i ) => {
-            this.trackedObjects.push({
-                mesh: cargo_ship,
-                domElement: this.getSymbolElement( 'diamond' ),
-                locked: false,
-                scanTime: 0,
-                lostTime: 0
-            });
-          } );
-
-        this.trackedObjects.forEach( trackedObject => {
-            this.container.appendChild( trackedObject.domElement );
-        } );
+        this.trackedObjects = {};
 
     }
 
@@ -243,12 +221,78 @@ export default class Scanners {
         
         const frustum = new THREE.Frustum()
         const matrix = new THREE.Matrix4().multiplyMatrices(l.scenograph.cameras.active.projectionMatrix, l.scenograph.cameras.active.matrixWorldInverse)
-        frustum.setFromProjectionMatrix(matrix)
-        
+        frustum.setFromProjectionMatrix(matrix)        
         l.scenograph.cameras.active.updateProjectionMatrix();
-        l.scenograph.overlays.scanners.trackedObjects.forEach(trackedObject => {
-            l.scenograph.overlays.scanners.animateTarget(delta, trackedObject, frustum);
-        });
+
+        // Use the players scanners to update the overlays.
+        l.current_scene.objects.player.actor.scanners.targets.forEach( target => l.scenograph.overlays.scanners.animateTarget2( delta, target, frustum ) );
+
+        l.scenograph.overlays.scanners.removeOldTargets();
+
+    }
+
+    animateTarget2( delta, target, frustum ) {
+        let [ x, y ] = l.scenograph.overlays.scanners.getScreenCoordinates( target.mesh, frustum );
+        let domElement = l.scenograph.overlays.scanners.getTargetDomElement( target );
+
+        if ( target.locked ) {
+            // console.log(target);
+            // debugger;
+            domElement.classList.add('locked');
+            domElement.classList.remove('locking');
+            domElement.classList.remove('tracking');
+        }
+        if ( target.locking ) {
+            domElement.classList.add('locking');
+            domElement.classList.remove('locked');
+            domElement.classList.remove('tracking');
+        }
+        if ( target.tracking ) {
+            // console.log(target);
+            // debugger;
+            domElement.classList.add('tracking');
+            domElement.classList.remove('locked');
+            domElement.classList.remove('locking');
+        }
+        if ( ! target.tracking && ! target.locking && ! target.locked ) {
+            domElement.classList.remove('tracking');
+            domElement.classList.remove('locked');
+            domElement.classList.remove('locking');
+        }
+
+        domElement.style.left = `${x-5}px`;
+        domElement.style.top = `${y-5}px`;
+    }
+
+    removeOldTargets() {
+
+        for ( const uuid in l.scenograph.overlays.scanners.trackedObjects ) {
+            const sceneObject = l.current_scene.scene.children.filter( mesh => mesh.uuid == uuid );
+            if ( sceneObject.length == 0 ) {
+                // Remove the marker from the overlay.
+                l.scenograph.overlays.scanners.container.removeChild( l.scenograph.overlays.scanners.trackedObjects[uuid] );
+
+                // Delete the marker domElement from memory.
+                delete l.scenograph.overlays.scanners.trackedObjects[ uuid ];
+            }
+        }
+
+    }
+
+    /**
+     * Grabs or creates a Dom Element for each target.
+     */
+    getTargetDomElement( target ) {
+        let trackedObject = l.scenograph.overlays.scanners.trackedObjects[ target.mesh.uuid ];
+
+        if ( ! trackedObject ) {
+            l.scenograph.overlays.scanners.trackedObjects[ target.mesh.uuid ] = l.scenograph.overlays.scanners.getSymbolElement( 'diamond' );
+            trackedObject = l.scenograph.overlays.scanners.trackedObjects[ target.mesh.uuid ];
+            l.scenograph.overlays.scanners.container.appendChild( trackedObject );
+        }
+
+        return trackedObject;
+
     }
 
 }

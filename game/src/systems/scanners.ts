@@ -27,7 +27,7 @@ export default class Scanners extends BaseSystem {
 
         this.targets = [];
 
-        this.timeout = 5000;
+        this.timeout = 500;
 
         const vision = new YUKA.Vision( this.entity );
         vision.range = 1500;
@@ -159,11 +159,9 @@ export default class Scanners extends BaseSystem {
 
 
     animate ( delta ) {
-
         if ( parseInt( l.current_scene.stats.currentTime ) >= parseInt(this.last) + parseInt(this.timeout) ) {
             this.scan( delta );
             this.last = l.current_scene.stats.currentTime;
         }
-
     }
 }

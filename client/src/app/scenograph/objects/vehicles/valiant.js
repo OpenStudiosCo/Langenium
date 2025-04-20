@@ -437,7 +437,7 @@ export default class Valiant extends ValiantBase {
                     l.scenograph.modes.multiplayer.socket.emit( 'input', l.current_scene.objects.player.controls );
                 }
 
-                l.current_scene.objects.player.actor.animate( l.current_scene.stats.currentTime );
+                l.current_scene.objects.player.actor.animate( delta );
 
             }
 

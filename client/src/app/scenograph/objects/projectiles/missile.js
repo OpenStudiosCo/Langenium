@@ -205,7 +205,7 @@ export default class Missile {
                 // - the missile has collided
                 // since the missile was fired, explode if so
                 ( parseFloat( l.current_scene.stats.currentTime ) >= parseFloat( missile.userData.created ) + 10000 ) ||
-                ( missile.position.distanceTo( missile.userData.destMesh.position ) <= 2 )
+                ( missile.position.distanceTo( missile.userData.destMesh.position ) <= 5 )
             ) {
                 l.current_scene.objects.projectiles.missile.active.splice( index, 1 );
                 l.current_scene.scene.remove( missile );
@@ -243,7 +243,7 @@ export default class Missile {
                 explosion.material.dispose();
             }
             else {
-                explosion.material.rotation *= 0.996;
+                explosion.material.rotation *= 0.96;
 
                 explosion.lookAt( l.scenograph.cameras.active.position );
 

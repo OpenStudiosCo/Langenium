@@ -80,20 +80,32 @@ export default class Missile {
         texture.wrapS = THREE.RepeatWrapping;
         texture.wrapT = THREE.RepeatWrapping;
         texture.repeat.set( 16/9, 1 );
-        texture.rotation = - Math.PI / 2;
 
         const material = new THREE.ShaderMaterial({
             uniforms: {
                 map: { value: texture },
                 color: { value: new THREE.Color(0xffffff) },
                 threshold: { value: 0.55 },
-                smoothness: { value: 0.05 }
+                smoothness: { value: 0.05 },
+                rotation: { value: Math.random() * Math.PI - Math.PI * 0.5 }
             },
             vertexShader: `
+                uniform float rotation;
                 varying vec2 vUv;
                 void main() {
                     vUv = uv;
-                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                    // Center the rotation
+                    vec3 pos = position;
+                    float s = sin(rotation);
+                    float c = cos(rotation);
+
+                    pos.xy = vec2(
+                        c * position.x - s * position.y,
+                        s * position.x + c * position.y
+                    );
+
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+
                 }
             `,
             fragmentShader: `
@@ -132,8 +144,6 @@ export default class Missile {
         mesh.userData.video = explosionVideo;
 
         mesh.position.copy( position );
-
-        mesh.material.rotation = Math.random() * Math.PI + Math.PI;
 
         l.current_scene.scene.add( mesh );
 
@@ -243,9 +253,9 @@ export default class Missile {
                 explosion.material.dispose();
             }
             else {
-                explosion.material.rotation *= 0.96;
-
                 explosion.lookAt( l.scenograph.cameras.active.position );
+
+                explosion.material.uniforms.rotation.value *= 0.996;
 
                 if ( parseFloat( l.current_scene.stats.currentTime ) >= parseFloat( explosion.userData.created ) + 500 ) {
                     explosion.scale.x *= 0.996;

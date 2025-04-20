@@ -63,7 +63,7 @@ export default class Missile {
 
         this.mesh = new THREE.Object3D();
         this.mesh.name = 'Missile';
-        this.mesh.userData.targetable = true;
+        this.mesh.userData.targetable = false; // @todo: allow shooting at them when guns are introduced
         this.mesh.userData.objectClass = 'missiles';
 
         this.mesh.add(this.getMissileBody());

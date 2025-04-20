@@ -196,7 +196,7 @@ export default class Scanners {
                     trackedObject.domElement.classList.remove('tracking');
                     trackedObject.scanTime = 0;
                     trackedObject.lostTime = 0;
-                    trackedObject.locked = false;
+                    trackedObject.locked = false;https://langenium.com/
                 }
 
             }

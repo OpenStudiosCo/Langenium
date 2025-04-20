@@ -196,7 +196,7 @@ export default class Scanners {
                     trackedObject.domElement.classList.remove('tracking');
                     trackedObject.scanTime = 0;
                     trackedObject.lostTime = 0;
-                    trackedObject.locked = false;https://langenium.com/
+                    trackedObject.locked = false;
                 }
 
             }
@@ -235,26 +235,25 @@ export default class Scanners {
         let [ x, y ] = l.scenograph.overlays.scanners.getScreenCoordinates( target.mesh, frustum );
         let domElement = l.scenograph.overlays.scanners.getTargetDomElement( target );
 
-        if ( target.locked ) {
-            // console.log(target);
-            // debugger;
-            domElement.classList.add('locked');
-            domElement.classList.remove('locking');
-            domElement.classList.remove('tracking');
+        if ( target.scanTime > 0 ) {
+            if ( target.scanTime >= 3 ) {
+                domElement.classList.add('locked');
+                domElement.classList.remove('locking');
+            }
+            else {
+                if ( target.scanTime >= 1 ) {
+                    domElement.classList.add('locking');
+                    domElement.classList.remove('locked');
+                }
+                else {
+                    domElement.classList.add('tracking');
+                    domElement.classList.remove('locked');
+                    domElement.classList.remove('locking');    
+                }   
+            }
+
         }
-        if ( target.locking ) {
-            domElement.classList.add('locking');
-            domElement.classList.remove('locked');
-            domElement.classList.remove('tracking');
-        }
-        if ( target.tracking ) {
-            // console.log(target);
-            // debugger;
-            domElement.classList.add('tracking');
-            domElement.classList.remove('locked');
-            domElement.classList.remove('locking');
-        }
-        if ( ! target.tracking && ! target.locking && ! target.locked ) {
+        else {
             domElement.classList.remove('tracking');
             domElement.classList.remove('locked');
             domElement.classList.remove('locking');

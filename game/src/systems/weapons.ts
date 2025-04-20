@@ -44,7 +44,7 @@ export default class Weapons extends BaseSystem {
                     // Check if the object is target locked and not friendly.
                     target.mesh.name != 'Missile' &&
                     // @todo: Fix bot AI so it can target lock better.
-                    target.tracking && this.ready()
+                    target.locked && this.ready()
                 ) {
                     this.last = l.current_scene.stats.currentTime;
 

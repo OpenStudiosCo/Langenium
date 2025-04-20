@@ -90,6 +90,7 @@ export default class Scanners extends BaseSystem {
             
         }
 
+        // Update the targets scanner statuses.
         this.targets.forEach( ( target, index ) => {
             const targetVisible = this.entity.vision.visible( target.mesh.position ) === true;
 
@@ -159,9 +160,9 @@ export default class Scanners extends BaseSystem {
 
 
     animate ( delta ) {
-        if ( parseInt( l.current_scene.stats.currentTime ) >= parseInt(this.last) + parseInt(this.timeout) ) {
+        //if ( parseInt( l.current_scene.stats.currentTime ) >= parseInt(this.last) + parseInt(this.timeout) ) {
             this.scan( delta );
             this.last = l.current_scene.stats.currentTime;
-        }
+        //}
     }
 }

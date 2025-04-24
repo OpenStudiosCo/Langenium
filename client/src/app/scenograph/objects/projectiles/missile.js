@@ -236,7 +236,15 @@ export default class Missile {
 
         l.current_scene.objects.projectiles.missile.explosions.forEach( ( explosion, index ) => {
             // Check if it's been 2 seconds since the explosion started, remove if so
-            if ( parseFloat( l.current_scene.stats.currentTime ) >= parseFloat( explosion.userData.created ) + 2000 ) {
+            if ( parseFloat( l.current_scene.stats.currentTime ) >= parseFloat( explosion.userData.created ) + 2000 ) {               
+                // Remove the explosion from the scene.
+                l.current_scene.scene.remove( explosion );
+                explosion.geometry.dispose();
+                explosion.material.uniforms.map.value.dispose();
+                explosion.userData.texture.dispose();
+                explosion.material.dispose();
+                l.current_scene.renderers.webgl.renderLists.dispose();
+
                 // Tidy up the explosion video element.
                 explosion.userData.video.pause();
                 explosion.userData.video.src = '';
@@ -245,12 +253,10 @@ export default class Missile {
 
                 if (explosion.userData.video.parentNode) explosion.userData.video.parentNode.removeChild(explosion.userData.video);
 
-                explosion.userData.texture.dispose();
-                
-                // Remove the explosion from the scene.
+                explosion = null;
+
+                // Remove from the tracking array.
                 l.current_scene.objects.projectiles.missile.explosions.splice( index, 1 );
-                l.current_scene.scene.remove( explosion );
-                explosion.material.dispose();
             }
             else {
                 explosion.lookAt( l.scenograph.cameras.active.position );

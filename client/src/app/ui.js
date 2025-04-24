@@ -16,6 +16,7 @@ import l from '@/helpers/l.js';
 import Flight_Instruments from '@/ui/flight_instruments.js';
 import Targeting from '@/ui/targeting.js';
 import Menus from '@/ui/menus.js';
+import ScoreTable from '@/ui/score_table.js';
 
 export default class UI {
 
@@ -24,6 +25,9 @@ export default class UI {
 
     // Control the menu pane, needed by touch controls which activate later.
     menus;
+
+    // Controls the score table.
+    score_table;    
 
     // Controls the targeting list and locked UIs.
     targeting;
@@ -40,6 +44,13 @@ export default class UI {
         Alpine.start();
 
         this.update_queue = [];
+
+        this.score_table = new ScoreTable();
+
+        this.update_queue.push( {
+            callback: 'l.ui.score_table.update',
+            data: []
+        } );
 
         // /**
         //  * @todo: Move into a game mode activation function.

@@ -126,7 +126,17 @@ export default class Raven extends RavenBase {
 
     }
 
-    // Runs on the main animation loop
+    /**
+     * Animate hook.
+     * 
+     * This method is called within the main animation loop and
+     * therefore must only reference global objects or properties.
+     * 
+     * @method animate
+     * @memberof Raven
+     * @global
+     * @note All references within this method should be globally accessible.
+    **/
     animate( delta ) {
         if ( l.current_scene.settings.game_controls ) {
             l.current_scene.objects.bot.mesh.userData.actor.animate( delta );

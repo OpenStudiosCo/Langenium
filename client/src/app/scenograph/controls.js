@@ -87,6 +87,17 @@ export default class Controls {
 
     }
 
+    /**
+     * Animate hook.
+     * 
+     * This method is called within the main animation loop and
+     * therefore must only reference global objects or properties.
+     * 
+     * @method animate
+     * @memberof Controls
+     * @global
+     * @note All references within this method should be globally accessible.
+    **/
     animate() {
         if ( l.scenograph.controls.orbit ) {
         

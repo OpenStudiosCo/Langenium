@@ -186,6 +186,17 @@ export default class Extractor {
         return capsule;
     }
 
+    /**
+     * Animate hook.
+     * 
+     * This method is called within the main animation loop and
+     * therefore must only reference global objects or properties.
+     * 
+     * @method animate
+     * @memberof Extractors
+     * @global
+     * @note All references within this method should be globally accessible.
+    **/
     animate( currentTime ) {
 
         l.current_scene.objects.extractors.forEach( ( extractor, i ) => {

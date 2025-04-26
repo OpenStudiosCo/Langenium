@@ -111,6 +111,17 @@ export default class Platform {
         this.ready = true;
     }
 
+    /**
+     * Animate hook.
+     * 
+     * This method is called within the main animation loop and
+     * therefore must only reference global objects or properties.
+     * 
+     * @method animate
+     * @memberof Platform
+     * @global
+     * @note All references within this method should be globally accessible.
+    **/
     animate( delta ) {
         // Iterate the sky uniforms to animate it.
         window.buildings.uniforms.time.value += delta / 10;

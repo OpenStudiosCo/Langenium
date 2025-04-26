@@ -422,7 +422,17 @@ export default class Valiant extends ValiantBase {
         l.current_scene.objects.player.mesh.rotation.z = l.current_scene.objects.player.rotation.z;
     }
 
-    // Runs on the main animation loop
+    /**
+     * Animate hook.
+     * 
+     * This method is called within the main animation loop and
+     * therefore must only reference global objects or properties.
+     * 
+     * @method animate
+     * @memberof Valiant
+     * @global
+     * @note All references within this method should be globally accessible.
+    **/
     animate( delta ) {
 
         if ( l.current_scene.objects.player.ready ) {

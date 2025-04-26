@@ -191,6 +191,17 @@ export default class CargoShips {
 
     }
 
+    /**
+     * Animate hook.
+     * 
+     * This method is called within the main animation loop and
+     * therefore must only reference global objects or properties.
+     * 
+     * @method animate
+     * @memberof CargoShips
+     * @global
+     * @note All references within this method should be globally accessible.
+    **/
     animate( delta ) {
 
         if ( l.current_scene.settings.game_controls ) {

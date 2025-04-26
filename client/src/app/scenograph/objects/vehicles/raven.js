@@ -98,7 +98,6 @@ export default class Raven extends RavenBase {
         this.mesh.name = 'Bot Ship';
         this.mesh.userData.targetable = true;
         this.mesh.userData.objectClass = 'bot';
-        this.mesh.userData.standing = -1;
         this.mesh.position.z = -1500;
         this.mesh.position.y = 200;
         this.mesh.rotation.order = 'YXZ';
@@ -117,6 +116,7 @@ export default class Raven extends RavenBase {
         l.scenograph.entityManager.add( this.mesh.userData.actor.entity );
 
         this.mesh.userData.object = this;
+        this.mesh.userData.object.standing = -1;
 
     }
 

@@ -124,7 +124,6 @@ export default class CargoShips {
 
             mesh.userData.objectClass = 'cargoShip';
             mesh.userData.targetable = true;
-            mesh.userData.standing = 0;
             mesh.userData.size = this.size;
             mesh.userData.actor = new cargoShip( mesh, l.current_scene.scene );
 

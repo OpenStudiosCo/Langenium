@@ -47,6 +47,9 @@ export default class Main_Menu {
             // Hide game exit button to return to main menu.
             this.buttons.exit_game.hidden = true;
 
+            // Hide the score table button.
+            this.buttons.scores.hidden = true;
+
             // Restore the main menu title.
             this.pane.title = this.default_title;
 

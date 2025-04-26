@@ -184,6 +184,8 @@ export default class CargoShips {
         const scale = new THREE.Vector3(1, 1, -1);
         result.scale.multiply(scale);
 
+        result.rotation.y = Math.PI;
+
         this.mesh = new THREE.Object3D();
         this.mesh.add( result );
 

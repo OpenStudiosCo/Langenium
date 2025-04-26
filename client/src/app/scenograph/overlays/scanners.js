@@ -129,7 +129,7 @@ export default class Scanners {
         l.scenograph.cameras.active.updateProjectionMatrix();
 
         // Use the players scanners to update the overlays.
-        l.current_scene.objects.player.actor.scanners.targets.forEach( target => l.scenograph.overlays.scanners.animateTarget( delta, target, frustum ) );
+        l.current_scene.objects.player.mesh.userData.actor.scanners.targets.forEach( target => l.scenograph.overlays.scanners.animateTarget( delta, target, frustum ) );
 
         l.scenograph.overlays.scanners.removeOldTargets();
 

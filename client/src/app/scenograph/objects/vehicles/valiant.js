@@ -18,8 +18,6 @@ import ValiantBase from '#/game/src/objects/aircraft/valiant';
 
 export default class Valiant extends ValiantBase {
 
-    actor;
-
     // Camera distance.
     camera_distance;
 
@@ -111,6 +109,8 @@ export default class Valiant extends ValiantBase {
 
         this.mesh.userData.targetable = true;
         this.mesh.userData.objectClass = 'player';
+        this.mesh.userData.actor = new Player( this.mesh, l.current_scene.scene );
+        l.scenograph.entityManager.add( this.mesh.userData.actor.entity );
 
         this.createThruster();
 
@@ -125,9 +125,7 @@ export default class Valiant extends ValiantBase {
 
         this.trail = l.current_scene.effects.trail.createTrail( this.mesh, 0, this.trail_position_y, this.trail_position_z );
 
-        this.actor = new Player( this.mesh, l.current_scene.scene );
-
-        l.scenograph.entityManager.add( this.actor.entity );
+        this.mesh.userData.object = this;
     }
 
     createThrusterMesh( options ) {
@@ -437,7 +435,7 @@ export default class Valiant extends ValiantBase {
                     l.scenograph.modes.multiplayer.socket.emit( 'input', l.current_scene.objects.player.controls );
                 }
 
-                l.current_scene.objects.player.actor.animate( delta );
+                l.current_scene.objects.player.mesh.userData.actor.animate( delta );
 
             }
 

@@ -14,6 +14,8 @@ import { TrailRenderer } from '@/../vendor/TrailRenderer.js';
 import l from '@/helpers/l.js';
 import { proceduralBuilding, proceduralMetalMaterial2 } from '@/scenograph/materials.js';
 
+import MissileProjectile from '#/game/src/objects/projectiles/missile';
+
 export default class Missile {
 
     // Array of active missiles on the scene
@@ -167,6 +169,7 @@ export default class Missile {
         newMissile.userData.originCoords = originCoords;
         newMissile.userData.destMesh = destMesh;
         newMissile.userData.destCoords = destCoords;
+        newMissile.userData.object = new MissileProjectile( newMissile );
         
         // Set starting position
         newMissile.position.x = originCoords.x;
@@ -215,7 +218,7 @@ export default class Missile {
                 // - the missile has collided
                 // since the missile was fired, explode if so
                 ( parseFloat( l.current_scene.stats.currentTime ) >= parseFloat( missile.userData.created ) + 10000 ) ||
-                ( missile.position.distanceTo( missile.userData.destMesh.position ) <= 5 )
+                ( missile.userData.object.hit() )
             ) {
                 l.current_scene.objects.projectiles.missile.active.splice( index, 1 );
                 l.current_scene.scene.remove( missile );

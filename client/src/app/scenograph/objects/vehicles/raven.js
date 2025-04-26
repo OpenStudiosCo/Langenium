@@ -112,15 +112,17 @@ export default class Raven extends RavenBase {
         this.mesh.matrixAutoUpdate = false;
 
         // @todo: Uncouple from the pirate actor when vehicle selection is introduced.
-        this.actor = new Pirate( this.mesh, l.current_scene.scene );
+        this.mesh.userData.actor = new Pirate( this.mesh, l.current_scene.scene );
 
-        l.scenograph.entityManager.add( this.actor.entity );
+        l.scenograph.entityManager.add( this.mesh.userData.actor.entity );
+
+        this.mesh.userData.object = this;
 
     }
 
     // Runs on the main animation loop
     animate( delta ) {
-        l.current_scene.objects.bot.actor.animate( delta );
+        l.current_scene.objects.bot.mesh.userData.actor.animate( delta );
     }
 
    

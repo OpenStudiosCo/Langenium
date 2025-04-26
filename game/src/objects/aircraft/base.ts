@@ -8,6 +8,7 @@
 import { normaliseSpeedDelta, easeOutExpo, easeInQuad, easeInOutExpo } from '../../helpers';
 
 export default class BaseAircraft {
+    public hitPoints:       number                              = 100;
     public airSpeed:        number                              = 0;
     public verticalSpeed:   number                              = 0;
     public maxForward:      number                              = 3.7 * 5;    // Reading as 200 knots on the airspeed instrument, may not be correct.
@@ -41,6 +42,39 @@ export default class BaseAircraft {
 
     constructor() {
         
+    }
+
+    /**
+     * Damages the aircraft based on the incoming damage.
+     * 
+     * Returns the calculated final damage amount.
+     * 
+     * @param damagePoints 
+     * @returns 
+     */
+    public damage( damagePoints ): number {
+        let damage = damagePoints;
+        let seed = Math.random();
+
+        // Critical Fail
+        if ( seed < 0.05 ) {
+            damage = 0;
+        }
+
+        // Critical Success
+        if ( seed > 0.95 ) {
+            damage = damage * 2;
+        }
+
+        // Apply damage to the aircrafts hitpoints.
+        if ( this.hitPoints <= damage ) {
+            this.hitPoints = 0;
+        }
+        else {
+            this.hitPoints -= damage;
+        }
+
+        return damage;
     }
 
     /**

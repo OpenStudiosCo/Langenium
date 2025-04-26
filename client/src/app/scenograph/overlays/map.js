@@ -109,7 +109,7 @@ export default class Map {
         let topEdge = l.current_scene.objects.player.mesh.position.z - l.scenograph.overlays.map.distance / 2;
 
 
-        l.current_scene.objects.player.actor.scanners.targets.forEach( target => {
+        l.current_scene.objects.player.mesh.userData.actor.scanners.targets.forEach( target => {
             let distance = target.mesh.position.distanceTo( l.current_scene.objects.player.mesh.position );
 
             // Check if the object is within the mapping distance.

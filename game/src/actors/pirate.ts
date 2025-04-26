@@ -43,7 +43,7 @@ export default class Pirate extends BaseActor {
             this.follow = new YUKA.FollowPathBehavior( path );
             this.entity.steering.add( this.follow );
 
-            this.pursue = new YUKA.PursuitBehavior( l.current_scene.objects.player.actor.entity, 1 );
+            this.pursue = new YUKA.PursuitBehavior( l.current_scene.objects.player.mesh.userData.actor.entity, 1 );
             this.pursue.active = false;
 			this.entity.steering.add( this.pursue );
 

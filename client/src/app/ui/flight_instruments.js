@@ -1,5 +1,7 @@
 /**
  * Controls flight instrument UI elements
+ * 
+ * @todo: v7: Remove if not used.
  */
 
 export default class Flight_Instruments {
@@ -22,7 +24,17 @@ export default class Flight_Instruments {
         l.ui.flight_instruments.activated = true;
     }
 
-    // Updater, runs on setInterval
+    /**
+     * Update hook.
+     * 
+     * This method is called within the UI setInterval updater, allowing
+     * HTML content to be updated at different rate than the 3D frame rate.
+     * 
+     * @method update
+     * @memberof Flight_Instruments
+     * @global
+     * @note All references within this method should be globally accessible.
+    **/
     update() {
 
         // Check if the main aircraft is loaded and ready

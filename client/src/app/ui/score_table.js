@@ -32,6 +32,17 @@ export default class ScoreTable {
         l.ui.score_table.container.classList.remove( 'active' );
     }
 
+    /**
+     * Update hook.
+     * 
+     * This method is called within the UI setInterval updater, allowing
+     * HTML content to be updated at different rate than the 3D frame rate.
+     * 
+     * @method update
+     * @memberof ScoreTable
+     * @global
+     * @note All references within this method should be globally accessible.
+    **/
     update() {
         let scores = l.current_scene.scene.children.filter( scene_obj => 
             scene_obj.userData.hasOwnProperty( 'object' ) &&

@@ -104,6 +104,7 @@ export default class Main_Menu {
 
         this.buttons.multi_player = this.pane.addButton( {
             title: 'Multi Player',
+            disabled: true // @todo: v7 Restore multiplayer and server tracking of scene objects.
         } );
         this.buttons.multi_player.on( 'click', () => {
             console.log( 'Multi player launched' );
@@ -218,7 +219,7 @@ export default class Main_Menu {
             title: 'Help',
         } );
         this.buttons.help.on( 'click', () => {
-            console.log( 'Help launched' );
+            l.ui.help.show();
         } );
 
         return this;

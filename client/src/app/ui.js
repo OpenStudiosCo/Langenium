@@ -14,6 +14,7 @@ import Alpine from 'alpinejs';
  */
 import l from '@/helpers/l.js';
 import Flight_Instruments from '@/ui/flight_instruments.js';
+import Help from '@/ui/help.js';
 import Targeting from '@/ui/targeting.js';
 import Menus from '@/ui/menus.js';
 import ScoreTable from '@/ui/score_table.js';
@@ -44,6 +45,8 @@ export default class UI {
         Alpine.start();
 
         this.update_queue = [];
+
+        this.help = new Help();
 
         this.score_table = new ScoreTable();
 

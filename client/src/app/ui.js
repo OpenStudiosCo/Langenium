@@ -56,7 +56,7 @@ export default class UI {
         } );
 
         // /**
-        //  * @todo: Move into a game mode activation function.
+        //  * @todo: v7: Remove this code after confirmed reference not needed
         //  */
         // this.targeting = new Targeting();
 

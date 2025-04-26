@@ -4,7 +4,29 @@
 
 export default class ScoreTable {
 
+    /**
+     * Container CSS selector statement.
+     * @type {string}
+     */
     containerSelector;
+
+    /**
+     * Container HTML Element.
+     * @type {HTMLElement}
+     */
+    container;
+
+    /**
+     * Row Container CSS selector statement.
+     * @type {string}
+     */
+    rowContainerSelector;
+
+    /**
+     * Row Container HTML Element.
+     * @type {HTMLElement}
+     */
+    rowContainer;   
 
     constructor() {
 

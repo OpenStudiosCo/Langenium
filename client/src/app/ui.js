@@ -109,10 +109,16 @@ export default class UI {
     }
 
     /**
-     * Update
+     * Update hook runner.
      * 
-     * Runs on setInterval
-     */
+     * This method is the UI setInterval queue runner, allowing HTML content
+     * to be updated at different rate than the 3D frame rate.
+     * 
+     * @method update
+     * @memberof UI
+     * @global
+     * @note All references within this method should be globally accessible.
+    **/
     update() {
         l.ui.update_queue.forEach( ( current_update, i ) => {
             _execute( current_update.callback, current_update.data, window );

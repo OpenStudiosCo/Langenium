@@ -1,7 +1,9 @@
 /**
  * Trail
  * 
- * Provides helpers for drawing trails.
+ * Provides helpers for creating thruster trails.
+ * 
+ * @uses https://github.com/mkkellogg/TrailRendererJS
  */
 
 /**
@@ -21,6 +23,15 @@ export default class Trail {
 
     }
 
+    /**
+     * Create a thruster trail mesh.
+     *
+     * @param {THREE.Mesh} mesh 
+     * @param {float} trail_position_x 
+     * @param {float} trail_position_y 
+     * @param {float} trail_position_z 
+     * @returns {TrailRenderer}
+     */
     createTrail( mesh, trail_position_x, trail_position_y, trail_position_z ) {
         // specify points to create planar trail-head geometry
         const trailHeadGeometry = l.current_scene.effects.trail.createTrailCircle();
@@ -52,6 +63,10 @@ export default class Trail {
         return trail;
     }
 
+    /**
+     * Create the trails circular shape.
+     * @returns {array}
+     */
     createTrailCircle() {
         let circlePoints = [];
         const twoPI = Math.PI * 2;

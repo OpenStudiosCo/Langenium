@@ -60,6 +60,17 @@ export default class BaseActor {
 
     }
 
+    /**
+     * Animate hook.
+     * 
+     * This method is called within the main game loop.
+     * 
+     * The game client and server call this function to update game systems.
+     * 
+     * @method animate
+     * @memberof BaseActor
+     * @global
+    **/
     animate( delta ) {
         this.scanners.animate( delta );
         this.weapons.animate( delta );

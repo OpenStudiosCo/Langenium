@@ -171,6 +171,7 @@ export default class Scanners extends BaseSystem {
     animate ( delta ) {
         //if ( parseInt( l.current_scene.stats.currentTime ) >= parseInt(this.last) + parseInt(this.timeout) ) {
             this.scan( delta );
+            // @todo: v7 Figure out a way to signal this to happen without l. global object access
             this.last = l.current_scene.stats.currentTime;
         //}
     }

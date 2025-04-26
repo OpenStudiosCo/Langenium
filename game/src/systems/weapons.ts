@@ -28,6 +28,7 @@ export default class Weapons extends BaseSystem {
     }
 
     // Check if we are ready to fire again.
+    // @todo: v7 Figure out a way to signal this to happen without l. global object access
     ready () {
         return parseInt( l.current_scene.stats.currentTime ) >= parseInt(this.last) + parseInt(this.timeout)
     }
@@ -59,6 +60,7 @@ export default class Weapons extends BaseSystem {
                     }
 
                     if ( negativeStanding ) {
+                        // @todo: v7 Figure out a way to signal this to happen without l. global object access
                         this.last = l.current_scene.stats.currentTime;
 
                         l.current_scene.objects.projectiles.missile.fireMissile(

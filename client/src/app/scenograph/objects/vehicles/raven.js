@@ -100,7 +100,7 @@ export default class Raven extends RavenBase {
         this.mesh.userData.objectClass = 'bot';
         this.mesh.position.z = -1500;
         this.mesh.position.y = 200;
-        this.mesh.rotation.y = Math.PI;
+        this.mesh.children[0].rotation.y = Math.PI;
         this.mesh.rotation.order = 'YXZ';
 
         // const vehicleGeometry = new THREE.ConeGeometry( 5, 20, 32 );

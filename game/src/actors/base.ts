@@ -41,6 +41,7 @@ export default class BaseActor {
              * @public
              */
             this.entity = new YUKA.Vehicle();
+            this.entity.forward = new YUKA.Vector3( 0, 0, -1 );
 
             this.scanners = new Scanners( this.entity, this.mesh, scene );
             this.weapons = new Weapons( this.mesh, this.scanners );

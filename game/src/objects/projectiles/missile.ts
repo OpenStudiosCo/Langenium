@@ -23,7 +23,7 @@ class MissileProjectile extends BaseProjectile {
         const hit = this.missileMesh.position.distanceTo( this.missileMesh.userData.destMesh.position ) <= 5;
 
         if ( hit && this.missileMesh.userData.destMesh.userData.object ) {
-            this.missileMesh.userData.destMesh.userData.object.damage( this.damagePoints );
+            this.missileMesh.userData.destMesh.userData.object.damage( this.damagePoints, this.missileMesh.userData.originMesh );
         }
 
         return hit;

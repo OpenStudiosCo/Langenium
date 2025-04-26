@@ -117,6 +117,11 @@ export default class Raven extends RavenBase {
 
         this.mesh.userData.object = this;
         this.mesh.userData.object.standing = -1;
+        // Set the object start position based on the path.
+        // @todo: pluck it dynamically from path.
+        this.mesh.userData.object.startPosition.x = -2000;
+        this.mesh.userData.object.startPosition.y = this.mesh.position.y;
+        this.mesh.userData.object.startPosition.z = -1000;
 
     }
 
@@ -127,4 +132,3 @@ export default class Raven extends RavenBase {
 
    
 }
-

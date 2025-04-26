@@ -14,6 +14,8 @@ export default class Pirate extends BaseActor {
 
     marker;
 
+    path;
+
     pursue;
 
     constructor( mesh, scene ) {
@@ -31,16 +33,15 @@ export default class Pirate extends BaseActor {
             this.entity.rotation.order = 'XYZ';
 
             const loopDistance = -1000;
-            const path = new YUKA.Path();
-            path.loop = true;
-            path.add( new YUKA.Vector3( loopDistance, this.mesh.position.y, loopDistance ) );
-            path.add( new YUKA.Vector3( loopDistance, this.mesh.position.y, - loopDistance ) );
-            path.add( new YUKA.Vector3( - loopDistance, this.mesh.position.y, - loopDistance ) );
-            path.add( new YUKA.Vector3( - loopDistance, this.mesh.position.y, loopDistance ) );
+
+            this.path = new YUKA.Path();
+            this.path.loop = true;
+            this.path.add( new YUKA.Vector3( loopDistance, this.mesh.position.y, loopDistance ) );
+            this.path.add( new YUKA.Vector3( loopDistance, this.mesh.position.y, - loopDistance ) );
+            this.path.add( new YUKA.Vector3( - loopDistance, this.mesh.position.y, - loopDistance ) );
+            this.path.add( new YUKA.Vector3( - loopDistance, this.mesh.position.y, loopDistance ) );
     
-            
-    
-            this.follow = new YUKA.FollowPathBehavior( path );
+            this.follow = new YUKA.FollowPathBehavior( this.path );
             this.entity.steering.add( this.follow );
 
             this.pursue = new YUKA.PursuitBehavior( l.current_scene.objects.player.mesh.userData.actor.entity, 1 );

@@ -8,6 +8,7 @@
 import { normaliseSpeedDelta, easeOutExpo, easeInQuad, easeInOutExpo } from '../../helpers';
 
 export default class BaseAircraft {
+    public score:           { kills: number; deaths: number }   = { kills: 0, deaths: 0 };
     public standing:        number                              = 0;
     public hitPoints:       number                              = 100;
     public airSpeed:        number                              = 0;
@@ -21,6 +22,7 @@ export default class BaseAircraft {
     public altitude:        number                              = 0;
     public horizon:         [number, number]                    = [0, 0];
     public position:        { x: number; y: number; z: number } = { x: 0, y: 8.5, z: 0 };
+    public startPosition:   { x: number; y: number; z: number } = { x: 0, y: 8.5, z: 0 };
     public rotation:        { x: number; y: number; z: number } = { x: 0, y: 0, z: 0 };
 
     public controls: {
@@ -42,7 +44,6 @@ export default class BaseAircraft {
     };
 
     constructor() {
-        
     }
 
     /**
@@ -51,9 +52,10 @@ export default class BaseAircraft {
      * Returns the calculated final damage amount.
      * 
      * @param damagePoints 
+     * @param originMesh
      * @returns 
      */
-    public damage( damagePoints ): number {
+    public damage( damagePoints, originMesh ): number {
         let damage = damagePoints;
         let seed = Math.random();
 
@@ -69,7 +71,27 @@ export default class BaseAircraft {
 
         // Apply damage to the aircrafts hitpoints.
         if ( this.hitPoints <= damage ) {
-            this.hitPoints = 0;
+            // Reset hitpoints
+            this.hitPoints = 100;
+            
+            // Update scores.
+            this.score.deaths += 1;
+            originMesh.userData.object.score.kills += 1;
+
+            // Reset object to start position,rotation and speed.
+            this.mesh.userData.actor.entity.position.x = this.startPosition.x;
+            this.mesh.userData.actor.entity.position.y = this.startPosition.y;
+            this.mesh.userData.actor.entity.position.z = this.startPosition.z;
+            this.rotation.x = 0;
+            this.rotation.y = 0;
+            this.rotation.z = 0;
+            this.airSpeed = 0;
+            this.verticalSpeed = 0;
+
+            // Remove respective target locks as the target object is 'dead' / being reset.
+            originMesh.userData.actor.scanners.untrackTarget( this.mesh.uuid );
+            this.mesh.userData.actor.scanners.untrackTarget( originMesh.uuid );
+
         }
         else {
             this.hitPoints -= damage;

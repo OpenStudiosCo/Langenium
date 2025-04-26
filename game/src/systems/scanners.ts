@@ -157,7 +157,16 @@ export default class Scanners extends BaseSystem {
 
     }
 
-
+    untrackTarget( uuid ) {
+        this.targets.forEach( ( target ) => {
+            if ( target.mesh.uuid == uuid ) {
+                target.locked   = false;
+                target.locking  = false;
+                target.tracking = false;
+                target.scanTime = 0;
+            }
+        });
+    }
 
     animate ( delta ) {
         //if ( parseInt( l.current_scene.stats.currentTime ) >= parseInt(this.last) + parseInt(this.timeout) ) {

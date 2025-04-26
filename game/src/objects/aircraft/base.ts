@@ -71,30 +71,45 @@ export default class BaseAircraft {
 
         // Apply damage to the aircrafts hitpoints.
         if ( this.hitPoints <= damage ) {
+            this.hitPoints = 0;
             // Add an explosion special effect
             // @todo: v7 Figure out a way to signal this to happen without l. global object access
             l.current_scene.objects.projectiles.missile.loadExplosion( this.mesh.position );
 
-            // Reset hitpoints
-            this.hitPoints = 100;
-            
-            // Update scores.
-            this.score.deaths += 1;
-            originMesh.userData.object.score.kills += 1;
+            // Destroy all missiles headed toward the target.
+            l.current_scene.objects.projectiles.missile.targetLost( this.mesh.uuid );
 
-            // Reset object to start position,rotation and speed.
-            this.mesh.userData.actor.entity.position.x = this.startPosition.x;
-            this.mesh.userData.actor.entity.position.y = this.startPosition.y;
-            this.mesh.userData.actor.entity.position.z = this.startPosition.z;
-            this.rotation.x = 0;
-            this.rotation.y = 0;
-            this.rotation.z = 0;
-            this.airSpeed = 0;
-            this.verticalSpeed = 0;
+            // Disable targeting until respawn.
+            this.mesh.userData.targetable = false;
+            this.mesh.visible = false;
 
-            // Remove respective target locks as the target object is 'dead' / being reset.
-            originMesh.userData.actor.scanners.untrackTarget( this.mesh.uuid );
-            this.mesh.userData.actor.scanners.untrackTarget( originMesh.uuid );
+            // Wait 3 seconds before 'respawn'.
+            setTimeout( () => {
+                // Reset hitpoints
+                this.hitPoints = 100;
+                            
+                // Update scores.
+                this.score.deaths += 1;
+                originMesh.userData.object.score.kills += 1;
+
+                // Reset object to start position,rotation and speed.
+                this.mesh.userData.actor.entity.position.x = this.startPosition.x;
+                this.mesh.userData.actor.entity.position.y = this.startPosition.y;
+                this.mesh.userData.actor.entity.position.z = this.startPosition.z;
+                this.rotation.x = 0;
+                this.rotation.y = 0;
+                this.rotation.z = 0;
+                this.airSpeed = 0;
+                this.verticalSpeed = 0;
+
+                // Remove respective target locks as the target object is 'dead' / being reset.
+                originMesh.userData.actor.scanners.untrackTarget( this.mesh.uuid );
+                this.mesh.userData.actor.scanners.untrackTarget( originMesh.uuid );
+
+                // Re-enable targeting after respawn.
+                this.mesh.userData.targetable = true;
+                this.mesh.visible = true;
+            }, 3000 );
 
         }
         else {

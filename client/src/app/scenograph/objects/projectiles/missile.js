@@ -72,6 +72,16 @@ export default class Missile {
 
     }
 
+    async targetLost( targetMeshUuid ) {
+
+        l.current_scene.objects.projectiles.missile.active.forEach( ( missile, index ) => {
+            // Detonate early if missile target was lost.
+            if ( missile.userData.destMesh.uuid == targetMeshUuid ) {
+                l.current_scene.objects.projectiles.missile.animateMissileEnd( missile, index );
+            }
+        } );
+    }
+
     async loadExplosion( position ) {
         const explosionVideo = document.getElementById( 'explosion' ).cloneNode(true);
         explosionVideo.play();
@@ -220,20 +230,11 @@ export default class Missile {
                 ( parseFloat( l.current_scene.stats.currentTime ) >= parseFloat( missile.userData.created ) + 10000 ) ||
                 ( missile.userData.object.hit() )
             ) {
-                l.current_scene.objects.projectiles.missile.active.splice( index, 1 );
-                l.current_scene.scene.remove( missile );
-                missile.userData.trail.destroyMesh();
-                missile.userData.trail.deactivate();
-                l.current_scene.objects.projectiles.missile.loadExplosion( missile.userData.destMesh.position );
+                l.current_scene.objects.projectiles.missile.animateMissileEnd( missile, index );
             }
             // Otherwise keep flying forward.
             else {
-                
-                let missileAge = parseFloat( missile.userData.created ) - parseFloat(l.current_scene.stats.currentTime );
-                let missileSpeed = 1 + 4 * Math.min( ( missileAge / 2000 ), 1 );
-                missile.lookAt( missile.userData.destMesh.position );
-                missile.translateZ(-missileSpeed); // 5 meters per frame at 60fps is approx 432km per hour
-                missile.userData.trail.update();
+                l.current_scene.objects.projectiles.missile.animateMissileFlight( missile );
             }
         } );
 
@@ -273,6 +274,23 @@ export default class Missile {
                 }
             }
         } );
+    }
+
+    animateMissileFlight( missile ) {
+        
+        let missileAge = parseFloat( missile.userData.created ) - parseFloat(l.current_scene.stats.currentTime );
+        let missileSpeed = 1 + 4 * Math.min( ( missileAge / 2000 ), 1 );
+        missile.lookAt( missile.userData.destMesh.position );
+        missile.translateZ(-missileSpeed); // 5 meters per frame at 60fps is approx 432km per hour
+        missile.userData.trail.update();
+    }
+
+    animateMissileEnd( missile, activeIndex ) {
+        l.current_scene.objects.projectiles.missile.active.splice( activeIndex, 1 );
+        l.current_scene.scene.remove( missile );
+        missile.userData.trail.destroyMesh();
+        missile.userData.trail.deactivate();
+        l.current_scene.objects.projectiles.missile.loadExplosion( missile.userData.destMesh.position );
     }
 
 }

@@ -193,11 +193,13 @@ export default class CargoShips {
 
     animate( delta ) {
 
-        l.current_scene.objects.cargo_ships.forEach( ( cargo_ship ) => {
+        if ( l.current_scene.settings.game_controls ) {
+            l.current_scene.objects.cargo_ships.forEach( ( cargo_ship ) => {
 
-            cargo_ship.userData.actor.animate( delta );
-            
-        } );
+                cargo_ship.userData.actor.animate( delta );
+                
+            } );
+        }
  
     }
     

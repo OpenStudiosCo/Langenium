@@ -128,7 +128,9 @@ export default class Raven extends RavenBase {
 
     // Runs on the main animation loop
     animate( delta ) {
-        l.current_scene.objects.bot.mesh.userData.actor.animate( delta );
+        if ( l.current_scene.settings.game_controls ) {
+            l.current_scene.objects.bot.mesh.userData.actor.animate( delta );
+        }
     }
 
    

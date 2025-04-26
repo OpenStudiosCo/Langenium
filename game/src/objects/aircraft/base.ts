@@ -71,6 +71,10 @@ export default class BaseAircraft {
 
         // Apply damage to the aircrafts hitpoints.
         if ( this.hitPoints <= damage ) {
+            // Add an explosion special effect
+            // @todo: v7 Figure out a way to signal this to happen without l. global object access
+            l.current_scene.objects.projectiles.missile.loadExplosion( this.mesh.position );
+
             // Reset hitpoints
             this.hitPoints = 100;
             

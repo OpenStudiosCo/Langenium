@@ -31,7 +31,7 @@ export default class Scanners extends BaseSystem {
 
         const vision = new YUKA.Vision( this.entity );
         vision.range = 1500;
-        vision.fieldOfView = Math.PI * 2;
+        vision.fieldOfView = 2.094; // 2.094 radians = 120 degrees
         this.entity.vision = vision;
     }
 

@@ -83,14 +83,18 @@ export default class BaseAircraft {
             this.mesh.userData.targetable = false;
             this.mesh.visible = false;
 
+            // Remove respective target locks as the target object is 'dead' / being reset.
+            originMesh.userData.actor.scanners.untrackTarget( this.mesh.uuid );
+            this.mesh.userData.actor.scanners.untrackTarget( originMesh.uuid );
+
+            // Update scores.
+            this.score.deaths += 1;
+            originMesh.userData.object.score.kills += 1;
+
             // Wait 3 seconds before 'respawn'.
             setTimeout( () => {
                 // Reset hitpoints
                 this.hitPoints = 100;
-                            
-                // Update scores.
-                this.score.deaths += 1;
-                originMesh.userData.object.score.kills += 1;
 
                 // Reset object to start position,rotation and speed.
                 this.mesh.userData.actor.entity.position.x = this.startPosition.x;
@@ -101,10 +105,6 @@ export default class BaseAircraft {
                 this.rotation.z = 0;
                 this.airSpeed = 0;
                 this.verticalSpeed = 0;
-
-                // Remove respective target locks as the target object is 'dead' / being reset.
-                originMesh.userData.actor.scanners.untrackTarget( this.mesh.uuid );
-                this.mesh.userData.actor.scanners.untrackTarget( originMesh.uuid );
 
                 // Re-enable targeting after respawn.
                 this.mesh.userData.targetable = true;

@@ -40,6 +40,14 @@ export default class Scanners {
     getSymbolElement( symbol ) {
         let element = document.createElement('div');
         element.innerHTML = this.item_template;
+        element.querySelector('.symbol').innerHTML = l.scenograph.overlays.map.icons[ symbol ];
+        element.firstChild.classList.add( symbol );
+        const shape = element.querySelector('.symbol path, .symbol rect');
+        
+        if ( shape.style ) {
+            shape.style = '';
+        }
+        
         return element.firstChild;
     }
 
@@ -162,8 +170,8 @@ export default class Scanners {
             domElement.classList.remove('locking');
         }
 
-        domElement.style.left = `${x-5}px`;
-        domElement.style.top = `${y-5}px`;
+        domElement.style.left = `${x-10}px`;
+        domElement.style.top = `${y-10}px`;
     }
 
     /**
@@ -191,7 +199,21 @@ export default class Scanners {
         let trackedObject = l.scenograph.overlays.scanners.trackedObjects[ target.mesh.uuid ];
 
         if ( ! trackedObject ) {
-            l.scenograph.overlays.scanners.trackedObjects[ target.mesh.uuid ] = l.scenograph.overlays.scanners.getSymbolElement( 'diamond' );
+
+            // Object icon look up table.
+            const objectIcons = {
+                'bot': 'aircraft',
+                'cargoShip': 'ship',
+                'city': 'structure',
+                'extractors': 'structure',
+                'missiles': 'aircraft',
+                'player': 'aircraft',
+                'refinery': 'structure',
+            }
+
+            let symbol = objectIcons[ target.mesh.userData.objectClass ];
+
+            l.scenograph.overlays.scanners.trackedObjects[ target.mesh.uuid ] = l.scenograph.overlays.scanners.getSymbolElement( symbol );
             trackedObject = l.scenograph.overlays.scanners.trackedObjects[ target.mesh.uuid ];
             l.scenograph.overlays.scanners.container.appendChild( trackedObject );
         }

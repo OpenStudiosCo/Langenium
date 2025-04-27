@@ -3,6 +3,7 @@ body {
   margin: 0;
   height: 100%;
   overflow: hidden;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 #page-wrapper {
   position: relative;
@@ -188,8 +189,8 @@ body {
   width: 40px;
   height: 40px;
   position: absolute;
-  right: -11px;
-  bottom: -11px;
+  right: -7.5px;
+  bottom: -7.5px;
   animation: scale 0.6s infinite ease-in-out;
 }
 #game_overlay .scanner-target.tracking .targeting-effect {
@@ -215,16 +216,32 @@ body {
   border: ridge 2px #c800c8;
   animation: none;
 }
+#game_overlay .scanner-target.aircraft path,
+#game_overlay .scanner-target.aircraft rect {
+  stroke-width: 20px;
+}
+#game_overlay .scanner-target.ship path,
+#game_overlay .scanner-target.ship rect {
+  stroke-width: 10px;
+}
+#game_overlay .scanner-target.structure path,
+#game_overlay .scanner-target.structure rect {
+  stroke-width: 15px;
+}
 #game_overlay .scanner-target .symbol {
   background: none;
-  border: solid 1px #0000c8;
-  width: 10px;
-  height: 10px;
-  transform: rotate(45deg);
+  width: 20px;
+  height: 20px;
 }
-#game_overlay .scanner-target.tracking .symbol {
-  background: rgba(200,0,200,0.5);
-  border: solid 2px #c800c8;
+#game_overlay .scanner-target .symbol path,
+#game_overlay .scanner-target .symbol rect {
+  stroke: rgba(0,0,200,0.5);
+  fill: none;
+}
+#game_overlay .scanner-target.tracking .symbol path,
+#game_overlay .scanner-target.tracking .symbol rect {
+  fill: rgba(200,0,200,0.5);
+  stroke: #c800c8;
 }
 #game_overlay #hud-lines {
   position: absolute;
@@ -404,6 +421,42 @@ body {
   bottom: 8px;
   right: 8px;
 }
+#help {
+  background: rgba(0,0,0,0.9);
+  color: #fff;
+  display: none;
+  position: absolute;
+  top: 12dvh;
+  left: 12dvw;
+  width: 76dvw;
+  height: 76dvh;
+  z-index: 5;
+  overflow-y: scroll;
+}
+#help.active {
+  display: block;
+}
+#help button {
+  background: #000;
+  border-radius: 32px;
+  font-size: 1.5rem;
+  color: #fff;
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  right: 0;
+  top: 0;
+  margin-right: 12px;
+  margin-top: 12px;
+}
+#help h1,
+#help h2 {
+  padding: 0.75rem 1rem 0.25rem;
+}
+#help p {
+  line-height: 1.5rem;
+  padding: 0.25rem 1rem;
+}
 #object_editor {
   bottom: 8px;
   left: 8px;
@@ -413,10 +466,45 @@ body {
   left: 8px;
   display: none;
 }
+#score_table {
+  background: rgba(0,0,0,0.8);
+  color: #fff;
+  display: none;
+  position: absolute;
+  top: 18dvw;
+  left: 18dvw;
+  width: 64dvw;
+  height: auto;
+  z-index: 5;
+}
+#score_table.active {
+  display: block;
+}
+#score_table button {
+  background: #000;
+  border-radius: 32px;
+  font-size: 1.5rem;
+  color: #fff;
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  right: 0;
+  top: 0;
+  margin-right: -16px;
+  margin-top: -16px;
+}
+#score_table h2 {
+  padding: 1rem;
+}
+#score_table table {
+  border-spacing: 1rem;
+  width: 100%;
+}
 #weapon_controls {
   display: none;
+  width: 100%;
   bottom: 8px;
-  right: 180px;
+  justify-content: center;
   z-index: 2;
 /* The switch - the box around the slider */
 /* Hide default HTML checkbox */
@@ -424,7 +512,6 @@ body {
 /* Rounded sliders */
 }
 #weapon_controls div.label {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   font-size: 0.7rem;
 }
 #weapon_controls button {
@@ -485,4 +572,11 @@ body {
 }
 #weapon_controls .slider.round:before {
   border-radius: 50%;
+}
+@media screen and (min-width: 640px) {
+  #weapon_controls {
+    justify-content: inherit;
+    right: 180px;
+    width: inherit;
+  }
 }

@@ -63,6 +63,9 @@
       init_helpers();
       BaseAircraft = class {
         constructor() {
+          __publicField(this, "score", { kills: 0, deaths: 0 });
+          __publicField(this, "standing", 0);
+          __publicField(this, "hitPoints", 100);
           __publicField(this, "airSpeed", 0);
           __publicField(this, "verticalSpeed", 0);
           __publicField(this, "maxForward", 3.7 * 5);
@@ -76,6 +79,7 @@
           __publicField(this, "altitude", 0);
           __publicField(this, "horizon", [0, 0]);
           __publicField(this, "position", { x: 0, y: 8.5, z: 0 });
+          __publicField(this, "startPosition", { x: 0, y: 8.5, z: 0 });
           __publicField(this, "rotation", { x: 0, y: 0, z: 0 });
           __publicField(this, "controls", {
             changing: false,
@@ -86,6 +90,73 @@
             moveLeft: false,
             moveRight: false
           });
+        }
+        blowUp(meshPosition) {
+          let seed = Math.round(Math.random() * 10);
+          for (var i2 = 0; i2 < seed; i2++) {
+            let xOffset = 10 - Math.random() * 20;
+            let yOffset = 10 - Math.random() * 20;
+            let zOffset = 10 - Math.random() * 20;
+            let explosionPosition = meshPosition.clone();
+            explosionPosition.x += xOffset;
+            explosionPosition.y += yOffset;
+            explosionPosition.z += zOffset;
+            setTimeout(() => {
+              l.current_scene.objects.projectiles.missile.loadExplosion(explosionPosition);
+            }, 250 * Math.random());
+          }
+        }
+        /**
+         * Damages the aircraft based on the incoming damage.
+         * 
+         * Returns the calculated final damage amount.
+         * 
+         * @param damagePoints 
+         * @param originMesh
+         * @returns 
+         */
+        damage(damagePoints, originMesh) {
+          let targetDestroyed = false;
+          let damage = damagePoints;
+          let seed = Math.random();
+          if (seed < 0.05) {
+            damage = 0;
+          }
+          if (seed > 0.95) {
+            damage = damage * 2;
+          }
+          if (this.hitPoints <= damage) {
+            targetDestroyed = true;
+            this.hitPoints = 0;
+            this.blowUp(this.mesh.position);
+            this.mesh.userData.targetable = false;
+            this.mesh.visible = false;
+            originMesh.userData.actor.scanners.untrackTarget(this.mesh.uuid);
+            this.mesh.userData.actor.scanners.untrackTarget(originMesh.uuid);
+            this.score.deaths += 1;
+            originMesh.userData.object.score.kills += 1;
+            const scannerMarker = l.scenograph.overlays.scanners.trackedObjects[this.mesh.uuid];
+            if (scannerMarker)
+              scannerMarker.style.display = "none";
+            setTimeout(() => {
+              this.hitPoints = 100;
+              this.mesh.userData.actor.entity.position.x = this.startPosition.x;
+              this.mesh.userData.actor.entity.position.y = this.startPosition.y;
+              this.mesh.userData.actor.entity.position.z = this.startPosition.z;
+              this.rotation.x = 0;
+              this.rotation.y = 0;
+              this.rotation.z = 0;
+              this.airSpeed = 0;
+              this.verticalSpeed = 0;
+              this.mesh.userData.targetable = true;
+              this.mesh.visible = true;
+              if (scannerMarker)
+                scannerMarker.style.display = "block";
+            }, 3e3);
+          } else {
+            this.hitPoints -= damage;
+          }
+          return [damage, targetDestroyed];
         }
         /**
          * Change aircraft velocity based on current and what buttons are pushed by the player.
@@ -212,6 +283,45 @@
         }
       };
       module.exports = Raven2;
+    }
+  });
+
+  // ../game/src/objects/projectiles/base.ts
+  var BaseProjectile;
+  var init_base2 = __esm({
+    "../game/src/objects/projectiles/base.ts"() {
+      BaseProjectile = class {
+        constructor() {
+        }
+        animate() {
+        }
+      };
+    }
+  });
+
+  // ../game/src/objects/projectiles/missile.ts
+  var require_missile = __commonJS({
+    "../game/src/objects/projectiles/missile.ts"(exports, module) {
+      init_base2();
+      var MissileProjectile2 = class extends BaseProjectile {
+        constructor(missileMesh) {
+          super();
+          __publicField(this, "damagePoints");
+          __publicField(this, "missileMesh");
+          this.damagePoints = 20;
+          this.missileMesh = missileMesh;
+        }
+        // IF a missile gets within 5m of its target, it counts as a hit.
+        hitCalculation() {
+          const hit = this.missileMesh.position.distanceTo(this.missileMesh.userData.destMesh.position) <= 5;
+          let targetDestroyed = false;
+          if (hit && this.missileMesh.userData.destMesh.userData.object) {
+            targetDestroyed = this.missileMesh.userData.destMesh.userData.object.damage(this.damagePoints, this.missileMesh.userData.originMesh);
+          }
+          return [hit];
+        }
+      };
+      module.exports = MissileProjectile2;
     }
   });
 
@@ -49588,8 +49698,23 @@ void main() {
   // src/app/scenograph/controls/touch/weapons.js
   var WeaponControls = class {
     constructor() {
+      /**
+       * Switch indicating we are currently attacking.
+       * 
+       * @type {boolean} 
+       */
       __publicField(this, "attack");
+      /**
+       * Switch indicating auto attack is on.
+       * 
+       * @type {boolean} 
+       */
       __publicField(this, "autoAttack");
+      /**
+       * HTML Container
+       * 
+       * @type {HTMLElement}
+       */
       __publicField(this, "container");
       this.attack = false;
       this.autoAttack = true;
@@ -49604,12 +49729,22 @@ void main() {
         l_default.scenograph.controls.touch.weapons.attack = false;
       };
     }
-    // Updater, runs on setInterval
+    /**
+     * Update hook.
+     * 
+     * This method is called within the UI setInterval updater, allowing
+     * HTML content to be updated at different rate than the 3D frame rate.
+     * 
+     * @method update
+     * @memberof WeaponControls
+     * @global
+     * @note All references within this method should be globally accessible.
+    **/
     update() {
       const button = l_default.scenograph.controls.touch.weapons.container.querySelector("button");
       let timeRemaining = 0;
-      if (parseInt(l_default.current_scene.stats.currentTime) < parseInt(l_default.current_scene.objects.player.actor.weapons.lastAttack) + parseInt(l_default.current_scene.objects.player.actor.weapons.timeout)) {
-        timeRemaining = parseInt(l_default.current_scene.objects.player.actor.weapons.timeout) - (parseInt(l_default.current_scene.stats.currentTime) - parseInt(l_default.current_scene.objects.player.actor.weapons.lastAttack));
+      if (parseInt(l_default.current_scene.stats.currentTime) < parseInt(l_default.current_scene.objects.player.mesh.userData.actor.weapons.last) + parseInt(l_default.current_scene.objects.player.mesh.userData.actor.weapons.timeout)) {
+        timeRemaining = parseInt(l_default.current_scene.objects.player.mesh.userData.actor.weapons.timeout) - (parseInt(l_default.current_scene.stats.currentTime) - parseInt(l_default.current_scene.objects.player.mesh.userData.actor.weapons.last));
       }
       if (timeRemaining == 0) {
         button.disabled = false;
@@ -49714,6 +49849,17 @@ void main() {
         (animation_queue_update) => animation_queue_update !== l_default.scenograph.controls.animate
       );
     }
+    /**
+     * Animate hook.
+     * 
+     * This method is called within the main animation loop and
+     * therefore must only reference global objects or properties.
+     * 
+     * @method animate
+     * @memberof Controls
+     * @global
+     * @note All references within this method should be globally accessible.
+    **/
     animate() {
       if (l_default.scenograph.controls.orbit) {
         l_default.scenograph.controls.orbit.target.set(
@@ -49728,7 +49874,7 @@ void main() {
     set_target(object_id) {
       let target_object = l_default.current_scene.scene.getObjectById(object_id);
       if (target_object.name == "Bot Ship") {
-        target_object = l_default.current_scene.objects.bot.actor.entity;
+        target_object = l_default.current_scene.objects.bot.mesh.userData.actor.entity;
       }
       l_default.scenograph.controls.orbitTarget = target_object.position.clone();
       l_default.scenograph.cameras.orbit.position.copy(l_default.scenograph.controls.orbitTarget);
@@ -50352,6 +50498,15 @@ void main() {
   var Trail = class {
     constructor() {
     }
+    /**
+     * Create a thruster trail mesh.
+     *
+     * @param {THREE.Mesh} mesh 
+     * @param {float} trail_position_x 
+     * @param {float} trail_position_y 
+     * @param {float} trail_position_z 
+     * @returns {TrailRenderer}
+     */
     createTrail(mesh, trail_position_x, trail_position_y, trail_position_z) {
       const trailHeadGeometry = l_default.current_scene.effects.trail.createTrailCircle();
       const trail = new TrailRenderer(l_default.current_scene.scene, false);
@@ -50363,9 +50518,14 @@ void main() {
       mesh.add(trailContainer);
       trail.initialize(trailMaterial, trailLength, false, 0, trailHeadGeometry, trailContainer);
       trail.mesh.name = mesh.name + " Trail";
+      trail.mesh.renderOrder = 999;
       trail.activate();
       return trail;
     }
+    /**
+     * Create the trails circular shape.
+     * @returns {array}
+     */
     createTrailCircle() {
       let circlePoints = [];
       const twoPI = Math.PI * 2;
@@ -50382,10 +50542,8 @@ void main() {
     }
     createTrailMaterial() {
       const trailMaterial = TrailRenderer.createBaseMaterial();
-      trailMaterial.depthWrite = true;
-      trailMaterial.depthBias = -1e-4;
-      trailMaterial.depthBiasConstant = 0;
-      trailMaterial.depthBiasSlope = 0;
+      trailMaterial.side = DoubleSide;
+      trailMaterial.transparent = true;
       trailMaterial.uniforms.headColor.value.set(255 / 255, 212 / 255, 148 / 255, 1);
       trailMaterial.uniforms.tailColor.value.set(132 / 255, 42 / 255, 36 / 255, 1);
       return trailMaterial;
@@ -58094,7 +58252,7 @@ bool _bvhIntersectFirstHit(
      * therefore must only reference global objects or properties.
      * 
      * @method animate
-     * @memberof Scanners
+     * @memberof HeadsUpDisplay
      * @global
      * @note All references within this method should be globally accessible.
     **/
@@ -58165,6 +58323,7 @@ bool _bvhIntersectFirstHit(
         "cargoShip": "ship",
         "city": "structure",
         "extractors": "structure",
+        "missiles": "aircraft",
         "player": "aircraft",
         "refinery": "structure"
       };
@@ -58192,12 +58351,12 @@ bool _bvhIntersectFirstHit(
       let halfMapSize = mapSize / 2 - 2.5;
       let leftEdge = l_default.current_scene.objects.player.mesh.position.x - l_default.scenograph.overlays.map.distance / 2;
       let topEdge = l_default.current_scene.objects.player.mesh.position.z - l_default.scenograph.overlays.map.distance / 2;
-      l_default.scenograph.overlays.scanners.trackedObjects.forEach((trackedObject) => {
-        let distance = trackedObject.mesh.position.distanceTo(l_default.current_scene.objects.player.mesh.position);
+      l_default.current_scene.objects.player.mesh.userData.actor.scanners.targets.forEach((target3) => {
+        let distance = target3.mesh.position.distanceTo(l_default.current_scene.objects.player.mesh.position);
         if (distance <= l_default.scenograph.overlays.map.distance * 100) {
-          if (trackedObject.mesh.uuid in l_default.scenograph.overlays.map.markers) {
-            let diffX = (trackedObject.mesh.position.x - leftEdge) * offset;
-            let diffZ = (trackedObject.mesh.position.z - topEdge) * offset;
+          if (target3.mesh.uuid in l_default.scenograph.overlays.map.markers) {
+            let diffX = (target3.mesh.position.x - leftEdge) * offset;
+            let diffZ = (target3.mesh.position.z - topEdge) * offset;
             let dx = diffX - halfMapSize;
             let dy = diffZ - halfMapSize;
             let distFromCenter = Math.sqrt(dx * dx + dy * dy);
@@ -58207,14 +58366,14 @@ bool _bvhIntersectFirstHit(
               diffX = clampedX;
               diffZ = clampedY;
             }
-            l_default.scenograph.overlays.map.markers[trackedObject.mesh.uuid].domElement.style.left = `${diffX - 5}px`;
-            l_default.scenograph.overlays.map.markers[trackedObject.mesh.uuid].domElement.style.top = `${diffZ - 5}px`;
+            l_default.scenograph.overlays.map.markers[target3.mesh.uuid].domElement.style.left = `${diffX - 5}px`;
+            l_default.scenograph.overlays.map.markers[target3.mesh.uuid].domElement.style.top = `${diffZ - 5}px`;
           } else {
-            l_default.scenograph.overlays.map.markers[trackedObject.mesh.uuid] = l_default.scenograph.overlays.map.addMarker(trackedObject);
+            l_default.scenograph.overlays.map.markers[target3.mesh.uuid] = l_default.scenograph.overlays.map.addMarker(target3);
           }
         } else {
-          if (trackedObject.mesh.uuid in l_default.scenograph.overlays.map.markers) {
-            l_default.scenograph.overlays.map.removeMarker(trackedObject.mesh.uuid, l_default.scenograph.overlays.map.markers[trackedObject.mesh.uuid]);
+          if (target3.mesh.uuid in l_default.scenograph.overlays.map.markers) {
+            l_default.scenograph.overlays.map.removeMarker(target3.mesh.uuid, l_default.scenograph.overlays.map.markers[target3.mesh.uuid]);
           }
         }
       });
@@ -58250,35 +58409,23 @@ bool _bvhIntersectFirstHit(
       this.offset = 10;
       this.container = document.querySelector("#game_overlay #scanner_targets");
       this.item_template = document.getElementById("overlays_scanner_target").innerHTML;
-      this.trackedObjects = [];
-      this.trackedObjects.push({
-        mesh: l_default.current_scene.objects.bot.mesh,
-        domElement: this.getSymbolElement("diamond"),
-        locked: false,
-        scanTime: 0,
-        lostTime: 0
-      });
-      l_default.current_scene.objects.cargo_ships.forEach(async (cargo_ship, i2) => {
-        this.trackedObjects.push({
-          mesh: cargo_ship,
-          domElement: this.getSymbolElement("diamond"),
-          locked: false,
-          scanTime: 0,
-          lostTime: 0
-        });
-      });
-      this.trackedObjects.forEach((trackedObject) => {
-        this.container.appendChild(trackedObject.domElement);
-      });
+      this.trackedObjects = {};
     }
     /**
-     * 
+     * Get the marker symbol.
+     *
      * @param {*} symbol 
      * @returns custom HTMLElement
      */
     getSymbolElement(symbol) {
       let element = document.createElement("div");
       element.innerHTML = this.item_template;
+      element.querySelector(".symbol").innerHTML = l_default.scenograph.overlays.map.icons[symbol];
+      element.firstChild.classList.add(symbol);
+      const shape = element.querySelector(".symbol path, .symbol rect");
+      if (shape.style) {
+        shape.style = "";
+      }
       return element.firstChild;
     }
     /**
@@ -58326,65 +58473,6 @@ bool _bvhIntersectFirstHit(
       }
       return [x, y];
     }
-    // @todo: Move scanner logic to aircraft equipment update code.
-    getTargetLock(x, y) {
-      if ((!l_default.scenograph.overlays.hud.portraitMode && x > l_default.scenograph.width * 0.375 && x < l_default.scenograph.width * 0.625 || l_default.scenograph.overlays.hud.portraitMode && x > l_default.scenograph.width * 0.1875 && x < l_default.scenograph.width * 0.8125) && y > l_default.scenograph.height * 0.375 && y < l_default.scenograph.height * 0.625) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-    animateTarget(delta, trackedObject, frustum) {
-      let [x, y] = l_default.scenograph.overlays.scanners.getScreenCoordinates(trackedObject.mesh, frustum);
-      let targetLock = l_default.scenograph.overlays.scanners.getTargetLock(x, y);
-      if (targetLock) {
-        trackedObject.domElement.classList.add("tracking");
-        trackedObject.scanTime += delta;
-        trackedObject.lostTime = 0;
-        if (trackedObject.scanTime >= 1) {
-          if (trackedObject.scanTime >= 3) {
-            trackedObject.domElement.classList.remove("locking");
-            trackedObject.domElement.classList.add("locked");
-            trackedObject.locked = true;
-          } else {
-            trackedObject.domElement.classList.add("locking");
-            trackedObject.domElement.classList.remove("locked");
-            trackedObject.locked = false;
-          }
-        } else {
-          trackedObject.domElement.classList.remove("locking");
-          trackedObject.domElement.classList.remove("locked");
-          trackedObject.locked = false;
-        }
-      } else {
-        trackedObject.lostTime += delta;
-        if (trackedObject.scanTime < 1) {
-          trackedObject.domElement.classList.remove("tracking");
-          trackedObject.scanTime = 0;
-          trackedObject.lostTime = 0;
-        } else {
-          if (trackedObject.lostTime >= 3 && trackedObject.domElement.classList.contains("locked")) {
-            trackedObject.domElement.classList.add("locking");
-            trackedObject.domElement.classList.remove("locked");
-            trackedObject.locked = false;
-            trackedObject.lostTime = 0;
-          } else {
-            if (trackedObject.lostTime >= 1 && trackedObject.domElement.classList.contains("locking")) {
-              trackedObject.domElement.classList.remove("locking");
-              trackedObject.lostTime = 0;
-            }
-          }
-          if (trackedObject.lostTime >= 1 && trackedObject.domElement.classList.contains("tracking") && !trackedObject.domElement.classList.contains("locked") && !trackedObject.domElement.classList.contains("locking")) {
-            trackedObject.domElement.classList.remove("tracking");
-            trackedObject.scanTime = 0;
-            trackedObject.lostTime = 0;
-            trackedObject.locked = false;
-          }
-        }
-      }
-      trackedObject.domElement.style.left = `${x - 5}px`;
-      trackedObject.domElement.style.top = `${y - 5}px`;
-    }
     /**
      * Animate hook.
      * 
@@ -58401,9 +58489,74 @@ bool _bvhIntersectFirstHit(
       const matrix3 = new Matrix4().multiplyMatrices(l_default.scenograph.cameras.active.projectionMatrix, l_default.scenograph.cameras.active.matrixWorldInverse);
       frustum.setFromProjectionMatrix(matrix3);
       l_default.scenograph.cameras.active.updateProjectionMatrix();
-      l_default.scenograph.overlays.scanners.trackedObjects.forEach((trackedObject) => {
-        l_default.scenograph.overlays.scanners.animateTarget(delta, trackedObject, frustum);
-      });
+      l_default.current_scene.objects.player.mesh.userData.actor.scanners.targets.forEach((target3) => l_default.scenograph.overlays.scanners.animateTarget(delta, target3, frustum));
+      l_default.scenograph.overlays.scanners.removeOldTargets();
+    }
+    /**
+     * Animate the target in the UI overlay
+     * 
+     * @param {*} delta 
+     * @param {*} trackedObject 
+     * @param {*} frustum 
+     */
+    animateTarget(delta, target3, frustum) {
+      let [x, y] = l_default.scenograph.overlays.scanners.getScreenCoordinates(target3.mesh, frustum);
+      let domElement = l_default.scenograph.overlays.scanners.getTargetDomElement(target3);
+      if (target3.scanTime > 0) {
+        if (target3.scanTime >= 3) {
+          domElement.classList.add("locked");
+          domElement.classList.remove("locking");
+        } else {
+          if (target3.scanTime >= 1) {
+            domElement.classList.add("locking");
+            domElement.classList.remove("locked");
+          } else {
+            domElement.classList.add("tracking");
+            domElement.classList.remove("locked");
+            domElement.classList.remove("locking");
+          }
+        }
+      } else {
+        domElement.classList.remove("tracking");
+        domElement.classList.remove("locked");
+        domElement.classList.remove("locking");
+      }
+      domElement.style.left = `${x - 10}px`;
+      domElement.style.top = `${y - 10}px`;
+    }
+    /**
+     * Remove markers for objects no longer in the scene.
+     */
+    removeOldTargets() {
+      for (const uuid in l_default.scenograph.overlays.scanners.trackedObjects) {
+        const sceneObject = l_default.current_scene.scene.children.filter((mesh) => mesh.uuid == uuid);
+        if (sceneObject.length == 0) {
+          l_default.scenograph.overlays.scanners.container.removeChild(l_default.scenograph.overlays.scanners.trackedObjects[uuid]);
+          delete l_default.scenograph.overlays.scanners.trackedObjects[uuid];
+        }
+      }
+    }
+    /**
+     * Grabs or creates a Dom Element for each target.
+     */
+    getTargetDomElement(target3) {
+      let trackedObject = l_default.scenograph.overlays.scanners.trackedObjects[target3.mesh.uuid];
+      if (!trackedObject) {
+        const objectIcons = {
+          "bot": "aircraft",
+          "cargoShip": "ship",
+          "city": "structure",
+          "extractors": "structure",
+          "missiles": "aircraft",
+          "player": "aircraft",
+          "refinery": "structure"
+        };
+        let symbol = objectIcons[target3.mesh.userData.objectClass];
+        l_default.scenograph.overlays.scanners.trackedObjects[target3.mesh.uuid] = l_default.scenograph.overlays.scanners.getSymbolElement(symbol);
+        trackedObject = l_default.scenograph.overlays.scanners.trackedObjects[target3.mesh.uuid];
+        l_default.scenograph.overlays.scanners.container.appendChild(trackedObject);
+      }
+      return trackedObject;
     }
   };
 
@@ -65880,37 +66033,173 @@ bool _bvhIntersectFirstHit(
 
   // ../game/src/systems/base.ts
   var BaseSystem = class {
-    constructor(type = "missile") {
-      __publicField(this, "type");
-      this.type = type;
+    constructor() {
+      // Timestamp of the last system run.
+      __publicField(this, "last");
+      // Delay between system runs.
+      __publicField(this, "timeout");
+      this.last = 0;
+      this.timeout = 0;
+    }
+  };
+
+  // ../game/src/systems/scanners.ts
+  var Scanners2 = class extends BaseSystem {
+    constructor(entity, mesh, scene) {
+      super();
+      __publicField(this, "entity");
+      __publicField(this, "mesh");
+      __publicField(this, "scene");
+      __publicField(this, "targets");
+      this.entity = entity;
+      this.mesh = mesh;
+      this.scene = scene;
+      this.targets = [];
+      this.timeout = 500;
+      const vision = new Vision(this.entity);
+      vision.range = 1500;
+      vision.fieldOfView = Math.PI / 2;
+      this.entity.vision = vision;
+    }
+    /**
+     * Called within animation loop.
+     * 
+     * Requires array of scene children to be sent in.
+     *
+     * @param scene_children 
+     * @returns 
+     */
+    getTargetable() {
+      return this.scene.children.filter(
+        (scene_obj) => scene_obj.userData.targetable
+      );
+    }
+    scan(delta) {
+      let currentTargets = this.getTargetable();
+      this.targets.forEach((target3, index) => {
+        let trackingObject = currentTargets.filter((object) => object.uuid == target3.mesh.uuid);
+        trackingObject = trackingObject.length > 0 ? trackingObject[0] : false;
+        if (!trackingObject) {
+          this.targets.splice(index, 1);
+        }
+      });
+      for (const target3 of currentTargets) {
+        if (target3.uuid === this.mesh.uuid) {
+          continue;
+        }
+        let trackingObject = this.targets.filter((object) => object.mesh.uuid == target3.uuid);
+        trackingObject = trackingObject.length > 0 ? trackingObject[0] : false;
+        if (!trackingObject) {
+          trackingObject = {
+            mesh: target3,
+            locked: false,
+            locking: false,
+            tracking: false,
+            scanTime: 0,
+            lostTime: 0
+          };
+          this.targets.push(trackingObject);
+        }
+      }
+      this.targets.forEach((target3, index) => {
+        const targetVisible = this.entity.vision.visible(target3.mesh.position) === true;
+        if (targetVisible) {
+          target3.tracking = true;
+          target3.scanTime += delta;
+          target3.lostTime = 0;
+          if (target3.scanTime >= 1) {
+            if (target3.scanTime >= 3) {
+              target3.locked = true;
+              target3.locking = false;
+            } else {
+              target3.locked = false;
+              target3.locking = true;
+            }
+          } else {
+            target3.locked = false;
+            target3.locking = false;
+          }
+        } else {
+          target3.lostTime += delta;
+          if (target3.scanTime < 1) {
+            target3.scanTime = 0;
+            target3.lostTime = 0;
+          } else {
+            if (target3.lostTime >= 3 && target3.locked) {
+              target3.locked = false;
+              target3.lostTime = 0;
+            } else {
+              if (target3.lostTime >= 1 && target3.locking) {
+                target3.locking = false;
+                target3.lostTime = 0;
+              }
+            }
+            if (target3.lostTime >= 1 && target3.tracking && !target3.locked && !target3.locking) {
+              target3.scanTime = 0;
+              target3.lostTime = 0;
+              target3.locked = false;
+              target3.locking = false;
+            }
+          }
+        }
+      });
+    }
+    untrackTarget(uuid) {
+      this.targets.forEach((target3) => {
+        if (target3.mesh.uuid == uuid) {
+          target3.locked = false;
+          target3.locking = false;
+          target3.tracking = false;
+          target3.scanTime = 0;
+        }
+      });
+    }
+    animate(delta) {
+      this.scan(delta);
+      this.last = l.current_scene.stats.currentTime;
     }
   };
 
   // ../game/src/systems/weapons.ts
   var Weapons = class extends BaseSystem {
-    constructor(type = "missile") {
-      super(type);
-      __publicField(this, "lastAttack");
-      __publicField(this, "timeout");
+    constructor(mesh, scanners, type = "missile") {
+      super();
+      // Origin mesh that fired the missile.
+      __publicField(this, "mesh");
+      // Scanner systems that determine where we're firing.
+      __publicField(this, "scanners");
+      this.mesh = mesh;
+      this.scanners = scanners;
       if (type == "missile") {
-        this.lastAttack = 0;
         this.timeout = 1e3;
       }
     }
-    animate(currentTime) {
-      if (parseInt(currentTime) >= parseInt(this.lastAttack) + parseInt(this.timeout)) {
-        l.scenograph.overlays.scanners.trackedObjects.forEach((object) => {
+    // Check if we are ready to fire again.
+    // @todo: v7 Figure out a way to signal this to happen without l. global object access
+    ready() {
+      return parseInt(l.current_scene.stats.currentTime) >= parseInt(this.last) + parseInt(this.timeout);
+    }
+    animate(delta) {
+      if (this.ready()) {
+        this.scanners.targets.forEach((target3) => {
           if (
             // Check if the object is target locked and not friendly.
-            object.locked && object.mesh.userData.standing < 0
+            target3.mesh.name != "Missile" && // @todo: Fix bot AI so it can target lock better.
+            target3.locked && this.ready()
           ) {
-            this.lastAttack = currentTime;
-            l.current_scene.objects.projectiles.missile.fireMissile(
-              l.current_scene.objects.player.mesh,
-              l.current_scene.objects.player.mesh.position,
-              l.current_scene.objects.bot.mesh,
-              l.current_scene.objects.bot.mesh.position
-            );
+            let negativeStanding = false;
+            if (target3.mesh.userData.hasOwnProperty("object") && target3.mesh.userData.object.hasOwnProperty("standing") && target3.mesh.userData.object.standing != this.mesh.userData.object.standing) {
+              negativeStanding = true;
+            }
+            if (negativeStanding) {
+              this.last = l.current_scene.stats.currentTime;
+              l.current_scene.objects.projectiles.missile.fireMissile(
+                this.mesh,
+                this.mesh.position,
+                target3.mesh,
+                target3.mesh.position
+              );
+            }
           }
         });
       }
@@ -65919,16 +66208,19 @@ bool _bvhIntersectFirstHit(
 
   // ../game/src/actors/base.ts
   var BaseActor = class {
-    constructor(mesh, type = "vehicle") {
+    constructor(mesh, scene, type = "vehicle") {
       __publicField(this, "entity");
       __publicField(this, "mesh");
       __publicField(this, "type");
+      __publicField(this, "scanners");
       __publicField(this, "weapons");
       this.mesh = mesh;
       this.type = type;
       if (this.type == "vehicle") {
         this.entity = new Vehicle2();
-        this.weapons = new Weapons();
+        this.entity.forward = new Vector33(0, 0, -1);
+        this.scanners = new Scanners2(this.entity, this.mesh, scene);
+        this.weapons = new Weapons(this.mesh, this.scanners);
       }
     }
     sync(entity, renderComponent) {
@@ -65938,12 +66230,27 @@ bool _bvhIntersectFirstHit(
       renderComponent.matrix.copy(entity.worldMatrix);
       renderComponent.position.copy(entity.position);
     }
+    /**
+     * Animate hook.
+     * 
+     * This method is called within the main game loop.
+     * 
+     * The game client and server call this function to update game systems.
+     * 
+     * @method animate
+     * @memberof BaseActor
+     * @global
+    **/
+    animate(delta) {
+      this.scanners.animate(delta);
+      this.weapons.animate(delta);
+    }
   };
 
   // ../game/src/actors/player.ts
   var Player = class extends BaseActor {
-    constructor(mesh, type = "vehicle") {
-      super(mesh, type);
+    constructor(mesh, scene) {
+      super(mesh, scene);
       if (this.type == "vehicle") {
         this.entity.position.z = this.mesh.position.z;
         this.entity.position.y = this.mesh.position.y;
@@ -65965,7 +66272,6 @@ bool _bvhIntersectFirstHit(
   var Valiant = class extends import_valiant.default {
     constructor() {
       super();
-      __publicField(this, "actor");
       // Camera distance.
       __publicField(this, "camera_distance");
       // Default camera distance.
@@ -66034,6 +66340,8 @@ bool _bvhIntersectFirstHit(
       this.mesh.rotation.order = "YXZ";
       this.mesh.userData.targetable = true;
       this.mesh.userData.objectClass = "player";
+      this.mesh.userData.actor = new Player(this.mesh, l_default.current_scene.scene);
+      l_default.scenograph.entityManager.add(this.mesh.userData.actor.entity);
       this.createThruster();
       this.mixer = new AnimationMixer(this.mesh);
       this.mixer.clipAction(this.model.animations[0]).play();
@@ -66041,8 +66349,7 @@ bool _bvhIntersectFirstHit(
       l_default.current_scene.tweens.shipEnterY = this.shipEnterY();
       l_default.current_scene.tweens.shipEnterZ = this.shipEnterZ();
       this.trail = l_default.current_scene.effects.trail.createTrail(this.mesh, 0, this.trail_position_y, this.trail_position_z);
-      this.actor = new Player(this.mesh);
-      l_default.scenograph.entityManager.add(this.actor.entity);
+      this.mesh.userData.object = this;
     }
     createThrusterMesh(options) {
       let geometry = false, texture = false, material = false, mesh = false;
@@ -66264,7 +66571,17 @@ bool _bvhIntersectFirstHit(
       l_default.current_scene.objects.player.mesh.rotation.y = l_default.current_scene.objects.player.rotation.y;
       l_default.current_scene.objects.player.mesh.rotation.z = l_default.current_scene.objects.player.rotation.z;
     }
-    // Runs on the main animation loop
+    /**
+     * Animate hook.
+     * 
+     * This method is called within the main animation loop and
+     * therefore must only reference global objects or properties.
+     * 
+     * @method animate
+     * @memberof Valiant
+     * @global
+     * @note All references within this method should be globally accessible.
+    **/
     animate(delta) {
       if (l_default.current_scene.objects.player.ready) {
         if (l_default.current_scene.settings.game_controls) {
@@ -66272,7 +66589,7 @@ bool _bvhIntersectFirstHit(
           if (l_default.scenograph.modes.multiplayer.connected) {
             l_default.scenograph.modes.multiplayer.socket.emit("input", l_default.current_scene.objects.player.controls);
           }
-          l_default.current_scene.objects.player.actor.weapons.animate(l_default.current_scene.stats.currentTime);
+          l_default.current_scene.objects.player.mesh.userData.actor.animate(delta);
         }
         l_default.current_scene.objects.player.updateAnimation(delta);
         let [rY, tY, tZ] = l_default.current_scene.objects.player.move(l_default.current_scene.stats.currentTime - l_default.current_scene.stats.lastTime);
@@ -66864,10 +67181,22 @@ bool _bvhIntersectFirstHit(
           submergedObjects
         }
       );
+      this.water.renderOrder = 1;
       this.water.material.transparent = true;
       this.water.rotation.x = -Math.PI / 2;
       this.water.name = "Ocean";
     }
+    /**
+     * Animate hook.
+     * 
+     * This method is called within the main animation loop and
+     * therefore must only reference global objects or properties.
+     * 
+     * @method animate
+     * @memberof Ocean
+     * @global
+     * @note All references within this method should be globally accessible.
+    **/
     animate(currentTime) {
       l_default.current_scene.objects.ocean.water.material.uniforms.time.value += 1 / 60;
     }
@@ -66904,6 +67233,17 @@ bool _bvhIntersectFirstHit(
       skyMesh.position.y = l_default.scale * 0;
       return skyMesh;
     }
+    /**
+     * Animate hook.
+     * 
+     * This method is called within the main animation loop and
+     * therefore must only reference global objects or properties.
+     * 
+     * @method animate
+     * @memberof Sky
+     * @global
+     * @note All references within this method should be globally accessible.
+    **/
     animate(delta) {
       l_default.current_scene.objects.sky.uniforms.time.value += delta / 10;
     }
@@ -67048,6 +67388,17 @@ bool _bvhIntersectFirstHit(
       capsule.scale.setScalar(100);
       return capsule;
     }
+    /**
+     * Animate hook.
+     * 
+     * This method is called within the main animation loop and
+     * therefore must only reference global objects or properties.
+     * 
+     * @method animate
+     * @memberof Extractors
+     * @global
+     * @note All references within this method should be globally accessible.
+    **/
     animate(currentTime) {
       l_default.current_scene.objects.extractors.forEach((extractor, i2) => {
         let inner = extractor.getObjectByName("inner");
@@ -67153,6 +67504,17 @@ bool _bvhIntersectFirstHit(
       this.mesh.userData.objectClass = "city";
       this.ready = true;
     }
+    /**
+     * Animate hook.
+     * 
+     * This method is called within the main animation loop and
+     * therefore must only reference global objects or properties.
+     * 
+     * @method animate
+     * @memberof Platform
+     * @global
+     * @note All references within this method should be globally accessible.
+    **/
     animate(delta) {
       window.buildings.uniforms.time.value += delta / 10;
     }
@@ -67257,6 +67619,17 @@ bool _bvhIntersectFirstHit(
       csgEvaluator.evaluate(outerShell, horizontalSlice, INTERSECTION, result);
       return result;
     }
+    /**
+     * Animate hook.
+     * 
+     * This method is called within the main animation loop and
+     * therefore must only reference global objects or properties.
+     * 
+     * @method animate
+     * @memberof Refineries
+     * @global
+     * @note All references within this method should be globally accessible.
+    **/
     animate(delta) {
       l_default.current_scene.objects.refineries.forEach((refinery, i2) => {
         let inner = refinery.getObjectByName("inner");
@@ -67267,8 +67640,8 @@ bool _bvhIntersectFirstHit(
 
   // ../game/src/actors/cargoShip.ts
   var cargoShip = class extends BaseActor {
-    constructor(mesh, type = "vehicle") {
-      super(mesh, type);
+    constructor(mesh, scene) {
+      super(mesh, scene);
       if (this.type == "vehicle") {
         this.entity.position.copy(this.mesh.userData.path.current());
         this.entity.maxSpeed = 150;
@@ -67361,9 +67734,8 @@ bool _bvhIntersectFirstHit(
         mesh.name = "Cargo Ship #" + (i2 + 1);
         mesh.userData.objectClass = "cargoShip";
         mesh.userData.targetable = true;
-        mesh.userData.standing = 0;
         mesh.userData.size = this.size;
-        mesh.userData.actor = new cargoShip(mesh);
+        mesh.userData.actor = new cargoShip(mesh, l_default.current_scene.scene);
         l_default.scenograph.entityManager.add(mesh.userData.actor.entity);
         mesh.matrixAutoUpdate = false;
         this.instances.push(mesh);
@@ -67414,51 +67786,63 @@ bool _bvhIntersectFirstHit(
       result.name = "outer";
       const scale = new Vector3(1, 1, -1);
       result.scale.multiply(scale);
+      result.rotation.y = Math.PI;
       this.mesh = new Object3D();
       this.mesh.add(result);
     }
-    animate() {
-      l_default.current_scene.objects.cargo_ships.forEach((cargo_ship) => {
-        cargo_ship.userData.actor.animate();
-      });
+    /**
+     * Animate hook.
+     * 
+     * This method is called within the main animation loop and
+     * therefore must only reference global objects or properties.
+     * 
+     * @method animate
+     * @memberof CargoShips
+     * @global
+     * @note All references within this method should be globally accessible.
+    **/
+    animate(delta) {
+      if (l_default.current_scene.settings.game_controls) {
+        l_default.current_scene.objects.cargo_ships.forEach((cargo_ship) => {
+          cargo_ship.userData.actor.animate(delta);
+        });
+      }
     }
   };
 
   // ../game/src/actors/pirate.ts
   var Pirate = class extends BaseActor {
-    constructor(mesh, type = "vehicle") {
-      super(mesh, type);
+    constructor(mesh, scene) {
+      super(mesh, scene);
       __publicField(this, "follow");
       __publicField(this, "marker");
+      __publicField(this, "path");
       __publicField(this, "pursue");
       this.marker = document.querySelector("#map .marker-bot svg path");
       if (this.type == "vehicle") {
         this.entity.position.z = this.mesh.position.z;
         this.entity.position.y = this.mesh.position.y;
-        this.entity.maxSpeed = 500;
+        this.entity.maxSpeed = 400;
         this.entity.setRenderComponent(this.mesh, this.sync);
         this.entity.boundingRadius = 20;
         this.entity.smoother = new Smoother2(20);
         this.entity.rotation.order = "XYZ";
         const loopDistance = -1e3;
-        const path = new Path3();
-        path.loop = true;
-        path.add(new Vector33(loopDistance, this.mesh.position.y, loopDistance));
-        path.add(new Vector33(loopDistance, this.mesh.position.y, -loopDistance));
-        path.add(new Vector33(-loopDistance, this.mesh.position.y, -loopDistance));
-        path.add(new Vector33(-loopDistance, this.mesh.position.y, loopDistance));
-        const vision = new Vision(this.entity);
-        vision.range = 1500;
-        vision.fieldOfView = Math.PI * 2;
-        this.entity.vision = vision;
-        this.follow = new FollowPathBehavior2(path);
+        this.path = new Path3();
+        this.path.loop = true;
+        this.path.add(new Vector33(loopDistance, this.mesh.position.y, loopDistance));
+        this.path.add(new Vector33(loopDistance, this.mesh.position.y, -loopDistance));
+        this.path.add(new Vector33(-loopDistance, this.mesh.position.y, -loopDistance));
+        this.path.add(new Vector33(-loopDistance, this.mesh.position.y, loopDistance));
+        this.follow = new FollowPathBehavior2(this.path);
         this.entity.steering.add(this.follow);
-        this.pursue = new PursuitBehavior2(l.current_scene.objects.player.actor.entity, 1);
+        this.pursue = new PursuitBehavior2(l.current_scene.objects.player.mesh.userData.actor.entity, 1);
         this.pursue.active = false;
         this.entity.steering.add(this.pursue);
       }
     }
-    animate() {
+    animate(delta) {
+      super.animate(delta);
       if (!this.marker) {
         this.marker = document.querySelector("#map .marker-bot svg path");
       }
@@ -67545,27 +67929,45 @@ bool _bvhIntersectFirstHit(
       this.mesh.name = "Bot Ship";
       this.mesh.userData.targetable = true;
       this.mesh.userData.objectClass = "bot";
-      this.mesh.userData.standing = -1;
       this.mesh.position.z = -1500;
       this.mesh.position.y = 200;
+      this.mesh.children[0].rotation.y = Math.PI;
       this.mesh.rotation.order = "YXZ";
       this.mesh.matrixAutoUpdate = false;
-      this.actor = new Pirate(this.mesh);
-      l_default.scenograph.entityManager.add(this.actor.entity);
+      this.mesh.userData.actor = new Pirate(this.mesh, l_default.current_scene.scene);
+      l_default.scenograph.entityManager.add(this.mesh.userData.actor.entity);
+      this.mesh.userData.object = this;
+      this.mesh.userData.object.standing = -1;
+      this.mesh.userData.object.startPosition.x = -2e3;
+      this.mesh.userData.object.startPosition.y = this.mesh.position.y;
+      this.mesh.userData.object.startPosition.z = -1e3;
     }
-    // Runs on the main animation loop
+    /**
+     * Animate hook.
+     * 
+     * This method is called within the main animation loop and
+     * therefore must only reference global objects or properties.
+     * 
+     * @method animate
+     * @memberof Raven
+     * @global
+     * @note All references within this method should be globally accessible.
+    **/
     animate(delta) {
-      l_default.current_scene.objects.bot.actor.animate();
+      if (l_default.current_scene.settings.game_controls) {
+        l_default.current_scene.objects.bot.mesh.userData.actor.animate(delta);
+      }
     }
   };
 
   // src/app/scenograph/objects/projectiles/missile.js
+  var import_missile = __toESM(require_missile());
   var Missile = class {
     constructor() {
       // Array of active missiles on the scene
       __publicField(this, "active");
-      // Reusable video texture sprite of an explosion when a missile terminates.
-      __publicField(this, "explosionMesh");
+      // Array of active explosions on the scene
+      __publicField(this, "explosions");
       // THREE.Mesh
       __publicField(this, "mesh");
       // The scale of the mesh.
@@ -67597,33 +67999,83 @@ bool _bvhIntersectFirstHit(
       window.missile.outer = material;
       this.mesh = new Object3D();
       this.mesh.name = "Missile";
-      this.mesh.userData.targetable = true;
+      this.mesh.userData.targetable = false;
       this.mesh.userData.objectClass = "missiles";
       this.mesh.add(this.getMissileBody());
     }
+    async targetLost(targetMeshUuid) {
+      l_default.current_scene.objects.projectiles.missile.active.forEach((missile, index) => {
+        if (missile.userData.destMesh.uuid == targetMeshUuid) {
+          l_default.current_scene.objects.projectiles.missile.animateMissileEnd(missile, index);
+        }
+      });
+    }
     async loadExplosion(position) {
-      const explosionVideo = document.getElementById("explosion");
+      const explosionVideo = document.getElementById("explosion").cloneNode(true);
       explosionVideo.play();
-      explosionVideo.playbackRate = 0.25;
+      explosionVideo.playbackRate = 1.5;
       const texture = new VideoTexture(explosionVideo);
       texture.colorSpace = SRGBColorSpace;
       texture.wrapS = RepeatWrapping;
       texture.wrapT = RepeatWrapping;
-      texture.repeat.set(1, 1);
-      texture.rotation = -Math.PI / 2;
-      const parameters = {
-        depthWrite: false,
-        map: texture,
-        transparent: true
-      };
-      const material = new MeshBasicMaterial(parameters);
-      material.blending = CustomBlending;
-      material.blendSrc = SrcAlphaFactor;
-      material.blendDst = OneFactor;
-      material.blendEquation = AddEquation;
-      const geometry = new PlaneGeometry(10, 10, 2, 2);
-      const mesh = new Mesh(geometry, material);
+      texture.repeat.set(16 / 9, 1);
+      const material = new ShaderMaterial({
+        uniforms: {
+          map: { value: texture },
+          color: { value: new Color(16777215) },
+          threshold: { value: 0.55 },
+          smoothness: { value: 0.05 },
+          rotation: { value: Math.random() * Math.PI - Math.PI * 0.5 }
+        },
+        vertexShader: `
+                uniform float rotation;
+                varying vec2 vUv;
+                void main() {
+                    vUv = uv;
+                    // Center the rotation
+                    vec3 pos = position;
+                    float s = sin(rotation);
+                    float c = cos(rotation);
+
+                    pos.xy = vec2(
+                        c * position.x - s * position.y,
+                        s * position.x + c * position.y
+                    );
+
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+
+                }
+            `,
+        fragmentShader: `
+                uniform sampler2D map;
+                uniform vec3 color;
+                uniform float threshold;
+                uniform float smoothness;
+                varying vec2 vUv;
+
+                void main() {
+                    vec4 tex = texture2D(map, vUv);
+                    float brightness = dot(tex.rgb, vec3(0.299, 0.587, 0.114));
+
+                    // Create smooth alpha edge
+                    float alpha = smoothstep(threshold, threshold + smoothness, brightness);
+
+                    vec4 finalColor = vec4(tex.rgb * color, alpha * tex.a);
+
+                    if (finalColor.r < threshold) discard;
+                    
+                    gl_FragColor = finalColor;
+                }
+            `,
+        transparent: true,
+        depthWrite: false
+      });
+      const mesh = new Sprite(material);
+      mesh.renderOrder = 999;
+      mesh.scale.set(30, 30, 30);
       mesh.userData.created = l_default.current_scene.stats.currentTime;
+      mesh.userData.texture = texture;
+      mesh.userData.video = explosionVideo;
       mesh.position.copy(position);
       l_default.current_scene.scene.add(mesh);
       l_default.current_scene.objects.projectiles.missile.explosions.push(mesh);
@@ -67643,13 +68095,13 @@ bool _bvhIntersectFirstHit(
       newMissile.userData.originCoords = originCoords;
       newMissile.userData.destMesh = destMesh;
       newMissile.userData.destCoords = destCoords;
+      newMissile.userData.object = new import_missile.default(newMissile);
       newMissile.position.x = originCoords.x;
       newMissile.position.y = originCoords.y;
       newMissile.position.z = originCoords.z;
       newMissile.lookAt(destCoords);
       l_default.current_scene.scene.add(newMissile);
       l_default.current_scene.objects.projectiles.missile.active.push(newMissile);
-      const trailHeadGeometry = l_default.current_scene.effects.trail.createTrailCircle();
       newMissile.userData.trail = l_default.current_scene.effects.trail.createTrail(newMissile, 0, 0, -1.5);
     }
     // getMissileHead
@@ -67671,31 +68123,80 @@ bool _bvhIntersectFirstHit(
       capsule.rotation.x = Math.PI / 2;
       return capsule;
     }
-    // @todo: This has to be simulated on the server somehow..
-    animate(currentTime) {
+    /**
+     * Animate hook.
+     * 
+     * This method is called within the main animation loop and
+     * therefore must only reference global objects or properties.
+     * 
+     * @method animate
+     * @memberof Missile
+     * @global
+     * @note All references within this method should be globally accessible.
+    **/
+    animate() {
+      const destroyedTargets = /* @__PURE__ */ new Set();
       l_default.current_scene.objects.projectiles.missile.active.forEach((missile, index) => {
-        if (parseFloat(l_default.current_scene.stats.currentTime) >= parseFloat(missile.userData.created) + 1e4) {
-          l_default.current_scene.objects.projectiles.missile.active.splice(index, 1);
-          l_default.current_scene.scene.remove(missile);
-          missile.userData.trail.destroyMesh();
-          missile.userData.trail.deactivate();
-          l_default.current_scene.objects.projectiles.missile.loadExplosion(missile.position);
-        } else {
-          let missileAge = parseFloat(missile.userData.created) - parseFloat(l_default.current_scene.stats.currentTime);
-          let missileSpeed = 1 + 4 * Math.min(missileAge / 2e3, 1);
-          missile.lookAt(missile.userData.destMesh.position);
-          missile.translateZ(-missileSpeed);
-          missile.userData.trail.update();
+        const [damage, targetDestroyed] = missile.userData.object.hitCalculation();
+        if (targetDestroyed) {
+          destroyedTargets.add(missile.userData.destMesh.uuid);
         }
+        if (
+          // Check if
+          // - it's been 10 seconds OR
+          // - the missile has collided
+          // since the missile was fired, explode if so
+          parseFloat(l_default.current_scene.stats.currentTime) >= parseFloat(missile.userData.created) + 1e4 || damage
+        ) {
+          l_default.current_scene.objects.projectiles.missile.animateMissileEnd(missile, index);
+        } else {
+          l_default.current_scene.objects.projectiles.missile.animateMissileFlight(missile);
+        }
+      });
+      l_default.current_scene.objects.projectiles.missile.active = l_default.current_scene.objects.projectiles.missile.active.filter((missile) => {
+        const remove = destroyedTargets.has(missile.userData.destMesh.uuid);
+        if (remove) l_default.current_scene.objects.projectiles.missile.targetLost(missile.userData.destMesh.uuid);
+        return !remove;
       });
       l_default.current_scene.objects.projectiles.missile.explosions.forEach((explosion, index) => {
         if (parseFloat(l_default.current_scene.stats.currentTime) >= parseFloat(explosion.userData.created) + 2e3) {
-          l_default.current_scene.objects.projectiles.missile.explosions.splice(index, 1);
           l_default.current_scene.scene.remove(explosion);
+          explosion.geometry.dispose();
+          explosion.material.uniforms.map.value.dispose();
+          explosion.userData.texture.dispose();
+          explosion.material.dispose();
+          l_default.current_scene.renderers.webgl.renderLists.dispose();
+          explosion.userData.video.pause();
+          explosion.userData.video.src = "";
+          explosion.userData.video.removeAttribute("src");
+          explosion.userData.video.load();
+          if (explosion.userData.video.parentNode) explosion.userData.video.parentNode.removeChild(explosion.userData.video);
+          explosion = null;
+          l_default.current_scene.objects.projectiles.missile.explosions.splice(index, 1);
         } else {
           explosion.lookAt(l_default.scenograph.cameras.active.position);
+          explosion.material.uniforms.rotation.value *= 0.996;
+          if (parseFloat(l_default.current_scene.stats.currentTime) >= parseFloat(explosion.userData.created) + 500) {
+            explosion.scale.x *= 0.996;
+            explosion.scale.y *= 0.996;
+            explosion.scale.z *= 0.996;
+          }
         }
       });
+    }
+    animateMissileFlight(missile) {
+      let missileAge = parseFloat(missile.userData.created) - parseFloat(l_default.current_scene.stats.currentTime);
+      let missileSpeed = 1 + 4 * Math.min(missileAge / 2e3, 1);
+      missile.lookAt(missile.userData.destMesh.position);
+      missile.translateZ(-missileSpeed);
+      missile.userData.trail.update();
+    }
+    animateMissileEnd(missile, activeIndex) {
+      l_default.current_scene.objects.projectiles.missile.active.splice(activeIndex, 1);
+      l_default.current_scene.scene.remove(missile);
+      missile.userData.trail.destroyMesh();
+      missile.userData.trail.deactivate();
+      l_default.current_scene.objects.projectiles.missile.loadExplosion(missile.userData.destMesh.position);
     }
   };
 
@@ -68126,8 +68627,16 @@ bool _bvhIntersectFirstHit(
       }
     }
     /**
-     * Main animation loop for the current scene.
-     */
+     * Animate hook runner.
+     * 
+     * This is the primary animate function that drives the entire game client
+     * and runs anonymously so must only reference global objects or properties.
+     * 
+     * @method animate
+     * @memberof Scenograph
+     * @global
+     * @note All references within this method should be globally accessible.
+    **/
     animate(currentTime) {
       updateFPS();
       const delta = l_default.scenograph.time.update().getDelta();
@@ -71479,7 +71988,17 @@ ${expression ? 'Expression: "' + expression + '"\n\n' : ""}`, el);
     activate() {
       l.ui.flight_instruments.activated = true;
     }
-    // Updater, runs on setInterval
+    /**
+     * Update hook.
+     * 
+     * This method is called within the UI setInterval updater, allowing
+     * HTML content to be updated at different rate than the 3D frame rate.
+     * 
+     * @method update
+     * @memberof Flight_Instruments
+     * @global
+     * @note All references within this method should be globally accessible.
+    **/
     update() {
       if (l.current_scene.objects.player && l.current_scene.objects.player.ready) {
         if (l.current_scene.settings.game_controls) {
@@ -71490,6 +72009,29 @@ ${expression ? 'Expression: "' + expression + '"\n\n' : ""}`, el);
         const angle = Math.abs(l.current_scene.objects.player.airSpeed) * 1.94384 * 45;
         document.querySelector(l.ui.flight_instruments.containerSelector + " #Airspeed #Needle").style.transform = `rotate(${angle}deg)`;
       }
+    }
+  };
+
+  // src/app/ui/help.js
+  var Help = class {
+    constructor() {
+      __publicField(this, "containerSelector");
+      this.containerSelector = "#help";
+      this.container = document.querySelector(this.containerSelector);
+    }
+    /**
+     * Activate Help
+     * 
+     * Adds itself to the ui classes update queue.
+     */
+    show() {
+      l.ui.help.container.classList.add("active");
+    }
+    /**
+     * Deactivate Help
+     */
+    hide() {
+      l.ui.help.container.classList.remove("active");
     }
   };
 
@@ -79119,11 +79661,19 @@ ${expression ? 'Expression: "' + expression + '"\n\n' : ""}`, el);
         this.buttons.single_player.hidden = false;
         this.buttons.multi_player.hidden = false;
         this.buttons.exit_game.hidden = true;
+        this.buttons.scores.hidden = true;
         this.pane.title = this.default_title;
         if (l.scenograph.modes.multiplayer.connected) {
           l.scenograph.modes.multiplayer.disconnect();
         }
         l.mode = "home";
+      });
+      this.buttons.scores = this.pane.addButton({
+        title: "Scores",
+        hidden: true
+      });
+      this.buttons.scores.on("click", () => {
+        l.ui.score_table.show();
       });
       this.buttons.single_player = this.pane.addButton({
         title: "Single Player"
@@ -79137,10 +79687,13 @@ ${expression ? 'Expression: "' + expression + '"\n\n' : ""}`, el);
         this.pane.expanded = false;
         this.pane.title = "Menu";
         this.buttons.exit_game.hidden = false;
+        this.buttons.scores.hidden = false;
         l.mode = "single_player";
       });
       this.buttons.multi_player = this.pane.addButton({
-        title: "Multi Player"
+        title: "Multi Player",
+        disabled: true
+        // @todo: v7 Restore multiplayer and server tracking of scene objects.
       });
       this.buttons.multi_player.on("click", () => {
         console.log("Multi player launched");
@@ -79150,6 +79703,7 @@ ${expression ? 'Expression: "' + expression + '"\n\n' : ""}`, el);
         this.pane.expanded = false;
         this.pane.title = "Menu";
         this.buttons.exit_game.hidden = false;
+        this.buttons.scores.hidden = false;
         let serverLocation = l.env == "Dev" ? "lcl.langenium.com:8090" : "test.langenium.com:42069";
         l.scenograph.modes.multiplayer.connect("//" + serverLocation);
         l.mode = "multi_player";
@@ -79159,6 +79713,7 @@ ${expression ? 'Expression: "' + expression + '"\n\n' : ""}`, el);
       });
       this.buttons.settings.on("click", () => {
         console.log("Settings launched");
+        this.buttons.scores.hidden = true;
         this.buttons.exit_game.hidden = true;
         this.buttons.single_player.hidden = true;
         this.buttons.multi_player.hidden = true;
@@ -79176,6 +79731,7 @@ ${expression ? 'Expression: "' + expression + '"\n\n' : ""}`, el);
       });
       this.buttons.settingsExit.on("click", () => {
         console.log("Settings closed");
+        this.buttons.scores.hidden = l.mode !== "home" ? false : true;
         this.buttons.exit_game.hidden = l.mode !== "home" ? false : true;
         this.buttons.single_player.hidden = l.mode !== "home" ? true : false;
         this.buttons.multi_player.hidden = l.mode !== "home" ? true : false;
@@ -79215,7 +79771,7 @@ ${expression ? 'Expression: "' + expression + '"\n\n' : ""}`, el);
         title: "Help"
       });
       this.buttons.help.on("click", () => {
-        console.log("Help launched");
+        l.ui.help.show();
       });
       return this;
     }
@@ -79293,6 +79849,76 @@ ${expression ? 'Expression: "' + expression + '"\n\n' : ""}`, el);
     }
   };
 
+  // src/app/ui/score_table.js
+  var ScoreTable = class {
+    constructor() {
+      /**
+       * Container CSS selector statement.
+       * @type {string}
+       */
+      __publicField(this, "containerSelector");
+      /**
+       * Container HTML Element.
+       * @type {HTMLElement}
+       */
+      __publicField(this, "container");
+      /**
+       * Row Container CSS selector statement.
+       * @type {string}
+       */
+      __publicField(this, "rowContainerSelector");
+      /**
+       * Row Container HTML Element.
+       * @type {HTMLElement}
+       */
+      __publicField(this, "rowContainer");
+      this.containerSelector = "#score_table";
+      this.container = document.querySelector(this.containerSelector);
+      this.rowContainerSelector = this.containerSelector + " tbody";
+      this.rowContainer = document.querySelector(this.rowContainerSelector);
+    }
+    /**
+     * Activate Score Table
+     * 
+     * Adds itself to the ui classes update queue.
+     */
+    show() {
+      l.ui.score_table.container.classList.add("active");
+    }
+    /**
+     * Deactivate Score Table
+     */
+    hide() {
+      l.ui.score_table.container.classList.remove("active");
+    }
+    /**
+     * Update hook.
+     * 
+     * This method is called within the UI setInterval updater, allowing
+     * HTML content to be updated at different rate than the 3D frame rate.
+     * 
+     * @method update
+     * @memberof ScoreTable
+     * @global
+     * @note All references within this method should be globally accessible.
+    **/
+    update() {
+      let scores = l.current_scene.scene.children.filter(
+        (scene_obj) => scene_obj.userData.hasOwnProperty("object") && scene_obj.userData.object.hasOwnProperty("score")
+      );
+      l.ui.score_table.rowContainer.innerHTML = "";
+      scores.forEach((aircraftMesh) => {
+        let row = "<tr>";
+        row += "<td>" + aircraftMesh.id + "</td>";
+        row += "<td>" + aircraftMesh.name + "</td>";
+        row += "<td>" + aircraftMesh.userData.object.score.kills + "</td>";
+        row += "<td>" + aircraftMesh.userData.object.score.deaths + "</td>";
+        row += "</tr>";
+        l.ui.score_table.rowContainer.innerHTML += row;
+      });
+    }
+  };
+
   // src/app/ui.js
   var UI = class {
     constructor() {
@@ -79300,6 +79926,8 @@ ${expression ? 'Expression: "' + expression + '"\n\n' : ""}`, el);
       __publicField(this, "flight_instruments");
       // Control the menu pane, needed by touch controls which activate later.
       __publicField(this, "menus");
+      // Controls the score table.
+      __publicField(this, "score_table");
       // Controls the targeting list and locked UIs.
       __publicField(this, "targeting");
       // Array of callbacks and data for updating UI
@@ -79309,6 +79937,12 @@ ${expression ? 'Expression: "' + expression + '"\n\n' : ""}`, el);
       window.Alpine = module_default;
       module_default.start();
       this.update_queue = [];
+      this.help = new Help();
+      this.score_table = new ScoreTable();
+      this.update_queue.push({
+        callback: "l.ui.score_table.update",
+        data: []
+      });
     }
     /**
      * Activate Flight Instruments
@@ -79341,10 +79975,16 @@ ${expression ? 'Expression: "' + expression + '"\n\n' : ""}`, el);
       l_default.ui.updater = setInterval(this.update, 100);
     }
     /**
-     * Update
+     * Update hook runner.
      * 
-     * Runs on setInterval
-     */
+     * This method is the UI setInterval queue runner, allowing HTML content
+     * to be updated at different rate than the 3D frame rate.
+     * 
+     * @method update
+     * @memberof UI
+     * @global
+     * @note All references within this method should be globally accessible.
+    **/
     update() {
       l_default.ui.update_queue.forEach((current_update, i2) => {
         _execute(current_update.callback, current_update.data, window);

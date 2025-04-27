@@ -14,8 +14,10 @@ import Alpine from 'alpinejs';
  */
 import l from '@/helpers/l.js';
 import Flight_Instruments from '@/ui/flight_instruments.js';
+import Help from '@/ui/help.js';
 import Targeting from '@/ui/targeting.js';
 import Menus from '@/ui/menus.js';
+import ScoreTable from '@/ui/score_table.js';
 
 export default class UI {
 
@@ -24,6 +26,9 @@ export default class UI {
 
     // Control the menu pane, needed by touch controls which activate later.
     menus;
+
+    // Controls the score table.
+    score_table;    
 
     // Controls the targeting list and locked UIs.
     targeting;
@@ -41,8 +46,17 @@ export default class UI {
 
         this.update_queue = [];
 
+        this.help = new Help();
+
+        this.score_table = new ScoreTable();
+
+        this.update_queue.push( {
+            callback: 'l.ui.score_table.update',
+            data: []
+        } );
+
         // /**
-        //  * @todo: Move into a game mode activation function.
+        //  * @todo: v7: Remove this code after confirmed reference not needed
         //  */
         // this.targeting = new Targeting();
 
@@ -95,10 +109,16 @@ export default class UI {
     }
 
     /**
-     * Update
+     * Update hook runner.
      * 
-     * Runs on setInterval
-     */
+     * This method is the UI setInterval queue runner, allowing HTML content
+     * to be updated at different rate than the 3D frame rate.
+     * 
+     * @method update
+     * @memberof UI
+     * @global
+     * @note All references within this method should be globally accessible.
+    **/
     update() {
         l.ui.update_queue.forEach( ( current_update, i ) => {
             _execute( current_update.callback, current_update.data, window );

@@ -98,9 +98,9 @@ export default class Raven extends RavenBase {
         this.mesh.name = 'Bot Ship';
         this.mesh.userData.targetable = true;
         this.mesh.userData.objectClass = 'bot';
-        this.mesh.userData.standing = -1;
         this.mesh.position.z = -1500;
         this.mesh.position.y = 200;
+        this.mesh.children[0].rotation.y = Math.PI;
         this.mesh.rotation.order = 'YXZ';
 
         // const vehicleGeometry = new THREE.ConeGeometry( 5, 20, 32 );
@@ -112,18 +112,36 @@ export default class Raven extends RavenBase {
         this.mesh.matrixAutoUpdate = false;
 
         // @todo: Uncouple from the pirate actor when vehicle selection is introduced.
-        this.actor = new Pirate( this.mesh );
+        this.mesh.userData.actor = new Pirate( this.mesh, l.current_scene.scene );
 
-        l.scenograph.entityManager.add( this.actor.entity );
+        l.scenograph.entityManager.add( this.mesh.userData.actor.entity );
+
+        this.mesh.userData.object = this;
+        this.mesh.userData.object.standing = -1;
+        // Set the object start position based on the path.
+        // @todo: pluck it dynamically from path.
+        this.mesh.userData.object.startPosition.x = -2000;
+        this.mesh.userData.object.startPosition.y = this.mesh.position.y;
+        this.mesh.userData.object.startPosition.z = -1000;
 
     }
 
-    // Runs on the main animation loop
+    /**
+     * Animate hook.
+     * 
+     * This method is called within the main animation loop and
+     * therefore must only reference global objects or properties.
+     * 
+     * @method animate
+     * @memberof Raven
+     * @global
+     * @note All references within this method should be globally accessible.
+    **/
     animate( delta ) {
-
-        l.current_scene.objects.bot.actor.animate();
+        if ( l.current_scene.settings.game_controls ) {
+            l.current_scene.objects.bot.mesh.userData.actor.animate( delta );
+        }
     }
 
    
 }
-

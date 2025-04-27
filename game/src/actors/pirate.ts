@@ -14,51 +14,53 @@ export default class Pirate extends BaseActor {
 
     marker;
 
+    path;
+
     pursue;
 
-    constructor( mesh, type = 'vehicle' ) {
-        super( mesh, type );
+    constructor( mesh, scene ) {
+        super( mesh, scene );
         
         this.marker = document.querySelector('#map .marker-bot svg path');
 
         if ( this.type == 'vehicle' ) {
             this.entity.position.z = this.mesh.position.z;
             this.entity.position.y = this.mesh.position.y;
-            this.entity.maxSpeed = 500;
+            this.entity.maxSpeed = 400;
             this.entity.setRenderComponent( this.mesh, this.sync );
             this.entity.boundingRadius = 20;
             this.entity.smoother = new YUKA.Smoother( 20 );
             this.entity.rotation.order = 'XYZ';
 
             const loopDistance = -1000;
-            const path = new YUKA.Path();
-            path.loop = true;
-            path.add( new YUKA.Vector3( loopDistance, this.mesh.position.y, loopDistance ) );
-            path.add( new YUKA.Vector3( loopDistance, this.mesh.position.y, - loopDistance ) );
-            path.add( new YUKA.Vector3( - loopDistance, this.mesh.position.y, - loopDistance ) );
-            path.add( new YUKA.Vector3( - loopDistance, this.mesh.position.y, loopDistance ) );
+
+            this.path = new YUKA.Path();
+            this.path.loop = true;
+            this.path.add( new YUKA.Vector3( loopDistance, this.mesh.position.y, loopDistance ) );
+            this.path.add( new YUKA.Vector3( loopDistance, this.mesh.position.y, - loopDistance ) );
+            this.path.add( new YUKA.Vector3( - loopDistance, this.mesh.position.y, - loopDistance ) );
+            this.path.add( new YUKA.Vector3( - loopDistance, this.mesh.position.y, loopDistance ) );
     
-            const vision = new YUKA.Vision( this.entity );
-            vision.range = 1500;
-            vision.fieldOfView = Math.PI * 2;
-            this.entity.vision = vision;
-    
-            this.follow = new YUKA.FollowPathBehavior( path );
+            this.follow = new YUKA.FollowPathBehavior( this.path );
             this.entity.steering.add( this.follow );
 
-            this.pursue = new YUKA.PursuitBehavior( l.current_scene.objects.player.actor.entity, 1 );
+            // @todo: v7 Figure out a way to signal this to happen without l. global object access
+            this.pursue = new YUKA.PursuitBehavior( l.current_scene.objects.player.mesh.userData.actor.entity, 1 );
             this.pursue.active = false;
 			this.entity.steering.add( this.pursue );
 
         }
     }
 
-    animate() {
+    animate( delta ) {
+        super.animate( delta );
+
         if ( ! this.marker ) {
             this.marker = document.querySelector('#map .marker-bot svg path');
         }
 
-        if ( this.entity.vision.visible( l.current_scene.objects.player.position ) === true ) {           
+        // @todo: v7 Figure out a way to signal this to happen without l. global object access
+        if ( this.entity.vision.visible( l.current_scene.objects.player.position ) === true ) {
             this.pursue.active = true;
             this.follow.active = false;
 

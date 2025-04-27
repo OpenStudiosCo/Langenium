@@ -128,6 +128,17 @@ export default class Refineries {
         return result;
     }
 
+    /**
+     * Animate hook.
+     * 
+     * This method is called within the main animation loop and
+     * therefore must only reference global objects or properties.
+     * 
+     * @method animate
+     * @memberof Refineries
+     * @global
+     * @note All references within this method should be globally accessible.
+    **/
     animate( delta ) {
 
         l.current_scene.objects.refineries.forEach( ( refinery, i ) => {

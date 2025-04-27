@@ -62,7 +62,7 @@ export default class HeadsUpDisplay {
      * therefore must only reference global objects or properties.
      * 
      * @method animate
-     * @memberof Scanners
+     * @memberof HeadsUpDisplay
      * @global
      * @note All references within this method should be globally accessible.
     **/

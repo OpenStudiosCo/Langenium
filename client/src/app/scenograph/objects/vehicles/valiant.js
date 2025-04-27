@@ -7,7 +7,6 @@
  */
 
 import * as THREE from 'three';
-import { TrailRenderer } from '@/../vendor/TrailRenderer.js';
 
 /**
  * Internal libs and helpers.
@@ -15,11 +14,9 @@ import { TrailRenderer } from '@/../vendor/TrailRenderer.js';
 import l from '@/helpers/l.js';
 import { brightenMaterial, proceduralMetalMaterial } from '@/scenograph/materials.js';
 import Player from '#/game/src/actors/player';
-import ValiantBase from '#/game/src/objects/aircraft/valiant.js';
+import ValiantBase from '#/game/src/objects/aircraft/valiant';
 
 export default class Valiant extends ValiantBase {
-
-    actor;
 
     // Camera distance.
     camera_distance;
@@ -112,6 +109,8 @@ export default class Valiant extends ValiantBase {
 
         this.mesh.userData.targetable = true;
         this.mesh.userData.objectClass = 'player';
+        this.mesh.userData.actor = new Player( this.mesh, l.current_scene.scene );
+        l.scenograph.entityManager.add( this.mesh.userData.actor.entity );
 
         this.createThruster();
 
@@ -124,64 +123,9 @@ export default class Valiant extends ValiantBase {
 
         //l.current_scene.effects.particles.createShipThruster(this, 1.5, { x: 0, y: 1.2, z: 1.5 });
 
-        // specify points to create planar trail-head geometry
-        const trailHeadGeometry = this.createTrailCircle();
+        this.trail = l.current_scene.effects.trail.createTrail( this.mesh, 0, this.trail_position_y, this.trail_position_z );
 
-        // create the trail renderer object
-        this.trail = new TrailRenderer( l.current_scene.scene, false );
-
-        // set how often a new trail node will be added and existing nodes will be updated
-        this.trail.setAdvanceFrequency( 30 );
-
-        // create material for the trail renderer
-        const trailMaterial = TrailRenderer.createBaseMaterial();
-
-        trailMaterial.depthWrite = true;
-        trailMaterial.depthBias = -0.0001; // Adjust depth bias as needed
-        trailMaterial.depthBiasConstant = 0; // Adjust depth bias constant term if necessary
-        trailMaterial.depthBiasSlope = 0; // Adjust depth bias slope term if necessary
-
-        //trailMaterial.side = THREE.DoubleSide;
-
-        //trailMaterial.transparent = true;
-
-        trailMaterial.uniforms.headColor.value.set( 255 / 255, 212 / 255, 148 / 255, 1. ); // RGBA.
-        trailMaterial.uniforms.tailColor.value.set( 132 / 255, 42 / 255, 36 / 255, 1. ); // RGBA.
-
-        // specify length of trail
-        const trailLength = 2;
-
-        const trailContainer = new THREE.Object3D();
-        trailContainer.position.set( 0, this.trail_position_y, this.trail_position_z );
-        this.mesh.add( trailContainer );
-
-        // initialize the trail
-        this.trail.initialize( trailMaterial, trailLength, false, 0, trailHeadGeometry, trailContainer );
-
-        this.trail.mesh.name = 'Player Ship Trail';
-
-        // activate the trail
-        this.trail.activate();
-
-        this.actor = new Player( this.mesh );
-
-        l.scenograph.entityManager.add( this.actor.entity );
-    }
-
-    createTrailCircle() {
-        let circlePoints = [];
-        const twoPI = Math.PI * 2;
-        let index = 0;
-        const scale = .25;
-        const inc = twoPI / 32.0;
-
-        for ( let i = 0; i <= twoPI + inc; i += inc ) {
-            const vector = new THREE.Vector3();
-            vector.set( Math.cos( i ) * scale, Math.sin( i ) * scale, 0 );
-            circlePoints[ index ] = vector;
-            index++;
-        }
-        return circlePoints;
+        this.mesh.userData.object = this;
     }
 
     createThrusterMesh( options ) {
@@ -478,7 +422,17 @@ export default class Valiant extends ValiantBase {
         l.current_scene.objects.player.mesh.rotation.z = l.current_scene.objects.player.rotation.z;
     }
 
-    // Runs on the main animation loop
+    /**
+     * Animate hook.
+     * 
+     * This method is called within the main animation loop and
+     * therefore must only reference global objects or properties.
+     * 
+     * @method animate
+     * @memberof Valiant
+     * @global
+     * @note All references within this method should be globally accessible.
+    **/
     animate( delta ) {
 
         if ( l.current_scene.objects.player.ready ) {
@@ -490,6 +444,9 @@ export default class Valiant extends ValiantBase {
                 if ( l.scenograph.modes.multiplayer.connected ) {
                     l.scenograph.modes.multiplayer.socket.emit( 'input', l.current_scene.objects.player.controls );
                 }
+
+                l.current_scene.objects.player.mesh.userData.actor.animate( delta );
+
             }
 
             l.current_scene.objects.player.updateAnimation( delta );
@@ -542,6 +499,7 @@ export default class Valiant extends ValiantBase {
                 l.current_scene.objects.player.trail.update();
             }
 
+            
         }
     }
 

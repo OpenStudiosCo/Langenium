@@ -68,6 +68,7 @@ export default class Map {
             'cargoShip': 'ship',
             'city': 'structure',
             'extractors': 'structure',
+            'missiles': 'aircraft',
             'player': 'aircraft',
             'refinery': 'structure',
         }
@@ -107,17 +108,18 @@ export default class Map {
         let leftEdge = l.current_scene.objects.player.mesh.position.x - l.scenograph.overlays.map.distance / 2;
         let topEdge = l.current_scene.objects.player.mesh.position.z - l.scenograph.overlays.map.distance / 2;
 
-        l.scenograph.overlays.scanners.trackedObjects.forEach( trackedObject => {
-            let distance = trackedObject.mesh.position.distanceTo( l.current_scene.objects.player.mesh.position );
-            
+
+        l.current_scene.objects.player.mesh.userData.actor.scanners.targets.forEach( target => {
+            let distance = target.mesh.position.distanceTo( l.current_scene.objects.player.mesh.position );
+
             // Check if the object is within the mapping distance.
             if ( distance <= l.scenograph.overlays.map.distance * 100 ) {
                 
                 // Check if the object is already present on the map, move it if so
-                if ( trackedObject.mesh.uuid in l.scenograph.overlays.map.markers ) {
+                if ( target.mesh.uuid in l.scenograph.overlays.map.markers ) {
 
-                    let diffX = ( trackedObject.mesh.position.x - leftEdge ) * offset;
-                    let diffZ = ( trackedObject.mesh.position.z - topEdge ) * offset;
+                    let diffX = ( target.mesh.position.x - leftEdge ) * offset;
+                    let diffZ = ( target.mesh.position.z - topEdge ) * offset;
 
                      // Calculate the distance from the center of the minimap
                     let dx = diffX - halfMapSize;
@@ -135,23 +137,24 @@ export default class Map {
                     }
 
                     // Update position.
-                    l.scenograph.overlays.map.markers[ trackedObject.mesh.uuid ].domElement.style.left = `${diffX-5}px`;
-                    l.scenograph.overlays.map.markers[ trackedObject.mesh.uuid ].domElement.style.top = `${diffZ-5}px`;
+                    l.scenograph.overlays.map.markers[ target.mesh.uuid ].domElement.style.left = `${diffX-5}px`;
+                    l.scenograph.overlays.map.markers[ target.mesh.uuid ].domElement.style.top = `${diffZ-5}px`;
 
                 }
                 else {
                     // Add the object to the map
-                    l.scenograph.overlays.map.markers[ trackedObject.mesh.uuid ] = l.scenograph.overlays.map.addMarker( trackedObject );
+                    l.scenograph.overlays.map.markers[ target.mesh.uuid ] = l.scenograph.overlays.map.addMarker( target );
                 }
 
             }
             else {
                 // Check if the object is already present on the map, remove it if so
-                if ( trackedObject.mesh.uuid in l.scenograph.overlays.map.markers ) {
-                    l.scenograph.overlays.map.removeMarker( trackedObject.mesh.uuid, l.scenograph.overlays.map.markers[ trackedObject.mesh.uuid ] );
+                if ( target.mesh.uuid in l.scenograph.overlays.map.markers ) {
+                    l.scenograph.overlays.map.removeMarker( target.mesh.uuid, l.scenograph.overlays.map.markers[ target.mesh.uuid ] );
                 }
             }
         } );
+
 
     }
 
@@ -176,7 +179,7 @@ export default class Map {
 
         l.scenograph.overlays.map.fov.style.transform = 'rotate(' + heading + 'deg)';
 
-        l.scenograph.overlays.map.animateMarkers( )
+        l.scenograph.overlays.map.animateMarkers( );
     }
 
 }

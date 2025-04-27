@@ -47,6 +47,9 @@ export default class Main_Menu {
             // Hide game exit button to return to main menu.
             this.buttons.exit_game.hidden = true;
 
+            // Hide the score table button.
+            this.buttons.scores.hidden = true;
+
             // Restore the main menu title.
             this.pane.title = this.default_title;
 
@@ -57,6 +60,15 @@ export default class Main_Menu {
             // Set client mode.
             l.mode = 'home';
         } );
+
+        this.buttons.scores = this.pane.addButton( {
+            title: 'Scores',
+            hidden: true
+        } );
+
+        this.buttons.scores.on( 'click', () => {
+            l.ui.score_table.show();
+        });
 
         this.buttons.single_player = this.pane.addButton( {
             title: 'Single Player',
@@ -83,12 +95,16 @@ export default class Main_Menu {
             // Show game exit button to return to main menu.
             this.buttons.exit_game.hidden = false;
 
+            // Show game scores button
+            this.buttons.scores.hidden = false;
+
             // Set client mode.
             l.mode = 'single_player';
         } );
 
         this.buttons.multi_player = this.pane.addButton( {
             title: 'Multi Player',
+            disabled: true // @todo: v7 Restore multiplayer and server tracking of scene objects.
         } );
         this.buttons.multi_player.on( 'click', () => {
             console.log( 'Multi player launched' );
@@ -108,6 +124,9 @@ export default class Main_Menu {
             // Show game exit button to return to main menu.
             this.buttons.exit_game.hidden = false;
 
+            // Show game scores button
+            this.buttons.scores.hidden = false;
+
             let serverLocation = l.env == 'Dev' ? 'lcl.langenium.com:8090' : 'test.langenium.com:42069';
 
             l.scenograph.modes.multiplayer.connect( '//' + serverLocation );
@@ -123,6 +142,7 @@ export default class Main_Menu {
             console.log( 'Settings launched' );
 
             // Hide all the other buttons.
+            this.buttons.scores.hidden = true;
             this.buttons.exit_game.hidden = true;
             this.buttons.single_player.hidden = true;
             this.buttons.multi_player.hidden = true;
@@ -148,6 +168,7 @@ export default class Main_Menu {
             console.log( 'Settings closed' );
 
             // Show all the other buttons.
+            this.buttons.scores.hidden = l.mode !== 'home' ? false : true;
             this.buttons.exit_game.hidden = l.mode !== 'home' ? false : true;
             this.buttons.single_player.hidden = l.mode !== 'home' ? true : false;
             this.buttons.multi_player.hidden = l.mode !== 'home' ? true : false;
@@ -198,7 +219,7 @@ export default class Main_Menu {
             title: 'Help',
         } );
         this.buttons.help.on( 'click', () => {
-            console.log( 'Help launched' );
+            l.ui.help.show();
         } );
 
         return this;

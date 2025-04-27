@@ -46,6 +46,24 @@ export default class BaseAircraft {
     constructor() {
     }
 
+    public blowUp( meshPosition ) {
+        let seed = Math.round(Math.random() * 10);
+
+        for ( var i = 0; i < seed; i++ ) {
+            let xOffset = 10 - Math.random() * 20;
+            let yOffset = 10 - Math.random() * 20;
+            let zOffset = 10 - Math.random() * 20;
+
+            let explosionPosition = meshPosition.clone();
+            explosionPosition.x += xOffset;
+            explosionPosition.y += yOffset;
+            explosionPosition.z += zOffset;
+
+            l.current_scene.objects.projectiles.missile.loadExplosion( explosionPosition );
+        }
+
+    };
+
     /**
      * Damages the aircraft based on the incoming damage.
      * 
@@ -56,6 +74,7 @@ export default class BaseAircraft {
      * @returns 
      */
     public damage( damagePoints, originMesh ): number {
+        let targetDestroyed = false;
         let damage = damagePoints;
         let seed = Math.random();
 
@@ -71,13 +90,11 @@ export default class BaseAircraft {
 
         // Apply damage to the aircrafts hitpoints.
         if ( this.hitPoints <= damage ) {
+            targetDestroyed = true;
             this.hitPoints = 0;
             // Add an explosion special effect
             // @todo: v7 Figure out a way to signal this to happen without l. global object access
-            l.current_scene.objects.projectiles.missile.loadExplosion( this.mesh.position );
-
-            // Destroy all missiles headed toward the target.
-            l.current_scene.objects.projectiles.missile.targetLost( this.mesh.uuid );
+            this.blowUp( this.mesh.position );
 
             // Disable targeting until respawn.
             this.mesh.userData.targetable = false;
@@ -126,7 +143,7 @@ export default class BaseAircraft {
             this.hitPoints -= damage;
         }
 
-        return damage;
+        return [ damage, targetDestroyed ];
     }
 
     /**

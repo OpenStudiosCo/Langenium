@@ -230,16 +230,22 @@ export default class Missile {
      * @note All references within this method should be globally accessible.
     **/
     animate() {
+        const destroyedTargets = new Set();
+
         // @todo: v7: This has to be simulated on the server somehow..
         l.current_scene.objects.projectiles.missile.active.forEach( ( missile, index ) => {
+            const [ damage, targetDestroyed ] = missile.userData.object.hitCalculation();
             
+            if ( targetDestroyed ) {
+                destroyedTargets.add( missile.userData.destMesh.uuid );
+            }
             if (
                 // Check if
                 // - it's been 10 seconds OR
                 // - the missile has collided
                 // since the missile was fired, explode if so
                 ( parseFloat( l.current_scene.stats.currentTime ) >= parseFloat( missile.userData.created ) + 10000 ) ||
-                ( missile.userData.object.hit() )
+                ( damage )
             ) {
                 l.current_scene.objects.projectiles.missile.animateMissileEnd( missile, index );
             }
@@ -248,6 +254,13 @@ export default class Missile {
                 l.current_scene.objects.projectiles.missile.animateMissileFlight( missile );
             }
         } );
+
+        // Destroy all missiles headed toward the target.
+        l.current_scene.objects.projectiles.missile.active = l.current_scene.objects.projectiles.missile.active.filter( missile => {
+            const remove = destroyedTargets.has( missile.userData.destMesh.uuid );
+            if (remove) l.current_scene.objects.projectiles.missile.targetLost( missile.userData.destMesh.uuid );
+            return !remove;
+        });
 
         l.current_scene.objects.projectiles.missile.explosions.forEach( ( explosion, index ) => {
             // Check if it's been 2 seconds since the explosion started, remove if so

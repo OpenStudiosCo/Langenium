@@ -19,14 +19,15 @@ class MissileProjectile extends BaseProjectile {
     }
 
     // IF a missile gets within 5m of its target, it counts as a hit.
-    hit ()  {
+    hitCalculation ()  {
         const hit = this.missileMesh.position.distanceTo( this.missileMesh.userData.destMesh.position ) <= 5;
+        let targetDestroyed = false;
 
         if ( hit && this.missileMesh.userData.destMesh.userData.object ) {
-            this.missileMesh.userData.destMesh.userData.object.damage( this.damagePoints, this.missileMesh.userData.originMesh );
+            targetDestroyed = this.missileMesh.userData.destMesh.userData.object.damage( this.damagePoints, this.missileMesh.userData.originMesh );
         }
 
-        return hit;
+        return [ hit ];
     }
 
 }

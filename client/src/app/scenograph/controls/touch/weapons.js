@@ -1,5 +1,5 @@
 /**
- * Weapon Controls
+ * Touchscreen Weapon Controls
  * 
  */
 
@@ -9,10 +9,26 @@
 import l from '@/helpers/l.js';
 
 export default class WeaponControls {
+    
+    /**
+     * Switch indicating we are currently attacking.
+     * 
+     * @type {boolean} 
+     */
     attack;
 
+    /**
+     * Switch indicating auto attack is on.
+     * 
+     * @type {boolean} 
+     */
     autoAttack;
 
+    /**
+     * HTML Container
+     * 
+     * @type {HTMLElement}
+     */
     container;
 
     constructor() {
@@ -35,15 +51,25 @@ export default class WeaponControls {
 
     }
 
-    // Updater, runs on setInterval
+    /**
+     * Update hook.
+     * 
+     * This method is called within the UI setInterval updater, allowing
+     * HTML content to be updated at different rate than the 3D frame rate.
+     * 
+     * @method update
+     * @memberof WeaponControls
+     * @global
+     * @note All references within this method should be globally accessible.
+    **/
     update() {
         const button = l.scenograph.controls.touch.weapons.container.querySelector('button');
 
         let timeRemaining = 0;
 
-        if ( parseInt(l.current_scene.stats.currentTime) < parseInt(l.current_scene.objects.player.actor.weapons.lastAttack) + parseInt(l.current_scene.objects.player.actor.weapons.timeout) ) {
-            timeRemaining = parseInt(l.current_scene.objects.player.actor.weapons.timeout) - (
-                parseInt(l.current_scene.stats.currentTime) - parseInt(l.current_scene.objects.player.actor.weapons.lastAttack)
+        if ( parseInt(l.current_scene.stats.currentTime) < parseInt(l.current_scene.objects.player.mesh.userData.actor.weapons.last) + parseInt(l.current_scene.objects.player.mesh.userData.actor.weapons.timeout) ) {
+            timeRemaining = parseInt(l.current_scene.objects.player.mesh.userData.actor.weapons.timeout) - (
+                parseInt(l.current_scene.stats.currentTime) - parseInt(l.current_scene.objects.player.mesh.userData.actor.weapons.last)
             );
         }
 

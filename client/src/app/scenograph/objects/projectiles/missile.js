@@ -14,13 +14,15 @@ import { TrailRenderer } from '@/../vendor/TrailRenderer.js';
 import l from '@/helpers/l.js';
 import { proceduralBuilding, proceduralMetalMaterial2 } from '@/scenograph/materials.js';
 
+import MissileProjectile from '#/game/src/objects/projectiles/missile';
+
 export default class Missile {
 
     // Array of active missiles on the scene
     active;
 
-    // Reusable video texture sprite of an explosion when a missile terminates.
-    explosionMesh;
+    // Array of active explosions on the scene
+    explosions;
 
     // THREE.Mesh
     mesh;
@@ -63,45 +65,95 @@ export default class Missile {
 
         this.mesh = new THREE.Object3D();
         this.mesh.name = 'Missile';
-        this.mesh.userData.targetable = true;
+        this.mesh.userData.targetable = false; // @todo: allow shooting at them when guns are introduced
         this.mesh.userData.objectClass = 'missiles';
 
         this.mesh.add(this.getMissileBody());
 
-        // // Instantiate the video element for reuse
-        // this.explosionMesh = await this.loadExplosion();
+    }
+
+    async targetLost( targetMeshUuid ) {
+
+        l.current_scene.objects.projectiles.missile.active.forEach( ( missile, index ) => {
+            // Detonate early if missile target was lost.
+            if ( missile.userData.destMesh.uuid == targetMeshUuid ) {
+                l.current_scene.objects.projectiles.missile.animateMissileEnd( missile, index );
+            }
+        } );
     }
 
     async loadExplosion( position ) {
-        const explosionVideo = document.getElementById( 'explosion' );
+        const explosionVideo = document.getElementById( 'explosion' ).cloneNode(true);
         explosionVideo.play();
-        explosionVideo.playbackRate = 0.25;
+        explosionVideo.playbackRate = 1.5;
 
         const texture = new THREE.VideoTexture( explosionVideo );
         texture.colorSpace = THREE.SRGBColorSpace;
         texture.wrapS = THREE.RepeatWrapping;
         texture.wrapT = THREE.RepeatWrapping;
-        texture.repeat.set( 1, 1 );
-        texture.rotation = - Math.PI / 2;
+        texture.repeat.set( 16/9, 1 );
 
-        const parameters = {
-            depthWrite: false,
-            map: texture,
+        const material = new THREE.ShaderMaterial({
+            uniforms: {
+                map: { value: texture },
+                color: { value: new THREE.Color(0xffffff) },
+                threshold: { value: 0.55 },
+                smoothness: { value: 0.05 },
+                rotation: { value: Math.random() * Math.PI - Math.PI * 0.5 }
+            },
+            vertexShader: `
+                uniform float rotation;
+                varying vec2 vUv;
+                void main() {
+                    vUv = uv;
+                    // Center the rotation
+                    vec3 pos = position;
+                    float s = sin(rotation);
+                    float c = cos(rotation);
+
+                    pos.xy = vec2(
+                        c * position.x - s * position.y,
+                        s * position.x + c * position.y
+                    );
+
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+
+                }
+            `,
+            fragmentShader: `
+                uniform sampler2D map;
+                uniform vec3 color;
+                uniform float threshold;
+                uniform float smoothness;
+                varying vec2 vUv;
+
+                void main() {
+                    vec4 tex = texture2D(map, vUv);
+                    float brightness = dot(tex.rgb, vec3(0.299, 0.587, 0.114));
+
+                    // Create smooth alpha edge
+                    float alpha = smoothstep(threshold, threshold + smoothness, brightness);
+
+                    vec4 finalColor = vec4(tex.rgb * color, alpha * tex.a);
+
+                    if (finalColor.r < threshold) discard;
+                    
+                    gl_FragColor = finalColor;
+                }
+            `,
             transparent: true,
-        };
+            depthWrite: false
+        });
 
-        const material = new THREE.MeshBasicMaterial( parameters );
+        const mesh = new THREE.Sprite( material );
 
-        material.blending = THREE.CustomBlending;
-        material.blendSrc = THREE.SrcAlphaFactor;
-        material.blendDst = THREE.OneFactor;
-        material.blendEquation = THREE.AddEquation;
+        mesh.renderOrder = 999;
 
-        const geometry = new THREE.PlaneGeometry( 10, 10, 2, 2);
-
-        const mesh = new THREE.Mesh( geometry, material );
+        mesh.scale.set( 30, 30, 30 );
 
         mesh.userData.created = l.current_scene.stats.currentTime;
+        mesh.userData.texture = texture;
+        mesh.userData.video = explosionVideo;
 
         mesh.position.copy( position );
 
@@ -127,6 +179,7 @@ export default class Missile {
         newMissile.userData.originCoords = originCoords;
         newMissile.userData.destMesh = destMesh;
         newMissile.userData.destCoords = destCoords;
+        newMissile.userData.object = new MissileProjectile( newMissile );
         
         // Set starting position
         newMissile.position.x = originCoords.x;
@@ -140,9 +193,6 @@ export default class Missile {
 
         // Add missile to the active missiles array (for animation etc)
         l.current_scene.objects.projectiles.missile.active.push( newMissile );
-
-        // specify points to create planar trail-head geometry
-        const trailHeadGeometry = l.current_scene.effects.trail.createTrailCircle();
 
         // Add a trail to the missile.
         newMissile.userData.trail = l.current_scene.effects.trail.createTrail( newMissile, 0, 0, -1.5 );
@@ -168,41 +218,103 @@ export default class Missile {
         return capsule;
     }
 
-    // @todo: This has to be simulated on the server somehow..
-    animate( currentTime ) {
+    /**
+     * Animate hook.
+     * 
+     * This method is called within the main animation loop and
+     * therefore must only reference global objects or properties.
+     * 
+     * @method animate
+     * @memberof Missile
+     * @global
+     * @note All references within this method should be globally accessible.
+    **/
+    animate() {
+        const destroyedTargets = new Set();
+
+        // @todo: v7: This has to be simulated on the server somehow..
         l.current_scene.objects.projectiles.missile.active.forEach( ( missile, index ) => {
-            // Check if it's been 10 seconds since the missile was fired, self destruct if so
-            if ( parseFloat( l.current_scene.stats.currentTime ) >= parseFloat( missile.userData.created ) + 10000 ) {
-                l.current_scene.objects.projectiles.missile.active.splice( index, 1 );
-                l.current_scene.scene.remove( missile );
-                missile.userData.trail.destroyMesh();
-                missile.userData.trail.deactivate();
-                l.current_scene.objects.projectiles.missile.loadExplosion( missile.position );
+            const [ damage, targetDestroyed ] = missile.userData.object.hitCalculation();
+            
+            if ( targetDestroyed ) {
+                destroyedTargets.add( missile.userData.destMesh.uuid );
+            }
+            if (
+                // Check if
+                // - it's been 10 seconds OR
+                // - the missile has collided
+                // since the missile was fired, explode if so
+                ( parseFloat( l.current_scene.stats.currentTime ) >= parseFloat( missile.userData.created ) + 10000 ) ||
+                ( damage )
+            ) {
+                l.current_scene.objects.projectiles.missile.animateMissileEnd( missile, index );
             }
             // Otherwise keep flying forward.
             else {
-                
-                let missileAge = parseFloat( missile.userData.created ) - parseFloat(l.current_scene.stats.currentTime );
-                let missileSpeed = 1 + 4 * Math.min( ( missileAge / 2000 ), 1 );
-                missile.lookAt( missile.userData.destMesh.position );
-                missile.translateZ(-missileSpeed); // 5 meters per frame at 60fps is approx 432km per hour
-                missile.userData.trail.update();
+                l.current_scene.objects.projectiles.missile.animateMissileFlight( missile );
             }
         } );
+
+        // Destroy all missiles headed toward the target.
+        l.current_scene.objects.projectiles.missile.active = l.current_scene.objects.projectiles.missile.active.filter( missile => {
+            const remove = destroyedTargets.has( missile.userData.destMesh.uuid );
+            if (remove) l.current_scene.objects.projectiles.missile.targetLost( missile.userData.destMesh.uuid );
+            return !remove;
+        });
 
         l.current_scene.objects.projectiles.missile.explosions.forEach( ( explosion, index ) => {
             // Check if it's been 2 seconds since the explosion started, remove if so
-            if ( parseFloat( l.current_scene.stats.currentTime ) >= parseFloat( explosion.userData.created ) + 2000 ) {
-                l.current_scene.objects.projectiles.missile.explosions.splice( index, 1 );
+            if ( parseFloat( l.current_scene.stats.currentTime ) >= parseFloat( explosion.userData.created ) + 2000 ) {               
+                // Remove the explosion from the scene.
                 l.current_scene.scene.remove( explosion );
+                explosion.geometry.dispose();
+                explosion.material.uniforms.map.value.dispose();
+                explosion.userData.texture.dispose();
+                explosion.material.dispose();
+                l.current_scene.renderers.webgl.renderLists.dispose();
+
+                // Tidy up the explosion video element.
+                explosion.userData.video.pause();
+                explosion.userData.video.src = '';
+                explosion.userData.video.removeAttribute('src'); // Sometimes needed for Safari
+                explosion.userData.video.load();                 // Ensures src is cleared
+
+                if (explosion.userData.video.parentNode) explosion.userData.video.parentNode.removeChild(explosion.userData.video);
+
+                explosion = null;
+
+                // Remove from the tracking array.
+                l.current_scene.objects.projectiles.missile.explosions.splice( index, 1 );
             }
-            // Otherwise rotate to the active camera.
             else {
-                
                 explosion.lookAt( l.scenograph.cameras.active.position );
 
+                explosion.material.uniforms.rotation.value *= 0.996;
+
+                if ( parseFloat( l.current_scene.stats.currentTime ) >= parseFloat( explosion.userData.created ) + 500 ) {
+                    explosion.scale.x *= 0.996;
+                    explosion.scale.y *= 0.996;
+                    explosion.scale.z *= 0.996;
+                }
             }
         } );
+    }
+
+    animateMissileFlight( missile ) {
+        
+        let missileAge = parseFloat( missile.userData.created ) - parseFloat(l.current_scene.stats.currentTime );
+        let missileSpeed = 1 + 4 * Math.min( ( missileAge / 2000 ), 1 );
+        missile.lookAt( missile.userData.destMesh.position );
+        missile.translateZ(-missileSpeed); // 5 meters per frame at 60fps is approx 432km per hour
+        missile.userData.trail.update();
+    }
+
+    animateMissileEnd( missile, activeIndex ) {
+        l.current_scene.objects.projectiles.missile.active.splice( activeIndex, 1 );
+        l.current_scene.scene.remove( missile );
+        missile.userData.trail.destroyMesh();
+        missile.userData.trail.deactivate();
+        l.current_scene.objects.projectiles.missile.loadExplosion( missile.userData.destMesh.position );
     }
 
 }

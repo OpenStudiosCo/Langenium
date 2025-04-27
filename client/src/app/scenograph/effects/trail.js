@@ -1,7 +1,9 @@
 /**
  * Trail
  * 
- * Provides helpers for drawing trails.
+ * Provides helpers for creating thruster trails.
+ * 
+ * @uses https://github.com/mkkellogg/TrailRendererJS
  */
 
 /**
@@ -21,6 +23,15 @@ export default class Trail {
 
     }
 
+    /**
+     * Create a thruster trail mesh.
+     *
+     * @param {THREE.Mesh} mesh 
+     * @param {float} trail_position_x 
+     * @param {float} trail_position_y 
+     * @param {float} trail_position_z 
+     * @returns {TrailRenderer}
+     */
     createTrail( mesh, trail_position_x, trail_position_y, trail_position_z ) {
         // specify points to create planar trail-head geometry
         const trailHeadGeometry = l.current_scene.effects.trail.createTrailCircle();
@@ -44,12 +55,18 @@ export default class Trail {
 
         trail.mesh.name = mesh.name + ' Trail';
 
+        trail.mesh.renderOrder = 999;
+
         // activate the trail
         trail.activate();
 
         return trail;
     }
 
+    /**
+     * Create the trails circular shape.
+     * @returns {array}
+     */
     createTrailCircle() {
         let circlePoints = [];
         const twoPI = Math.PI * 2;
@@ -70,14 +87,9 @@ export default class Trail {
         // create material for the trail renderer
         const trailMaterial = TrailRenderer.createBaseMaterial();
 
-        trailMaterial.depthWrite = true;
-        trailMaterial.depthBias = -0.0001; // Adjust depth bias as needed
-        trailMaterial.depthBiasConstant = 0; // Adjust depth bias constant term if necessary
-        trailMaterial.depthBiasSlope = 0; // Adjust depth bias slope term if necessary
+        trailMaterial.side = THREE.DoubleSide;
 
-        //trailMaterial.side = THREE.DoubleSide;
-
-        //trailMaterial.transparent = true;
+        trailMaterial.transparent = true;
 
         trailMaterial.uniforms.headColor.value.set( 255 / 255, 212 / 255, 148 / 255, 1. ); // RGBA.
         trailMaterial.uniforms.tailColor.value.set( 132 / 255, 42 / 255, 36 / 255, 1. ); // RGBA.

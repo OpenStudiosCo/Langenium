@@ -42,9 +42,9 @@ html(lang='en')
             canvas#loader_symbols
             canvas#loader_image
             video#explosion( autoplay="true" muted="muted" loop crossOrigin="anonymous" playsinline style="display:none")
-                source( src="/assets/textures/explosion.mp4" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"')
+                source( src="https://langenium.com/assets/textures/explosion.mp4" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"')
             video#thruster( autoplay="true" muted="muted" loop crossOrigin="anonymous" playsinline style="display:none")
-                source( src="/assets/textures/thruster.mp4" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"')
+                source( src="https://langenium.com/assets/textures/thruster.mp4" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"')
             h1#loadingSign
                 div Loading
                 img(src='/assets/images/tail-spin.svg' alt='Loading spinner')
@@ -52,4 +52,6 @@ html(lang='en')
             #webgl
             include ./partials/game_client/scripts.pug
         include ./partials/ui/flight_instruments.pug
+        include ./partials/ui/help.pug
+        include ./partials/ui/score_table.pug
         include ./partials/ui/weapon_controls.pug

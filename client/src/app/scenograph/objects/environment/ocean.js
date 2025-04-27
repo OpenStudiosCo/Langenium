@@ -44,6 +44,8 @@ export default class Ocean {
             }
         );
 
+        this.water.renderOrder = 1;
+
         this.water.material.transparent = true;
 
         // this.water.material = new THREE.MeshBasicMaterial( {
@@ -58,6 +60,17 @@ export default class Ocean {
 
     }
 
+    /**
+     * Animate hook.
+     * 
+     * This method is called within the main animation loop and
+     * therefore must only reference global objects or properties.
+     * 
+     * @method animate
+     * @memberof Ocean
+     * @global
+     * @note All references within this method should be globally accessible.
+    **/
     animate( currentTime ) {
         // Iterate the sky uniforms to animate it.
         l.current_scene.objects.ocean.water.material.uniforms.time.value += 1.0 / 60;

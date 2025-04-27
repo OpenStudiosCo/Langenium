@@ -206,8 +206,16 @@ export default class Scenograph {
     }
 
     /**
-     * Main animation loop for the current scene.
-     */
+     * Animate hook runner.
+     * 
+     * This is the primary animate function that drives the entire game client
+     * and runs anonymously so must only reference global objects or properties.
+     * 
+     * @method animate
+     * @memberof Scenograph
+     * @global
+     * @note All references within this method should be globally accessible.
+    **/
     animate( currentTime ) {
         updateFPS();
 

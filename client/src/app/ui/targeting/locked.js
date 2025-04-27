@@ -58,7 +58,9 @@ export default class Locked {
             let icon_class = '';
 
             // Add class of neutral of target stance is 0 (neutral)
-            icon_class = target.mesh.userData.standing == 0 ? 'neutral' : '';
+            icon_class = target.mesh.userData.hasOwnProperty('object') &&
+                         target.mesh.userData.object.hasOwnProperty('standing') &&
+                         target.mesh.userData.object.standing == 0 ? 'neutral' : '';
 
             item = item
                 .replaceAll( '$uuid', target.mesh.uuid )

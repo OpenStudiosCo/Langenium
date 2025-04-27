@@ -64,7 +64,9 @@ export default class List {
                 let icon_class = '';
 
                 // Add class of neutral of target stance is 0 (neutral)
-                icon_class = mesh.userData.standing == 0 ? 'neutral' : '';
+                icon_class =    mesh.userData.hasOwnProperty('object') &&
+                                mesh.userData.object.hasOwnProperty('standing') &&
+                                mesh.userData.object.standing == 0 ? 'neutral' : '';
 
                 item = item
                     .replaceAll( '$uuid', mesh.uuid )

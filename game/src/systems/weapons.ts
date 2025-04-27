@@ -9,37 +9,69 @@ import BaseSystem from './base';
 
 export default class Weapons extends BaseSystem {
 
-    lastAttack;
-    timeout;
+    // Origin mesh that fired the missile.
+    mesh;
 
-    constructor( type = 'missile' ) {
-        super( type );
+    // Scanner systems that determine where we're firing.
+    scanners;
+
+    constructor( mesh, scanners, type = 'missile' ) {
+        super( );
+
+        this.mesh = mesh;
+
+        this.scanners = scanners;
 
         if ( type == 'missile' ) {
-            this.lastAttack = 0;
             this.timeout = 1000; // in milliseconds
         }
     }
 
-    animate ( currentTime ) {
+    // Check if we are ready to fire again.
+    // @todo: v7 Figure out a way to signal this to happen without l. global object access
+    ready () {
+        return parseInt( l.current_scene.stats.currentTime ) >= parseInt(this.last) + parseInt(this.timeout)
+    }
 
-        if ( parseInt(currentTime) >= parseInt(this.lastAttack) + parseInt(this.timeout) ) {
+    animate ( delta ) {
+
+        if ( this.ready() ) {
 
             // Check scanners for objects to shoot at.
             // @todo: Move scanners into a game subsystem class.
-            l.scenograph.overlays.scanners.trackedObjects.forEach( ( object ) => {
-                
+            this.scanners.targets.forEach( ( target ) => {
+
                 if (
                     // Check if the object is target locked and not friendly.
-                    object.locked && object.mesh.userData.standing < 0
+                    target.mesh.name != 'Missile' &&
+                    // @todo: Fix bot AI so it can target lock better.
+                    target.locked && this.ready()
                 ) {
-                    this.lastAttack = currentTime;
-                    l.current_scene.objects.projectiles.missile.fireMissile(
-                        l.current_scene.objects.player.mesh,
-                        l.current_scene.objects.player.mesh.position,
-                        l.current_scene.objects.bot.mesh,
-                        l.current_scene.objects.bot.mesh.position
-                    );
+
+                    let negativeStanding = false;
+
+                    // Check if the object has an object class game object and do a standing check.
+                    if ( 
+                        target.mesh.userData.hasOwnProperty('object') &&
+                        target.mesh.userData.object.hasOwnProperty('standing') &&
+                        target.mesh.userData.object.standing != this.mesh.userData.object.standing
+                    ) {
+                        negativeStanding = true;
+                    }
+
+                    if ( negativeStanding ) {
+                        // @todo: v7 Figure out a way to signal this to happen without l. global object access
+                        this.last = l.current_scene.stats.currentTime;
+
+                        l.current_scene.objects.projectiles.missile.fireMissile(
+                            this.mesh,
+                            this.mesh.position,
+                            target.mesh,
+                            target.mesh.position
+                        );
+                    }
+
+
                 }
 
             } );

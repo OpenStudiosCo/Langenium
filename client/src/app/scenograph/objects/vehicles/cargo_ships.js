@@ -124,9 +124,8 @@ export default class CargoShips {
 
             mesh.userData.objectClass = 'cargoShip';
             mesh.userData.targetable = true;
-            mesh.userData.standing = 0;
             mesh.userData.size = this.size;
-            mesh.userData.actor = new cargoShip( mesh );
+            mesh.userData.actor = new cargoShip( mesh, l.current_scene.scene );
 
             l.scenograph.entityManager.add( mesh.userData.actor.entity );
 
@@ -185,18 +184,33 @@ export default class CargoShips {
         const scale = new THREE.Vector3(1, 1, -1);
         result.scale.multiply(scale);
 
+        result.rotation.y = Math.PI;
+
         this.mesh = new THREE.Object3D();
         this.mesh.add( result );
 
     }
 
-    animate() {
+    /**
+     * Animate hook.
+     * 
+     * This method is called within the main animation loop and
+     * therefore must only reference global objects or properties.
+     * 
+     * @method animate
+     * @memberof CargoShips
+     * @global
+     * @note All references within this method should be globally accessible.
+    **/
+    animate( delta ) {
 
-        l.current_scene.objects.cargo_ships.forEach( ( cargo_ship ) => {
+        if ( l.current_scene.settings.game_controls ) {
+            l.current_scene.objects.cargo_ships.forEach( ( cargo_ship ) => {
 
-            cargo_ship.userData.actor.animate();
-            
-        } );
+                cargo_ship.userData.actor.animate( delta );
+                
+            } );
+        }
  
     }
     

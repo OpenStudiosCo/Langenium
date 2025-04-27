@@ -53,6 +53,17 @@ export default class Sky {
 
     }
 
+    /**
+     * Animate hook.
+     * 
+     * This method is called within the main animation loop and
+     * therefore must only reference global objects or properties.
+     * 
+     * @method animate
+     * @memberof Sky
+     * @global
+     * @note All references within this method should be globally accessible.
+    **/
     animate( delta ) {
         // Iterate the sky uniforms to animate it.
         l.current_scene.objects.sky.uniforms.time.value += delta / 10;

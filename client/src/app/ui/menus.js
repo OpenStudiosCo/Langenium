@@ -38,6 +38,7 @@ export default class Menus {
         // Position: Top left.
         this.scene_overview = new Scene_Overview();
 
+        // @todo : Fix bugs with clicking and filtering items before restoring.
         // l.ui.update_queue.push( {
         //     callback: 'l.ui.menus.scene_overview.update',
         //     data: []

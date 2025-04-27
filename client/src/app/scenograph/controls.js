@@ -87,6 +87,17 @@ export default class Controls {
 
     }
 
+    /**
+     * Animate hook.
+     * 
+     * This method is called within the main animation loop and
+     * therefore must only reference global objects or properties.
+     * 
+     * @method animate
+     * @memberof Controls
+     * @global
+     * @note All references within this method should be globally accessible.
+    **/
     animate() {
         if ( l.scenograph.controls.orbit ) {
         
@@ -104,7 +115,7 @@ export default class Controls {
         let target_object = l.current_scene.scene.getObjectById( object_id );
 
         if (target_object.name == 'Bot Ship') {
-            target_object = l.current_scene.objects.bot.actor.entity;
+            target_object = l.current_scene.objects.bot.mesh.userData.actor.entity;
         }
 
         l.scenograph.controls.orbitTarget = target_object.position.clone();

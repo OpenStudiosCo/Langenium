@@ -1,6 +1,6 @@
 /***
  * @name            Scanners
- * @description     Draws shapes that track the positions of other craft.
+ * @description     Draws shapes that track the players scanners.
  * @namespace       l.scenograph.overlays.scanners
  * @memberof        l.scenograph.overlays
  * @global
@@ -27,40 +27,27 @@ export default class Scanners {
 
         this.item_template = document.getElementById( 'overlays_scanner_target' ).innerHTML;
 
-        this.trackedObjects = [];
-
-        this.trackedObjects.push({
-            mesh: l.current_scene.objects.bot.mesh,
-            domElement: this.getSymbolElement( 'diamond' ),
-            locked: false,
-            scanTime: 0,
-            lostTime: 0
-        });
-
-        l.current_scene.objects.cargo_ships.forEach( async ( cargo_ship, i ) => {
-            this.trackedObjects.push({
-                mesh: cargo_ship,
-                domElement: this.getSymbolElement( 'diamond' ),
-                locked: false,
-                scanTime: 0,
-                lostTime: 0
-            });
-          } );
-
-        this.trackedObjects.forEach( trackedObject => {
-            this.container.appendChild( trackedObject.domElement );
-        } );
+        this.trackedObjects = {};
 
     }
 
     /**
-     * 
+     * Get the marker symbol.
+     *
      * @param {*} symbol 
      * @returns custom HTMLElement
      */
     getSymbolElement( symbol ) {
         let element = document.createElement('div');
         element.innerHTML = this.item_template;
+        element.querySelector('.symbol').innerHTML = l.scenograph.overlays.map.icons[ symbol ];
+        element.firstChild.classList.add( symbol );
+        const shape = element.querySelector('.symbol path, .symbol rect');
+        
+        if ( shape.style ) {
+            shape.style = '';
+        }
+        
         return element.firstChild;
     }
 
@@ -123,104 +110,6 @@ export default class Scanners {
         return [ x, y ];
     }
 
-    // @todo: Move scanner logic to aircraft equipment update code.
-    getTargetLock( x, y ) {
-        if ( 
-            ((
-                ! l.scenograph.overlays.hud.portraitMode &&
-                x > l.scenograph.width * 0.375 &&
-                x < l.scenograph.width * 0.625
-            ) ||  (
-                l.scenograph.overlays.hud.portraitMode &&
-                x > l.scenograph.width * 0.1875 &&
-                x < l.scenograph.width * 0.8125
-            ) ) &&
-            
-            y > l.scenograph.height * 0.375 &&
-            y < l.scenograph.height * 0.625
-        ) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-
-    animateTarget( delta, trackedObject, frustum ) {
-        let [ x, y ] = l.scenograph.overlays.scanners.getScreenCoordinates(trackedObject.mesh, frustum);
-        let targetLock = l.scenograph.overlays.scanners.getTargetLock( x, y );
-
-        // Check if the object is within the scanner area.
-        if ( targetLock ) {
-            trackedObject.domElement.classList.add('tracking');
-            trackedObject.scanTime += delta;
-            trackedObject.lostTime = 0;
-
-            if ( trackedObject.scanTime >= 1 ) {
-                if ( trackedObject.scanTime >= 3 ) {
-                    trackedObject.domElement.classList.remove('locking');
-                    trackedObject.domElement.classList.add('locked');
-                    trackedObject.locked = true;
-                }
-                else {
-                    trackedObject.domElement.classList.add('locking');
-                    trackedObject.domElement.classList.remove('locked');
-                    trackedObject.locked = false;
-                }
-            }
-            else {
-                trackedObject.domElement.classList.remove('locking');
-                trackedObject.domElement.classList.remove('locked');
-                trackedObject.locked = false;
-            }
-
-        }
-        else {
-            trackedObject.lostTime += delta;
-
-            if ( trackedObject.scanTime < 1 ) {
-                trackedObject.domElement.classList.remove('tracking');
-                trackedObject.scanTime = 0;
-                trackedObject.lostTime = 0;
-            }
-            else {
-                // Allow 3 seconds before a target is downgraded when locked.
-                if ( trackedObject.lostTime >= 3 && trackedObject.domElement.classList.contains('locked') ) {
-                    trackedObject.domElement.classList.add('locking');
-                    trackedObject.domElement.classList.remove('locked');
-                    trackedObject.locked = false;
-
-                    trackedObject.lostTime = 0;
-                }
-                else {
-                    // Allow 1 seconds before a target is downgraded when locking.
-                    if ( trackedObject.lostTime >= 1 && trackedObject.domElement.classList.contains('locking') ) {
-                        trackedObject.domElement.classList.remove('locking');
-
-                        trackedObject.lostTime = 0;
-                    }
-                }
-
-                // Allow 1 seconds before a target is lost when tracking.
-                if ( 
-                    trackedObject.lostTime >= 1 &&
-                    trackedObject.domElement.classList.contains('tracking') &&
-                    ! trackedObject.domElement.classList.contains('locked') &&
-                    ! trackedObject.domElement.classList.contains('locking') 
-                ) {
-                    trackedObject.domElement.classList.remove('tracking');
-                    trackedObject.scanTime = 0;
-                    trackedObject.lostTime = 0;
-                    trackedObject.locked = false;
-                }
-
-            }
-        }
-
-        trackedObject.domElement.style.left = `${x-5}px`;
-        trackedObject.domElement.style.top = `${y-5}px`;
-    }
-
     /**
      * Animate hook.
      * 
@@ -233,14 +122,104 @@ export default class Scanners {
      * @note All references within this method should be globally accessible.
     **/
     animate( delta ) {
+        
         const frustum = new THREE.Frustum()
         const matrix = new THREE.Matrix4().multiplyMatrices(l.scenograph.cameras.active.projectionMatrix, l.scenograph.cameras.active.matrixWorldInverse)
-        frustum.setFromProjectionMatrix(matrix)
-        
+        frustum.setFromProjectionMatrix(matrix)        
         l.scenograph.cameras.active.updateProjectionMatrix();
-        l.scenograph.overlays.scanners.trackedObjects.forEach(trackedObject => {
-            l.scenograph.overlays.scanners.animateTarget(delta, trackedObject, frustum);
-        });
+
+        // Use the players scanners to update the overlays.
+        l.current_scene.objects.player.mesh.userData.actor.scanners.targets.forEach( target => l.scenograph.overlays.scanners.animateTarget( delta, target, frustum ) );
+
+        l.scenograph.overlays.scanners.removeOldTargets();
+
+    }
+
+    /**
+     * Animate the target in the UI overlay
+     * 
+     * @param {*} delta 
+     * @param {*} trackedObject 
+     * @param {*} frustum 
+     */
+    animateTarget( delta, target, frustum ) {
+        let [ x, y ] = l.scenograph.overlays.scanners.getScreenCoordinates( target.mesh, frustum );
+        let domElement = l.scenograph.overlays.scanners.getTargetDomElement( target );
+
+        if ( target.scanTime > 0 ) {
+            if ( target.scanTime >= 3 ) {
+                domElement.classList.add('locked');
+                domElement.classList.remove('locking');
+            }
+            else {
+                if ( target.scanTime >= 1 ) {
+                    domElement.classList.add('locking');
+                    domElement.classList.remove('locked');
+                }
+                else {
+                    domElement.classList.add('tracking');
+                    domElement.classList.remove('locked');
+                    domElement.classList.remove('locking');    
+                }   
+            }
+
+        }
+        else {
+            domElement.classList.remove('tracking');
+            domElement.classList.remove('locked');
+            domElement.classList.remove('locking');
+        }
+
+        domElement.style.left = `${x-10}px`;
+        domElement.style.top = `${y-10}px`;
+    }
+
+    /**
+     * Remove markers for objects no longer in the scene.
+     */
+    removeOldTargets() {
+
+        for ( const uuid in l.scenograph.overlays.scanners.trackedObjects ) {
+            const sceneObject = l.current_scene.scene.children.filter( mesh => mesh.uuid == uuid );
+            if ( sceneObject.length == 0 ) {
+                // Remove the marker from the overlay.
+                l.scenograph.overlays.scanners.container.removeChild( l.scenograph.overlays.scanners.trackedObjects[uuid] );
+
+                // Delete the marker domElement from memory.
+                delete l.scenograph.overlays.scanners.trackedObjects[ uuid ];
+            }
+        }
+
+    }
+
+    /**
+     * Grabs or creates a Dom Element for each target.
+     */
+    getTargetDomElement( target ) {
+        let trackedObject = l.scenograph.overlays.scanners.trackedObjects[ target.mesh.uuid ];
+
+        if ( ! trackedObject ) {
+
+            // Object icon look up table.
+            const objectIcons = {
+                'bot': 'aircraft',
+                'cargoShip': 'ship',
+                'city': 'structure',
+                'extractors': 'structure',
+                'missiles': 'aircraft',
+                'player': 'aircraft',
+                'refinery': 'structure',
+            }
+
+            let symbol = objectIcons[ target.mesh.userData.objectClass ];
+
+            l.scenograph.overlays.scanners.trackedObjects[ target.mesh.uuid ] = l.scenograph.overlays.scanners.getSymbolElement( symbol );
+            trackedObject = l.scenograph.overlays.scanners.trackedObjects[ target.mesh.uuid ];
+            l.scenograph.overlays.scanners.container.appendChild( trackedObject );
+        }
+
+        return trackedObject;
+
     }
 
 }

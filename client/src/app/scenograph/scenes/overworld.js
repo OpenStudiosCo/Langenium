@@ -20,6 +20,7 @@ import Sky2 from "@/scenograph/objects/environment/sky2";
 
 // Structures
 import Extractors from "@/scenograph/objects/structures/extractors";
+import Hangar from "@/scenograph/objects/structures/hangar";
 import Platform from "@/scenograph/objects/structures/platform";
 import Refineries from "@/scenograph/objects/structures/refineries";
 
@@ -170,6 +171,19 @@ export default class Overworld extends SceneBase {
     );
     l.current_scene.animation_queue.push(
       l.current_scene.objects.bot.animate
+    );
+
+    // Setup hangar
+    // @todo: #31 Implement first person mode and a way to go between being in the hangar and being in the aircraft
+    l.current_scene.objects.hangar = new Hangar();
+    await l.current_scene.objects.hangar.load();
+    // l.current_scene.objects.hangar.mesh.position.z = 0;
+    // l.current_scene.objects.hangar.mesh.position.x = 0;
+    l.current_scene.scene.add(
+      l.current_scene.objects.hangar.mesh
+    );
+    l.current_scene.animation_queue.push(
+      l.current_scene.objects.hangar.animate
     );
 
 

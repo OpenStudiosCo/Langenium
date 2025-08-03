@@ -68,6 +68,7 @@ export default class Map {
             'cargoShip': 'ship',
             'city': 'structure',
             'extractors': 'structure',
+            'hangar': 'structure',
             'missiles': 'aircraft',
             'player': 'aircraft',
             'refinery': 'structure',

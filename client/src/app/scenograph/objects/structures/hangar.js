@@ -6,7 +6,7 @@
  * Vendor libs
  */
 import * as THREE from 'three';
-import { HOLLOW_SUBTRACTION, Brush, Evaluator } from 'three-bvh-csg';
+import { ADDITION, HOLLOW_SUBTRACTION, Brush, Evaluator } from 'three-bvh-csg';
 
 /**
  * Internal libs and helpers.
@@ -16,6 +16,14 @@ import { proceduralBuilding, proceduralMetalMaterial2 } from '@/scenograph/mater
 
 export default class Hangar {
 
+    // Dimensions of the hangar
+    // @todo: Dynamic hangars with different dimensions
+    hangarSize;
+
+    // Dimensions of player living quarters
+    // @todo: Dynamic hangars which don't all have one.
+    quartersSize;
+
     // THREE.Mesh
     mesh;
 
@@ -23,6 +31,19 @@ export default class Hangar {
     size;
 
     constructor() {
+
+        this.hangarSize = { 
+            width: 10,
+            height: 5,
+            depth: 10
+        };
+
+        this.quartersSize = {
+            width: 5,
+            height: 2.5,
+            depth: 5
+        };
+
         this.ready = false;
         this.size = 5;
 
@@ -51,14 +72,35 @@ export default class Hangar {
         window.extractor = {};
         window.extractor.outer = material;
 
-        let outerMesh = new Brush( new THREE.BoxGeometry( 10, 5, 10, 2, 2, 2 ), material );
+        let innerMeshMaterial = material.clone();
+        innerMeshMaterial.uniforms.scale.value = 0.25;
+
+
+        let outerMesh = new Brush( new THREE.BoxGeometry( this.hangarSize.width, this.hangarSize.height, this.hangarSize.depth, 2, 2, 2 ), [
+            innerMeshMaterial,
+            innerMeshMaterial,
+            innerMeshMaterial,
+            innerMeshMaterial,
+            innerMeshMaterial,
+            clearMaterial.clone()
+        ]  );
         outerMesh.scale.setScalar( this.size );
         outerMesh.updateMatrixWorld();
 
-        let innerMesh = new Brush( new THREE.BoxGeometry( 9, 4, 9, 2, 2, 2 ), material );
-        innerMesh.position.z = -10;
-        innerMesh.scale.setScalar( this.size );
+        // Create door geometry
+        var doorWidth = 8.2;
+        var doorHeight = 20.4;
+        var doorDepth = 20;
+        var doorGeometry = new THREE.BoxGeometry( doorWidth, doorHeight, doorDepth );
+
+        let innerMesh = new Brush( doorGeometry, material );
+        innerMesh.position.x = - (this.hangarSize.width * this.size) / 2 ;
+        innerMesh.position.y = ( - (this.hangarSize.height * this.size) / 2 ) + doorHeight * 0.25;
+        innerMesh.rotation.y = Math.PI / 2;
+        innerMesh.scale.setScalar( this.size / 10 );
         innerMesh.updateMatrixWorld();
+
+        window.hangarDoor = innerMesh;
 
         let result = new THREE.Mesh(
             new THREE.BufferGeometry(),
@@ -69,31 +111,34 @@ export default class Hangar {
         let csgEvaluator;
         csgEvaluator = new Evaluator();
         csgEvaluator.useGroups = true;
-        csgEvaluator.evaluate( outerMesh, innerMesh, HOLLOW_SUBTRACTION, result );
+        csgEvaluator.evaluate( innerMesh, outerMesh, ADDITION, result );
         result.name = 'outer';
 
-        let innerGeo = new THREE.BoxGeometry( 9, 4, 9, 2, 2, 2 );
-        let innerMeshMaterial = material.clone();
-        innerMeshMaterial.uniforms.scale.value = 0.25;
+        let innerGeo = new THREE.BoxGeometry( this.quartersSize.width, this.quartersSize.height, this.quartersSize.depth, 2, 2, 2 );
 
-        let innerMesh2 = new THREE.Mesh( innerGeo, [
-            innerMeshMaterial,
-            innerMeshMaterial,
-            innerMeshMaterial,
-            innerMeshMaterial,
-            innerMeshMaterial,
-            clearMaterial.clone()
-        ] );
-        window.extractor.inner = innerMesh2.material;
-        // innerMesh2.material.uniforms.scale.value = 0.8;
-        innerMesh2.position.y = 0;
+        let innerMesh2 = new Brush( innerGeo, material );
+        window.quarters = innerMesh2;
+        innerMesh2.material.uniforms.scale.value = 0.8;
+        // Offset player quarters by the hangars half width
+        innerMesh2.position.x = (- (this.hangarSize.width * this.size) / 2);
+        // Offset player quarters by the access corridor
+        innerMesh2.position.x += - doorDepth * 0.25;
+        // Offset player quarters by half the quarters width
+        innerMesh2.position.x += (- (this.quartersSize.width * this.size) / 2);
+        // Offset for intersection
+        innerMesh2.position.x += 1;
+
+        innerMesh2.position.y = ( - (this.quartersSize.height * this.size) / 2 );
+
         innerMesh2.scale.setScalar( this.size );
         innerMesh2.updateMatrixWorld();
         innerMesh2.name = 'inner';
 
+        csgEvaluator.evaluate( result, innerMesh2, ADDITION, result );
+
         this.mesh = new THREE.Object3D();
         this.mesh.add( result );
-        this.mesh.add( innerMesh2 );
+        // this.mesh.add( innerMesh2 );
         this.mesh.userData.targetable = true;
         this.mesh.userData.objectClass = 'hangar';
 

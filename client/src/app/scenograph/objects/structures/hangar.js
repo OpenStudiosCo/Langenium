@@ -62,10 +62,46 @@ export default class Hangar {
 
     async load() {
 
-        /**
-         * Setup Hangar materials
-         */
+        // Setup materials.
+        await this.loadMaterials();
 
+        let hangarMesh = await this.loadHangarMesh();
+        
+        /**
+         * Corridor mesh
+         */
+        let corridorMesh = await this.loadCorridorMesh();
+
+        // Setup the result mesh.
+        let result = new THREE.Mesh( new THREE.BufferGeometry(), new THREE.MeshBasicMaterial() );
+
+        // Constructive Solid Geometry (csg) Evaluator.
+        let csgEvaluator;
+        csgEvaluator = new Evaluator();
+        csgEvaluator.useGroups = true;
+        csgEvaluator.evaluate( corridorMesh, hangarMesh, ADDITION, result );
+        result.name = 'outer';
+
+        /**
+         * Player quarters mesh.
+         */
+        let quartersMesh = await this.loadQuartersMesh();
+
+        // @todo: #31 - Implement hierarchical operations
+        // csgEvaluator.evaluate( result, innerMesh2, ADDITION, result );
+
+        this.mesh = new THREE.Object3D();
+        this.mesh.add( result );
+        // this.mesh.add( innerMesh2 );
+        this.mesh.userData.targetable = false;
+        this.mesh.userData.objectClass = 'hangar';
+
+    }
+
+    /**
+     * Setup Hangar materials
+     */
+    async loadMaterials() {      
         this.materials.clear = new THREE.MeshBasicMaterial( { color: 0xffFFFF, transparent: true, visible: false, side: THREE.DoubleSide } );
         this.materials.metal = proceduralBuilding( {
             uniforms: {
@@ -84,57 +120,6 @@ export default class Hangar {
         // Clone of the material to customize scaling.
         this.materials.hangar = this.materials.metal.clone();
         this.materials.hangar.uniforms.scale.value = 0.25;
-
-        let hangarMesh = await this.loadHangarMesh();
-
-        
-        /**
-         * Corridor mesh
-         */
-        let corridorMesh = await this.loadCorridorMesh();
-
-        // Setup the result mesh.
-        let result = new THREE.Mesh( new THREE.BufferGeometry(), new THREE.MeshBasicMaterial() );
-
-        // Constructive Solid Geometry (csg) Evaluator.
-        let csgEvaluator;
-        csgEvaluator = new Evaluator();
-        csgEvaluator.useGroups = true;
-        csgEvaluator.evaluate( corridorMesh, hangarMesh, ADDITION, result );
-        result.name = 'outer';
-
-        let innerGeo = new THREE.BoxGeometry( this.quartersSize.width, this.quartersSize.height, this.quartersSize.depth, 2, 2, 2 );
-
-        /**
-         * Player quarters mesh.
-         */
-        let quartersMesh = new Brush( innerGeo, this.materials.metal );
-        window.quarters = quartersMesh;
-        quartersMesh.material.uniforms.scale.value = 0.8;
-        // Offset player quarters by the hangars half width
-        quartersMesh.position.x = ( - ( this.hangarSize.width * this.size ) / 2 );
-        // Offset player quarters by the access corridor
-        quartersMesh.position.x += - this.corridorSize.depth * 0.25;
-        // Offset player quarters by half the quarters width
-        quartersMesh.position.x += ( - ( this.quartersSize.width * this.size ) / 2 );
-        // Offset for intersection
-        quartersMesh.position.x += 1;
-
-        quartersMesh.position.y = ( - ( this.quartersSize.height * this.size ) / 2 );
-
-        quartersMesh.scale.setScalar( this.size );
-        quartersMesh.updateMatrixWorld();
-        quartersMesh.name = 'inner';
-
-        // @todo: #31 - Implement hierarchical operations
-        // csgEvaluator.evaluate( result, innerMesh2, ADDITION, result );
-
-        this.mesh = new THREE.Object3D();
-        this.mesh.add( result );
-        // this.mesh.add( innerMesh2 );
-        this.mesh.userData.targetable = false;
-        this.mesh.userData.objectClass = 'hangar';
-
     }
 
     /**
@@ -178,6 +163,34 @@ export default class Hangar {
         corridorMesh.updateMatrixWorld();
 
         return corridorMesh;
+    }
+
+    /**
+     * Creates the player quarters mesh.
+     */
+    async loadQuartersMesh() {
+        let innerGeo = new THREE.BoxGeometry( this.quartersSize.width, this.quartersSize.height, this.quartersSize.depth, 2, 2, 2 );
+        let quartersMesh = new Brush( innerGeo, this.materials.metal );
+
+        window.quarters = quartersMesh;
+
+        quartersMesh.material.uniforms.scale.value = 0.8;
+        // Offset player quarters by the hangars half width
+        quartersMesh.position.x = ( - ( this.hangarSize.width * this.size ) / 2 );
+        // Offset player quarters by the access corridor
+        quartersMesh.position.x += - this.corridorSize.depth * 0.25;
+        // Offset player quarters by half the quarters width
+        quartersMesh.position.x += ( - ( this.quartersSize.width * this.size ) / 2 );
+        // Offset for intersection
+        quartersMesh.position.x += 1;
+
+        quartersMesh.position.y = ( - ( this.quartersSize.height * this.size ) / 2 );
+
+        quartersMesh.scale.setScalar( this.size );
+        quartersMesh.updateMatrixWorld();
+        quartersMesh.name = 'inner';
+
+        return quartersMesh;
     }
 
     /**

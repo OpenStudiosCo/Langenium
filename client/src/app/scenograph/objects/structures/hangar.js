@@ -80,24 +80,21 @@ export default class Hangar {
         corridorMesh.operation = ADDITION;
         this.hangar.add( corridorMesh );
 
+        /**
+         * Player quarters mesh.
+         */
+        let quartersMesh = await this.loadQuartersMesh();
+        quartersMesh.operation = ADDITION;
+        this.hangar.add( quartersMesh );
+
         // Constructive Solid Geometry (csg) Evaluator.
         let csgEvaluator;
         csgEvaluator = new Evaluator();
         csgEvaluator.useGroups = true;
         let result = csgEvaluator.evaluateHierarchy( this.hangar );
-        // result.name = 'outer';
-
-        /**
-         * Player quarters mesh.
-         */
-        let quartersMesh = await this.loadQuartersMesh();
-
-        // @todo: #31 - Implement hierarchical operations
-        // csgEvaluator.evaluate( result, innerMesh2, ADDITION, result );
 
         this.mesh = new THREE.Object3D();
         this.mesh.add( result );
-        // this.mesh.add( innerMesh2 );
         this.mesh.userData.targetable = false;
         this.mesh.userData.objectClass = 'hangar';
 
@@ -179,17 +176,16 @@ export default class Hangar {
 
         quartersMesh.material.uniforms.scale.value = 0.8;
         // Offset player quarters by the hangars half width
-        quartersMesh.position.x = ( - ( this.hangarSize.width * this.size ) / 2 );
+        quartersMesh.position.x = ( - ( this.hangarSize.width * this.size ) / 10 );
         // Offset player quarters by the access corridor
-        quartersMesh.position.x += - this.corridorSize.depth * 0.25;
+        quartersMesh.position.x += - this.corridorSize.depth * 0.75;
         // Offset player quarters by half the quarters width
-        quartersMesh.position.x += ( - ( this.quartersSize.width * this.size ) / 2 );
+        quartersMesh.position.x += ( - ( this.quartersSize.width * this.size ) / 10 );
         // Offset for intersection
         quartersMesh.position.x += 1;
 
-        quartersMesh.position.y = ( - ( this.quartersSize.height * this.size ) / 2 );
+        quartersMesh.position.y = ( - ( this.quartersSize.height * this.size ) / 10 );
 
-        quartersMesh.scale.setScalar( this.size );
         quartersMesh.updateMatrixWorld();
         quartersMesh.name = 'inner';
 

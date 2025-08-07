@@ -97,6 +97,7 @@ export default class Hangar {
         this.mesh.add( result );
         this.mesh.userData.targetable = false;
         this.mesh.userData.objectClass = 'hangar';
+        this.mesh.scale.setScalar( 2.5 );
 
     }
 
@@ -139,8 +140,6 @@ export default class Hangar {
             this.materials.hangar,
             this.materials.clear.clone()
         ] );
-
-        hangarMesh.scale.setScalar( this.size );
 
         hangarMesh.updateMatrixWorld();
 

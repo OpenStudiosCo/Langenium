@@ -6,7 +6,7 @@
  * Vendor libs
  */
 import * as THREE from 'three';
-import { ADDITION, HOLLOW_SUBTRACTION, Brush, Evaluator } from 'three-bvh-csg';
+import { ADDITION, HOLLOW_SUBTRACTION, Operation, Evaluator } from 'three-bvh-csg';
 
 /**
  * Internal libs and helpers.
@@ -15,6 +15,9 @@ import l from '@/helpers/l.js';
 import { proceduralBuilding, proceduralMetalMaterial2 } from '@/scenograph/materials.js';
 
 export default class Hangar {
+
+    // The hangar mesh and root of the CSG BVH hierarchy.
+    hangar;
 
     // Dimensions of the hangar
     // @todo: Dynamic hangars with different dimensions
@@ -34,13 +37,16 @@ export default class Hangar {
 
     constructor() {
 
+        this.size = 5;
+
         this.materials = {};
 
+        let corridorScale = 0.125;
         // Based on office door dimensions.
         this.corridorSize = {
-            width: 8.2,
-            height: 20.4,
-            depth: 20,
+            width: 8.2 * corridorScale,
+            height: 20.4 * corridorScale,
+            depth: 20 * corridorScale,
         }
 
         this.hangarSize = {
@@ -56,7 +62,7 @@ export default class Hangar {
         };
 
         this.ready = false;
-        this.size = 5;
+        
 
     }
 
@@ -65,22 +71,21 @@ export default class Hangar {
         // Setup materials.
         await this.loadMaterials();
 
-        let hangarMesh = await this.loadHangarMesh();
+        this.hangar = await this.loadHangarMesh();
         
         /**
          * Corridor mesh
          */
         let corridorMesh = await this.loadCorridorMesh();
-
-        // Setup the result mesh.
-        let result = new THREE.Mesh( new THREE.BufferGeometry(), new THREE.MeshBasicMaterial() );
+        corridorMesh.operation = ADDITION;
+        this.hangar.add( corridorMesh );
 
         // Constructive Solid Geometry (csg) Evaluator.
         let csgEvaluator;
         csgEvaluator = new Evaluator();
         csgEvaluator.useGroups = true;
-        csgEvaluator.evaluate( corridorMesh, hangarMesh, ADDITION, result );
-        result.name = 'outer';
+        let result = csgEvaluator.evaluateHierarchy( this.hangar );
+        // result.name = 'outer';
 
         /**
          * Player quarters mesh.
@@ -129,7 +134,7 @@ export default class Hangar {
         /**
          * Hangar mesh
          */
-        let hangarMesh = new Brush( new THREE.BoxGeometry( this.hangarSize.width, this.hangarSize.height, this.hangarSize.depth, 2, 2, 2 ), [
+        let hangarMesh = new Operation( new THREE.BoxGeometry( this.hangarSize.width, this.hangarSize.height, this.hangarSize.depth, 2, 2, 2 ), [
             this.materials.hangar,
             this.materials.hangar,
             this.materials.hangar,
@@ -152,13 +157,11 @@ export default class Hangar {
         
         var doorGeometry = new THREE.BoxGeometry( this.corridorSize.width, this.corridorSize.height, this.corridorSize.depth );
 
-        let corridorMesh = new Brush( doorGeometry, this.materials.metal );
+        let corridorMesh = new Operation( doorGeometry, this.materials.metal );
 
-        corridorMesh.position.x = - ( this.hangarSize.width * this.size ) / 2;
-        corridorMesh.position.y = ( - ( this.hangarSize.height * this.size ) / 2 ) + this.corridorSize.height * 0.25;
+        corridorMesh.position.x = - ( this.hangarSize.width * this.size ) / 10;
+        corridorMesh.position.y = ( - ( this.hangarSize.height * this.size ) / 10 ) + this.corridorSize.height * 0.5;
         corridorMesh.rotation.y = Math.PI / 2;
-
-        corridorMesh.scale.setScalar( this.size / 10 );
 
         corridorMesh.updateMatrixWorld();
 
@@ -170,7 +173,7 @@ export default class Hangar {
      */
     async loadQuartersMesh() {
         let innerGeo = new THREE.BoxGeometry( this.quartersSize.width, this.quartersSize.height, this.quartersSize.depth, 2, 2, 2 );
-        let quartersMesh = new Brush( innerGeo, this.materials.metal );
+        let quartersMesh = new Operation( innerGeo, this.materials.metal );
 
         window.quarters = quartersMesh;
 

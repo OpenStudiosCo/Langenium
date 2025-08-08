@@ -1,5 +1,5 @@
 /**
- * Union Extractor
+ * Hangar (Player quarters)
  */
 
 /**
@@ -109,7 +109,7 @@ export default class Hangar {
         this.materials.metal = proceduralBuilding( {
             uniforms: {
                 time: { value: 0.0 },
-                scale: { value: .05 },                                         // Scale
+                scale: { value: .025 },                                         // Scale
                 lacunarity: { value: 2.0 },                                          // Lacunarity
                 randomness: { value: 1.0 },                                          // Randomness
                 emitColour1: { value: new THREE.Vector4( 0.0, 0.0, 0.0, 0.25 ) },     // Emission gradient colour 1
@@ -159,6 +159,8 @@ export default class Hangar {
         corridorMesh.position.y = ( - ( this.hangarSize.height * this.size ) / 10 ) + this.corridorSize.height * 0.5;
         corridorMesh.rotation.y = Math.PI / 2;
 
+        corridorMesh.position.z = ( - ( this.hangarSize.depth * this.size ) / 10 ) / 4;
+
         corridorMesh.updateMatrixWorld();
 
         return corridorMesh;
@@ -185,6 +187,8 @@ export default class Hangar {
 
         quartersMesh.position.y = ( - ( this.quartersSize.height * this.size ) / 10 );
 
+        quartersMesh.position.z = ( - ( this.hangarSize.depth * this.size ) / 10 ) / 2;
+
         quartersMesh.updateMatrixWorld();
         quartersMesh.name = 'inner';
 
@@ -203,7 +207,7 @@ export default class Hangar {
      * @note All references within this method should be globally accessible.
     **/
     animate( currentTime ) {
-
+        l.current_scene.objects.hangar.materials.metal.uniforms.time.value += 0.0000025;
     }
 
 }

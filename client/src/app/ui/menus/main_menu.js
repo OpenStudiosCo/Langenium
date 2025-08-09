@@ -74,15 +74,7 @@ export default class Main_Menu {
             title: 'Single Player',
         } );
         this.buttons.single_player.on( 'click', () => {
-            console.log( 'Single player launched' );
-
-            // Start controls.
-            l.scenograph.controls.activate();
-
-            // Start overlays.
-            l.scenograph.overlays.activate();
-
-            //l.ui.show_flight_instruments();
+            l.routes.singlePlayer.start();
 
             // Hide game mode buttons.
             this.buttons.single_player.hidden = true;
@@ -98,8 +90,7 @@ export default class Main_Menu {
             // Show game scores button
             this.buttons.scores.hidden = false;
 
-            // Set client mode.
-            l.mode = 'single_player';
+            
         } );
 
         this.buttons.multi_player = this.pane.addButton( {

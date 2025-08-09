@@ -3,6 +3,7 @@
  */
 import l from '@/helpers/l.js';
 import Config from "@/config.js";
+import Routes from "@/routes.js";
 import Scenograph from "@/scenograph.js";
 import UI from "@/ui.js";
 
@@ -12,7 +13,12 @@ import UI from "@/ui.js";
 l.config = new Config();
 
 /**
- * Scenograph controls the current scene
+ * Routes activate game modes and screens.
+ */
+l.routes = new Routes();
+
+/**
+ * Scenograph controls the current 3D scene
  */
 l.scenograph = new Scenograph();
 

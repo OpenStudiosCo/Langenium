@@ -13,10 +13,7 @@ import l from '@/helpers/l.js';
 
 export default class singlePlayerRoute {
 
-    /**
-     * Start single player mode.
-     */
-    start() {
+    constructor() {
         console.log( 'Single player launched' );
 
         // Start controls.
@@ -27,13 +24,6 @@ export default class singlePlayerRoute {
 
         // Set client mode.
         l.mode = 'single_player';
-    }
-
-    /**
-     * Stop single player mode.
-     */
-    stop() {
-
     }
 
 }

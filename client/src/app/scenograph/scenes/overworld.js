@@ -177,8 +177,8 @@ export default class Overworld extends SceneBase {
     // @todo: #31 Implement first person mode and a way to go between being in the hangar and being in the aircraft
     l.current_scene.objects.hangar = new Hangar();
     await l.current_scene.objects.hangar.load();
-    l.current_scene.objects.hangar.mesh.position.y = 15;
-    // l.current_scene.objects.hangar.mesh.position.x = 0;
+    // Hide the hangar so we can load it when needed.
+    l.current_scene.objects.hangar.mesh.visible = false;
     l.current_scene.scene.add(
       l.current_scene.objects.hangar.mesh
     );

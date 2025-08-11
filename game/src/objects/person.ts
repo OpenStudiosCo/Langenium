@@ -7,16 +7,16 @@
 
 import { normaliseSpeedDelta, easeOutExpo, easeInQuad, easeInOutExpo } from '../helpers';
 
-export default class BaseAircraft {
+export default class Person {
     public score:           { kills: number; deaths: number }   = { kills: 0, deaths: 0 };
     public standing:        number                              = 0;
     public hitPoints:       number                              = 100;
     public airSpeed:        number                              = 0;
     public verticalSpeed:   number                              = 0;
-    public maxForward:      number                              = 3.7 * 5;    // Reading as 200 knots on the airspeed instrument, may not be correct.
-    public maxBackward:     number                              = 2.0;
-    public maxUp:           number                              = 3.7 * 2.5;
-    public maxDown:         number                              = 3.7 * 5;  // gravity?
+    public maxForward:      number                              = 8 / 60;    // 8 km/h @ 60 FPS
+    public maxBackward:     number                              = 8 / 120;
+    public maxUp:           number                              = 4 / 60;
+    public maxDown:         number                              = 16 / 60;  // gravity?
 
     public position:        { x: number; y: number; z: number } = { x: 0, y: 8.5, z: 0 };
     public startPosition:   { x: number; y: number; z: number } = { x: 0, y: 8.5, z: 0 };
@@ -96,7 +96,7 @@ export default class BaseAircraft {
             rY:                 number = 0, 
             tZ:                 number = 0, 
             tY:                 number = 0,
-            radian:             number = (Math.PI / 180);
+            radian:             number = - (Math.PI / 180) * stepSize;
 
         // Update Airspeed (horizontal velocity)
         this.airSpeed = this._changeVelocity(

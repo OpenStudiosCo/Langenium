@@ -99,7 +99,7 @@ export default class Person extends PersonBase {
     updateCamera( rY, tY, tZ ) {
             var radian = ( Math.PI / 180 );
     
-            l.scenograph.actors.player.person.camera_distance = l.scenograph.actors.player.person.default_camera_distance + ( l.current_scene.room_depth / 2 );
+            l.scenograph.actors.player.person.camera_distance = l.scenograph.actors.player.person.default_camera_distance + ( l.current_scene.room_depth / 20 );
             if ( l.scenograph.actors.player.person.airSpeed < 0 ) {
                 l.scenograph.actors.player.person.camera_distance -= l.scenograph.actors.player.person.airSpeed * 4;
             }
@@ -114,40 +114,40 @@ export default class Person extends PersonBase {
     
                 l.scenograph.cameras.player.rotation.y += rY;
             }
-            else {
-                // Check there is y difference and the rotation pad isn't being pressed.                   
-                if (
-                    l.scenograph.cameras.player.rotation.y != l.scenograph.actors.player.person.mesh.rotation.y &&
-                    ( l.scenograph.controls.touch && !l.scenograph.controls.touch.controls.rotationPad.mouseDown )
-                ) {
+            // else {
+            //     // Check there is y difference and the rotation pad isn't being pressed.                   
+            //     if (
+            //         l.scenograph.cameras.player.rotation.y != l.scenograph.actors.player.person.mesh.rotation.y &&
+            //         ( l.scenograph.controls.touch && !l.scenograph.controls.touch.controls.rotationPad.mouseDown )
+            //     ) {
     
-                    // Get the difference in y rotation betwen the camera and ship
-                    let yDiff = l.scenograph.actors.player.person.mesh.rotation.y - l.scenograph.cameras.player.rotation.y;
+            //         // Get the difference in y rotation betwen the camera and ship
+            //         let yDiff = l.scenograph.actors.player.person.mesh.rotation.y - l.scenograph.cameras.player.rotation.y;
     
-                    // Check the y difference is larger than 1/100th of a radian
-                    if (
-                        Math.abs( yDiff ) > radian / 100
-                    ) {
-                        // Add 1/60th of the difference in rotation, as FPS currently capped to 60.
-                        l.scenograph.cameras.player.rotation.y += ( l.scenograph.actors.player.person.mesh.rotation.y - l.scenograph.cameras.player.rotation.y ) * 1 / 60;
-                    }
-                    else {
-                        l.scenograph.cameras.player.rotation.y = l.scenograph.actors.player.person.mesh.rotation.y;
-                    }
+            //         // Check the y difference is larger than 1/100th of a radian
+            //         if (
+            //             Math.abs( yDiff ) > radian / 100
+            //         ) {
+            //             // Add 1/60th of the difference in rotation, as FPS currently capped to 60.
+            //             l.scenograph.cameras.player.rotation.y += ( l.scenograph.actors.player.person.mesh.rotation.y - l.scenograph.cameras.player.rotation.y ) * 1 / 60;
+            //         }
+            //         else {
+            //             l.scenograph.cameras.player.rotation.y = l.scenograph.actors.player.person.mesh.rotation.y;
+            //         }
     
-                }
+            //     }
     
-            }
+            // }
     
-            let xDiff2 = tZ * Math.sin( l.scenograph.actors.player.person.mesh.rotation.y ),
-                zDiff2 = tZ * Math.cos( l.scenograph.actors.player.person.mesh.rotation.y );
+            // let xDiff2 = tZ * Math.sin( l.scenograph.actors.player.person.mesh.rotation.y ),
+            //     zDiff2 = tZ * Math.cos( l.scenograph.actors.player.person.mesh.rotation.y );
     
-            if ( l.scenograph.actors.player.person.mesh.position.y + tY >= 1 ) {
-                l.scenograph.cameras.player.position.y += tY;
-            }
+            // if ( l.scenograph.actors.player.person.mesh.position.y + tY >= 1 ) {
+            //     l.scenograph.cameras.player.position.y += tY;
+            // }
     
-            l.scenograph.cameras.player.position.x += xDiff2;
-            l.scenograph.cameras.player.position.z += zDiff2;
+            // l.scenograph.cameras.player.position.x += xDiff2;
+            // l.scenograph.cameras.player.position.z += zDiff2;
     
             l.scenograph.cameras.player.updateProjectionMatrix();
         }

@@ -20,6 +20,7 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import l from "@/helpers/l.js";
 import { calculateAdjustedGapSize } from '@/helpers/math.js';
 
+import Actors from "@/scenograph/actors.js";
 import Cameras from "@/scenograph/cameras.js";
 import Controls from "@/scenograph/controls.js";
 import Effects from "@/scenograph/effects";
@@ -45,6 +46,8 @@ import {
 } from "@/scenograph/tweens";
 
 export default class Scenograph {
+
+    actors;
 
     cameras;
 
@@ -78,6 +81,11 @@ export default class Scenograph {
     constructor() {
 
         this.modes = {};
+
+        /**
+         * Cameras.
+         */
+        this.actors = new Actors();
 
         /**
          * Cameras.

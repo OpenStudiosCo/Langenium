@@ -77,13 +77,13 @@ export default class HeadsUpDisplay {
             l.scenograph.overlays.hud.container.classList.remove('portrait');
         }
 
-        let aspd = -l.scenograph.overlays.hud.frameToSecond(l.current_scene.objects.player.airSpeed);
+        let aspd = -l.scenograph.overlays.hud.frameToSecond(l.scenograph.actors.player.vehicle.airSpeed);
         l.scenograph.overlays.hud.aspdElement.innerHTML = `AIRSPEED: ${aspd}km/h`;
 
-        let vspd = l.scenograph.overlays.hud.frameToSecond(l.current_scene.objects.player.verticalSpeed);
+        let vspd = l.scenograph.overlays.hud.frameToSecond(l.scenograph.actors.player.vehicle.verticalSpeed);
         l.scenograph.overlays.hud.vspdElement.innerHTML = `VERT. SPD: ${vspd}km/h`;
 
-        let heading = THREE.MathUtils.radToDeg( l.current_scene.objects.player.rotation.y );
+        let heading = THREE.MathUtils.radToDeg( l.scenograph.actors.player.vehicle.rotation.y );
         heading = heading % 360;
         if (heading < 0) {
             heading += 360;
@@ -91,7 +91,7 @@ export default class HeadsUpDisplay {
         heading = Math.round(360 - heading);
         l.scenograph.overlays.hud.headingElement.innerHTML = `HEADING: ${heading}°`;
 
-        let elevation = Math.round( l.current_scene.objects.player.position.y * 100 ) / 100;
+        let elevation = Math.round( l.scenograph.actors.player.vehicle.position.y * 100 ) / 100;
         l.scenograph.overlays.hud.elevationElement.innerHTML = `ELEVATION: ${elevation}m`;
     }
 

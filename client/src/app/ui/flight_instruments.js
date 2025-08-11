@@ -38,7 +38,7 @@ export default class Flight_Instruments {
     update() {
 
         // Check if the main aircraft is loaded and ready
-        if (l.current_scene.objects.player && l.current_scene.objects.player.ready) {
+        if (l.scenograph.actors.player.vehicle && l.scenograph.actors.player.vehicle.ready) {
 
             if ( l.current_scene.settings.game_controls ) {
                 if ( !l.ui.flight_instruments.activated ) {
@@ -47,7 +47,7 @@ export default class Flight_Instruments {
             }
 
             // Update the angle of the needle
-            const angle = (Math.abs(l.current_scene.objects.player.airSpeed) * 1.94384) * 45;
+            const angle = (Math.abs(l.scenograph.actors.player.vehicle.airSpeed) * 1.94384) * 45;
             // Update the needle rotation
             document.querySelector(l.ui.flight_instruments.containerSelector + ' #Airspeed #Needle').style.transform = `rotate(${angle}deg)`;
         }

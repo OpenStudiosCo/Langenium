@@ -45,7 +45,7 @@ export default class Pirate extends BaseActor {
             this.entity.steering.add( this.follow );
 
             // @todo: v7 Figure out a way to signal this to happen without l. global object access
-            this.pursue = new YUKA.PursuitBehavior( l.current_scene.objects.player.mesh.userData.actor.entity, 1 );
+            this.pursue = new YUKA.PursuitBehavior( l.scenograph.actors.player.vehicle.mesh.userData.actor.entity, 1 );
             this.pursue.active = false;
 			this.entity.steering.add( this.pursue );
 
@@ -60,7 +60,7 @@ export default class Pirate extends BaseActor {
         }
 
         // @todo: v7 Figure out a way to signal this to happen without l. global object access
-        if ( this.entity.vision.visible( l.current_scene.objects.player.position ) === true ) {
+        if ( this.entity.vision.visible( l.scenograph.actors.player.vehicle.mesh.position ) === true ) {
             this.pursue.active = true;
             this.follow.active = false;
 

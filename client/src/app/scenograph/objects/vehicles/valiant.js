@@ -457,49 +457,53 @@ export default class Valiant extends ValiantBase {
 
             l.scenograph.cameras.updatePlayer( rY, tY, tZ );
 
-            if ( l.current_scene.objects.player.trail ) {
-
-                // Fix the trail being too far behind.
-                let trailOffset = 0;
-
-                // Only offset the trail effect if we are going forward which is (z-1) in numerical terms
-                if ( l.current_scene.objects.player.airSpeed < 0 ) {
-
-                    // Update ship thruster
-                    l.current_scene.objects.player.animateThruster( l.current_scene.objects.player.airSpeed, l.current_scene.objects.player.thruster.centralConeBurner, .5 );
-                    l.current_scene.objects.player.animateThruster( l.current_scene.objects.player.airSpeed, l.current_scene.objects.player.thruster.outerCylBurner, .5 );
-
-                    l.current_scene.objects.player.spinThruster( l.current_scene.objects.player.airSpeed, l.current_scene.objects.player.thruster.rearConeBurner, -1 );
-                    l.current_scene.objects.player.spinThruster( l.current_scene.objects.player.airSpeed, l.current_scene.objects.player.thruster.centralConeBurner, 1 );
-                    l.current_scene.objects.player.spinThruster( l.current_scene.objects.player.airSpeed, l.current_scene.objects.player.thruster.outerCylBurner, -1 );
-                    l.current_scene.objects.player.spinThruster( l.current_scene.objects.player.airSpeed, l.current_scene.objects.player.thruster.innerCylBurner, 1 );
-
-                    // Limit playback rate to 5x as large values freak out the browser.
-                    l.current_scene.objects.player.thruster.videoElement.playbackRate = Math.min( 5, 0.25 + Math.abs( l.current_scene.objects.player.airSpeed ) );
-
-                    trailOffset += l.current_scene.objects.player.trail_position_z - Math.abs( l.current_scene.objects.player.airSpeed );
-
-                    l.current_scene.objects.player.trail.mesh.material.uniforms.headColor.value.set( 255 / 255, 212 / 255, 148 / 255, .8 ); // RGBA.                    
-                }
-                else {
-                    l.current_scene.objects.player.trail.mesh.material.uniforms.headColor.value.set( 255 / 255, 212 / 255, 148 / 255, 0 ); // RGBA.
-                }
-
-                // Update the trail position based on above calculations.
-                l.current_scene.objects.player.trail.targetObject.position.y = l.current_scene.objects.player.trail_position_y + l.current_scene.objects.player.verticalSpeed;
-                l.current_scene.objects.player.trail.targetObject.position.z = trailOffset;
-
-                if ( rY != 0 ) {
-                    l.current_scene.objects.player.trail.targetObject.position.x = rY * l.current_scene.objects.player.airSpeed;
-                    l.current_scene.objects.player.trail.targetObject.position.y += Math.abs( l.current_scene.objects.player.trail.targetObject.position.x ) / 4;
-                }
-                else {
-                    l.current_scene.objects.player.trail.targetObject.position.x = 0;
-                }
-                l.current_scene.objects.player.trail.update();
-            }
+            l.current_scene.objects.player.animateTrail( rY );
 
             
+        }
+    }
+
+    animateTrail( rY ) {
+        if ( l.current_scene.objects.player.trail ) {
+
+            // Fix the trail being too far behind.
+            let trailOffset = 0;
+
+            // Only offset the trail effect if we are going forward which is (z-1) in numerical terms
+            if ( l.current_scene.objects.player.airSpeed < 0 ) {
+
+                // Update ship thruster
+                l.current_scene.objects.player.animateThruster( l.current_scene.objects.player.airSpeed, l.current_scene.objects.player.thruster.centralConeBurner, .5 );
+                l.current_scene.objects.player.animateThruster( l.current_scene.objects.player.airSpeed, l.current_scene.objects.player.thruster.outerCylBurner, .5 );
+
+                l.current_scene.objects.player.spinThruster( l.current_scene.objects.player.airSpeed, l.current_scene.objects.player.thruster.rearConeBurner, -1 );
+                l.current_scene.objects.player.spinThruster( l.current_scene.objects.player.airSpeed, l.current_scene.objects.player.thruster.centralConeBurner, 1 );
+                l.current_scene.objects.player.spinThruster( l.current_scene.objects.player.airSpeed, l.current_scene.objects.player.thruster.outerCylBurner, -1 );
+                l.current_scene.objects.player.spinThruster( l.current_scene.objects.player.airSpeed, l.current_scene.objects.player.thruster.innerCylBurner, 1 );
+
+                // Limit playback rate to 5x as large values freak out the browser.
+                l.current_scene.objects.player.thruster.videoElement.playbackRate = Math.min( 5, 0.25 + Math.abs( l.current_scene.objects.player.airSpeed ) );
+
+                trailOffset += l.current_scene.objects.player.trail_position_z - Math.abs( l.current_scene.objects.player.airSpeed );
+
+                l.current_scene.objects.player.trail.mesh.material.uniforms.headColor.value.set( 255 / 255, 212 / 255, 148 / 255, .8 ); // RGBA.                    
+            }
+            else {
+                l.current_scene.objects.player.trail.mesh.material.uniforms.headColor.value.set( 255 / 255, 212 / 255, 148 / 255, 0 ); // RGBA.
+            }
+
+            // Update the trail position based on above calculations.
+            l.current_scene.objects.player.trail.targetObject.position.y = l.current_scene.objects.player.trail_position_y + l.current_scene.objects.player.verticalSpeed;
+            l.current_scene.objects.player.trail.targetObject.position.z = trailOffset;
+
+            if ( rY != 0 ) {
+                l.current_scene.objects.player.trail.targetObject.position.x = rY * l.current_scene.objects.player.airSpeed;
+                l.current_scene.objects.player.trail.targetObject.position.y += Math.abs( l.current_scene.objects.player.trail.targetObject.position.x ) / 4;
+            }
+            else {
+                l.current_scene.objects.player.trail.targetObject.position.x = 0;
+            }
+            l.current_scene.objects.player.trail.update();
         }
     }
 

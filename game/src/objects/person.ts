@@ -96,7 +96,7 @@ export default class Person {
             rY:                 number = 0, 
             tZ:                 number = 0, 
             tY:                 number = 0,
-            radian:             number = - (Math.PI / 180) * stepSize;
+            radian:             number = - (Math.PI / 180) * stepSize * 10;
 
         // Update Airspeed (horizontal velocity)
         this.airSpeed = this._changeVelocity(
@@ -144,14 +144,6 @@ export default class Person {
             tZ = this.airSpeed;
 
         }
-
-        // Animate the ship's rotation in the game client based on controls.
-        if (
-            !(this.controls.forward || this.controls.back) &&
-            !(this.controls.jump || this.controls.crouch)
-        ) {
-            this.rotation.x *= .9;
-        }
         
         if (rY != 0) {
             if (Math.abs(this.rotation.z) < Math.PI / 4) {
@@ -159,9 +151,6 @@ export default class Person {
             }
 
             this.rotation.y += rY;
-        }
-        else {
-            this.rotation.z *= .9;
         }
 
         let xDiff = tZ * Math.sin(this.rotation.y),

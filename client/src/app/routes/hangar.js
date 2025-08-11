@@ -29,10 +29,21 @@ export default class hangarRoute {
         l.current_scene.objects.platform.mesh.visible = false;
         l.current_scene.objects.hangar.mesh.visible = true;
 
-        l.current_scene.objects.hangar.mesh.position.y = 15;
+        l.current_scene.objects.hangar.mesh.position.copy( l.current_scene.objects.platform.mesh.position );
+        l.current_scene.objects.hangar.mesh.position.y = 505;
+        
+        l.current_scene.objects.player.position.x = l.current_scene.objects.platform.mesh.position.x; 
+        l.current_scene.objects.player.position.z = l.current_scene.objects.platform.mesh.position.z; 
+        l.current_scene.objects.player.position.y = 500;
+        
+        
+        l.scenograph.controls.orbitTarget.copy(l.current_scene.objects.player.position);
+        l.scenograph.cameras.active.position.copy(l.current_scene.objects.player.position);
+        l.scenograph.cameras.active.translateZ(-15);
+        l.scenograph.cameras.orbit.updateProjectionMatrix();
+        l.scenograph.controls.orbit.update();
 
         // @todo #31
-        // - Update player and hangar position to platform
         // - Implement first person controls
         // - Separate player from aircraft
 

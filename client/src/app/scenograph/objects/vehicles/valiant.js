@@ -106,6 +106,7 @@ export default class Valiant extends ValiantBase {
         this.mesh.name = 'Player Ship';
         this.mesh.position.z = l.current_scene.room_depth;
         this.mesh.rotation.order = 'YXZ';
+        this.mesh.scale.setScalar(2);
 
         this.mesh.userData.targetable = true;
         this.mesh.userData.objectClass = 'player';
@@ -507,7 +508,8 @@ export default class Valiant extends ValiantBase {
 
             }
 
-            l.scenograph.actors.player.vehicle.updateAnimation( delta );
+            if (  l.mode != 'hangar')
+                l.scenograph.actors.player.vehicle.updateAnimation( delta );
 
             // Update the ships state model.
             let [ rY, tY, tZ ] = l.scenograph.actors.player.vehicle.move( l.current_scene.stats.currentTime - l.current_scene.stats.lastTime );
@@ -517,7 +519,6 @@ export default class Valiant extends ValiantBase {
 
             l.scenograph.actors.player.vehicle.animateTrail( rY );
 
-            
         }
     }
 

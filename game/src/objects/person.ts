@@ -13,8 +13,8 @@ export default class Person {
     public hitPoints:       number                              = 100;
     public airSpeed:        number                              = 0;
     public verticalSpeed:   number                              = 0;
-    public maxForward:      number                              = 12 / 60;    // 8 km/h @ 60 FPS
-    public maxBackward:     number                              = 12 / 60;
+    public maxForward:      number                              = 16 / 60;    // 8 km/h @ 60 FPS
+    public maxBackward:     number                              = 16 / 60;
     public maxUp:           number                              = 4 / 60;
     public maxDown:         number                              = 16 / 60;  // gravity?
 

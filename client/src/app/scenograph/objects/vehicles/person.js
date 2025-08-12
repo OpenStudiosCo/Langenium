@@ -110,10 +110,10 @@ export default class Person extends PersonBase {
             l.scenograph.cameras.player.position.x = xDiff + l.scenograph.actors.player.person.camera_distance * Math.sin( l.scenograph.actors.player.person.mesh.rotation.y );
             l.scenograph.cameras.player.position.z = zDiff + l.scenograph.actors.player.person.camera_distance * Math.cos( l.scenograph.actors.player.person.mesh.rotation.y );
     
-            if ( rY != 0 ) {
+            // if ( rY != 0 ) {
     
-                l.scenograph.cameras.player.rotation.y += rY;
-            }
+            //     l.scenograph.cameras.player.rotation.y += rY;
+            // }
             // else {
             //     // Check there is y difference and the rotation pad isn't being pressed.                   
             //     if (
@@ -178,6 +178,8 @@ export default class Person extends PersonBase {
 
             // Update the persons camera
             l.scenograph.actors.player.person.updateCamera(rY, tY, tZ);
+
+            l.scenograph.cameras.player.rotation.y = l.scenograph.actors.player.person.rotation.y;
 
         }
     }

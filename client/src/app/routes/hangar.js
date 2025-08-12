@@ -37,12 +37,10 @@ export default class hangarRoute {
         l.scenograph.actors.player.vehicle.position.y = 500;
 
         l.scenograph.actors.player.person.position.x = l.current_scene.objects.platform.mesh.position.x; 
-        l.scenograph.actors.player.person.position.z = l.current_scene.objects.platform.mesh.position.z - 5; 
-        l.scenograph.actors.player.person.position.y = 495;
+        l.scenograph.actors.player.person.position.z = l.current_scene.objects.platform.mesh.position.z + 5; 
+        l.scenograph.actors.player.person.position.y = 502.5;
         
-        l.scenograph.cameras.active.position.copy(l.scenograph.actors.player.vehicle.position);
-        l.scenograph.cameras.active.translateZ(15);
-        l.scenograph.cameras.active.translateY(7.5);
+        l.scenograph.cameras.active.position.copy(l.scenograph.actors.player.person.position);
         
         
         if ( l.scenograph.controls.orbit ) {

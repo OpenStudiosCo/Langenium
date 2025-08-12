@@ -13,7 +13,7 @@ export default class Person {
     public hitPoints:       number                              = 100;
     public airSpeed:        number                              = 0;
     public verticalSpeed:   number                              = 0;
-    public maxForward:      number                              = 8 / 60;    // 8 km/h @ 60 FPS
+    public maxForward:      number                              = 12 / 60;    // 8 km/h @ 60 FPS
     public maxBackward:     number                              = 8 / 120;
     public maxUp:           number                              = 4 / 60;
     public maxDown:         number                              = 16 / 60;  // gravity?
@@ -92,31 +92,37 @@ export default class Person {
      * @param time_delta 
      */
     public move( time_delta: number ): object {
-        let stepSize:           number = .05 * normaliseSpeedDelta( time_delta ),
+        let stepSize:           number = .025 * normaliseSpeedDelta( time_delta ),
             rY:                 number = 0, 
             tZ:                 number = 0, 
             tY:                 number = 0,
-            radian:             number = - (Math.PI / 180) * stepSize * 10;
+            radian:             number = - (Math.PI / 180) * stepSize * 50;
 
-        // Update Airspeed (horizontal velocity)
-        this.airSpeed = this._changeVelocity(
-            stepSize * easeInOutExpo( 1 - ( Math.abs ( this.airSpeed ) / this.maxForward ) ),
-            stepSize,
-            this.airSpeed,
-            this.controls.forward,
-            this.controls.back,
-            this.maxForward,
-            this.maxBackward,
-            easeOutExpo( 0.987 )
-        );
+        if ( this.controls.forward || this.controls.back ){
+            // Update Airspeed (horizontal velocity)
+            this.airSpeed = this._changeVelocity(
+                stepSize * easeInOutExpo( 1 - ( Math.abs ( this.airSpeed ) / this.maxForward ) ),
+                stepSize,
+                this.airSpeed,
+                this.controls.forward,
+                this.controls.back,
+                this.maxForward,
+                this.maxBackward,
+                easeOutExpo( 0.987 )
+            );
+        }
+        else {
+            this.airSpeed = 0;
+        }
+        
 
         // Update Vertical Speed (velocity)
         this.verticalSpeed = this._changeVelocity(
             stepSize * easeInOutExpo( 1 - ( Math.abs ( this.verticalSpeed ) / this.maxUp ) ),
             stepSize * easeInOutExpo( 1 - ( Math.abs ( this.verticalSpeed ) / this.maxDown ) ),
             this.verticalSpeed,
-            this.controls.jump,     // Note: Move Down/Up is reversed by design.
-            this.controls.crouch,
+            this.controls.crouch,     // Note: Move Down/Up is reversed by design.
+            this.controls.jump,
             this.maxDown,
             this.maxUp,
             easeInQuad( 0.321 )
@@ -128,11 +134,11 @@ export default class Person {
         }
 
         // Turning
-        if (this.controls.turnLeft) {
+        if (this.controls.turnRight) {
             rY += radian;
         }
         else {
-            if (this.controls.turnRight) {
+            if (this.controls.turnLeft) {
                 rY -= radian;
             }
         }

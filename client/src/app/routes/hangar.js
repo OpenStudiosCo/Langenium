@@ -19,10 +19,6 @@ export default class hangarRoute {
         // Start controls.
         l.scenograph.controls.activate();
 
-        // Start overlays.
-        // @todo: #31 Fix the need for this, only included so that damage calcs can trigger their overlay updates
-        l.scenograph.overlays.activate();
-
         // Set client mode.
         l.mode = 'hangar';
 

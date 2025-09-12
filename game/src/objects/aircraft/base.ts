@@ -111,12 +111,6 @@ export default class BaseAircraft {
             this.score.deaths += 1;
             originMesh.userData.object.score.kills += 1;
 
-            // Hide the scanner marker during respawn.
-            const scannerMarker = l.scenograph.overlays.scanners.trackedObjects[ this.mesh.uuid ];
-            if ( scannerMarker )
-                scannerMarker.style.display = 'none';
-
-
             // Wait 3 seconds before 'respawn'.
             setTimeout( () => {
                 // Reset hitpoints
@@ -136,9 +130,6 @@ export default class BaseAircraft {
                 this.mesh.userData.targetable = true;
                 this.mesh.visible = true;
 
-                // Restore the scanner marker after respawn.
-                if ( scannerMarker )
-                    scannerMarker.style.display = 'block';
             }, 3000 );
 
         }

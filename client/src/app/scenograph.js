@@ -145,11 +145,7 @@ export default class Scenograph {
     }
 
     load( sceneName ) {
-        let scene = false;
-
-        if ( sceneName == 'Overworld' ) {
-            scene = new Overworld();
-        }
+        let scene = new World( sceneName );
         return scene;
     }
 

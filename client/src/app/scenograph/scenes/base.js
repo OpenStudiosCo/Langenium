@@ -18,13 +18,6 @@ export default class SceneBase {
       this.camera = false;
 
       /**
-       * Debug mode.
-       * 
-       * @memberof Boolean
-       */
-      this.debug = false;
-
-      /**
        * Effects composers and their layers.
        * 
        * @memberof Object { postprocessing.EffectComposer }
@@ -33,15 +26,6 @@ export default class SceneBase {
         particles: false,
         postprocessing: false
       };
-
-      /**
-       * Exit sign.
-       * 
-       * @todo: Consolidate scene rigs.
-       * 
-       * @memberOf function
-       */
-      this.exitSignClick = false;
 
       /**
        * Fast mode (bloom off, no shadows)

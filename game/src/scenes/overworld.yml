@@ -1,0 +1,93 @@
+# Dynamic Objects
+actors:
+  - name: Capy One
+    model: cargoShip
+    class: cargoShip
+    position:
+      x: -35000
+      y: -2000
+      z: 10000
+  - name: Capy Two
+    model: cargoShip
+    class: cargoShip
+    position:
+      x: -36000
+      y: -1500
+      z: 10000
+  - name: Capy Three
+    model: cargoShip
+    class: cargoShip
+    position:
+      x: -34000
+      y: -1500
+      z: 10000
+  - name: Player One
+    model: valiant
+    class: player
+    position:
+      x: -65000
+      y: -35000
+      z: 1500
+    rotation:
+      x: 0
+      y: -12.56
+      z: 0
+  - name: Pirate One
+    model: raven
+    class: pirate
+    position:
+      x: -65000
+      y: -35000
+      z: 1500
+    rotation:
+      x: 0
+      y: -12.56
+      z: 0
+# Static Objects
+objects:
+  - name: Einstein Well
+    model: extractor
+    position:
+      x: 0
+      y: -70000
+      z: 1500
+  - name: Newton Well
+    model: extractor
+    position:
+      x: 0
+      y: 70000
+      z: 1500
+  - name: Galileo Well
+    model: extractor
+    position:
+      x: -70000
+      y: 0
+      z: 1500
+  - name: Planck Well
+    model: extractor
+    position:
+      x: 70000
+      y: 0
+      z: 1500
+  - name: Lambda
+    model: platform
+    position:
+      x: -65000
+      y: -35000
+      z: 1500
+    rotation:
+      x: 0
+      y: -12.56
+      z: 0
+  - name: Refinery 91
+    model: refinery
+    position:
+      x: 20000
+      y: -20000
+      z: 10000
+  - name: Refinery 92
+    model: refinery
+    position:
+      x: 20000
+      y: -20000
+      z: 10000

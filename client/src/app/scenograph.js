@@ -33,9 +33,9 @@ import Fast from '@/scenograph/modes/fast.js';
 import Multiplayer from "@/scenograph/modes/multiplayer.js";
 
 /**
- * Scenes 
+ * World Simulation 
  */
-import Overworld from '@/scenograph/scenes/overworld.js';
+import World from '#/game/src/world';
 
 /**
  * Scene controllers
@@ -146,6 +146,8 @@ export default class Scenograph {
 
     load( sceneName ) {
         let scene = new World( sceneName );
+        console.log(this.instance);
+
         return scene;
     }
 

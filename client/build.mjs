@@ -2,6 +2,8 @@
 import { fileURLToPath } from 'url';
 import { dirname, resolve } from 'path';
 import esbuild from 'esbuild';
+import { YAMLPlugin } from 'esbuild-yaml';
+
 
 const __filename = fileURLToPath( import.meta.url );
 const __dirname = dirname( __filename );
@@ -12,6 +14,9 @@ esbuild
         bundle: true,
         minify: false,
         outdir: '../docs',
+        plugins: [
+            YAMLPlugin()
+        ],
         target: 'es2018',
         alias: {
             '@': resolve( __dirname, 'src/app' ),

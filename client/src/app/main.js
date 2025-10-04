@@ -31,7 +31,7 @@ l.init = function () {
     /**
      * Load up the overworld by default.
      */
-    l.current_scene = l.scenograph.load( "Overworld" );
+    l.current_scene = l.scenograph.director.load( "Overworld" );
 
     l.scenograph.init();
 }

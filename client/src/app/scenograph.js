@@ -23,19 +23,16 @@ import { calculateAdjustedGapSize } from '@/helpers/math.js';
 import Actors from "@/scenograph/actors.js";
 import Cameras from "@/scenograph/cameras.js";
 import Controls from "@/scenograph/controls.js";
+import Director from "@/scenograph/director.js";
 import Effects from "@/scenograph/effects";
 import Events from "./scenograph/events";
 import Materials from "@/scenograph/materials.js";
 import Overlays from "@/scenograph/overlays.js";
 
+
 import Debugging from '@/scenograph/modes/debugging.js';
 import Fast from '@/scenograph/modes/fast.js';
 import Multiplayer from "@/scenograph/modes/multiplayer.js";
-
-/**
- * World Simulation 
- */
-import World from '#/game/src/world';
 
 /**
  * Scene controllers
@@ -63,6 +60,8 @@ export default class Scenograph {
     modes;
 
     overlays;
+
+    sceneManager;
 
     /**
      * @instance YUKA.EntityManager;
@@ -118,6 +117,11 @@ export default class Scenograph {
         this.overlays = new Overlays();
 
         /**
+         * Scene Manager.
+         */
+        this.director = new Director();
+
+        /**
          * Setup the different game modes (controllers)
          */
 
@@ -144,12 +148,6 @@ export default class Scenograph {
 
     }
 
-    load( sceneName ) {
-        let scene = new World( sceneName );
-        console.log(this.instance);
-
-        return scene;
-    }
 
     /**
      * Game 3D initialiser, called by l when it's finished loading.

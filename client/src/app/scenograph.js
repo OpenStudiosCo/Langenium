@@ -27,6 +27,7 @@ import Director from "@/scenograph/director.js";
 import Effects from "@/scenograph/effects";
 import Events from "./scenograph/events";
 import Materials from "@/scenograph/materials.js";
+import Objects from "@/scenograph/objects";
 import Overlays from "@/scenograph/overlays.js";
 
 
@@ -58,6 +59,8 @@ export default class Scenograph {
     materials;
 
     modes;
+
+    objects;
 
     overlays;
 
@@ -110,6 +113,11 @@ export default class Scenograph {
          * Custom materials.
          */
         this.materials = new Materials();
+
+        /**
+         * Objects.
+         */
+        this.objects = new Objects();
 
         /**
          * Overlays.

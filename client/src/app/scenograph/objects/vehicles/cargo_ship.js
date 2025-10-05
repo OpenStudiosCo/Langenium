@@ -16,7 +16,7 @@ import { proceduralMetalMaterial } from '@/scenograph/materials.js';
 import { SUBTRACTION, Brush, Evaluator } from 'three-bvh-csg';
 import cargoShip from '../../../../../../game/src/actors/cargoShip';
 
-export default class CargoShips {
+export default class CargoShip {
 
     // THREE.Mesh clones
     instances;

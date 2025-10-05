@@ -19,7 +19,6 @@ import l from '@/helpers/l.js';
  */
 import World from '#/game/src/world';
 
-
 /**
  * Scene controllers
  */
@@ -30,39 +29,6 @@ import {
   startTweening,
 } from "@/scenograph/tweens";
 
-/**
- * Objects
- */
-
-// Environment
-import Ocean from "@/scenograph/objects/environment/ocean";
-import Sky from "@/scenograph/objects/environment/sky";
-import Sky2 from "@/scenograph/objects/environment/sky2";
-
-// Structures
-import Extractors from "@/scenograph/objects/structures/extractors";
-import Hangar from "@/scenograph/objects/structures/hangar";
-import Platform from "@/scenograph/objects/structures/platform";
-import Refineries from "@/scenograph/objects/structures/refineries";
-
-// Vehicles
-import CargoShips from "@/scenograph/objects/vehicles/cargo_ships";
-import Person from "@/scenograph/objects/vehicles/person";
-import Raven from "@/scenograph/objects/vehicles/raven";
-import Valiant from "@/scenograph/objects/vehicles/valiant";
-
-// Projectiles
-import Missile from "@/scenograph/objects/projectiles/missile";
-
-/**
- * Preloader objects
- */
-import {
-  createDoor,
-  createOfficeRoom,
-  doorHeight,
-  doorWidth,
-} from "@/scenograph/objects/structures/office_room";
 
 
 export default class Director {
@@ -99,9 +65,9 @@ export default class Director {
 
 
       /**
-       * World instance.
+       * Game world simulation.
        */
-      this.instance = false;
+      this.world = false;
 
       /**
        * Reusable loaders for assets.
@@ -265,7 +231,7 @@ export default class Director {
 
     // Load world instance from game classes.
     load( sceneName ) {
-      this.instance = new World( sceneName );
+      this.world = new World( sceneName );
       
       return this;
     }
@@ -273,8 +239,41 @@ export default class Director {
     // Load the objects in world instance to the current scene.
     async setup() {
       this.setupSceneDefaults();
+
+      this.loadInstance();
   
       this.finishSetup();
+    }
+
+    async loadInstance() {
+      this.world.instance.actors.forEach( actor => {
+        if ( actor.class == 'cargoShip' ) {
+          
+        }
+        console.log(actor);
+      } );
+
+      debugger;
+
+      // Setup Player aircraft, used for the intro sequence.
+      l.scenograph.actors.player.vehicle = new Valiant();
+      await l.scenograph.actors.player.vehicle.load();
+      l.current_scene.scene.add(
+        l.scenograph.actors.player.vehicle.mesh
+      );
+      l.current_scene.animation_queue.push(
+        l.scenograph.actors.player.vehicle.animate
+      );
+
+      // Setup Player person, used for the hangar scene.
+      l.scenograph.actors.player.person = new Person();
+      l.current_scene.scene.add(
+        l.scenograph.actors.player.person.mesh
+      );
+      l.current_scene.animation_queue.push(
+        l.scenograph.actors.player.person.animate
+      );
+      
     }
 
     async setupSceneDefaults() {
@@ -313,7 +312,7 @@ export default class Director {
       l.current_scene.scene.add( l.current_scene.objects.door );
   
       // Setup skybox
-      l.current_scene.objects.sky = new Sky();
+      l.current_scene.objects.sky = new l.scenograph.objects.environment.sky();
       l.current_scene.scene.add(
         l.current_scene.objects.sky.mesh
       );
@@ -323,7 +322,12 @@ export default class Director {
   
       // Setup ocean
       //l.current_scene.objects.ocean = new Ocean( extractors.extractorLocations );
-      l.current_scene.objects.ocean = new Ocean( [] );
+      l.current_scene.objects.ocean = new l.scenograph.objects.environment.ocean( [
+          //new THREE.Vector3( 0, -500, this.size * 10 ),              // Test ship
+          new THREE.Vector3( -35000, -2000, 10000 ),
+          new THREE.Vector3( -36000, -1500, 10000 ),
+          new THREE.Vector3( -34000, -1500, 10000 ),
+      ] );
       l.current_scene.scene.add(
         l.current_scene.objects.ocean.water
       );

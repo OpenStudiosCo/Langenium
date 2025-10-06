@@ -16,6 +16,10 @@ import { proceduralBuilding, proceduralMetalMaterial2 } from '@/scenograph/mater
 
 export default class Extractor {
 
+    instances;
+
+    locations;
+
     // Array of three.vector3's defining X/Z coordinates and radius of where extractors are in the ocean.
     extractorLocations;
 
@@ -26,39 +30,41 @@ export default class Extractor {
     size;
 
     constructor() {
+        this.instances = [];
+        this.locations = [];
         this.ready = false;
         this.size = 150;
 
-        // Setup extractors
-        this.extractorLocations = [
-            //new THREE.Vector3( 0, 0, this.size * 10 ),            // Test extractor.
-            new THREE.Vector3( 0, -70000, this.size * 10 ),
-            new THREE.Vector3( 0, 70000, this.size * 10 ),
-            new THREE.Vector3( -70000, 0, this.size * 10 ),
-            new THREE.Vector3( 70000, 0, this.size * 10 ),
-        ];
+        // // Setup extractors
+        // this.extractorLocations = [
+        //     //new THREE.Vector3( 0, 0, this.size * 10 ),            // Test extractor.
+        //     new THREE.Vector3( 0, -70000, this.size * 10 ),
+        //     new THREE.Vector3( 0, 70000, this.size * 10 ),
+        //     new THREE.Vector3( -70000, 0, this.size * 10 ),
+        //     new THREE.Vector3( 70000, 0, this.size * 10 ),
+        // ];
     }
 
-    async getAll() {
-        let extractors = [];
+    // async getAll() {
+    //     let extractors = [];
 
-        await this.load();
+    //     await this.load();
 
-        this.extractorLocations.forEach( async ( extractor_location, i ) => {
-            let extractor = this.mesh.clone();
+    //     this.extractorLocations.forEach( async ( extractor_location, i ) => {
+    //         let extractor = this.mesh.clone();
 
-            extractor.rotation.y = Math.PI / 8;
-            extractor.position.x = extractor_location.x;
-            extractor.position.y = -7450;
-            extractor.position.z = extractor_location.y;
+    //         extractor.rotation.y = Math.PI / 8;
+    //         extractor.position.x = extractor_location.x;
+    //         extractor.position.y = -7450;
+    //         extractor.position.z = extractor_location.y;
 
-            extractor.name = 'Extractor #' + ( i + 1 );
+    //         extractor.name = 'Extractor #' + ( i + 1 );
 
-            extractors.push( extractor );
-        } );
+    //         extractors.push( extractor );
+    //     } );
 
-        return extractors;
-    }
+    //     return extractors;
+    // }
 
     async load() {
 
@@ -126,6 +132,20 @@ export default class Extractor {
         // phatTank.position.x = 200;
         // this.mesh.add(phatTank);
 
+    }
+
+    async get() {
+        let extractor = this.mesh.clone();
+
+        extractor.rotation.y = Math.PI / 8;
+
+        let i = this.instances.length;
+
+        extractor.name = 'Extractor #' + ( i + 1 );
+
+        this.instances.push( extractor );
+
+        return extractor;
     }
 
     getPhatTank() {
@@ -199,7 +219,7 @@ export default class Extractor {
     **/
     animate( currentTime ) {
 
-        l.current_scene.objects.extractors.forEach( ( extractor, i ) => {
+        l.scenograph.objects.extractor.instances.forEach( ( extractor, i ) => {
             let inner = extractor.getObjectByName( 'inner' );
             let outer = extractor.getObjectByName( 'outer' );
             inner.material.uniforms.time.value += 0.0000025;

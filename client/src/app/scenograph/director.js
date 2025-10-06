@@ -246,17 +246,26 @@ export default class Director {
     }
 
     async loadInstance() {
-      this.world.instance.actors.forEach( actor => {
-        if ( actor.class == 'cargoShip' ) {
-          
+      this.world.instance.objects.forEach( async object => {
+        if ( object.model == 'extractor' ) {
+            l.scenograph.director.loadObject(
+              object,
+              await l.scenograph.objects.structures.extractor.get()
+            );         
         }
-        console.log(actor);
       } );
 
-      debugger;
+      // this.world.instance.actors.forEach( actor => {
+      //   if ( actor.class == 'cargoShip' ) {
+          
+      //   }
+      //   console.log(actor);
+      // } );
+
+      //debugger;
 
       // Setup Player aircraft, used for the intro sequence.
-      l.scenograph.actors.player.vehicle = new Valiant();
+      l.scenograph.actors.player.vehicle = new l.scenograph.objects.vehicles.valiant();
       await l.scenograph.actors.player.vehicle.load();
       l.current_scene.scene.add(
         l.scenograph.actors.player.vehicle.mesh
@@ -266,7 +275,7 @@ export default class Director {
       );
 
       // Setup Player person, used for the hangar scene.
-      l.scenograph.actors.player.person = new Person();
+      l.scenograph.actors.player.person = new l.scenograph.objects.vehicles.person();
       l.current_scene.scene.add(
         l.scenograph.actors.player.person.mesh
       );
@@ -274,6 +283,27 @@ export default class Director {
         l.scenograph.actors.player.person.animate
       );
       
+    }
+
+    async loadObject( config, object ) {
+      object.position.x = config.position.x;
+      object.position.y = config.position.y;
+      object.position.z = config.position.z;
+
+      object.name = config.name;
+
+      // @todo: add to current_scene array relevant to object class.
+
+      l.current_scene.scene.add(
+        object
+      );
+    }
+
+    /**
+     * @todo: Make this dynamic and not hard codo
+     */
+    async temp_addPlayer() {
+
     }
 
     async setupSceneDefaults() {
@@ -295,18 +325,11 @@ export default class Director {
 
       l.scenograph.effects.init();
 
-      l.current_scene.objects.projectiles = {
-        missile: new Missile()
-      };
-      await l.current_scene.objects.projectiles.missile.load();
-      l.current_scene.animation_queue.push(
-        l.current_scene.objects.projectiles.missile.animate
-      );
   
-      l.current_scene.objects.door = await createDoor();
+      l.current_scene.objects.door = await l.scenograph.objects.preloader.createDoor();
       l.current_scene.objects.door.position.set(
-        -doorWidth / 2,
-        -5 + doorHeight / 2,
+        -l.scenograph.objects.preloader.doorWidth / 2,
+        -5 + l.scenograph.objects.preloader.doorHeight / 2,
         -15 + l.current_scene.room_depth / 2
       );
       l.current_scene.scene.add( l.current_scene.objects.door );
@@ -346,7 +369,7 @@ export default class Director {
       );
   
       l.current_scene.objects.screens_loaded = 0;
-      l.current_scene.objects.room = await createOfficeRoom();
+      l.current_scene.objects.room = await l.scenograph.objects.preloader.createOfficeRoom();
       l.current_scene.scene.add( l.current_scene.objects.room );
   
 

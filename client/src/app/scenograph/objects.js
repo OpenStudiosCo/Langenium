@@ -46,11 +46,11 @@ import Valiant from "@/scenograph/objects/vehicles/valiant";
 
 export default class Objects {
 
-    this.environment = false;
-    this.preloader = false;
-    this.projectiles = false;
-    this.structures = false;
-    this.vehicles = false;
+    environment = false;
+    preloader = false;
+    projectiles = false;
+    structures = false;
+    vehicles = false;
 
     constructor() {
         this.environment = {
@@ -64,10 +64,10 @@ export default class Objects {
             doorWidth: doorWidth,
         };
         this.projectiles = {
-            missile: Missile
+            missile: new Missile()
         };
         this.structures = {
-            extractor: Extractor,
+            extractor: new Extractor(),
             hangar: Hangar,
             platform: Platform,
             refineries: Refineries,
@@ -79,6 +79,32 @@ export default class Objects {
             valiant: Valiant,
         };
       
+    }
+
+    /**
+     * @todo: Conditionally switching off loading some objects on scenes where not needed.
+     */
+    async init () {
+        await this.structures.extractor.load();
+        await this.projectiles.missile.load();
+        //await this.vehicles.cargoShip.load();
+        console.log("Objects loaded");
+    }
+
+    /**
+     * Animate hook.
+     * 
+     * This method is called within the main animation loop and
+     * therefore must only reference global objects or properties.
+     * 
+     * @method animate
+     * @memberof Objects
+     * @global
+     * @note All references within this method should be globally accessible.
+    **/
+    animate( currentTime ) {
+        l.scenograph.objects.structures.extractors.animate( currentTime );
+        l.scenograph.objects.projectiles.missile.animate( currentTime );
     }
 
 }

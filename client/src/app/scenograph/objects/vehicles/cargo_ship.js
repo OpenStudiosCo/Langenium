@@ -136,6 +136,35 @@ export default class CargoShip {
 
     }
 
+    async get() {
+        let mesh = this.mesh.clone();
+        mesh.userData.path = this.getPath();
+
+        let i = this.instances.length;
+        
+        // Bump each starting point for the cargo ships
+        for ( let j = 0; j < i; j++) {
+            mesh.userData.path.advance();
+        }
+
+        mesh.position.copy( mesh.userData.path.current() );
+        mesh.name = 'Cargo Ship #' + ( i + 1 );
+
+        mesh.userData.objectClass = 'cargoShip';
+        mesh.userData.targetable = true;
+        mesh.userData.size = this.size;
+        mesh.userData.actor = new cargoShip( mesh, l.current_scene.scene );
+
+        l.scenograph.entityManager.add( mesh.userData.actor.entity );
+
+        mesh.matrixAutoUpdate = false;
+
+        this.instances.push( mesh );
+
+        return mesh;
+    }
+
+
     async load() {
 
         //const material = new THREE.MeshBasicMaterial( {color: 0xff0000, transparent: true, opacity: 1.0, side: THREE.DoubleSide} );

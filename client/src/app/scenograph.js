@@ -186,6 +186,9 @@ export default class Scenograph {
         // Reusable raycaster for tracking what the user tried to hit.
         l.current_scene.raycaster = new THREE.Raycaster();
 
+        // Load all object classes.
+        await this.objects.init();
+
         // Scene Setup.
         l.current_scene.setup();
 
@@ -197,6 +200,7 @@ export default class Scenograph {
 
         // Activate Event listeners.
         this.events.init();
+
 
     };
 

@@ -49,26 +49,26 @@ objects:
     model: extractor
     position:
       x: 0
-      y: -70000
-      z: 1500
+      y: -7450
+      z: -70000
   - name: Newton Well
     model: extractor
     position:
       x: 0
-      y: 70000
-      z: 1500
+      y: -7450
+      z: 70000
   - name: Galileo Well
     model: extractor
     position:
       x: -70000
-      y: 0
-      z: 1500
+      y: -7450
+      z: 0
   - name: Planck Well
     model: extractor
     position:
       x: 70000
-      y: 0
-      z: 1500
+      y: -7450
+      z: 0
   - name: Lambda
     model: platform
     position:

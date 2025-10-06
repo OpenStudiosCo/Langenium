@@ -68,8 +68,8 @@ export default class Objects {
         };
         this.structures = {
             extractor: new Extractor(),
-            hangar: Hangar,
-            platform: Platform,
+            hangar: new Hangar(),
+            platform: new Platform(),
             refineries: Refineries,
         };
         this.vehicles = {
@@ -86,6 +86,7 @@ export default class Objects {
      */
     async init () {
         await this.structures.extractor.load();
+        await this.structures.platform.load();
         await this.projectiles.missile.load();
         //await this.vehicles.cargoShip.load();
         console.log("Objects loaded");
@@ -103,7 +104,8 @@ export default class Objects {
      * @note All references within this method should be globally accessible.
     **/
     animate( currentTime ) {
-        l.scenograph.objects.structures.extractors.animate( currentTime );
+        l.scenograph.objects.structures.extractor.animate( currentTime );
+        l.scenograph.objects.structures.platform.animate( currentTime );
         l.scenograph.objects.projectiles.missile.animate( currentTime );
     }
 

@@ -111,6 +111,12 @@ export default class Platform {
         this.ready = true;
     }
 
+    async get() {
+        let platform = this.mesh.clone();
+
+        return platform;
+    }
+
     /**
      * Animate hook.
      * 

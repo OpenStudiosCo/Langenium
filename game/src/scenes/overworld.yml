@@ -73,8 +73,8 @@ objects:
     model: platform
     position:
       x: -65000
-      y: -35000
-      z: 1500
+      y: 1500
+      z: -35000
     rotation:
       x: 0
       y: -12.56

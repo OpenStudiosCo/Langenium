@@ -248,10 +248,16 @@ export default class Director {
     async loadInstance() {
       this.world.instance.objects.forEach( async object => {
         if ( object.model == 'extractor' ) {
-            l.scenograph.director.loadObject(
-              object,
-              await l.scenograph.objects.structures.extractor.get()
-            );         
+          l.scenograph.director.loadObject(
+            object,
+            await l.scenograph.objects.structures.extractor.get()
+          );
+        }
+        if ( object.model == 'platform' ) {
+          l.scenograph.director.loadObject(
+            object,
+            await l.scenograph.objects.structures.platform.get()
+          );
         }
       } );
 

@@ -296,6 +296,12 @@ export default class Director {
       object.position.y = config.position.y;
       object.position.z = config.position.z;
 
+      if ( config.rotation ) {
+        object.rotation.x = config.rotation.x;
+        object.rotation.y = config.rotation.y;
+        object.rotation.z = config.rotation.z;
+      }
+
       object.name = config.name;
 
       // @todo: add to current_scene array relevant to object class.

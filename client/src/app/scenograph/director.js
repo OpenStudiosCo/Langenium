@@ -357,12 +357,9 @@ export default class Director {
   
       // Setup ocean
       //l.current_scene.objects.ocean = new Ocean( extractors.extractorLocations );
-      l.current_scene.objects.ocean = new l.scenograph.objects.environment.ocean( [
-          //new THREE.Vector3( 0, -500, this.size * 10 ),              // Test ship
-          new THREE.Vector3( -35000, -2000, 10000 ),
-          new THREE.Vector3( -36000, -1500, 10000 ),
-          new THREE.Vector3( -34000, -1500, 10000 ),
-      ] );
+      l.current_scene.objects.ocean = new l.scenograph.objects.environment.ocean( 
+        l.scenograph.objects.structures.extractor.extractorLocations
+       );
       l.current_scene.scene.add(
         l.current_scene.objects.ocean.water
       );

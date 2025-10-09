@@ -34,28 +34,6 @@ export default class Refinery {
         ];
     }
 
-    async getAll() {
-        let meshes = [];
-
-        await this.load();
-
-        this.locations.forEach( async ( location, i ) => {
-            let mesh = this.mesh.clone();
-
-            mesh.position.x = location.x;
-            
-            mesh.position.z = location.y;
-            mesh.name = 'Refinery #' + ( i + 1 );
-            mesh.userData.targetable = true;
-            mesh.userData.objectClass = 'refinery';
-
-            meshes.push( mesh );
-        } );
-
-        return meshes;
-    }
-
-
     async get() {
         let refinery = this.mesh.clone();
 

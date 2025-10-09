@@ -45,27 +45,6 @@ export default class Extractor {
         ];
     }
 
-    // async getAll() {
-    //     let extractors = [];
-
-    //     await this.load();
-
-    //     this.extractorLocations.forEach( async ( extractor_location, i ) => {
-    //         let extractor = this.mesh.clone();
-
-    //         extractor.rotation.y = Math.PI / 8;
-    //         extractor.position.x = extractor_location.x;
-    //         extractor.position.y = -7450;
-    //         extractor.position.z = extractor_location.y;
-
-    //         extractor.name = 'Extractor #' + ( i + 1 );
-
-    //         extractors.push( extractor );
-    //     } );
-
-    //     return extractors;
-    // }
-
     async load() {
 
         //const material = new THREE.MeshBasicMaterial( {color: 0xff0000, transparent: true, opacity: 1.0, side: THREE.DoubleSide} ); 

@@ -69,7 +69,7 @@ objects:
       x: 70000
       y: -7450
       z: 0
-  - name: Lambda
+  - name: Lambda City
     model: platform
     position:
       x: -35000

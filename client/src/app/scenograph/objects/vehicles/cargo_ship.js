@@ -21,9 +21,6 @@ export default class CargoShip {
     // THREE.Mesh clones
     instances;
 
-    // Array of three.vector3's defining X/Z coordinates and radius of where extractors are in the ocean.
-    locations;
-
     // THREE.Mesh
     mesh;
 
@@ -36,28 +33,10 @@ export default class CargoShip {
     // The scale of the mesh.
     size;
 
-    // Locations the cargo ships will randomly select and travel to.
-    targets;
-
     constructor() {
         this.instances = [];
         this.ready = false;
         this.size = 1000;
-
-        // Cargo ship start locations
-        this.locations = [
-            //new THREE.Vector3( 0, -500, this.size * 10 ),              // Test ship
-            new THREE.Vector3( -35000, -2000, this.size * 10 ),
-            new THREE.Vector3( -36000, -1500, this.size * 10 ),
-            new THREE.Vector3( -34000, -1500, this.size * 10 ),
-        ];
-
-        // Cargo ship destinations, use the current scene's extractor positions.
-        this.destinations = [];
-        l.current_scene.objects.extractors.forEach( (extractor) => {
-            this.destinations.push( new THREE.Vector3( extractor.position.x, 0, extractor.position.z ) );
-        });
-
     }
 
     /**
@@ -69,14 +48,15 @@ export default class CargoShip {
         let path = new YUKA.Path();
         path.loop = true;
 
-        // Add the union platform
-        const platform_location = l.current_scene.objects.platform.mesh.position;
-        path.add( new YUKA.Vector3( platform_location.x, 0, platform_location.z ) );
-
-        this.destinations.forEach( ( destination ) => {
-            path.add( new YUKA.Vector3( destination.x, 0, destination.z ) );
+        // Add the union platforms
+        l.scenograph.objects.structures.platform.instances.forEach( (platform) => {
+            path.add( new YUKA.Vector3( platform.position.x, 0, platform.position.z ) );
         });
-        path.add( new YUKA.Vector3( platform_location.x, 0, platform_location.z ) );
+
+        // Add the extractors.
+        l.scenograph.objects.structures.extractor.instances.forEach( (extractor) => {
+            path.add( new YUKA.Vector3( extractor.position.x, 0, extractor.position.z ) );
+        });
 
         return path;
     }
@@ -164,7 +144,7 @@ export default class CargoShip {
         return mesh;
     }
 
-
+    // Note: has to be loaded after extractors!
     async load() {
 
         //const material = new THREE.MeshBasicMaterial( {color: 0xff0000, transparent: true, opacity: 1.0, side: THREE.DoubleSide} );

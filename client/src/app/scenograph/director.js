@@ -246,35 +246,35 @@ export default class Director {
     }
 
     async loadInstance() {
-      this.world.instance.objects.forEach( async object => {
-        if ( object.model == 'extractor' ) {
+      await this.world.instance.objects.forEach( async object_config => {
+        if ( object_config.model == 'extractor' ) {
           l.scenograph.director.loadObject(
-            object,
+            object_config,
             await l.scenograph.objects.structures.extractor.get()
           );
         }
-        if ( object.model == 'platform' ) {
+        if ( object_config.model == 'platform' ) {
           l.scenograph.director.loadObject(
-            object,
+            object_config,
             await l.scenograph.objects.structures.platform.get()
           );
         }
-        if ( object.model == 'refinery' ) {
+        if ( object_config.model == 'refinery' ) {
           l.scenograph.director.loadObject(
-            object,
+            object_config,
             await l.scenograph.objects.structures.refinery.get()
           );
         }
       } );
 
-      // this.world.instance.actors.forEach( actor => {
-      //   if ( actor.class == 'cargoShip' ) {
-          
-      //   }
-      //   console.log(actor);
-      // } );
-
-      //debugger;
+      this.world.instance.actors.forEach( async object_config => {
+        if ( object_config.class == 'cargoShip' ) {
+          l.scenograph.director.loadObject(
+            object_config,
+            await l.scenograph.objects.vehicles.cargoShip.get()
+          );
+        }
+      } );
 
       // Setup Player aircraft, used for the intro sequence.
       l.scenograph.actors.player.vehicle = new l.scenograph.objects.vehicles.valiant();

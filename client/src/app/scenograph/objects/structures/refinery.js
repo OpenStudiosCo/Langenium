@@ -10,7 +10,7 @@ import l from '@/helpers/l.js';
 import { proceduralMetalMaterial2, proceduralBuilding } from '@/scenograph/materials.js';
 import { Brush, Evaluator, INTERSECTION } from 'three-bvh-csg';
 
-export default class Refineries {
+export default class Refinery {
 
     // Array of three.vector3's defining X/Z coordinates and radius of where extractors are in the ocean.
     locations;
@@ -22,6 +22,7 @@ export default class Refineries {
     size;
 
     constructor() {
+        this.instances = [];
         this.ready = false;
         this.size = 1000;
 
@@ -42,7 +43,7 @@ export default class Refineries {
             let mesh = this.mesh.clone();
 
             mesh.position.x = location.x;
-            mesh.position.y = this.size / 6.5;
+            
             mesh.position.z = location.y;
             mesh.name = 'Refinery #' + ( i + 1 );
             mesh.userData.targetable = true;
@@ -52,6 +53,19 @@ export default class Refineries {
         } );
 
         return meshes;
+    }
+
+
+    async get() {
+        let refinery = this.mesh.clone();
+
+        let i = this.instances.length;
+
+        refinery.name = 'Extractor #' + ( i + 1 );
+
+        this.instances.push( refinery );
+
+        return refinery;
     }
 
     async load() {

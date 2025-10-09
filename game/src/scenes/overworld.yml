@@ -83,11 +83,11 @@ objects:
     model: refinery
     position:
       x: 20000
-      y: -20000
-      z: 10000
+      y: 153
+      z: -20000
   - name: Refinery 92
     model: refinery
     position:
-      x: 20000
-      y: -20000
-      z: 10000
+      x: -20000
+      y: 153
+      z: 20000

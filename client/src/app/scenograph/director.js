@@ -259,6 +259,12 @@ export default class Director {
             await l.scenograph.objects.structures.platform.get()
           );
         }
+        if ( object.model == 'refinery' ) {
+          l.scenograph.director.loadObject(
+            object,
+            await l.scenograph.objects.structures.refinery.get()
+          );
+        }
       } );
 
       // this.world.instance.actors.forEach( actor => {

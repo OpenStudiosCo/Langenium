@@ -36,7 +36,7 @@ import Missile from "@/scenograph/objects/projectiles/missile";
 import Extractor from "@/scenograph/objects/structures/extractor";
 import Hangar from "@/scenograph/objects/structures/hangar";
 import Platform from "@/scenograph/objects/structures/platform";
-import Refineries from "@/scenograph/objects/structures/refineries";
+import Refinery from "@/scenograph/objects/structures/refinery";
 
 // Vehicles
 import CargoShip from "@/scenograph/objects/vehicles/cargo_ship";
@@ -70,7 +70,7 @@ export default class Objects {
             extractor: new Extractor(),
             hangar: new Hangar(),
             platform: new Platform(),
-            refineries: Refineries,
+            refinery: new Refinery(),
         };
         this.vehicles = {
             cargoShip: CargoShip,
@@ -87,6 +87,7 @@ export default class Objects {
     async init () {
         await this.structures.extractor.load();
         await this.structures.platform.load();
+        await this.structures.refinery.load();
         await this.projectiles.missile.load();
         //await this.vehicles.cargoShip.load();
         console.log("Objects loaded");
@@ -106,6 +107,7 @@ export default class Objects {
     animate( currentTime ) {
         l.scenograph.objects.structures.extractor.animate( currentTime );
         l.scenograph.objects.structures.platform.animate( currentTime );
+        l.scenograph.objects.structures.refinery.animate( currentTime );
         l.scenograph.objects.projectiles.missile.animate( currentTime );
     }
 

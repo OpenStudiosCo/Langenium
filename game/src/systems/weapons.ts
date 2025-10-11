@@ -63,7 +63,7 @@ export default class Weapons extends BaseSystem {
                         // @todo: v7 Figure out a way to signal this to happen without l. global object access
                         this.last = l.current_scene.stats.currentTime;
 
-                        l.current_scene.objects.projectiles.missile.fireMissile(
+                        l.scenograph.objects.projectiles.missile.fireMissile(
                             this.mesh,
                             this.mesh.position,
                             target.mesh,

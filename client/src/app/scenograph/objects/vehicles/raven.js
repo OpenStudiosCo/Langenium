@@ -133,7 +133,7 @@ export default class Raven extends RavenBase {
         mesh.userData.object.startPosition.y = this.mesh.position.y;
         mesh.userData.object.startPosition.z = -1000;
 
-        mesh.userData.actor = new Pirate( this.mesh, l.current_scene.scene );
+        mesh.userData.actor = new Pirate( mesh, l.current_scene.scene );
 
         l.scenograph.entityManager.add( mesh.userData.actor.entity );
 
@@ -152,12 +152,10 @@ export default class Raven extends RavenBase {
      * @note All references within this method should be globally accessible.
     **/
     animate( delta ) {
-        console.log('bonjour hi 1!');
+
         if ( l.current_scene.settings.game_controls ) {
-            console.log('bonjour hi 2!');
             l.scenograph.objects.vehicles.raven.instances.forEach( raven => {
                 raven.userData.actor.animate( delta );
-                console.log('bonjour hi 3!');
             } );
         }
     }

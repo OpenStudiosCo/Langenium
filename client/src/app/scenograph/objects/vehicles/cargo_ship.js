@@ -214,7 +214,7 @@ export default class CargoShip {
     animate( delta ) {
 
         if ( l.current_scene.settings.game_controls ) {
-            l.current_scene.objects.cargo_ships.forEach( ( cargo_ship ) => {
+            l.scenograph.objects.vehicles.cargoShip.instances.forEach( ( cargo_ship ) => {
 
                 cargo_ship.userData.actor.animate( delta );
                 

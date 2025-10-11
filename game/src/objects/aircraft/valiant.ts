@@ -6,8 +6,8 @@ import BaseAircraft from './base';
 
 class Valiant extends BaseAircraft {
 
-    constructor() {
-        super(); // Call the constructor of the base class
+    constructor( mesh ) {
+        super( mesh ); // Call the constructor of the base class
     }
 
 }

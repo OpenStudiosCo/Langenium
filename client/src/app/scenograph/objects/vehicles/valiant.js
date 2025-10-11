@@ -14,9 +14,9 @@ import * as THREE from 'three';
 import l from '@/helpers/l.js';
 import { brightenMaterial, proceduralMetalMaterial } from '@/scenograph/materials.js';
 import Player from '#/game/src/actors/player';
-import ValiantBase from '#/game/src/objects/aircraft/valiant';
+import ValiantObject from '#/game/src/objects/aircraft/valiant';
 
-export default class Valiant extends ValiantBase {
+export default class Valiant {
 
     // Camera distance.
     camera_distance;
@@ -126,7 +126,7 @@ export default class Valiant extends ValiantBase {
 
         this.trail = l.current_scene.effects.trail.createTrail( this.mesh, 0, this.trail_position_y, this.trail_position_z );
 
-        this.mesh.userData.object = this;
+        this.mesh.userData.object = new ValiantObject( this.mesh );
     }
 
     createThrusterMesh( options ) {

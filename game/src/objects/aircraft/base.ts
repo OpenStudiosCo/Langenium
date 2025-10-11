@@ -62,7 +62,7 @@ export default class BaseAircraft {
             explosionPosition.z += zOffset;
 
             setTimeout( () => {
-                l.current_scene.objects.projectiles.missile.loadExplosion( explosionPosition );
+                l.scenograph.objects.projectiles.missile.loadExplosion( explosionPosition );
             }, 250 * Math.random() )
             
         }

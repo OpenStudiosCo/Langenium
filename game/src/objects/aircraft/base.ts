@@ -8,6 +8,7 @@
 import { normaliseSpeedDelta, easeOutExpo, easeInQuad, easeInOutExpo } from '../../helpers';
 
 export default class BaseAircraft {
+    public mesh;
     public score:           { kills: number; deaths: number }   = { kills: 0, deaths: 0 };
     public standing:        number                              = 0;
     public hitPoints:       number                              = 100;
@@ -43,7 +44,8 @@ export default class BaseAircraft {
         moveRight: false
     };
 
-    constructor() {
+    constructor( mesh ) {
+        this.mesh = mesh;
     }
 
     public blowUp( meshPosition ) {

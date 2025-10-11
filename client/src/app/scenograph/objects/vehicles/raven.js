@@ -10,10 +10,10 @@ import * as THREE from 'three';
  */
 import l from '@/helpers/l.js';
 import { brightenMaterial, proceduralMetalMaterial } from '@/scenograph/materials.js';
-import Pirate from '#/game/src/actors/pirate';
-import RavenBase from '#/game/src/objects/aircraft/raven';
+import PirateActor from '#/game/src/actors/pirate';
+import RavenObject from '#/game/src/objects/aircraft/raven';
 
-export default class Raven extends RavenBase {
+export default class Raven {
 
 
     // An actor containing AI behaviours.
@@ -35,7 +35,7 @@ export default class Raven extends RavenBase {
     state;
 
     constructor() {
-        super();
+
         this.instances = [];
         this.default_camera_distance = l.scenograph.width < l.scenograph.height ? -70 : -35;
         this.trail_position_y = 1.2;
@@ -122,10 +122,7 @@ export default class Raven extends RavenBase {
     async get() {
         let mesh = this.mesh.clone();
 
-        let i = this.instances.length;
-
-        this.instances.push( mesh );
-        mesh.userData.object = this;
+        mesh.userData.object = new RavenObject( mesh );
         mesh.userData.object.standing = -1;
         // Set the object start position based on the path.
         // @todo: pluck it dynamically from path.
@@ -133,9 +130,10 @@ export default class Raven extends RavenBase {
         mesh.userData.object.startPosition.y = this.mesh.position.y;
         mesh.userData.object.startPosition.z = -1000;
 
-        mesh.userData.actor = new Pirate( mesh, l.current_scene.scene );
-
+        mesh.userData.actor = new PirateActor( mesh, l.current_scene.scene );
         l.scenograph.entityManager.add( mesh.userData.actor.entity );
+
+        this.instances.push( mesh );
 
         return mesh;
     }

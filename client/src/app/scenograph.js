@@ -201,7 +201,6 @@ export default class Scenograph {
         // Activate Event listeners.
         this.events.init();
 
-
     };
 
     async checkGPUTier() {
@@ -238,6 +237,7 @@ export default class Scenograph {
         const delta = l.scenograph.time.update().getDelta();
 
         if ( l.current_scene.started ) {
+
             if ( l.current_scene.animation_queue.length > 0 ) {
                 for (
                     var i = 0;

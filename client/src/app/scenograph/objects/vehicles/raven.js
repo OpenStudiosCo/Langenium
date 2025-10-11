@@ -19,6 +19,9 @@ export default class Raven extends RavenBase {
     // An actor containing AI behaviours.
     actor;
 
+    // THREE.Mesh clones
+    instances;
+
     // Ship Model (gltf)
     model;
 
@@ -33,6 +36,7 @@ export default class Raven extends RavenBase {
 
     constructor() {
         super();
+        this.instances = [];
         this.default_camera_distance = l.scenograph.width < l.scenograph.height ? -70 : -35;
         this.trail_position_y = 1.2;
         this.trail_position_z = 1.5;
@@ -111,19 +115,29 @@ export default class Raven extends RavenBase {
         // this.mesh.scale.set(100,100,100);
         this.mesh.matrixAutoUpdate = false;
 
-        // @todo: Uncouple from the pirate actor when vehicle selection is introduced.
-        this.mesh.userData.actor = new Pirate( this.mesh, l.current_scene.scene );
 
-        l.scenograph.entityManager.add( this.mesh.userData.actor.entity );
 
-        this.mesh.userData.object = this;
-        this.mesh.userData.object.standing = -1;
+    }
+
+    async get() {
+        let mesh = this.mesh.clone();
+
+        let i = this.instances.length;
+
+        this.instances.push( mesh );
+        mesh.userData.object = this;
+        mesh.userData.object.standing = -1;
         // Set the object start position based on the path.
         // @todo: pluck it dynamically from path.
-        this.mesh.userData.object.startPosition.x = -2000;
-        this.mesh.userData.object.startPosition.y = this.mesh.position.y;
-        this.mesh.userData.object.startPosition.z = -1000;
+        mesh.userData.object.startPosition.x = -2000;
+        mesh.userData.object.startPosition.y = this.mesh.position.y;
+        mesh.userData.object.startPosition.z = -1000;
 
+        mesh.userData.actor = new Pirate( this.mesh, l.current_scene.scene );
+
+        l.scenograph.entityManager.add( mesh.userData.actor.entity );
+
+        return mesh;
     }
 
     /**
@@ -138,8 +152,13 @@ export default class Raven extends RavenBase {
      * @note All references within this method should be globally accessible.
     **/
     animate( delta ) {
+        console.log('bonjour hi 1!');
         if ( l.current_scene.settings.game_controls ) {
-            l.current_scene.objects.bot.mesh.userData.actor.animate( delta );
+            console.log('bonjour hi 2!');
+            l.scenograph.objects.vehicles.raven.instances.forEach( raven => {
+                raven.userData.actor.animate( delta );
+                console.log('bonjour hi 3!');
+            } );
         }
     }
 

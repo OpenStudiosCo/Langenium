@@ -246,6 +246,25 @@ export default class Director {
     }
 
     async loadInstance() {
+      // Setup Player aircraft, used for the intro sequence.
+      l.scenograph.actors.player.vehicle = new l.scenograph.objects.vehicles.valiant();
+      await l.scenograph.actors.player.vehicle.load();
+      l.current_scene.scene.add(
+        l.scenograph.actors.player.vehicle.mesh
+      );
+      l.current_scene.animation_queue.push(
+        l.scenograph.actors.player.vehicle.animate
+      );
+
+      // Setup Player person, used for the hangar scene.
+      l.scenograph.actors.player.person = new l.scenograph.objects.vehicles.person();
+      l.current_scene.scene.add(
+        l.scenograph.actors.player.person.mesh
+      );
+      l.current_scene.animation_queue.push(
+        l.scenograph.actors.player.person.animate
+      );
+      
       await this.world.instance.objects.forEach( async object_config => {
         if ( object_config.model == 'extractor' ) {
           l.scenograph.director.loadObject(
@@ -274,27 +293,15 @@ export default class Director {
             await l.scenograph.objects.vehicles.cargoShip.get()
           );
         }
+        if ( object_config.class == 'pirate' ) {
+          l.scenograph.director.loadObject(
+            object_config,
+            await l.scenograph.objects.vehicles.raven.get()
+          );
+        }
       } );
 
-      // Setup Player aircraft, used for the intro sequence.
-      l.scenograph.actors.player.vehicle = new l.scenograph.objects.vehicles.valiant();
-      await l.scenograph.actors.player.vehicle.load();
-      l.current_scene.scene.add(
-        l.scenograph.actors.player.vehicle.mesh
-      );
-      l.current_scene.animation_queue.push(
-        l.scenograph.actors.player.vehicle.animate
-      );
 
-      // Setup Player person, used for the hangar scene.
-      l.scenograph.actors.player.person = new l.scenograph.objects.vehicles.person();
-      l.current_scene.scene.add(
-        l.scenograph.actors.player.person.mesh
-      );
-      l.current_scene.animation_queue.push(
-        l.scenograph.actors.player.person.animate
-      );
-      
     }
 
     async loadObject( config, object ) {
@@ -398,6 +405,10 @@ export default class Director {
     }
 
     finishSetup() {
+      // Add objects to animation queue.
+      l.current_scene.animation_queue.push(
+        l.scenograph.objects.animate
+      );
       // Check if we've finished loading.
       let bootWaiter = setInterval( () => {
         if (

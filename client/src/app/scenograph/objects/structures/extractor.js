@@ -198,7 +198,7 @@ export default class Extractor {
     **/
     animate( currentTime ) {
 
-        l.scenograph.objects.extractor.instances.forEach( ( extractor, i ) => {
+        l.scenograph.objects.structures.extractor.instances.forEach( ( extractor, i ) => {
             let inner = extractor.getObjectByName( 'inner' );
             let outer = extractor.getObjectByName( 'outer' );
             inner.material.uniforms.time.value += 0.0000025;

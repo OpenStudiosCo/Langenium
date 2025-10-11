@@ -75,7 +75,7 @@ export default class Objects {
         this.vehicles = {
             cargoShip: new CargoShip(),
             person: Person,
-            raven: Raven,
+            raven: new Raven(),
             valiant: Valiant,
         };
       
@@ -90,6 +90,7 @@ export default class Objects {
         await this.structures.refinery.load();
         await this.projectiles.missile.load();
         await this.vehicles.cargoShip.load();
+        await this.vehicles.raven.load();
         console.log("Objects loaded");
     }
 
@@ -110,6 +111,7 @@ export default class Objects {
         l.scenograph.objects.structures.refinery.animate( currentTime );
         l.scenograph.objects.projectiles.missile.animate( currentTime );
         l.scenograph.objects.vehicles.cargoShip.animate( currentTime );
+        l.scenograph.objects.vehicles.raven.animate( currentTime );
     }
 
 }

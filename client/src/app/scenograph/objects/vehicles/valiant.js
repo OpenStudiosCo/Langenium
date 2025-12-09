@@ -425,8 +425,8 @@ export default class Valiant {
         var radian = ( Math.PI / 180 );
 
         l.scenograph.actors.player.vehicle.camera_distance = l.scenograph.actors.player.vehicle.default_camera_distance + ( l.current_scene.room_depth / 2 );
-        if ( l.scenograph.actors.player.vehicle.airSpeed < 0 ) {
-            l.scenograph.actors.player.vehicle.camera_distance -= l.scenograph.actors.player.vehicle.airSpeed * 4;
+        if ( l.scenograph.actors.player.vehicle.mesh.userData.object.airSpeed < 0 ) {
+            l.scenograph.actors.player.vehicle.camera_distance -= l.scenograph.actors.player.vehicle.mesh.userData.object.airSpeed * 4;
         }
 
         let xDiff = l.scenograph.actors.player.vehicle.mesh.position.x;
@@ -527,21 +527,21 @@ export default class Valiant {
             let trailOffset = 0;
 
             // Only offset the trail effect if we are going forward which is (z-1) in numerical terms
-            if ( l.scenograph.actors.player.vehicle.airSpeed < 0 ) {
+            if ( l.scenograph.actors.player.vehicle.mesh.userData.object.airSpeed < 0 ) {
 
                 // Update ship thruster
-                l.scenograph.actors.player.vehicle.animateThruster( l.scenograph.actors.player.vehicle.airSpeed, l.scenograph.actors.player.vehicle.thruster.centralConeBurner, .5 );
-                l.scenograph.actors.player.vehicle.animateThruster( l.scenograph.actors.player.vehicle.airSpeed, l.scenograph.actors.player.vehicle.thruster.outerCylBurner, .5 );
+                l.scenograph.actors.player.vehicle.animateThruster( l.scenograph.actors.player.vehicle.mesh.userData.object.airSpeed, l.scenograph.actors.player.vehicle.thruster.centralConeBurner, .5 );
+                l.scenograph.actors.player.vehicle.animateThruster( l.scenograph.actors.player.vehicle.mesh.userData.object.airSpeed, l.scenograph.actors.player.vehicle.thruster.outerCylBurner, .5 );
 
-                l.scenograph.actors.player.vehicle.spinThruster( l.scenograph.actors.player.vehicle.airSpeed, l.scenograph.actors.player.vehicle.thruster.rearConeBurner, -1 );
-                l.scenograph.actors.player.vehicle.spinThruster( l.scenograph.actors.player.vehicle.airSpeed, l.scenograph.actors.player.vehicle.thruster.centralConeBurner, 1 );
-                l.scenograph.actors.player.vehicle.spinThruster( l.scenograph.actors.player.vehicle.airSpeed, l.scenograph.actors.player.vehicle.thruster.outerCylBurner, -1 );
-                l.scenograph.actors.player.vehicle.spinThruster( l.scenograph.actors.player.vehicle.airSpeed, l.scenograph.actors.player.vehicle.thruster.innerCylBurner, 1 );
+                l.scenograph.actors.player.vehicle.spinThruster( l.scenograph.actors.player.vehicle.mesh.userData.object.airSpeed, l.scenograph.actors.player.vehicle.thruster.rearConeBurner, -1 );
+                l.scenograph.actors.player.vehicle.spinThruster( l.scenograph.actors.player.vehicle.mesh.userData.object.airSpeed, l.scenograph.actors.player.vehicle.thruster.centralConeBurner, 1 );
+                l.scenograph.actors.player.vehicle.spinThruster( l.scenograph.actors.player.vehicle.mesh.userData.object.airSpeed, l.scenograph.actors.player.vehicle.thruster.outerCylBurner, -1 );
+                l.scenograph.actors.player.vehicle.spinThruster( l.scenograph.actors.player.vehicle.mesh.userData.object.airSpeed, l.scenograph.actors.player.vehicle.thruster.innerCylBurner, 1 );
 
                 // Limit playback rate to 5x as large values freak out the browser.
-                l.scenograph.actors.player.vehicle.thruster.videoElement.playbackRate = Math.min( 5, 0.25 + Math.abs( l.scenograph.actors.player.vehicle.airSpeed ) );
+                l.scenograph.actors.player.vehicle.thruster.videoElement.playbackRate = Math.min( 5, 0.25 + Math.abs( l.scenograph.actors.player.vehicle.mesh.userData.object.airSpeed ) );
 
-                trailOffset += l.scenograph.actors.player.vehicle.trail_position_z - Math.abs( l.scenograph.actors.player.vehicle.airSpeed );
+                trailOffset += l.scenograph.actors.player.vehicle.trail_position_z - Math.abs( l.scenograph.actors.player.vehicle.mesh.userData.object.airSpeed );
 
                 l.scenograph.actors.player.vehicle.trail.mesh.material.uniforms.headColor.value.set( 255 / 255, 212 / 255, 148 / 255, .8 ); // RGBA.
             }
@@ -550,11 +550,11 @@ export default class Valiant {
             }
 
             // Update the trail position based on above calculations.
-            l.scenograph.actors.player.vehicle.trail.targetObject.position.y = l.scenograph.actors.player.vehicle.trail_position_y + l.scenograph.actors.player.vehicle.verticalSpeed;
+            l.scenograph.actors.player.vehicle.trail.targetObject.position.y = l.scenograph.actors.player.vehicle.trail_position_y + l.scenograph.actors.player.vehicle.mesh.userData.object.verticalSpeed;
             l.scenograph.actors.player.vehicle.trail.targetObject.position.z = trailOffset;
 
             if ( rY != 0 ) {
-                l.scenograph.actors.player.vehicle.trail.targetObject.position.x = rY * l.scenograph.actors.player.vehicle.airSpeed;
+                l.scenograph.actors.player.vehicle.trail.targetObject.position.x = rY * l.scenograph.actors.player.vehicle.mesh.userData.object.airSpeed;
                 l.scenograph.actors.player.vehicle.trail.targetObject.position.y += Math.abs( l.scenograph.actors.player.vehicle.trail.targetObject.position.x ) / 4;
             }
             else {

@@ -1,6 +1,6 @@
 /**
  * Controls flight instrument UI elements
- * 
+ *
  * @todo: v7: Remove if not used.
  */
 
@@ -26,10 +26,10 @@ export default class Flight_Instruments {
 
     /**
      * Update hook.
-     * 
+     *
      * This method is called within the UI setInterval updater, allowing
      * HTML content to be updated at different rate than the 3D frame rate.
-     * 
+     *
      * @method update
      * @memberof Flight_Instruments
      * @global
@@ -47,11 +47,11 @@ export default class Flight_Instruments {
             }
 
             // Update the angle of the needle
-            const angle = (Math.abs(l.scenograph.actors.player.vehicle.airSpeed) * 1.94384) * 45;
+            const angle = (Math.abs(l.scenograph.actors.player.vehicle.mesh.userData.object.airSpeed) * 1.94384) * 45;
             // Update the needle rotation
             document.querySelector(l.ui.flight_instruments.containerSelector + ' #Airspeed #Needle').style.transform = `rotate(${angle}deg)`;
         }
-        
+
     }
 
 }

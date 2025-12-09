@@ -115,15 +115,15 @@ export default class Multiplayer {
     move_ship( data ) {
         if ( data.socket_id == l.scenograph.modes.multiplayer.socket.id ) {
             // Update stored ship state, don't punch out as functions aren't transmitted.
-            l.scenograph.actors.player.vehicle.airSpeed = data.airSpeed;
-            l.scenograph.actors.player.vehicle.altitude = data.altitude;
+            l.scenograph.actors.player.vehicle.mesh.userData.object.airSpeed = data.airSpeed;
+            l.scenograph.actors.player.vehicle.mesh.userData.object.altitude = data.altitude;
             l.scenograph.actors.player.vehicle.heading = data.heading;
             l.scenograph.actors.player.vehicle.horizon = data.horizon;
             l.scenograph.actors.player.vehicle.position.x = data.position.x;
             l.scenograph.actors.player.vehicle.position.y = data.position.y;
             l.scenograph.actors.player.vehicle.position.z = data.position.z;
             l.scenograph.actors.player.vehicle.rotation = data.rotation;
-            l.scenograph.actors.player.vehicle.verticalSpeed = data.verticalSpeed;
+            l.scenograph.actors.player.vehicle.mesh.userData.object.verticalSpeed = data.verticalSpeed;
         }
         else {
             l.scenograph.actors.player.vehicles.forEach( ( ship ) => {

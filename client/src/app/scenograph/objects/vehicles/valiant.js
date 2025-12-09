@@ -560,7 +560,7 @@ export default class Valiant {
             else {
                 l.scenograph.actors.player.vehicle.trail.targetObject.position.x = 0;
             }
-            //l.scenograph.actors.player.vehicle.trail.update();
+            l.scenograph.actors.player.vehicle.trail.update();
         }
     }
 

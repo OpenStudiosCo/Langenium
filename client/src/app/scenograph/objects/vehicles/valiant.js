@@ -1,8 +1,8 @@
 /**
  * Valiant Aircraft
- * 
+ *
  * Provides a Valiant aircraft that can be added and updated in the game world.
- * 
+ *
  * @todo: Uncouple player actor from this ship class.
  */
 
@@ -46,7 +46,6 @@ export default class Valiant {
     trail;
 
     constructor() {
-        super();
         this.default_camera_distance = -35;
         this.trail_position_y = 1.2;
         this.trail_position_z = 1.5;
@@ -313,9 +312,9 @@ export default class Valiant {
                 // Set the ship as ready.
                 l.scenograph.actors.player.vehicle.ready = true;
                 l.scenograph.actors.player.vehicle.camera_distance = l.scenograph.actors.player.vehicle.default_camera_distance + ( l.current_scene.room_depth / 2 );
-                l.scenograph.actors.player.vehicle.position.x = l.scenograph.actors.player.vehicle.mesh.position.x;
-                l.scenograph.actors.player.vehicle.position.y = l.scenograph.actors.player.vehicle.mesh.position.y;
-                l.scenograph.actors.player.vehicle.position.z = l.scenograph.actors.player.vehicle.mesh.position.z;
+                l.scenograph.actors.player.vehicle.mesh.userData.object.position.x = l.scenograph.actors.player.vehicle.mesh.position.x;
+                l.scenograph.actors.player.vehicle.mesh.userData.object.position.y = l.scenograph.actors.player.vehicle.mesh.position.y;
+                l.scenograph.actors.player.vehicle.mesh.userData.object.position.z = l.scenograph.actors.player.vehicle.mesh.position.z;
             } );
     }
 
@@ -332,12 +331,12 @@ export default class Valiant {
         let changing = false;
         for ( const [ controlName, keyMapping ] of Object.entries( mappings ) ) {
             if ( l.scenograph.controls.keyboard.pressed( keyMapping ) ) {
-                l.scenograph.actors.player.vehicle.controls[ controlName ] = true;
+                l.scenograph.actors.player.vehicle.mesh.userData.object.controls[ controlName ] = true;
                 changing = true;
             }
             else {
 
-                l.scenograph.actors.player.vehicle.controls[ controlName ] = false;
+                l.scenograph.actors.player.vehicle.mesh.userData.object.controls[ controlName ] = false;
 
                 if ( l.scenograph.controls.touch ) {
                     // Check if any touchpad controls are being pressed
@@ -351,29 +350,29 @@ export default class Valiant {
                     ) {
                         changing = true;
                         if ( l.scenograph.controls.touch.controls.moveUp ) {
-                            l.scenograph.actors.player.vehicle.controls.moveUp = true;
+                            l.scenograph.actors.player.vehicle.mesh.userData.object.controls.moveUp = true;
                         }
                         if ( l.scenograph.controls.touch.controls.moveDown ) {
-                            l.scenograph.actors.player.vehicle.controls.moveDown = true;
+                            l.scenograph.actors.player.vehicle.mesh.userData.object.controls.moveDown = true;
                         }
                         if ( l.scenograph.controls.touch.controls.moveForward ) {
-                            l.scenograph.actors.player.vehicle.controls.throttleUp = true;
+                            l.scenograph.actors.player.vehicle.mesh.userData.object.controls.throttleUp = true;
                         }
                         if ( l.scenograph.controls.touch.controls.moveBackward ) {
-                            l.scenograph.actors.player.vehicle.controls.throttleDown = true;
+                            l.scenograph.actors.player.vehicle.mesh.userData.object.controls.throttleDown = true;
                         }
                         if ( l.scenograph.controls.touch.controls.moveLeft ) {
-                            l.scenograph.actors.player.vehicle.controls.moveLeft = true;
+                            l.scenograph.actors.player.vehicle.mesh.userData.object.controls.moveLeft = true;
                         }
                         if ( l.scenograph.controls.touch.controls.moveRight ) {
-                            l.scenograph.actors.player.vehicle.controls.moveRight = true;
+                            l.scenograph.actors.player.vehicle.mesh.userData.object.controls.moveRight = true;
                         }
                     }
 
                 }
             }
         }
-        l.scenograph.actors.player.vehicle.controls.changing = changing;
+        l.scenograph.actors.player.vehicle.mesh.userData.object.controls.changing = changing;
 
     }
 
@@ -383,8 +382,8 @@ export default class Valiant {
         }
 
         // Rock the ship forward and back when moving horizontally
-        if ( l.scenograph.actors.player.vehicle.controls.throttleDown || l.scenograph.actors.player.vehicle.controls.throttleUp ) {
-            let pitchChange = l.scenograph.actors.player.vehicle.controls.throttleUp ? -1 : 1;
+        if ( l.scenograph.actors.player.vehicle.mesh.userData.object.controls.throttleDown || l.scenograph.actors.player.vehicle.mesh.userData.object.controls.throttleUp ) {
+            let pitchChange = l.scenograph.actors.player.vehicle.mesh.userData.object.controls.throttleUp ? -1 : 1;
             if ( Math.abs( l.scenograph.actors.player.vehicle.mesh.rotation.x ) < 1 / 4 ) {
                 l.scenograph.actors.player.vehicle.mesh.rotation.x += pitchChange / 10 / 180;
             }
@@ -392,11 +391,11 @@ export default class Valiant {
 
         // Rock the ship forward and back when moving vertically
         if (
-            l.scenograph.actors.player.vehicle.controls.moveDown
+            l.scenograph.actors.player.vehicle.mesh.userData.object.controls.moveDown
             ||
-            l.scenograph.actors.player.vehicle.controls.moveUp
+            l.scenograph.actors.player.vehicle.mesh.userData.object.controls.moveUp
         ) {
-            let elevationChange = l.scenograph.actors.player.vehicle.controls.moveDown ? -1 : 1;
+            let elevationChange = l.scenograph.actors.player.vehicle.mesh.userData.object.controls.moveDown ? -1 : 1;
             if ( Math.abs( l.scenograph.actors.player.vehicle.mesh.rotation.x ) < 1 / 8 ) {
                 l.scenograph.actors.player.vehicle.mesh.rotation.x += elevationChange / 10 / 180;
             }
@@ -414,13 +413,12 @@ export default class Valiant {
 
     // Update the position of the aircraft to spot determined by game logic.
     updateMesh() {
-        l.scenograph.actors.player.vehicle.mesh.position.x = l.scenograph.actors.player.vehicle.position.x;
-        l.scenograph.actors.player.vehicle.mesh.position.y = l.scenograph.actors.player.vehicle.position.y;
-        l.scenograph.actors.player.vehicle.mesh.position.z = l.scenograph.actors.player.vehicle.position.z;
-
-        l.scenograph.actors.player.vehicle.mesh.rotation.x = l.scenograph.actors.player.vehicle.rotation.x;
-        l.scenograph.actors.player.vehicle.mesh.rotation.y = l.scenograph.actors.player.vehicle.rotation.y;
-        l.scenograph.actors.player.vehicle.mesh.rotation.z = l.scenograph.actors.player.vehicle.rotation.z;
+        l.scenograph.actors.player.vehicle.mesh.position.x = l.scenograph.actors.player.vehicle.mesh.userData.actor.entity.position.x;
+        l.scenograph.actors.player.vehicle.mesh.position.y = l.scenograph.actors.player.vehicle.mesh.userData.actor.entity.position.y;
+        l.scenograph.actors.player.vehicle.mesh.position.z = l.scenograph.actors.player.vehicle.mesh.userData.actor.entity.position.z;
+        l.scenograph.actors.player.vehicle.mesh.rotation.x = l.scenograph.actors.player.vehicle.mesh.userData.actor.entity.rotation.x;
+        l.scenograph.actors.player.vehicle.mesh.rotation.y = l.scenograph.actors.player.vehicle.mesh.userData.actor.entity.rotation.y;
+        l.scenograph.actors.player.vehicle.mesh.rotation.z = l.scenograph.actors.player.vehicle.mesh.userData.actor.entity.rotation.z;
     }
 
     updateCamera( rY, tY, tZ ) {
@@ -442,7 +440,7 @@ export default class Valiant {
             l.scenograph.cameras.player.rotation.y += rY;
         }
         else {
-            // Check there is y difference and the rotation pad isn't being pressed.                   
+            // Check there is y difference and the rotation pad isn't being pressed.
             if (
                 l.scenograph.cameras.player.rotation.y != l.scenograph.actors.player.vehicle.mesh.rotation.y &&
                 ( l.scenograph.controls.touch && !l.scenograph.controls.touch.controls.rotationPad.mouseDown )
@@ -480,10 +478,10 @@ export default class Valiant {
     }
     /**
      * Animate hook.
-     * 
+     *
      * This method is called within the main animation loop and
      * therefore must only reference global objects or properties.
-     * 
+     *
      * @method animate
      * @memberof Valiant
      * @global
@@ -494,14 +492,14 @@ export default class Valiant {
         if ( l.scenograph.actors.player.vehicle.ready ) {
 
             if ( l.current_scene.settings.game_controls ) {
-                
+
                 if ( l.scenograph.actors.player.mode == 'vehicle' ) {
                     // Detect keyboard input and pass it to the ship state model.
                     l.scenograph.actors.player.vehicle.updateControls();
                 }
 
                 if ( l.scenograph.modes.multiplayer.connected ) {
-                    l.scenograph.modes.multiplayer.socket.emit( 'input', l.scenograph.actors.player.vehicle.controls );
+                    l.scenograph.modes.multiplayer.socket.emit( 'input', l.scenograph.actors.player.vehicle.mesh.userData.object.controls );
                 }
 
                 l.scenograph.actors.player.vehicle.mesh.userData.actor.animate( delta );
@@ -512,7 +510,7 @@ export default class Valiant {
                 l.scenograph.actors.player.vehicle.updateAnimation( delta );
 
             // Update the ships state model.
-            let [ rY, tY, tZ ] = l.scenograph.actors.player.vehicle.move( l.current_scene.stats.currentTime - l.current_scene.stats.lastTime );
+            let [ rY, tY, tZ ] = l.scenograph.actors.player.vehicle.mesh.userData.object.move( l.current_scene.stats.currentTime - l.current_scene.stats.lastTime );
             l.scenograph.actors.player.vehicle.updateMesh();
 
             l.scenograph.actors.player.vehicle.updateCamera( rY, tY, tZ );
@@ -545,7 +543,7 @@ export default class Valiant {
 
                 trailOffset += l.scenograph.actors.player.vehicle.trail_position_z - Math.abs( l.scenograph.actors.player.vehicle.airSpeed );
 
-                l.scenograph.actors.player.vehicle.trail.mesh.material.uniforms.headColor.value.set( 255 / 255, 212 / 255, 148 / 255, .8 ); // RGBA.                    
+                l.scenograph.actors.player.vehicle.trail.mesh.material.uniforms.headColor.value.set( 255 / 255, 212 / 255, 148 / 255, .8 ); // RGBA.
             }
             else {
                 l.scenograph.actors.player.vehicle.trail.mesh.material.uniforms.headColor.value.set( 255 / 255, 212 / 255, 148 / 255, 0 ); // RGBA.
@@ -562,7 +560,7 @@ export default class Valiant {
             else {
                 l.scenograph.actors.player.vehicle.trail.targetObject.position.x = 0;
             }
-            l.scenograph.actors.player.vehicle.trail.update();
+            //l.scenograph.actors.player.vehicle.trail.update();
         }
     }
 

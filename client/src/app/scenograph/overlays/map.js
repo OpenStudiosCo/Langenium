@@ -115,7 +115,7 @@ export default class Map {
 
             // Check if the object is within the mapping distance.
             if ( distance <= l.scenograph.overlays.map.distance * 100 ) {
-                
+
                 // Check if the object is already present on the map, move it if so
                 if ( target.mesh.uuid in l.scenograph.overlays.map.markers ) {
 
@@ -161,17 +161,17 @@ export default class Map {
 
     /**
      * Animate hook.
-     * 
+     *
      * This method is called within the main animation loop andw
      * therefore must only reference global objects or properties.
-     * 
+     *
      * @method animate
      * @memberof Map
      * @global
      * @note All references within this method should be globally accessible.
     **/
     animate() {
-        let heading = THREE.MathUtils.radToDeg( l.scenograph.actors.player.vehicle.rotation.y );
+        let heading = THREE.MathUtils.radToDeg( l.scenograph.actors.player.vehicle.mesh.rotation.y );
         heading = heading % 360;
         if (heading < 0) {
             heading += 360;

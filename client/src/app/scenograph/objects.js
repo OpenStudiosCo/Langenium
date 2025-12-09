@@ -1,6 +1,6 @@
 /**
  * Objects.
- * 
+ *
  * Composes scene meshes from gltf and procedural code.
  */
 
@@ -78,7 +78,7 @@ export default class Objects {
             raven: new Raven(),
             valiant: Valiant,
         };
-      
+
     }
 
     /**
@@ -86,6 +86,7 @@ export default class Objects {
      */
     async init () {
         await this.structures.extractor.load();
+        await this.structures.hangar.load();
         await this.structures.platform.load();
         await this.structures.refinery.load();
         await this.projectiles.missile.load();
@@ -96,10 +97,10 @@ export default class Objects {
 
     /**
      * Animate hook.
-     * 
+     *
      * This method is called within the main animation loop and
      * therefore must only reference global objects or properties.
-     * 
+     *
      * @method animate
      * @memberof Objects
      * @global

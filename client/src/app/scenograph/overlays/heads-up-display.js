@@ -57,10 +57,10 @@ export default class HeadsUpDisplay {
 
     /**
      * Animate hook.
-     * 
+     *
      * This method is called within the main animation loop and
      * therefore must only reference global objects or properties.
-     * 
+     *
      * @method animate
      * @memberof HeadsUpDisplay
      * @global
@@ -83,7 +83,7 @@ export default class HeadsUpDisplay {
         let vspd = l.scenograph.overlays.hud.frameToSecond(l.scenograph.actors.player.vehicle.verticalSpeed);
         l.scenograph.overlays.hud.vspdElement.innerHTML = `VERT. SPD: ${vspd}km/h`;
 
-        let heading = THREE.MathUtils.radToDeg( l.scenograph.actors.player.vehicle.rotation.y );
+        let heading = THREE.MathUtils.radToDeg( l.scenograph.actors.player.vehicle.mesh.rotation.y );
         heading = heading % 360;
         if (heading < 0) {
             heading += 360;
@@ -91,7 +91,7 @@ export default class HeadsUpDisplay {
         heading = Math.round(360 - heading);
         l.scenograph.overlays.hud.headingElement.innerHTML = `HEADING: ${heading}°`;
 
-        let elevation = Math.round( l.scenograph.actors.player.vehicle.position.y * 100 ) / 100;
+        let elevation = Math.round( l.scenograph.actors.player.vehicle.mesh.position.y * 100 ) / 100;
         l.scenograph.overlays.hud.elevationElement.innerHTML = `ELEVATION: ${elevation}m`;
     }
 

@@ -413,12 +413,12 @@ export default class Valiant {
 
     // Update the position of the aircraft to spot determined by game logic.
     updateMesh() {
-        l.scenograph.actors.player.vehicle.mesh.position.x = l.scenograph.actors.player.vehicle.mesh.userData.actor.entity.position.x;
-        l.scenograph.actors.player.vehicle.mesh.position.y = l.scenograph.actors.player.vehicle.mesh.userData.actor.entity.position.y;
-        l.scenograph.actors.player.vehicle.mesh.position.z = l.scenograph.actors.player.vehicle.mesh.userData.actor.entity.position.z;
-        l.scenograph.actors.player.vehicle.mesh.rotation.x = l.scenograph.actors.player.vehicle.mesh.userData.actor.entity.rotation.x;
-        l.scenograph.actors.player.vehicle.mesh.rotation.y = l.scenograph.actors.player.vehicle.mesh.userData.actor.entity.rotation.y;
-        l.scenograph.actors.player.vehicle.mesh.rotation.z = l.scenograph.actors.player.vehicle.mesh.userData.actor.entity.rotation.z;
+        l.scenograph.actors.player.vehicle.mesh.position.x = l.scenograph.actors.player.vehicle.mesh.userData.object.position.x;
+        l.scenograph.actors.player.vehicle.mesh.position.y = l.scenograph.actors.player.vehicle.mesh.userData.object.position.y;
+        l.scenograph.actors.player.vehicle.mesh.position.z = l.scenograph.actors.player.vehicle.mesh.userData.object.position.z;
+        l.scenograph.actors.player.vehicle.mesh.rotation.x = l.scenograph.actors.player.vehicle.mesh.userData.object.rotation.x;
+        l.scenograph.actors.player.vehicle.mesh.rotation.y = l.scenograph.actors.player.vehicle.mesh.userData.object.rotation.y;
+        l.scenograph.actors.player.vehicle.mesh.rotation.z = l.scenograph.actors.player.vehicle.mesh.userData.object.rotation.z;
     }
 
     updateCamera( rY, tY, tZ ) {

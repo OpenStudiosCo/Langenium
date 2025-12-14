@@ -1,6 +1,6 @@
 /**
  * Director.
- * 
+ *
  * Scene Management class.
  */
 
@@ -15,7 +15,7 @@ import * as THREE from "three";
 import l from '@/helpers/l.js';
 
 /**
- * World Simulation 
+ * World Simulation
  */
 import World from '#/game/src/world';
 
@@ -33,7 +33,7 @@ import {
 
 export default class Director {
     constructor() {
-      
+
       /**
        * Animation queue.
        */
@@ -41,14 +41,14 @@ export default class Director {
 
       /**
        * Primary scene camera
-       * 
+       *
        * @memberof THREE.Camera
        */
       this.camera = false;
 
       /**
        * Effects composers and their layers.
-       * 
+       *
        * @memberof Object { postprocessing.EffectComposer }
        */
       this.effects = {
@@ -58,7 +58,7 @@ export default class Director {
 
       /**
        * Fast mode (bloom off, no shadows)
-       * 
+       *
        * @memberof Boolean
        */
       this.fast = true;
@@ -112,21 +112,21 @@ export default class Director {
 
       /**
        * Camera is being moved by tweening.
-       * 
+       *
        * @memberof Boolean
        */
       this.moving = false;
 
       /**
        * Current position of the users pointer.
-       * 
+       *
        * @memberof THREE.Vector2
        */
       this.pointer = false;
 
       /**
        * Raycaster that projects into the scene from the users pointer and picks up collisions for interaction.
-       * 
+       *
        * @memberof THREE.Raycaster
        */
       this.raycaster = false;
@@ -139,7 +139,7 @@ export default class Director {
 
       /**
        * Renderers that create the scene.
-       * 
+       *
        * @memberof Object { THREE.Renderer , ... }
        */
       this.renderers = {
@@ -148,7 +148,7 @@ export default class Director {
 
       /**
        * Settings that controls the scene.
-       * 
+       *
        * @memberof Object
        */
       this.settings = {
@@ -172,17 +172,17 @@ export default class Director {
               normal: 0.1, active: 0.05
             }
           }
-          
+
         },
         room_depth: false, // calculated value
         scale: 11, // do not change, braeks css screen sizes
         startPosZ: - 10 // updated responsive eugene levy
       };
 
-      
+
       /**
        * Currently selected object.
-       * 
+       *
        * @memberof THREE.Object3d
        */
       this.selected = false;
@@ -194,7 +194,7 @@ export default class Director {
 
       /**
        * If the main sequence has begun.
-       * 
+       *
        * @memberof Boolean
        */
       this.started = false;
@@ -205,7 +205,7 @@ export default class Director {
       this.stats = {
           /**
          * Frames Per Second (FPS)
-         * 
+         *
          * @memberof Integer
          */
         currentTime: performance.now(),
@@ -216,14 +216,14 @@ export default class Director {
 
       /**
        * All scene triggers.
-       * 
+       *
        * @memberof Object
        */
       this.triggers = {};
-      
+
       /**
        * All scene tweens.
-       * 
+       *
        * @memberof Object
        */
       this.tweens = {};
@@ -232,7 +232,7 @@ export default class Director {
     // Load world instance from game classes.
     load( sceneName ) {
       this.world = new World( sceneName );
-      
+
       return this;
     }
 
@@ -241,7 +241,7 @@ export default class Director {
       this.setupSceneDefaults();
 
       this.loadInstance();
-  
+
       this.finishSetup();
     }
 
@@ -264,7 +264,7 @@ export default class Director {
       l.current_scene.animation_queue.push(
         l.scenograph.actors.player.person.animate
       );
-      
+
       await this.world.instance.objects.forEach( async object_config => {
         if ( object_config.model == 'extractor' ) {
           l.scenograph.director.loadObject(
@@ -316,6 +316,7 @@ export default class Director {
       }
 
       object.name = config.name;
+      object.userData.config = config;
 
       // @todo: add to current_scene array relevant to object class.
 
@@ -335,14 +336,14 @@ export default class Director {
 
       /**
        * Tracked meshes and mesh groups that compose the scene.
-       * 
+       *
        * @memberof Object
        */
       l.current_scene.objects = {};
 
       /**
        * The main scene container.
-       * 
+       *
        * @memberof THREE.Scene
        */
       l.current_scene.scene = new THREE.Scene();
@@ -350,7 +351,7 @@ export default class Director {
 
       l.scenograph.effects.init();
 
-  
+
       l.current_scene.objects.door = await l.scenograph.objects.preloader.createDoor();
       l.current_scene.objects.door.position.set(
         -l.scenograph.objects.preloader.doorWidth / 2,
@@ -358,7 +359,7 @@ export default class Director {
         -15 + l.current_scene.room_depth / 2
       );
       l.current_scene.scene.add( l.current_scene.objects.door );
-  
+
       // Setup skybox
       l.current_scene.objects.sky = new l.scenograph.objects.environment.sky();
       l.current_scene.scene.add(
@@ -367,10 +368,10 @@ export default class Director {
       l.current_scene.animation_queue.push(
         l.current_scene.objects.sky.animate
       );
-  
+
       // Setup ocean
       //l.current_scene.objects.ocean = new Ocean( extractors.extractorLocations );
-      l.current_scene.objects.ocean = new l.scenograph.objects.environment.ocean( 
+      l.current_scene.objects.ocean = new l.scenograph.objects.environment.ocean(
         l.scenograph.objects.structures.extractor.extractorLocations
        );
       l.current_scene.scene.add(
@@ -379,7 +380,7 @@ export default class Director {
       l.current_scene.animation_queue.push(
         l.current_scene.objects.ocean.animate
       );
-  
+
       // Adjust ambient light intensity
       l.current_scene.objects.ambientLight = new THREE.AmbientLight(
         l.config.settings.fast ? 0x555555 : 0x444444
@@ -389,11 +390,11 @@ export default class Director {
       l.current_scene.scene.add(
         l.current_scene.objects.ambientLight
       );
-  
+
       l.current_scene.objects.screens_loaded = 0;
       l.current_scene.objects.room = await l.scenograph.objects.preloader.createOfficeRoom();
       l.current_scene.scene.add( l.current_scene.objects.room );
-  
+
 
       // Setup triggers
       setupTriggers();

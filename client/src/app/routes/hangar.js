@@ -22,6 +22,8 @@ export default class hangarRoute {
         // Set client mode.
         l.mode = 'hangar';
 
+        l.current_scene.scene.add(l.scenograph.objects.structures.hangar.mesh);
+
         l.scenograph.objects.structures.platform.mesh.visible = false;
         l.scenograph.objects.structures.hangar.mesh.visible = true;
 

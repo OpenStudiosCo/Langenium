@@ -1,6 +1,6 @@
 /**
  * Base Aircraft class
- * 
+ *
  * @todo:
  * - Add weight and wind resistance
  */
@@ -41,14 +41,14 @@ export default class Person {
     };
 
     constructor() {
-    }  
+    }
 
     /**
      * Change aircraft velocity based on current and what buttons are pushed by the player.
-     * 
+     *
      * @param currentVelocity
-     * @param increasePushed 
-     * @param decreasePushed 
+     * @param increasePushed
+     * @param decreasePushed
      */
     private _changeVelocity(stepIncrease, stepDecrease, currentVelocity, increasePushed, decreasePushed, increaseMax, decreaseMax, dragFactor): number {
         let newVelocity = currentVelocity;
@@ -79,7 +79,7 @@ export default class Person {
                         newVelocity = 0;
                     }
                 }
-                
+
             }
         }
 
@@ -88,15 +88,15 @@ export default class Person {
 
     /**
      * Move the aircraft based on velocity, direction and time delta between frames.
-     * 
-     * @param time_delta 
+     *
+     * @param time_delta
      */
     public move( time_delta: number ): object {
         let stepSize:           number = .025 * normaliseSpeedDelta( time_delta ),
-            rY:                 number = 0, 
-            tZ:                 number = 0, 
+            rY:                 number = 0,
+            tZ:                 number = 0,
             tY:                 number = 0,
-            radian:             number = - (Math.PI / 180) * stepSize * 50;
+            radian:             number = - (Math.PI / 180) * stepSize * 100;
 
         if ( this.controls.forward || this.controls.back ){
             // Update Airspeed (horizontal velocity)
@@ -114,7 +114,7 @@ export default class Person {
         else {
             this.airSpeed = 0;
         }
-        
+
 
         // Update Vertical Speed (velocity)
         this.verticalSpeed = this._changeVelocity(
@@ -150,7 +150,7 @@ export default class Person {
             tZ = this.airSpeed;
 
         }
-        
+
         if (rY != 0) {
             if (Math.abs(this.rotation.z) < Math.PI / 4) {
                 this.rotation.z += rY / Math.PI;
@@ -161,7 +161,7 @@ export default class Person {
 
         let xDiff = tZ * Math.sin(this.rotation.y),
             zDiff = tZ * Math.cos(this.rotation.y);
-        
+
         // "1" is the floor limit as it's the ocean surface and the camera clips through the water any lower.
         if (this.position.y + tY >= 1 ) {
             this.position.y += tY;
@@ -173,7 +173,7 @@ export default class Person {
         this.position.z += zDiff;
 
         return [ rY, tY, tZ ];
-    
+
     }
 
 }

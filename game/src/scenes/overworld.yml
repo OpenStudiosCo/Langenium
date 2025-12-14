@@ -79,6 +79,25 @@ objects:
       x: 0
       y: -12.56
       z: 0
+    hangars:
+      - name: Hangar 1
+        position:
+          x: 0
+          y: 505
+          z: 0
+        rotation:
+          x: 0
+          y: 0
+          z: 0
+      - name: Hangar 2
+        position:
+          x: 0
+          y: 505
+          z: 0
+        rotation:
+          x: 0
+          y: 3.14159
+          z: 0
   - name: Refinery 91
     model: refinery
     position:

@@ -18,22 +18,17 @@ import HangarObject from '#/game/src/objects/structures/hangar';
 
 export default class Hangar {
 
+    // Preset layouts for hangars as defined by the game object class.
     designs;
 
     // The hangar mesh and root of the CSG BVH hierarchy.
     hangar;
 
-    // Dimensions of the hangar
-    // @todo: Dynamic hangars with different dimensions
-    hangarSize;
-
+    // Modified materials for indoor scenes
     materials;
 
+    // Game object containing layout definition and collision detection handling.
     objectClass;
-
-    // Dimensions of player living quarters
-    // @todo: Dynamic hangars which don't all have one.
-    quartersSize;
 
     // THREE.Mesh
     mesh;
@@ -46,26 +41,6 @@ export default class Hangar {
         this.size = 5;
 
         this.materials = {};
-
-        let corridorScale = 0.125;
-        // Based on office door dimensions.
-        this.corridorSize = {
-            width: 8.2 * corridorScale,
-            height: 20.4 * corridorScale,
-            depth: 20 * corridorScale,
-        }
-
-        this.hangarSize = {
-            width: 10,
-            height: 5,
-            depth: 10
-        };
-
-        this.quartersSize = {
-            width: 5,
-            height: 2.5,
-            depth: 5
-        };
 
         this.ready = false;
 
@@ -89,47 +64,69 @@ export default class Hangar {
         return designs;
     }
 
+    /**
+     * Load hangar based on design name, default if not set.
+     *
+     * @param {string} designName
+     * @returns
+     */
+    async loadMesh( designName = 'default' ) {
+        let hangarConfig, corridorConfig, quartersConfig;
+
+        this.designs[designName].components.forEach(component => {
+            if ( component.name === 'Main Bay' ) {
+                hangarConfig = component;
+            }
+            if ( component.name === 'Quarters' ) {
+                quartersConfig = component;
+            }
+            if ( component.name === 'Corridor' ) {
+                corridorConfig = component;
+            }
+        });
+
+        /**
+         * Main hangar mesh
+         */
+        let hangarMesh = await this.loadHangarMesh( hangarConfig );
+
+        /**
+         * Corridor mesh
+         */
+        let corridorMesh = await this.loadCorridorMesh( corridorConfig );
+        corridorMesh.operation = ADDITION;
+        hangarMesh.add( corridorMesh );
+
+        /**
+         * Player quarters mesh.
+         */
+        let quartersMesh = await this.loadQuartersMesh( quartersConfig );
+        quartersMesh.operation = ADDITION;
+        hangarMesh.add( quartersMesh );
+
+        // Constructive Solid Geometry (csg) Evaluator.
+        let csgEvaluator;
+        csgEvaluator = new Evaluator();
+        csgEvaluator.useGroups = true;
+        let result = csgEvaluator.evaluateHierarchy( hangarMesh );
+
+        let mesh = new THREE.Object3D();
+        mesh.add( result );
+        mesh.userData.targetable = false;
+        mesh.userData.objectClass = 'hangar';
+        mesh.scale.setScalar( 2.5 );
+
+        return mesh;
+    }
+
     async load() {
 
         // Setup materials.
         await this.loadMaterials();
 
         this.designs = await this.loadDesigns();
-        console.log(this.designs);
 
-        this.hangar = await this.loadHangarMesh();
-        console.log('hangar.position', this.hangar.position);
-        console.log('hangar.rotation', this.hangar.rotation);
-
-        /**
-         * Corridor mesh
-         */
-        let corridorMesh = await this.loadCorridorMesh();
-        corridorMesh.operation = ADDITION;
-        this.hangar.add( corridorMesh );
-        console.log('corridorMesh.position', corridorMesh.position);
-        console.log('corridorMesh.rotation', corridorMesh.rotation);
-
-        /**
-         * Player quarters mesh.
-         */
-        let quartersMesh = await this.loadQuartersMesh();
-        quartersMesh.operation = ADDITION;
-        this.hangar.add( quartersMesh );
-        console.log('quartersMesh.position', quartersMesh.position);
-        console.log('quartersMesh.rotation', quartersMesh.rotation);
-
-        // Constructive Solid Geometry (csg) Evaluator.
-        let csgEvaluator;
-        csgEvaluator = new Evaluator();
-        csgEvaluator.useGroups = true;
-        let result = csgEvaluator.evaluateHierarchy( this.hangar );
-
-        this.mesh = new THREE.Object3D();
-        this.mesh.add( result );
-        this.mesh.userData.targetable = false;
-        this.mesh.userData.objectClass = 'hangar';
-        this.mesh.scale.setScalar( 2.5 );
+        this.mesh = await this.loadMesh();
 
     }
 
@@ -160,11 +157,11 @@ export default class Hangar {
     /**
      * Creates the Hangar's main mesh.
      */
-    async loadHangarMesh() {
+    async loadHangarMesh( config ) {
         /**
          * Hangar mesh
          */
-        let hangarMesh = new Operation( new THREE.BoxGeometry( this.hangarSize.width, this.hangarSize.height, this.hangarSize.depth, 2, 2, 2 ), [
+        let hangarMesh = new Operation( new THREE.BoxGeometry( config.width, config.height, config.depth, 2, 2, 2 ), [
             this.materials.hangar,
             this.materials.hangar,
             this.materials.hangar,
@@ -181,17 +178,16 @@ export default class Hangar {
     /**
      * Creates the corridor mesh.
      */
-    async loadCorridorMesh() {
+    async loadCorridorMesh( config ) {
 
-        var doorGeometry = new THREE.BoxGeometry( this.corridorSize.width, this.corridorSize.height, this.corridorSize.depth );
+        let corridorMesh = new Operation( new THREE.BoxGeometry( config.width, config.height, config.depth ), this.materials.metal );
 
-        let corridorMesh = new Operation( doorGeometry, this.materials.metal );
-
-        corridorMesh.position.x = - ( this.hangarSize.width * this.size ) / 10;
-        corridorMesh.position.y = ( - ( this.hangarSize.height * this.size ) / 10 ) + this.corridorSize.height * 0.5;
-        corridorMesh.rotation.y = Math.PI / 2;
-
-        corridorMesh.position.z = ( - ( this.hangarSize.depth * this.size ) / 10 ) / 4;
+        corridorMesh.position.x = config.position.x;
+        corridorMesh.position.y = config.position.y;
+        corridorMesh.position.z = config.position.z;
+        corridorMesh.rotation.x = config.rotation.x;
+        corridorMesh.rotation.y = config.rotation.y;
+        corridorMesh.rotation.z = config.rotation.z;
 
         corridorMesh.updateMatrixWorld();
 
@@ -201,25 +197,16 @@ export default class Hangar {
     /**
      * Creates the player quarters mesh.
      */
-    async loadQuartersMesh() {
-        let innerGeo = new THREE.BoxGeometry( this.quartersSize.width, this.quartersSize.height, this.quartersSize.depth, 2, 2, 2 );
-        let quartersMesh = new Operation( innerGeo, this.materials.metal );
+    async loadQuartersMesh( config ) {
+        let quartersMesh = new Operation( new THREE.BoxGeometry( config.width, config.height, config.depth, 2, 2, 2 ), this.materials.metal );
 
-        window.quarters = quartersMesh;
-
+        quartersMesh.position.x = config.position.x;
+        quartersMesh.position.y = config.position.y;
+        quartersMesh.position.z = config.position.z;
+        quartersMesh.rotation.x = config.rotation.x;
+        quartersMesh.rotation.y = config.rotation.y;
+        quartersMesh.rotation.z = config.rotation.z;
         quartersMesh.material.uniforms.scale.value = 0.8;
-        // Offset player quarters by the hangars half width
-        quartersMesh.position.x = ( - ( this.hangarSize.width * this.size ) / 10 );
-        // Offset player quarters by the access corridor
-        quartersMesh.position.x += - this.corridorSize.depth * 0.75;
-        // Offset player quarters by half the quarters width
-        quartersMesh.position.x += ( - ( this.quartersSize.width * this.size ) / 10 );
-        // Offset for intersection
-        quartersMesh.position.x += 1;
-
-        quartersMesh.position.y = ( - ( this.quartersSize.height * this.size ) / 10 );
-
-        quartersMesh.position.z = ( - ( this.hangarSize.depth * this.size ) / 10 ) / 2;
 
         quartersMesh.updateMatrixWorld();
         quartersMesh.name = 'inner';

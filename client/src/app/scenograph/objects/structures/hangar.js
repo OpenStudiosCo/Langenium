@@ -14,7 +14,11 @@ import { ADDITION, HOLLOW_SUBTRACTION, Operation, Evaluator } from 'three-bvh-cs
 import l from '@/helpers/l.js';
 import { proceduralBuilding, proceduralMetalMaterial2 } from '@/scenograph/materials.js';
 
+import HangarObject from '#/game/src/objects/structures/hangar';
+
 export default class Hangar {
+
+    designs;
 
     // The hangar mesh and root of the CSG BVH hierarchy.
     hangar;
@@ -24,6 +28,8 @@ export default class Hangar {
     hangarSize;
 
     materials;
+
+    objectClass;
 
     // Dimensions of player living quarters
     // @todo: Dynamic hangars which don't all have one.
@@ -62,8 +68,25 @@ export default class Hangar {
         };
 
         this.ready = false;
-        
 
+        this.objectClass = new HangarObject();
+
+    }
+
+    /**
+     * Loads hangar room layouts from the game object class.
+     */
+    async loadDesigns() {
+        let designs = {};
+
+        this.objectClass.designs.forEach(design => {
+            // Auto load the "'Bay with quarters'" as default
+            if (design.name == 'Bay with quarters') {
+                designs.default = design;
+            }
+        });
+
+        return designs;
     }
 
     async load() {
@@ -71,14 +94,21 @@ export default class Hangar {
         // Setup materials.
         await this.loadMaterials();
 
+        this.designs = await this.loadDesigns();
+        console.log(this.designs);
+
         this.hangar = await this.loadHangarMesh();
-        
+        console.log('hangar.position', this.hangar.position);
+        console.log('hangar.rotation', this.hangar.rotation);
+
         /**
          * Corridor mesh
          */
         let corridorMesh = await this.loadCorridorMesh();
         corridorMesh.operation = ADDITION;
         this.hangar.add( corridorMesh );
+        console.log('corridorMesh.position', corridorMesh.position);
+        console.log('corridorMesh.rotation', corridorMesh.rotation);
 
         /**
          * Player quarters mesh.
@@ -86,6 +116,8 @@ export default class Hangar {
         let quartersMesh = await this.loadQuartersMesh();
         quartersMesh.operation = ADDITION;
         this.hangar.add( quartersMesh );
+        console.log('quartersMesh.position', quartersMesh.position);
+        console.log('quartersMesh.rotation', quartersMesh.rotation);
 
         // Constructive Solid Geometry (csg) Evaluator.
         let csgEvaluator;
@@ -104,7 +136,7 @@ export default class Hangar {
     /**
      * Setup Hangar materials
      */
-    async loadMaterials() {      
+    async loadMaterials() {
         this.materials.clear = new THREE.MeshBasicMaterial( { color: 0xffFFFF, transparent: true, visible: false, side: THREE.DoubleSide } );
         this.materials.metal = proceduralBuilding( {
             uniforms: {
@@ -150,7 +182,7 @@ export default class Hangar {
      * Creates the corridor mesh.
      */
     async loadCorridorMesh() {
-        
+
         var doorGeometry = new THREE.BoxGeometry( this.corridorSize.width, this.corridorSize.height, this.corridorSize.depth );
 
         let corridorMesh = new Operation( doorGeometry, this.materials.metal );
@@ -197,10 +229,10 @@ export default class Hangar {
 
     /**
      * Animate hook.
-     * 
+     *
      * This method is called within the main animation loop and
      * therefore must only reference global objects or properties.
-     * 
+     *
      * @method animate
      * @memberof Hangar
      * @global

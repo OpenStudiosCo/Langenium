@@ -14,10 +14,25 @@ import Player from '@/scenograph/actors/player.js';
 
 export default class Actors {
 
-    player;
+    map;
 
     constructor() {
-        this.player = new Player();
+        this.map = new Map();
+    }
+
+    registerActor(actor) {
+      if ( actor.class == 'player' ) {
+          let player = new Player( actor );
+          this.map.set(actor.name, player);
+      }
+    }
+
+    get(name) {
+      return this.map.get(name);
+    }
+
+    getAll() {
+      return this.map.values();
     }
 
 }

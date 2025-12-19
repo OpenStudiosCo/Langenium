@@ -1,7 +1,6 @@
 /**
  * @name            Player
  * @description     Provides an interface to the player actor in the game.
- * @namespace       l.scenograph.actors.player
  * @memberof        l.scenograph.actors
  * @global
  */
@@ -29,7 +28,9 @@ export default class Player {
     // Vehicle model.
     vehicle;
 
-    constructor() {
+    constructor( actorConfig ) {
+
+        this.actorConfig = actorConfig;
 
         this.ready = false;
 
@@ -47,6 +48,29 @@ export default class Player {
         else {
             this.mode = 'person';
         }
+    }
+
+    async load() {
+
+        // Setup aircraft, used for the intro sequence.
+        this.vehicle = new l.scenograph.objects.vehicles.valiant();
+        await this.vehicle.load();
+        l.current_scene.scene.add(
+          this.vehicle.mesh
+        );
+        l.current_scene.animation_queue.push(
+            delta => this.vehicle.animate(delta)
+        );
+
+        // Setup person, used for the hangar scene.
+        this.person = new l.scenograph.objects.vehicles.person();
+        l.current_scene.scene.add(
+          this.person.mesh
+        );
+        l.current_scene.animation_queue.push(
+          this.person.animate
+        );
+
     }
 
 }

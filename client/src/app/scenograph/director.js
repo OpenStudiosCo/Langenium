@@ -246,24 +246,6 @@ export default class Director {
     }
 
     async loadInstance() {
-      // Setup Player aircraft, used for the intro sequence.
-      l.scenograph.actors.player.vehicle = new l.scenograph.objects.vehicles.valiant();
-      await l.scenograph.actors.player.vehicle.load();
-      l.current_scene.scene.add(
-        l.scenograph.actors.player.vehicle.mesh
-      );
-      l.current_scene.animation_queue.push(
-        l.scenograph.actors.player.vehicle.animate
-      );
-
-      // Setup Player person, used for the hangar scene.
-      l.scenograph.actors.player.person = new l.scenograph.objects.vehicles.person();
-      l.current_scene.scene.add(
-        l.scenograph.actors.player.person.mesh
-      );
-      l.current_scene.animation_queue.push(
-        l.scenograph.actors.player.person.animate
-      );
 
       await this.world.instance.objects.forEach( async object_config => {
         if ( object_config.model == 'extractor' ) {
@@ -298,6 +280,13 @@ export default class Director {
             object_config,
             await l.scenograph.objects.vehicles.raven.get()
           );
+        }
+        if ( object_config.class == 'player' ) {
+            l.scenograph.actors.registerActor(
+                object_config.name,
+                object_config
+            );
+
         }
       } );
 
@@ -351,6 +340,16 @@ export default class Director {
 
       l.scenograph.effects.init();
 
+      l.current_scene.objects.demoShip = new l.scenograph.objects.vehicles.valiant();
+      await l.current_scene.objects.demoShip.load();
+      l.current_scene.scene.add(
+        l.current_scene.objects.demoShip.mesh
+      );
+      l.current_scene.animation_queue.push(
+        delta => l.current_scene.objects.demoShip.animate(delta)
+      );
+      l.current_scene.tweens.shipEnterY = l.current_scene.objects.demoShip.shipEnterY();
+      l.current_scene.tweens.shipEnterZ = l.current_scene.objects.demoShip.shipEnterZ();
 
       l.current_scene.objects.door = await l.scenograph.objects.preloader.createDoor();
       l.current_scene.objects.door.position.set(

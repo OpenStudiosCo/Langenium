@@ -32,6 +32,20 @@ actors:
       x: 0
       y: -12.56
       z: 0
+  - name: Player TWo
+    model: person
+    class: player
+    hangar:
+      structure: Lambda City
+      hangarName: Hangar 1
+    position:
+      x: -65000
+      y: -35000
+      z: 1500
+    rotation:
+      x: 0
+      y: -12.56
+      z: 0
   - name: Pirate One
     model: raven
     class: pirate

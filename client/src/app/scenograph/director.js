@@ -282,14 +282,9 @@ export default class Director {
           );
         }
         if ( object_config.class == 'player' ) {
-            l.scenograph.actors.registerActor(
-                object_config.name,
-                object_config
-            );
-
+            await l.scenograph.actors.registerActor( object_config );
         }
       } );
-
 
     }
 

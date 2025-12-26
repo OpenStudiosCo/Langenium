@@ -247,7 +247,7 @@ export default class Director {
 
     async loadInstance() {
 
-      await this.world.instance.objects.forEach( async object_config => {
+      await this.world.config.objects.forEach( async object_config => {
         if ( object_config.model == 'extractor' ) {
           l.scenograph.director.loadObject(
             object_config,
@@ -268,7 +268,7 @@ export default class Director {
         }
       } );
 
-      this.world.instance.actors.forEach( async object_config => {
+      this.world.config.actors.forEach( async object_config => {
         if ( object_config.class == 'cargoShip' ) {
           l.scenograph.director.loadObject(
             object_config,

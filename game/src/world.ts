@@ -105,8 +105,10 @@ export default class World {
 
     update() {
         for (const actor of this.instance.actors.values()) {
-            if (actor.name =='Player Two') {
+            if (actor.actor) {
                 actor.actor.update(this.fixedDelta);
+            }
+            if (actor.object) {
                 actor.object.update(this.fixedDelta);
             }
         }

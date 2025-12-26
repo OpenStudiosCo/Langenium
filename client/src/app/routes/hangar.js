@@ -27,17 +27,17 @@ export default class hangarRoute {
 
         this.targetStructure = l.scenograph.objects.structures.platform.instances[0];
 
-        this.loadHangar();
-
+        l.scenograph.actors.player = l.scenograph.actors.get('Player Two');
         l.scenograph.actors.player.setMode('person');
+
+        this.loadHangar();
 
     }
 
     loadHangar() {
       l.current_scene.scene.add(l.scenograph.objects.structures.hangar.mesh);
-      l.scenograph.objects.structures.platform.mesh.visible = false;
+      this.targetStructure.visible = false;
       l.scenograph.objects.structures.hangar.mesh.visible = true;
-
       l.scenograph.objects.structures.hangar.mesh.position.copy( this.targetStructure.position );
       l.scenograph.objects.structures.hangar.mesh.position.y = this.targetStructure.userData.config.hangars[0].position.y;
 
@@ -45,11 +45,12 @@ export default class hangarRoute {
       l.scenograph.actors.player.vehicle.mesh.userData.object.position.z = this.targetStructure.position.z - 2.5;
       l.scenograph.actors.player.vehicle.mesh.userData.object.position.y = l.scenograph.objects.structures.hangar.mesh.position.y - 7.5;
 
-      l.scenograph.actors.player.person.position.x = this.targetStructure.position.x;
-      l.scenograph.actors.player.person.position.z = this.targetStructure.position.z + 10;
-      l.scenograph.actors.player.person.position.y = l.scenograph.objects.structures.hangar.mesh.position.y - 2.75;
+      l.scenograph.actors.player.actorInstance.object.position.x = this.targetStructure.position.x;
+      l.scenograph.actors.player.actorInstance.object.position.z = this.targetStructure.position.z + 10;
+      l.scenograph.actors.player.actorInstance.object.position.y = l.scenograph.objects.structures.hangar.mesh.position.y - 2.5
+      ;
 
-      l.scenograph.cameras.active.position.copy(l.scenograph.actors.player.person.position);
+      l.scenograph.cameras.active.position.copy(l.scenograph.actors.player.actorInstance.object.position);
 
       if ( l.scenograph.controls.orbit ) {
           l.scenograph.cameras.orbit.updateProjectionMatrix();

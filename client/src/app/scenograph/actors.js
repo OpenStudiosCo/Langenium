@@ -4,6 +4,8 @@
  * @namespace       l.scenograph.actors
  * @memberof        l.scenograph
  * @global
+ *
+ * @todo: #31 consider removal now that world instance manages and updates actors.
  */
 
 /**
@@ -21,16 +23,11 @@ export default class Actors {
         this.map = new Map();
     }
 
-    async registerActor(actor) {
-        if ( actor.class == 'player' ) {
-            let player = new Player( actor );
+    async registerActor(actorInstance) {
+        if ( actorInstance.config.class == 'player' ) {
+            let player = new Player( actorInstance );
             await player.load();
-            this.map.set(actor.name, player);
-
-            // @todo: Add player to the game world more dynamically.
-            if ( actor.name == 'Player One' ) {
-                this.player = player;
-            }
+            this.map.set(actorInstance.config.name, player);
         }
     }
 

@@ -31,6 +31,7 @@ export default class Person {
     }
 
     update( time_delta: number  ) {
+
         if (this.actor) {
             let stepSize:           number = .025 * normaliseSpeedDelta( time_delta ),
                 rY:                 number = 0,

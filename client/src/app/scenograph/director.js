@@ -247,44 +247,48 @@ export default class Director {
 
     async loadInstance() {
 
-      await this.world.config.objects.forEach( async object_config => {
-        if ( object_config.model == 'extractor' ) {
-          l.scenograph.director.loadObject(
-            object_config,
-            await l.scenograph.objects.structures.extractor.get()
-          );
-        }
-        if ( object_config.model == 'platform' ) {
-          l.scenograph.director.loadObject(
-            object_config,
-            await l.scenograph.objects.structures.platform.get()
-          );
-        }
-        if ( object_config.model == 'refinery' ) {
-          l.scenograph.director.loadObject(
-            object_config,
-            await l.scenograph.objects.structures.refinery.get()
-          );
-        }
-      } );
+        await this.world.config.objects.forEach( async object_config => {
+            if ( object_config.model == 'extractor' ) {
+                l.scenograph.director.loadObject(
+                object_config,
+                await l.scenograph.objects.structures.extractor.get()
+                );
+            }
+            if ( object_config.model == 'platform' ) {
+                l.scenograph.director.loadObject(
+                object_config,
+                await l.scenograph.objects.structures.platform.get()
+                );
+            }
+            if ( object_config.model == 'refinery' ) {
+                l.scenograph.director.loadObject(
+                object_config,
+                await l.scenograph.objects.structures.refinery.get()
+                );
+            }
+        } );
 
-      this.world.config.actors.forEach( async object_config => {
-        if ( object_config.class == 'cargoShip' ) {
-          l.scenograph.director.loadObject(
-            object_config,
-            await l.scenograph.objects.vehicles.cargoShip.get()
-          );
-        }
-        if ( object_config.class == 'pirate' ) {
-          l.scenograph.director.loadObject(
-            object_config,
-            await l.scenograph.objects.vehicles.raven.get()
-          );
-        }
-        if ( object_config.class == 'player' ) {
-            await l.scenograph.actors.registerActor( object_config );
-        }
-      } );
+        this.world.config.actors.forEach( async object_config => {
+            if ( object_config.class == 'cargoShip' ) {
+                l.scenograph.director.loadObject(
+                object_config,
+                await l.scenograph.objects.vehicles.cargoShip.get()
+                );
+            }
+            if ( object_config.class == 'pirate' ) {
+                l.scenograph.director.loadObject(
+                object_config,
+                await l.scenograph.objects.vehicles.raven.get()
+                );
+            }
+
+        } );
+
+        this.world.instance.actors.forEach(async actorInstance => {
+            if ( actorInstance.config.class == 'player' ) {
+                await l.scenograph.actors.registerActor( actorInstance );
+            }
+        });
 
     }
 

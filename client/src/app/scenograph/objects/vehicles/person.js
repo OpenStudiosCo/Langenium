@@ -12,19 +12,17 @@ import * as THREE from 'three';
  */
 import l from '@/helpers/l.js';
 
-import PersonBase from '#/game/src/objects/person';
+export default class Person {
 
-export default class Person extends PersonBase {
+    constructor(actorInstance) {
+        // Set internal game accessor to the game world actor instance.
+        this.game = actorInstance;
 
-    constructor() {
-        super();
         this.default_camera_distance = l.scenograph.width < l.scenograph.height ? -5 : -2.5;
 
         this.camera_distance = 0;
 
         this.mesh = new THREE.Object3D();
-
-
     }
 
     // Internal helper to manage state changes to the person's character model.
@@ -40,12 +38,12 @@ export default class Person extends PersonBase {
         let changing = false;
         for ( const [ controlName, keyMapping ] of Object.entries( mappings ) ) {
             if ( l.scenograph.controls.keyboard.pressed( keyMapping ) ) {
-                l.scenograph.actors.player.person.controls[ controlName ] = true;
+                this.game.actor.controls[ controlName ] = true;
                 changing = true;
             }
             else {
 
-                l.scenograph.actors.player.person.controls[ controlName ] = false;
+                this.game.actor.controls[ controlName ] = false;
 
                 if ( l.scenograph.controls.touch ) {
                     // Check if any touchpad controls are being pressed
@@ -59,41 +57,41 @@ export default class Person extends PersonBase {
                     ) {
                         changing = true;
                         if ( l.scenograph.controls.touch.controls.moveForward ) {
-                            l.scenograph.actors.player.person.controls.forward = true;
+                            this.game.actor.controls.forward = true;
                         }
                         if ( l.scenograph.controls.touch.controls.moveBackward ) {
-                            l.scenograph.actors.player.person.controls.back = true;
+                            this.game.actor.controls.back = true;
                         }
                         if ( l.scenograph.controls.touch.controls.moveUp ) {
-                            l.scenograph.actors.player.person.controls.jump = true;
+                            this.game.actor.controls.jump = true;
                         }
                         if ( l.scenograph.controls.touch.controls.moveDown ) {
-                            l.scenograph.actors.player.person.controls.crouch = true;
+                            this.game.actor.controls.crouch = true;
                         }
                         if ( l.scenograph.controls.touch.controls.moveLeft ) {
-                            l.scenograph.actors.player.person.controls.turnLeft = true;
+                            this.game.actor.controls.turnLeft = true;
                         }
                         if ( l.scenograph.controls.touch.controls.moveRight ) {
-                            l.scenograph.actors.player.person.controls.turnRight = true;
+                            this.game.actor.controls.turnRight = true;
                         }
                     }
 
                 }
             }
         }
-        l.scenograph.actors.player.person.controls.changing = changing;
+        this.game.actor.controls.changing = changing;
 
     }
 
-    // Update the position of the aircraft to spot determined by game logic.
-    updateMesh() {
-        l.scenograph.actors.player.person.mesh.position.x = l.scenograph.actors.player.person.position.x;
-        l.scenograph.actors.player.person.mesh.position.y = l.scenograph.actors.player.person.position.y;
-        l.scenograph.actors.player.person.mesh.position.z = l.scenograph.actors.player.person.position.z;
+    // Synchronise mesh with game world object.
+    sync() {
+        this.mesh.position.x = this.game.object.position.x;
+        this.mesh.position.y = this.game.object.position.y;
+        this.mesh.position.z = this.game.object.position.z;
 
-        l.scenograph.actors.player.person.mesh.rotation.x = l.scenograph.actors.player.person.rotation.x;
-        l.scenograph.actors.player.person.mesh.rotation.y = l.scenograph.actors.player.person.rotation.y;
-        l.scenograph.actors.player.person.mesh.rotation.z = l.scenograph.actors.player.person.rotation.z;
+        this.mesh.rotation.x = this.game.object.rotation.x;
+        this.mesh.rotation.y = this.game.object.rotation.y;
+        this.mesh.rotation.z = this.game.object.rotation.z;
     }
 
     updateCamera( rY, tY, tZ ) {
@@ -156,32 +154,26 @@ export default class Person extends PersonBase {
     /**
      * Animate hook.
      *
-     * This method is called within the main animation loop and
-     * therefore must only reference global objects or properties.
+     * This method is called within a delta in the main animation
+     * which means it supports "this" references to itself.
      *
      * @method animate
-     * @memberof Raven
-     * @global
+     * @memberof Person
+     * @local
      * @note All references within this method should be globally accessible.
     **/
     animate( delta ) {
-        if ( l.current_scene.settings.game_controls && l.scenograph.actors.player.mode == 'person' ) {
+        if ( l.current_scene.settings.game_controls && l.scenograph.actors.player.mode == 'person' && this.game.object) {
+
             // Detect keyboard input and pass it to the ship state model.
-            l.scenograph.actors.player.person.updateControls();
+            this.updateControls();
 
-            // Update the persons state model.
-            let [ rY, tY, tZ ] = l.scenograph.actors.player.person.move( l.current_scene.stats.currentTime - l.current_scene.stats.lastTime );
-
-//            console.log(l.scenograph.actors.player.person.position);
-
-
-            // Update the persons mesh
-            l.scenograph.actors.player.person.updateMesh();
+            // Sync the mesh to game world state.
+            this.sync();
 
             // Update the persons camera
-            l.scenograph.actors.player.person.updateCamera(rY, tY, tZ);
-
-            l.scenograph.cameras.player.rotation.y = l.scenograph.actors.player.person.rotation.y;
+            this.updateCamera(this.game.object.rY, this.game.object.tY, this.game.object.tZ);
+            l.scenograph.cameras.player.rotation.y = this.game.object.rotation.y;
 
         }
     }

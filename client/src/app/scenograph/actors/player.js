@@ -28,9 +28,9 @@ export default class Player {
     // Vehicle model.
     vehicle;
 
-    constructor( actorConfig ) {
+    constructor( actorInstance ) {
 
-        this.actorConfig = actorConfig;
+        this.actorInstance = actorInstance;
 
         this.ready = false;
 
@@ -63,12 +63,12 @@ export default class Player {
         );
 
         // Setup person, used for the hangar scene.
-        this.person = new l.scenograph.objects.vehicles.person();
+        this.person = new l.scenograph.objects.vehicles.person(this.actorInstance);
         l.current_scene.scene.add(
-          this.person.mesh
+            this.person.mesh
         );
         l.current_scene.animation_queue.push(
-          this.person.animate
+            delta => this.person.animate(delta)
         );
 
     }

@@ -10,6 +10,11 @@ import Overworld from "./scenes/overworld.yml";
 import ActorPlayer from './actors/player2';
 import ObjectPerson from './objects/person2';
 
+interface WorldConfig {
+    actors: Record<string, any>;
+    objects: Record<string, any>;
+}
+
 interface WorldInstance {
     actors: Record<string, any>;
     objects: Record<string, any>;
@@ -17,6 +22,7 @@ interface WorldInstance {
 
 export default class World {
 
+    public config: WorldConfig;
     public instance: WorldInstance;
 
     constructor( sceneName: string ) {
@@ -35,9 +41,13 @@ export default class World {
      * - loop over config to load game world simulation in here and scenograph in the client
      */
     initialise( config ) {
-        this.instance = {
+        this.config = {
             actors: config.actors,
             objects: config.objects
+        }
+        this.instance = {
+            actors: new Map<string, any>(),
+            objects: new Map<string, any>()
         };
 
         this.lastUpdateTime = performance.now();
@@ -46,26 +56,42 @@ export default class World {
 
         this.load();
         this.start();
+
     }
 
     load() {
-        for (const actor of this.instance.actors.values()) {
-            if (actor.name =='Player Two') {
-                // Set actors first.
-                if (actor.class == 'player') {
-                    actor.actor = new ActorPlayer();
-                }
+        for (const actorConfig of this.config.actors.values()) {
+            const actorInstance: any = { config: actorConfig };
+            // Set actors first.
+            actorInstance.actor = this.loadActor(actorConfig.class);
 
-                // Set objects.
-                if (actor.model == 'person') {
-                    actor.object = new ObjectPerson();
-                }
+            // Set objects.
+            actorInstance.object = this.loadObject(actorConfig.model);
 
-                // Set objects actor properties to actor.
-                if ( actor.actor && actor.object ) {
-                    actor.object.actor = actor.actor;
-                }
+            // Set objects actor properties to actor.
+            if ( actorInstance.actor && actorInstance.object ) {
+                actorInstance.object.actor = actorInstance.actor;
             }
+
+            this.instance.actors.set(actorConfig.name, actorInstance);
+        }
+    }
+
+    loadActor(actorClass: string) {
+        if (actorClass == 'player') {
+            return new ActorPlayer();
+        }
+        else {
+            return false;
+        }
+    }
+
+    loadObject(actorModel: string) {
+        if (actorModel == 'person') {
+            return new ObjectPerson();
+        }
+        else {
+            return false;
         }
     }
 
@@ -83,10 +109,7 @@ export default class World {
                 actor.actor.update(this.fixedDelta);
                 actor.object.update(this.fixedDelta);
             }
-            console.log(this, actor);
-            //actor.updateState(this.fixedDelta);
         }
-        debugger;
     }
 
 }

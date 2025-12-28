@@ -187,9 +187,8 @@ export default class World {
                     if (objectInstance.hangars) {
                         objectInstance.hangars.forEach((hangarInstance) => {
                             if (hangarInstance.config.name == actorInstance.config.hangar.hangarName) {
-                                const componentAABBs = hangarInstance.object.getComponentAABBs();
 
-                                for (const componentAABB of componentAABBs ) {
+                                for (const componentAABB of hangarInstance.object.aabb ) {
                                     if (this.aabbContained(actorAABB, componentAABB)) {
                                         inside = true;
                                         break;

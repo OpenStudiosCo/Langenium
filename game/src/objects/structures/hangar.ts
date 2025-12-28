@@ -8,8 +8,11 @@ import { AABB } from '../types';
 
 class Hangar extends ObjectBase {
 
+    // axis aligned bounding box
+    public aabb: AABB;
+
     // Hangar component configuration.
-    design;
+    public design: any;
 
     constructor(config = {}) {
         super(); // Call the constructor of the base class
@@ -29,6 +32,8 @@ class Hangar extends ObjectBase {
             this.rotation.y = config.rotation.y;
             this.rotation.z = config.rotation.z;
         }
+
+        this.aabb = this.getComponentAABBs();
     }
 
     detectCollision ()  {

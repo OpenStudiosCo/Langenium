@@ -60,12 +60,13 @@ export default class World {
     }
 
     load() {
+        // Load actors and their attached objects.
         for (const actorConfig of this.config.actors.values()) {
             const actorInstance: any = { config: actorConfig };
-            // Set actors first.
+            // Set actor class first.
             actorInstance.actor = this.loadActor(actorConfig.class);
 
-            // Set objects.
+            // Set object class.
             actorInstance.object = this.loadObject(actorConfig.model);
 
             // Set objects actor properties to actor.
@@ -74,6 +75,21 @@ export default class World {
             }
 
             this.instance.actors.set(actorConfig.name, actorInstance);
+        }
+
+        // Load static objects into the world.
+        for (const objectConfig of this.config.objects.values()) {
+            const objectInstance: any = { config: objectConfig };
+
+            // Set object class.
+            objectInstance.object = this.loadObject(objectConfig.model);
+
+            // Set objects actor properties to actor.
+            if ( objectInstance.actor && objectInstance.object ) {
+                objectInstance.object.actor = objectInstance.actor;
+            }
+
+            this.instance.objects.set(objectConfig.name, objectInstance);
         }
     }
 

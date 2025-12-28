@@ -1,17 +1,17 @@
 /**
- * Base Aircraft class
- *
- * @todo:
- * - Add weight and wind resistance
+ * Person class
  */
 
+import ObjectBase from './base';
 import BaseActor from '../actors/base2';
 import { changeVelocity, normaliseSpeedDelta, easeOutExpo, easeInQuad, easeInOutExpo } from '../helpers';
 
-export default class Person {
+export default class Person extends ObjectBase {
 
+    // Actor that controls this object.
     public actor?:          BaseActor;
 
+    // Object world parameters
     public hitPoints:       number                              = 100;
     public airSpeed:        number                              = 0;
     public verticalSpeed:   number                              = 0;
@@ -20,14 +20,11 @@ export default class Person {
     public maxUp:           number                              = 4 / 60;
     public maxDown:         number                              = 16 / 60;  // gravity?
 
-    public position:        { x: number; y: number; z: number } = { x: 0, y: 0, z: 0 };
-    public rotation:        { x: number; y: number; z: number } = { x: 0, y: 0, z: 0 };
-
-    public rY: number = 0;
-    public tY: number = 0;
-    public tZ: number = 0;
-
     constructor() {
+        super();
+        this.aabb = {
+            halfSize: { x: 0.3, y: 0.9, z: 0.3 }
+        };
     }
 
     update( time_delta: number  ) {

@@ -74,9 +74,9 @@ class Hangar extends ObjectBase {
               },
               {
                 name: 'Corridor',
-                width: 1.025,
+                width: 2.5,
                 height: 2.55,
-                depth: 2.5,
+                depth: 1.25,
                 position: {
                     x: -5,
                     y: -1.225,
@@ -84,7 +84,7 @@ class Hangar extends ObjectBase {
                 },
                 rotation: {
                     x: 0,
-                    y: 1.5708, // 90 degrees or half pi
+                    y: 0, // 90 degrees or half pi
                     z: 0
                 }
               },
@@ -106,9 +106,9 @@ class Hangar extends ObjectBase {
             };
 
             const worldPos = {
-                x: this.position.x + component.position.x,
-                y: this.position.y + component.position.y,
-                z: this.position.z + component.position.z
+                x: this.position.x + component.position.x * 2.5,
+                y: this.position.y + component.position.y * 2.5,
+                z: this.position.z + component.position.z  * 2.5
             };
 
             return {

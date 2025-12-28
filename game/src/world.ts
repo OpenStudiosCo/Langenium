@@ -151,8 +151,10 @@ export default class World {
 
     checkHangarCollisions(actorInstance: any) {
         // Get object's proposed AABB at next position
-        const objAABB = actorInstance.object.getAABBNext(); // you’ll need a method that returns AABB at nextPosition
+        const actorAABB = actorInstance.object.getAABBNext();
 
+        // Ensure the user is still inside the hangar area.
+        let inside = false;
         if (actorInstance.config.hangar) {
             this.instance.objects.forEach((objectInstance, objectName) => {
                 if (objectName == actorInstance.config.hangar.structure) {
@@ -160,18 +162,12 @@ export default class World {
                         objectInstance.hangars.forEach((hangarInstance) => {
                             if (hangarInstance.config.name == actorInstance.config.hangar.hangarName) {
                                 const componentAABBs = hangarInstance.object.getComponentAABBs();
-                                //const aabb = componentAABBs[0];
 
-                                for (const aabb of componentAABBs ) {
-                                    const overlapX = objAABB.min.x <= aabb.max.x && objAABB.max.x >= aabb.min.x;
-                                    const overlapY = objAABB.min.y <= aabb.max.y && objAABB.max.y >= aabb.min.y;
-                                    const overlapZ = objAABB.min.z <= aabb.max.z && objAABB.max.z >= aabb.min.z;
-
-                                    if (overlapX && overlapY && overlapZ) {
-                                        actorInstance.object.commitNextPosition();
-                                        return false;
+                                for (const componentAABB of componentAABBs ) {
+                                    if (this.aabbContained(actorAABB, componentAABB)) {
+                                        inside = true;
+                                        break;
                                     }
-
                                 }
 
                             }
@@ -182,8 +178,23 @@ export default class World {
             });
 
         }
+        if (inside) {
+            actorInstance.object.commitNextPosition();
+        }
 
-        return true;
+    }
+
+    // Checks if actor Bounding Box is within the component Bounding Box
+    aabbContained(actorBounds, componentBounds) {
+        let offset = 0.5;
+        return (
+            actorBounds.min.x >= componentBounds.min.x - offset &&
+            actorBounds.max.x <= componentBounds.max.x + offset &&
+            actorBounds.min.y >= componentBounds.min.y - offset &&
+            actorBounds.max.y <= componentBounds.max.y + offset &&
+            actorBounds.min.z >= componentBounds.min.z - offset &&
+            actorBounds.max.z <= componentBounds.max.z + offset
+        );
     }
 
 }

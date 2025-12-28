@@ -25,7 +25,7 @@ export default class Person extends ObjectBase {
     constructor() {
         super();
         this.aabb = {
-            halfSize: { x: 0.1, y: 0.1, z: 0.1 }
+            halfSize: { x: 0.5, y: 0.75, z: 0.3 }
         };
     }
 

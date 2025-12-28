@@ -27,6 +27,9 @@ export default class World {
     public config: WorldConfig;
     public instance: WorldInstance;
 
+    private accumulator = 0;
+    private running = false;
+
     constructor( sceneName: string ) {
         if ( sceneName === 'Overworld' ) {
             this.initialise( Overworld );
@@ -130,11 +133,32 @@ export default class World {
     }
 
     start() {
-        this.updateLoop = setInterval(() => this.update(), this.fixedDelta);
+        this.running = true;
+        this.lastUpdateTime = performance.now();
+
+        const loop = () => {
+            if (!this.running) return;
+
+            const now = performance.now();
+            const frameTime = now - this.lastUpdateTime;
+            this.lastUpdateTime = now;
+
+            // Prevent spiral of death
+            this.accumulator += Math.min(frameTime, 250);
+
+            while (this.accumulator >= this.fixedDelta) {
+                this.update();
+                this.accumulator -= this.fixedDelta;
+            }
+
+            setTimeout(loop, 0);
+        };
+
+        loop();
     }
 
     stop() {
-        clearInterval(this.updateLoop);
+        this.running = false;
     }
 
     update() {
@@ -144,7 +168,9 @@ export default class World {
             }
             if (actorInstance.object) {
                 actorInstance.object.update(this.fixedDelta);
-                this.checkHangarCollisions(actorInstance);
+                if (actorInstance.actor.controls.forward || actorInstance.actor.controls.back) {
+                    this.checkHangarCollisions(actorInstance);
+                }
             }
         }
     }

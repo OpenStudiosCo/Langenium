@@ -4,6 +4,8 @@
 
 import ObjectBase from '../base';
 
+import { AABB } from '../types';
+
 class Hangar extends ObjectBase {
 
     // Hangar component configuration.
@@ -12,7 +14,6 @@ class Hangar extends ObjectBase {
     constructor(config = {}) {
         super(); // Call the constructor of the base class
 
-        let corridorScale = 0.125;
         if (config.design) {
             this.design = this.getDesign(config.design);
         } else {
@@ -91,6 +92,38 @@ class Hangar extends ObjectBase {
           }
         ];
         return designs[designIndex];
+    }
+
+    /**
+     * Returns world-space AABBs for all solid components
+     */
+    public getComponentAABBs(): AABB[] {
+        return this.design.components.map(component => {
+            const halfSize = {
+                x: component.width,
+                y: component.height,
+                z: component.depth
+            };
+
+            const worldPos = {
+                x: this.position.x + component.position.x,
+                y: this.position.y + component.position.y,
+                z: this.position.z + component.position.z
+            };
+
+            return {
+                min: {
+                    x: worldPos.x - halfSize.x,
+                    y: worldPos.y - halfSize.y,
+                    z: worldPos.z - halfSize.z
+                },
+                max: {
+                    x: worldPos.x + halfSize.x,
+                    y: worldPos.y + halfSize.y,
+                    z: worldPos.z + halfSize.z
+                }
+            };
+        });
     }
 
 }

@@ -89,6 +89,12 @@ export default class World {
             if (objectConfig.hangars){
                 objectInstance.hangars = [];
                 objectConfig.hangars.forEach(hangarConfig => {
+                    // Merge hangar position with world position;
+                    hangarConfig.position = {
+                        x: hangarConfig.position.x + objectConfig.position.x,
+                        y: hangarConfig.position.y, // skip this one as the y offset is model specific.
+                        z: hangarConfig.position.z + objectConfig.position.z
+                    };
                     const hangarInstance: any = { config: hangarConfig };
                     hangarInstance.object = this.loadObject({
                         ...hangarConfig,
@@ -132,44 +138,52 @@ export default class World {
     }
 
     update() {
-        for (const actor of this.instance.actors.values()) {
-            if (actor.actor) {
-                actor.actor.update(this.fixedDelta);
+        for (const actorInstance of this.instance.actors.values()) {
+            if (actorInstance.actor) {
+                actorInstance.actor.update(this.fixedDelta);
             }
-            if (actor.object) {
-                actor.object.update(this.fixedDelta);
-                this.checkCollisions(actor.object);
+            if (actorInstance.object) {
+                actorInstance.object.update(this.fixedDelta);
+                this.checkHangarCollisions(actorInstance);
             }
         }
     }
 
-    checkCollisions(object: ObjectPerson) {
+    checkHangarCollisions(actorInstance: any) {
         // Get object's proposed AABB at next position
-        const objAABB = object.getAABBNext(); // you’ll need a method that returns AABB at nextPosition
+        const objAABB = actorInstance.object.getAABBNext(); // you’ll need a method that returns AABB at nextPosition
 
-        for (const other of this.instance.objects.values()) {
+        if (actorInstance.config.hangar) {
+            this.instance.objects.forEach((objectInstance, objectName) => {
+                if (objectName == actorInstance.config.hangar.structure) {
+                    if (objectInstance.hangars) {
+                        objectInstance.hangars.forEach((hangarInstance) => {
+                            if (hangarInstance.config.name == actorInstance.config.hangar.hangarName) {
+                                const componentAABBs = hangarInstance.object.getComponentAABBs();
+                                //const aabb = componentAABBs[0];
 
-            if (!other.object || other.object === object) continue;
+                                for (const aabb of componentAABBs ) {
+                                    const overlapX = objAABB.min.x <= aabb.max.x && objAABB.max.x >= aabb.min.x;
+                                    const overlapY = objAABB.min.y <= aabb.max.y && objAABB.max.y >= aabb.min.y;
+                                    const overlapZ = objAABB.min.z <= aabb.max.z && objAABB.max.z >= aabb.min.z;
 
-            const otherAABB = other.object.getAABB();
+                                    if (overlapX && overlapY && overlapZ) {
+                                        actorInstance.object.commitNextPosition();
+                                        return false;
+                                    }
 
-            // AABB collision check
-            const overlapX = objAABB.min.x <= otherAABB.max.x && objAABB.max.x >= otherAABB.min.x;
-            const overlapY = objAABB.min.y <= otherAABB.max.y && objAABB.max.y >= otherAABB.min.y;
-            const overlapZ = objAABB.min.z <= otherAABB.max.z && objAABB.max.z >= otherAABB.min.z;
+                                }
 
-            if (overlapX && overlapY && overlapZ) {
-                console.log('Collision detected!');
-                return true; // stop at first collision or handle multiple collisions
-            }
-            console.log(overlapX, overlapY, overlapZ);
-            debugger;
+                            }
+                        });
+                    }
+
+                }
+            });
+
         }
 
-
-        // No collision: commit next position
-        object.commitNextPosition();
-        return false;
+        return true;
     }
 
 }

@@ -8,6 +8,8 @@
 import Overworld from "./scenes/overworld.yml";
 
 import ActorPlayer from './actors/player2';
+
+import ObjectHangar from './objects/structures/hangar';
 import ObjectPerson from './objects/person2';
 
 interface WorldConfig {
@@ -67,7 +69,7 @@ export default class World {
             actorInstance.actor = this.loadActor(actorConfig.class);
 
             // Set object class.
-            actorInstance.object = this.loadObject(actorConfig.model);
+            actorInstance.object = this.loadObject(actorConfig);
 
             // Set objects actor properties to actor.
             if ( actorInstance.actor && actorInstance.object ) {
@@ -82,11 +84,18 @@ export default class World {
             const objectInstance: any = { config: objectConfig };
 
             // Set object class.
-            objectInstance.object = this.loadObject(objectConfig.model);
+            objectInstance.object = this.loadObject(objectConfig);
 
-            // Set objects actor properties to actor.
-            if ( objectInstance.actor && objectInstance.object ) {
-                objectInstance.object.actor = objectInstance.actor;
+            if (objectConfig.hangars){
+                objectInstance.hangars = [];
+                objectConfig.hangars.forEach(hangarConfig => {
+                    const hangarInstance: any = { config: hangarConfig };
+                    hangarInstance.object = this.loadObject({
+                        ...hangarConfig,
+                        model: 'hangar'
+                    });
+                    objectInstance.hangars.push(hangarInstance);
+                });
             }
 
             this.instance.objects.set(objectConfig.name, objectInstance);
@@ -102,9 +111,12 @@ export default class World {
         }
     }
 
-    loadObject(actorModel: string) {
-        if (actorModel == 'person') {
+    loadObject(config: any) {
+        if (config.model == 'person') {
             return new ObjectPerson();
+        }
+        else if (config.model == 'hangar') {
+            return new ObjectHangar(config);
         }
         else {
             return false;
@@ -126,8 +138,38 @@ export default class World {
             }
             if (actor.object) {
                 actor.object.update(this.fixedDelta);
+                this.checkCollisions(actor.object);
             }
         }
+    }
+
+    checkCollisions(object: ObjectPerson) {
+        // Get object's proposed AABB at next position
+        const objAABB = object.getAABBNext(); // you’ll need a method that returns AABB at nextPosition
+
+        for (const other of this.instance.objects.values()) {
+
+            if (!other.object || other.object === object) continue;
+
+            const otherAABB = other.object.getAABB();
+
+            // AABB collision check
+            const overlapX = objAABB.min.x <= otherAABB.max.x && objAABB.max.x >= otherAABB.min.x;
+            const overlapY = objAABB.min.y <= otherAABB.max.y && objAABB.max.y >= otherAABB.min.y;
+            const overlapZ = objAABB.min.z <= otherAABB.max.z && objAABB.max.z >= otherAABB.min.z;
+
+            if (overlapX && overlapY && overlapZ) {
+                console.log('Collision detected!');
+                return true; // stop at first collision or handle multiple collisions
+            }
+            console.log(overlapX, overlapY, overlapZ);
+            debugger;
+        }
+
+
+        // No collision: commit next position
+        object.commitNextPosition();
+        return false;
     }
 
 }

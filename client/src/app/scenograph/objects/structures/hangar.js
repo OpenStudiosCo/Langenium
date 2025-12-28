@@ -18,12 +18,6 @@ import HangarObject from '#/game/src/objects/structures/hangar';
 
 export default class Hangar {
 
-    // Preset layouts for hangars as defined by the game object class.
-    designs;
-
-    // The hangar mesh and root of the CSG BVH hierarchy.
-    hangar;
-
     // Modified materials for indoor scenes
     materials;
 
@@ -49,31 +43,13 @@ export default class Hangar {
     }
 
     /**
-     * Loads hangar room layouts from the game object class.
-     */
-    async loadDesigns() {
-        let designs = {};
-
-        this.objectClass.designs.forEach(design => {
-            // Auto load the "'Bay with quarters'" as default
-            if (design.name == 'Bay with quarters') {
-                designs.default = design;
-            }
-        });
-
-        return designs;
-    }
-
-    /**
-     * Load hangar based on design name, default if not set.
-     *
-     * @param {string} designName
+     * Load hangar mesh
      * @returns
      */
-    async loadMesh( designName = 'default' ) {
+    async loadMesh( ) {
         let hangarConfig, corridorConfig, quartersConfig;
 
-        this.designs[designName].components.forEach(component => {
+        this.objectClass.design.components.forEach(component => {
             if ( component.name === 'Main Bay' ) {
                 hangarConfig = component;
             }
@@ -123,8 +99,6 @@ export default class Hangar {
 
         // Setup materials.
         await this.loadMaterials();
-
-        this.designs = await this.loadDesigns();
 
         this.mesh = await this.loadMesh();
 

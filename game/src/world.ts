@@ -186,7 +186,7 @@ export default class World {
 
     // Checks if actor Bounding Box is within the component Bounding Box
     aabbContained(actorBounds, componentBounds) {
-        let offset = 0.5;
+        let offset = 1.25;
         return (
             actorBounds.min.x >= componentBounds.min.x - offset &&
             actorBounds.max.x <= componentBounds.max.x + offset &&

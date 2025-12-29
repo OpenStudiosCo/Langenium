@@ -97,8 +97,8 @@ objects:
       - name: Hangar 1
         position:
           x: 0
-          y: 505
-          z: 0
+          y: 6100
+          z: -8620
         rotation:
           x: 0
           y: 0

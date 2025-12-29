@@ -36,17 +36,19 @@ export default class hangarRoute {
 
     loadHangar() {
       l.current_scene.scene.add(l.scenograph.objects.structures.hangar.mesh);
-      this.targetStructure.visible = false;
+      //this.targetStructure.visible = false;
       l.scenograph.objects.structures.hangar.mesh.visible = true;
-      l.scenograph.objects.structures.hangar.mesh.position.copy( this.targetStructure.position );
+        console.log(this.targetStructure.userData.config.hangars[0].position);
+      l.scenograph.objects.structures.hangar.mesh.position.x = this.targetStructure.userData.config.hangars[0].position.x;
       l.scenograph.objects.structures.hangar.mesh.position.y = this.targetStructure.userData.config.hangars[0].position.y;
+      l.scenograph.objects.structures.hangar.mesh.position.z = this.targetStructure.userData.config.hangars[0].position.z;
 
-      l.scenograph.actors.player.vehicle.mesh.userData.object.position.x = this.targetStructure.position.x;
-      l.scenograph.actors.player.vehicle.mesh.userData.object.position.z = this.targetStructure.position.z - 2.5;
+      l.scenograph.actors.player.vehicle.mesh.userData.object.position.x =  this.targetStructure.userData.config.hangars[0].position.x;
+      l.scenograph.actors.player.vehicle.mesh.userData.object.position.z = - 2.5 + this.targetStructure.userData.config.hangars[0].position.z;
       l.scenograph.actors.player.vehicle.mesh.userData.object.position.y = l.scenograph.objects.structures.hangar.mesh.position.y - 7.5;
 
-      l.scenograph.actors.player.actorInstance.object.position.x = this.targetStructure.position.x;
-      l.scenograph.actors.player.actorInstance.object.position.z = this.targetStructure.position.z + 10;
+      l.scenograph.actors.player.actorInstance.object.position.x = this.targetStructure.userData.config.hangars[0].position.x;
+      l.scenograph.actors.player.actorInstance.object.position.z = 10 + this.targetStructure.userData.config.hangars[0].position.z;
       l.scenograph.actors.player.actorInstance.object.position.y = l.scenograph.objects.structures.hangar.mesh.position.y - 2.5
       ;
 

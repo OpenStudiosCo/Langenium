@@ -14,7 +14,6 @@ import * as THREE from 'three';
 import l from '@/helpers/l.js';
 import { brightenMaterial, proceduralMetalMaterial } from '@/scenograph/materials.js';
 import Player from '#/game/src/actors/player';
-import ValiantObject from '#/game/src/objects/aircraft/valiant';
 
 export default class Valiant {
 
@@ -45,13 +44,17 @@ export default class Valiant {
     // TrailRenderer effect showing a trailing effect on the thruster.
     trail;
 
-    constructor() {
+    constructor(actorInstance) {
+        // Set internal game accessor to the game world actor instance.
+        this.game = actorInstance;
+
         this.default_camera_distance = -35;
         this.trail_position_y = 1.2;
         this.trail_position_z = 1.5;
         this.camera_distance = 0;
 
         this.ready = false;
+        console.log(this);
 
     }
 
@@ -122,7 +125,6 @@ export default class Valiant {
 
         this.trail = l.current_scene.effects.trail.createTrail( this.mesh, 0, this.trail_position_y, this.trail_position_z );
 
-        this.mesh.userData.object = new ValiantObject( this.mesh );
     }
 
     createThrusterMesh( options ) {
@@ -309,9 +311,9 @@ export default class Valiant {
                 // Set the ship as ready.
                 l.current_scene.objects.demoShip.ready = true;
                 l.current_scene.objects.demoShip.camera_distance = l.current_scene.objects.demoShip.default_camera_distance + ( l.current_scene.room_depth / 2 );
-                l.current_scene.objects.demoShip.mesh.userData.object.position.x = l.current_scene.objects.demoShip.mesh.position.x;
-                l.current_scene.objects.demoShip.mesh.userData.object.position.y = l.current_scene.objects.demoShip.mesh.position.y;
-                l.current_scene.objects.demoShip.mesh.userData.object.position.z = l.current_scene.objects.demoShip.mesh.position.z;
+                // l.current_scene.objects.demoShip.mesh.userData.object.position.x = l.current_scene.objects.demoShip.mesh.position.x;
+                // l.current_scene.objects.demoShip.mesh.userData.object.position.y = l.current_scene.objects.demoShip.mesh.position.y;
+                // l.current_scene.objects.demoShip.mesh.userData.object.position.z = l.current_scene.objects.demoShip.mesh.position.z;
             } );
     }
 
@@ -328,12 +330,12 @@ export default class Valiant {
         let changing = false;
         for ( const [ controlName, keyMapping ] of Object.entries( mappings ) ) {
             if ( l.scenograph.controls.keyboard.pressed( keyMapping ) ) {
-                this.mesh.userData.object.controls[ controlName ] = true;
+                this.game.actor.controls[ controlName ] = true;
                 changing = true;
             }
             else {
 
-                this.mesh.userData.object.controls[ controlName ] = false;
+                this.game.actor.controls[ controlName ] = false;
 
                 if ( l.scenograph.controls.touch ) {
                     // Check if any touchpad controls are being pressed
@@ -347,29 +349,29 @@ export default class Valiant {
                     ) {
                         changing = true;
                         if ( l.scenograph.controls.touch.controls.moveUp ) {
-                            this.mesh.userData.object.controls.moveUp = true;
+                            this.game.actor.controls.moveUp = true;
                         }
                         if ( l.scenograph.controls.touch.controls.moveDown ) {
-                            this.mesh.userData.object.controls.moveDown = true;
+                            this.game.actor.controls.moveDown = true;
                         }
                         if ( l.scenograph.controls.touch.controls.moveForward ) {
-                            this.mesh.userData.object.controls.throttleUp = true;
+                            this.game.actor.controls.throttleUp = true;
                         }
                         if ( l.scenograph.controls.touch.controls.moveBackward ) {
-                            this.mesh.userData.object.controls.throttleDown = true;
+                            this.game.actor.controls.throttleDown = true;
                         }
                         if ( l.scenograph.controls.touch.controls.moveLeft ) {
-                            this.mesh.userData.object.controls.moveLeft = true;
+                            this.game.actor.controls.moveLeft = true;
                         }
                         if ( l.scenograph.controls.touch.controls.moveRight ) {
-                            this.mesh.userData.object.controls.moveRight = true;
+                            this.game.actor.controls.moveRight = true;
                         }
                     }
 
                 }
             }
         }
-        this.mesh.userData.object.controls.changing = changing;
+        this.game.actor.controls.changing = changing;
 
     }
 
@@ -378,52 +380,54 @@ export default class Valiant {
             this.mixer.update( delta );
         }
 
-        // Rock the ship forward and back when moving horizontally
-        if ( this.mesh.userData.object.controls.throttleDown || this.mesh.userData.object.controls.throttleUp ) {
-            let pitchChange = this.mesh.userData.object.controls.throttleUp ? -1 : 1;
-            if ( Math.abs( this.mesh.rotation.x ) < 1 / 4 ) {
-                this.mesh.rotation.x += pitchChange / 10 / 180;
-            }
-        }
-
-        // Rock the ship forward and back when moving vertically
-        if (
-            this.mesh.userData.object.controls.moveDown
-            ||
-            this.mesh.userData.object.controls.moveUp
-        ) {
-            let elevationChange = this.mesh.userData.object.controls.moveDown ? -1 : 1;
-            if ( Math.abs( this.mesh.rotation.x ) < 1 / 8 ) {
-                this.mesh.rotation.x += elevationChange / 10 / 180;
+        if ( this.game ) {
+            // Rock the ship forward and back when moving horizontally
+            if ( this.game.actor.controls.throttleDown || this.game.actor.controls.throttleUp ) {
+                let pitchChange = this.game.actor.controls.throttleUp ? -1 : 1;
+                if ( Math.abs( this.mesh.rotation.x ) < 1 / 4 ) {
+                    this.mesh.rotation.x += pitchChange / 10 / 180;
+                }
             }
 
-            if ( Math.abs( l.scenograph.cameras.player.rotation.x ) < 1 / 8 ) {
-                let radian = ( Math.PI / 180 );
-                l.scenograph.cameras.player.rotation.x += elevationChange * radian / 10;
+            // Rock the ship forward and back when moving vertically
+            if (
+                this.game.actor.controls.moveDown
+                ||
+                this.game.actor.controls.moveUp
+            ) {
+                let elevationChange = this.game.actor.controls.moveDown ? -1 : 1;
+                if ( Math.abs( this.mesh.rotation.x ) < 1 / 8 ) {
+                    this.mesh.rotation.x += elevationChange / 10 / 180;
+                }
+
+                if ( Math.abs( l.scenograph.cameras.player.rotation.x ) < 1 / 8 ) {
+                    let radian = ( Math.PI / 180 );
+                    l.scenograph.cameras.player.rotation.x += elevationChange * radian / 10;
+                }
             }
-        }
-        else {
-            if ( l.scenograph.controls.touch && !l.scenograph.controls.touch.controls.rotationPad.mouseDown )
-                l.scenograph.cameras.player.rotation.x *= .9;
+            else {
+                if ( l.scenograph.controls.touch && !l.scenograph.controls.touch.controls.rotationPad.mouseDown )
+                    l.scenograph.cameras.player.rotation.x *= .9;
+            }
         }
     }
 
     // Update the position of the aircraft to spot determined by game logic.
-    updateMesh() {
-        this.mesh.position.x = this.mesh.userData.object.position.x;
-        this.mesh.position.y = this.mesh.userData.object.position.y;
-        this.mesh.position.z = this.mesh.userData.object.position.z;
-        this.mesh.rotation.x = this.mesh.userData.object.rotation.x;
-        this.mesh.rotation.y = this.mesh.userData.object.rotation.y;
-        this.mesh.rotation.z = this.mesh.userData.object.rotation.z;
+    sync() {
+        this.mesh.position.x = this.game.object.position.x;
+        this.mesh.position.y = this.game.object.position.y;
+        this.mesh.position.z = this.game.object.position.z;
+        this.mesh.rotation.x = this.game.object.rotation.x;
+        this.mesh.rotation.y = this.game.object.rotation.y;
+        this.mesh.rotation.z = this.game.object.rotation.z;
     }
 
     updateCamera( rY, tY, tZ ) {
         var radian = ( Math.PI / 180 );
 
         this.camera_distance = this.default_camera_distance + ( l.current_scene.room_depth / 2 );
-        if ( this.mesh.userData.object.airSpeed < 0 ) {
-            this.camera_distance -= this.mesh.userData.object.airSpeed * 4;
+        if ( this.game.object.airSpeed < 0 ) {
+            this.camera_distance -= this.game.object.airSpeed * 4;
         }
 
         let xDiff = this.mesh.position.x;
@@ -495,7 +499,7 @@ export default class Valiant {
                 }
 
                 if ( l.scenograph.modes.multiplayer.connected ) {
-                    l.scenograph.modes.multiplayer.socket.emit( 'input', this.mesh.userData.object.controls );
+                    l.scenograph.modes.multiplayer.socket.emit( 'input', this.game.actor.controls );
                 }
 
                 this.mesh.userData.actor.animate( delta );
@@ -505,15 +509,12 @@ export default class Valiant {
             if (  l.mode != 'hangar')
                 this.updateAnimation( delta );
 
+            if (this.game) {
+                this.sync();
+                this.updateCamera( this.game.object.rY, this.game.object.tY, this.game.object.tZ );
 
-            // Update the ships state model.
-            let [ rY, tY, tZ ] = this.mesh.userData.object.move( l.current_scene.stats.currentTime - l.current_scene.stats.lastTime );
-
-            this.updateMesh();
-
-            this.updateCamera( rY, tY, tZ );
-
-            this.animateTrail( rY );
+                this.animateTrail( this.game.object.rY );
+            }
 
         }
     }
@@ -525,21 +526,21 @@ export default class Valiant {
             let trailOffset = 0;
 
             // Only offset the trail effect if we are going forward which is (z-1) in numerical terms
-            if ( this.mesh.userData.object.airSpeed < 0 ) {
+            if ( this.game.object.airSpeed < 0 ) {
 
                 // Update ship thruster
-                this.animateThruster( this.mesh.userData.object.airSpeed, this.thruster.centralConeBurner, .5 );
-                this.animateThruster( this.mesh.userData.object.airSpeed, this.thruster.outerCylBurner, .5 );
+                this.animateThruster( this.game.object.airSpeed, this.thruster.centralConeBurner, .5 );
+                this.animateThruster( this.game.object.airSpeed, this.thruster.outerCylBurner, .5 );
 
-                this.spinThruster( this.mesh.userData.object.airSpeed, this.thruster.rearConeBurner, -1 );
-                this.spinThruster( this.mesh.userData.object.airSpeed, this.thruster.centralConeBurner, 1 );
-                this.spinThruster( this.mesh.userData.object.airSpeed, this.thruster.outerCylBurner, -1 );
-                this.spinThruster( this.mesh.userData.object.airSpeed, this.thruster.innerCylBurner, 1 );
+                this.spinThruster( this.game.object.airSpeed, this.thruster.rearConeBurner, -1 );
+                this.spinThruster( this.game.object.airSpeed, this.thruster.centralConeBurner, 1 );
+                this.spinThruster( this.game.object.airSpeed, this.thruster.outerCylBurner, -1 );
+                this.spinThruster( this.game.object.airSpeed, this.thruster.innerCylBurner, 1 );
 
                 // Limit playback rate to 5x as large values freak out the browser.
-                this.thruster.videoElement.playbackRate = Math.min( 5, 0.25 + Math.abs( this.mesh.userData.object.airSpeed ) );
+                this.thruster.videoElement.playbackRate = Math.min( 5, 0.25 + Math.abs( this.game.object.airSpeed ) );
 
-                trailOffset += this.trail_position_z - Math.abs( this.mesh.userData.object.airSpeed );
+                trailOffset += this.trail_position_z - Math.abs( this.game.object.airSpeed );
 
                 this.trail.mesh.material.uniforms.headColor.value.set( 255 / 255, 212 / 255, 148 / 255, .8 ); // RGBA.
             }
@@ -548,11 +549,11 @@ export default class Valiant {
             }
 
             // Update the trail position based on above calculations.
-            this.trail.targetObject.position.y = this.trail_position_y + this.mesh.userData.object.verticalSpeed;
+            this.trail.targetObject.position.y = this.trail_position_y + this.game.object.verticalSpeed;
             this.trail.targetObject.position.z = trailOffset;
 
             if ( rY != 0 ) {
-                this.trail.targetObject.position.x = rY * this.mesh.userData.object.airSpeed;
+                this.trail.targetObject.position.x = rY * this.game.object.airSpeed;
                 this.trail.targetObject.position.y += Math.abs( this.trail.targetObject.position.x ) / 4;
             }
             else {

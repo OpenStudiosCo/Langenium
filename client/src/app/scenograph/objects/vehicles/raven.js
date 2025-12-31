@@ -1,6 +1,6 @@
 /**
  * Enemy bot.
- * 
+ *
  * Currently hardcoded to use the Raven aircraft.
  */
 import * as THREE from 'three';
@@ -11,7 +11,7 @@ import * as THREE from 'three';
 import l from '@/helpers/l.js';
 import { brightenMaterial, proceduralMetalMaterial } from '@/scenograph/materials.js';
 import PirateActor from '#/game/src/actors/pirate';
-import RavenObject from '#/game/src/objects/aircraft/raven';
+import RavenObject from '#/game/src/objects/vehicles/raven';
 
 export default class Raven {
 
@@ -140,10 +140,10 @@ export default class Raven {
 
     /**
      * Animate hook.
-     * 
+     *
      * This method is called within the main animation loop and
      * therefore must only reference global objects or properties.
-     * 
+     *
      * @method animate
      * @memberof Raven
      * @global
@@ -158,5 +158,5 @@ export default class Raven {
         }
     }
 
-   
+
 }

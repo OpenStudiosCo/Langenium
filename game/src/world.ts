@@ -10,7 +10,8 @@ import Overworld from "./scenes/overworld.yml";
 import ActorPlayer from './actors/player2';
 
 import ObjectHangar from './objects/structures/hangar';
-import ObjectPerson from './objects/person2';
+import ObjectPerson from './objects/vehicles/person';
+import ObjectValiant from './objects/vehicles/valiant';
 
 interface WorldConfig {
     actors: Record<string, any>;
@@ -127,7 +128,11 @@ export default class World {
         else if (config.model == 'hangar') {
             return new ObjectHangar(config);
         }
+        else if (config.model == 'valiant') {
+            return new ObjectValiant(config);
+        }
         else {
+            console.log('Unknown object model:', config.model);
             return false;
         }
     }

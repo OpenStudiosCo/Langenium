@@ -432,8 +432,7 @@ export default class Valiant {
         l.scenograph.cameras.player.position.x = xDiff + this.camera_distance * Math.sin( this.mesh.rotation.y );
         l.scenograph.cameras.player.position.z = zDiff + this.camera_distance * Math.cos( this.mesh.rotation.y );
 
-        if ( rY != 0 ) {
-
+        if ( rY != 0 && Math.abs(l.scenograph.cameras.player.rotation.y) < .3925 ) {
             l.scenograph.cameras.player.rotation.y += rY;
         }
         else {
@@ -506,8 +505,10 @@ export default class Valiant {
             if (  l.mode != 'hangar')
                 this.updateAnimation( delta );
 
+
             // Update the ships state model.
             let [ rY, tY, tZ ] = this.mesh.userData.object.move( l.current_scene.stats.currentTime - l.current_scene.stats.lastTime );
+
             this.updateMesh();
 
             this.updateCamera( rY, tY, tZ );

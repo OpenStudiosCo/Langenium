@@ -178,5 +178,4 @@ export default class Person {
         }
     }
 
-
 }

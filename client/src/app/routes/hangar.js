@@ -36,9 +36,9 @@ export default class hangarRoute {
 
     loadHangar() {
       l.current_scene.scene.add(l.scenograph.objects.structures.hangar.mesh);
-      //this.targetStructure.visible = false;
+
       l.scenograph.objects.structures.hangar.mesh.visible = true;
-        console.log(this.targetStructure.userData.config.hangars[0].position);
+
       l.scenograph.objects.structures.hangar.mesh.position.x = this.targetStructure.userData.config.hangars[0].position.x;
       l.scenograph.objects.structures.hangar.mesh.position.y = this.targetStructure.userData.config.hangars[0].position.y;
       l.scenograph.objects.structures.hangar.mesh.position.z = this.targetStructure.userData.config.hangars[0].position.z;

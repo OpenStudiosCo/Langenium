@@ -491,7 +491,7 @@ export default class Valiant {
 
         if ( l.current_scene.objects.demoShip.ready ) {
 
-            if ( l.current_scene.settings.game_controls ) {
+            if ( l.current_scene.settings.game_controls && this.game ) {
 
                 if ( l.scenograph.actors.player.mode == 'vehicle' ) {
                     // Detect keyboard input and pass it to the ship state model.

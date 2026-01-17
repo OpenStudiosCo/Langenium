@@ -2,7 +2,7 @@
  * Person class
  */
 
-import ObjectBase from './base';
+import ObjectBase from '../base';
 import BaseActor from '../actors/base2';
 import { changeVelocity, normaliseSpeedDelta, easeOutExpo, easeInQuad, easeInOutExpo } from '../../helpers';
 import { Vec3 } from '../types';

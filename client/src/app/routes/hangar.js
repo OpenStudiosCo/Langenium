@@ -43,9 +43,9 @@ export default class hangarRoute {
       l.scenograph.objects.structures.hangar.mesh.position.y = this.targetStructure.userData.config.hangars[0].position.y;
       l.scenograph.objects.structures.hangar.mesh.position.z = this.targetStructure.userData.config.hangars[0].position.z;
 
-      l.scenograph.actors.player.vehicle.mesh.userData.object.position.x =  this.targetStructure.userData.config.hangars[0].position.x;
-      l.scenograph.actors.player.vehicle.mesh.userData.object.position.z = - 2.5 + this.targetStructure.userData.config.hangars[0].position.z;
-      l.scenograph.actors.player.vehicle.mesh.userData.object.position.y = l.scenograph.objects.structures.hangar.mesh.position.y - 7.5;
+      l.scenograph.actors.player.vehicle.game.object.position.x =  this.targetStructure.userData.config.hangars[0].position.x;
+      l.scenograph.actors.player.vehicle.game.object.position.z = - 2.5 + this.targetStructure.userData.config.hangars[0].position.z;
+      l.scenograph.actors.player.vehicle.game.object.position.y = l.scenograph.objects.structures.hangar.mesh.position.y - 7.5;
 
       l.scenograph.actors.player.actorInstance.object.position.x = this.targetStructure.userData.config.hangars[0].position.x;
       l.scenograph.actors.player.actorInstance.object.position.z = 10 + this.targetStructure.userData.config.hangars[0].position.z;

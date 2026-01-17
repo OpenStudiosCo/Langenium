@@ -2,7 +2,7 @@
  * Raven Aircraft, default ship and Los Zaar main vehicle.
  */
 
-import BaseAircraft from './base';
+import BaseAircraft from '../base';
 
 class Raven extends BaseAircraft {
 

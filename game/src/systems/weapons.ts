@@ -1,6 +1,6 @@
 /**
  * Weapons Systems
- * 
+ *
  * Defines an interface that fires a vehicles weapons.
  */
 
@@ -48,10 +48,14 @@ export default class Weapons extends BaseSystem {
                     target.locked && this.ready()
                 ) {
 
+                    if (! this.mesh.userData.object ) {
+                        debugger;
+                    }
+
                     let negativeStanding = false;
 
                     // Check if the object has an object class game object and do a standing check.
-                    if ( 
+                    if (
                         target.mesh.userData.hasOwnProperty('object') &&
                         target.mesh.userData.object.hasOwnProperty('standing') &&
                         target.mesh.userData.object.standing != this.mesh.userData.object.standing

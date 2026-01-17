@@ -181,6 +181,7 @@ export default class World {
     }
 
     checkHangarCollisions(actorInstance: any) {
+
         // Get object's proposed AABB at next position
         const actorAABB = actorInstance.object.getAABBNext();
 

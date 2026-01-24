@@ -1,0 +1,166 @@
+entities:
+  - id: player1
+    components:
+      Name: Player One
+      Transform:
+        position: { x: -65000, y: -35000, z: 1500 }
+        rotation: { x: 0, y: -12.56, z: 0 }
+      Renderable:
+        primaryColor: FF0000
+        secondaryColor: FFFF00
+        object: valiant
+      PlayerInput: {}
+      FactionStanding: { union: 0.5, winthrom: 1.0, zaar: 0.0 }
+      AI: defensive
+      Health:
+        current: 100
+        max: 100
+
+  - id: player2
+    components:
+      Name: Player Two
+      Transform:
+        position: { x: -65000, y: -35000, z: 1500 }
+        rotation: { x: 0, y: -12.56, z: 0 }
+      Renderable:
+        primaryColor: 0000FF
+        secondaryColor: 00FFFF
+        object: person
+      PlayerInput: {}
+      HangarAssigned:
+        structureId: lambda_city
+        hangarId: hangar_1
+      FactionStanding: { union: 0.5, winthrom: 1.0, zaar: 0.0 }
+      AI: defensive
+      Health:
+        current: 100
+        max: 100
+
+  - id: pirate_1
+    components:
+      Name: Pirate One
+      Transform:
+        position: { x: -65000, y: -35000, z: 1500 }
+        rotation: { x: 0, y: -12.56, z: 0 }
+      Renderable:
+        primaryColor: 00FF00
+        secondaryColor: FF00FF
+        object: raven
+      AI: aggressive
+      FactionStanding: { union: 0.5, winthrom: 0.0, zaar: 1.0 }
+      Health:
+        current: 100
+        max: 100
+
+  - id: cargo_1
+    components:
+      Name: Capy One
+      Transform:
+        position: { x: -35000, y: -2000, z: 10000 }
+      Renderable:
+        object: cargoShip
+      AI: passive
+      FactionStanding: { union: 1.0, winthrom: 0.5, zaar: 0.0 }
+      Health:
+        current: 100
+        max: 100
+
+  - id: cargo_2
+    components:
+      Name: Capy Two
+      Transform:
+        position: { x: -34000, y: -1500, z: 10000 }
+      Renderable:
+        object: cargoShip
+      AI: passive
+      FactionStanding: { union: 1.0, winthrom: 0.5, zaar: 0.0 }
+      Health:
+        current: 100
+        max: 100
+
+  - id: cargo_3
+    components:
+      Name: Capy Three
+      Transform:
+        position: { x: -36000, y: -1500, z: 10000 }
+      Renderable:
+        object: cargoShip
+      AI: passive
+      FactionStanding: { union: 1.0, winthrom: 0.5, zaar: 0.0 }
+      Health:
+        current: 100
+        max: 100
+
+  # Static objects
+  - id: einstein_well
+    components:
+      Name: Einstein Well
+      Transform:
+        position: { x: 0, y: -7450, z: -70000 }
+      Renderable:
+        object: extractor
+      FactionStanding: { union: 1.0, winthrom: 0.5, zaar: 0.0 }
+
+  - id: newton_well
+    components:
+      Name: Newton Well
+      Transform:
+        position: { x: 0, y: -7450, z: 70000 }
+      Renderable:
+        object: extractor
+      FactionStanding: { union: 1.0, winthrom: 0.5, zaar: 0.0 }
+
+  - id: galileo_well
+    components:
+      Name: Galileo Well
+      Transform:
+        position: { x: -70000, y: -7450, z: 0 }
+      Renderable:
+        object: extractor
+      FactionStanding: { union: 1.0, winthrom: 0.5, zaar: 0.0 }
+
+  - id: planck_well
+    components:
+      Name: Planck Well
+      Transform:
+        position: { x: 70000, y: -7450, z: 0 }
+      Renderable:
+        object: extractor
+      FactionStanding: { union: 1.0, winthrom: 0.5, zaar: 0.0 }
+
+  - id: lambda_city
+    components:
+      Name: Lambda City
+      Transform:
+        position: { x: -35000, y: 1500, z: -65000 }
+        rotation: { x: 0, y: -12.56, z: 0 }
+      Renderable:
+        object: platform
+      Hangars:
+        - id: hangar_1
+          name: Hangar 1
+          position: { x: 0, y: 6100, z: -8620 }
+          rotation: { x: 0, y: 0, z: 0 }
+        - id: hangar_2
+          name: Hangar 2
+          position: { x: 0, y: 505, z: 0 }
+          rotation: { x: 0, y: 3.14159, z: 0 }
+      FactionStanding: { union: 1.0, winthrom: 0.5, zaar: 0.0 }
+
+  - id: refinery_91
+    components:
+      Name: Refinery 91
+      Transform:
+        position: { x: 20000, y: 153, z: -20000 }
+      Renderable:
+        object: refinery
+      FactionStanding: { union: 1.0, winthrom: 0.5, zaar: 0.0 }
+
+  - id: refinery_92
+    components:
+      Name: Refinery 92
+      Transform:
+        position: { x: -20000, y: 153, z: 20000 }
+      Renderable:
+        object: refinery
+      FactionStanding: { union: 1.0, winthrom: 0.5, zaar: 0.0 }

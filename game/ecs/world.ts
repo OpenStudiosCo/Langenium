@@ -9,7 +9,12 @@
 
 import Overworld from "./scenes/overworld.yml";
 
+import { Vec3 } from "./types";
+
 import { Name } from "./components/name";
+import { Transform } from "./components/Transform";
+
+
 
 interface WorldConfig {
     entities: Record<string, any>;
@@ -65,7 +70,13 @@ export default class World {
             for (const [componentName, componentData] of Object.entries(entityConfig.components)) {
                 switch (componentName) {
                     case 'Name':
-                        entityInstance.components.Name = componentData;
+                        entityInstance.components.Name = componentData as Name;
+                        break;
+                    case 'Transform':
+                        entityInstance.components.Transform = {
+                            position: componentData.position,
+                            rotation: componentData.rotation
+                        } as Transform;
                         break;
                 }
             }

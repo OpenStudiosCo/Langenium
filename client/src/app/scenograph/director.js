@@ -17,7 +17,7 @@ import l from '@/helpers/l.js';
 /**
  * World Simulation
  */
-import World from '#/game/src/world';
+import World from '#/game/ecs/world';
 
 /**
  * Scene controllers
@@ -231,9 +231,12 @@ export default class Director {
 
     // Load world instance from game classes.
     load( sceneName ) {
-      this.world = new World( sceneName );
+        this.world = new World(sceneName);
 
-      return this;
+        console.log(this.world);
+        debugger;
+
+        return this;
     }
 
     // Load the objects in world instance to the current scene.

@@ -14,7 +14,7 @@ import { Vec3 } from "./types";
 import { Name } from "./components/name";
 import { Transform } from "./components/Transform";
 
-
+import { movementSystem } from "./systems/movement";
 
 interface WorldConfig {
     entities: Record<string, any>;
@@ -116,17 +116,8 @@ export default class World {
     }
 
     update() {
-        // for (const actorInstance of this.instance.actors.values()) {
-        //     if (actorInstance.actor) {
-        //         actorInstance.actor.update(this.fixedDelta);
-        //     }
-        //     if (actorInstance.object) {
-        //         actorInstance.object.update(this.fixedDelta);
-        //         if (actorInstance.actor.controls.forward || actorInstance.actor.controls.back) {
-        //             this.checkHangarCollisions(actorInstance);
-        //         }
-        //     }
-        // }
+        movementSystem(this.instance.entities, this.fixedDelta);
+        // Later: call other systems here, e.g., AI, collision, rendering
     }
 
 

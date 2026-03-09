@@ -24,7 +24,7 @@ import { movementSystem } from "./systems/movement";
 export default class World {
 
     public configs: Record<string, any>;
-    public instances: Record<string, any>;
+    public entities: Record<string, any>;
 
     public fixedDelta: number;
     public lastUpdateTime: number;
@@ -44,7 +44,7 @@ export default class World {
     constructor( sceneName: string ) {
         if ( sceneName === 'Overworld' ) {
             this.configs = Overworld.entities;
-            this.instances = new Map<string, any>();
+            this.entities = new Map<string, any>();
 
             this.lastUpdateTime = performance.now();
             this.fixedDelta = 16; // ~60 FPS for logic
@@ -80,26 +80,26 @@ export default class World {
                             altitude: 0,
                             heading: 0
                         } as Motion;
-                        break;
-                    case 'Renderable':
-                        // Load object specific settings from config.
-                        if (componentData.object === 'cargoShip') {
-                            entityInstance.maxSpeed = CargoShip.maxSpeed;
-                        }
-                        if (componentData.object === 'person') {
-                            entityInstance.maxSpeed = Person.maxSpeed;
-                        }
-                        if (componentData.object === 'raven') {
-                            entityInstance.maxSpeed = Raven.maxSpeed;
-                        }
-                        if (componentData.object === 'valiant') {
-                            entityInstance.maxSpeed = Valiant.maxSpeed;
+                        if (entityConfig.components.Renderable && entityConfig.components.Renderable.object) {
+                            // Load object specific settings from config.
+                            if (entityConfig.components.Renderable.object === 'cargoShip') {
+                                entityInstance.components.Motion.limits = CargoShip.limits;
+                            }
+                            if (entityConfig.components.Renderable.object === 'person') {
+                                entityInstance.components.Motion.limits = Person.limits;
+                            }
+                            if (entityConfig.components.Renderable.object === 'raven') {
+                                entityInstance.components.Motion.limits = Raven.limits;
+                            }
+                            if (entityConfig.components.Renderable.object === 'valiant') {
+                                entityInstance.components.Motion.limits = Valiant.limits;
+                            }
                         }
                         break;
                 }
             }
 
-            this.instances.set(entityConfig.id, entityInstance);
+            this.entities.set(entityConfig.id, entityInstance);
         }
 
     }
@@ -134,7 +134,7 @@ export default class World {
     }
 
     update() {
-        movementSystem(this.instances, this.fixedDelta);
+        movementSystem(this.entities, this.fixedDelta);
         // Later: call other systems here, e.g., AI, collision, rendering
     }
 

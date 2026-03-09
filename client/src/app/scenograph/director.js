@@ -233,9 +233,6 @@ export default class Director {
     load( sceneName ) {
         this.world = new World(sceneName);
 
-        console.log(this.world);
-        debugger;
-
         return this;
     }
 
@@ -249,8 +246,9 @@ export default class Director {
     }
 
     async loadInstance() {
-
-        await this.world.config.objects.forEach( async object_config => {
+        console.log(this.world);
+        debugger;
+        await this.world.entities.forEach( async object_config => {
             if ( object_config.model == 'extractor' ) {
                 l.scenograph.director.loadObject(
                 object_config,
@@ -269,9 +267,7 @@ export default class Director {
                 await l.scenograph.objects.structures.refinery.get()
                 );
             }
-        } );
 
-        this.world.config.actors.forEach( async object_config => {
             if ( object_config.class == 'cargoShip' ) {
                 l.scenograph.director.loadObject(
                 object_config,

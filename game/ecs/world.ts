@@ -21,18 +21,10 @@ import { Motion } from "./components/Motion";
 
 import { movementSystem } from "./systems/movement";
 
-interface WorldConfig {
-    entities: Record<string, any>;
-}
-
-interface WorldInstance {
-    entities: Record<string, any>;
-}
-
 export default class World {
 
-    public config: WorldConfig;
-    public instance: WorldInstance;
+    public configs: Record<string, any>;
+    public instances: Record<string, any>;
 
     public fixedDelta: number;
     public lastUpdateTime: number;
@@ -51,12 +43,8 @@ export default class World {
      */
     constructor( sceneName: string ) {
         if ( sceneName === 'Overworld' ) {
-            this.config = {
-                entities: Overworld.entities,
-            }
-            this.instance = {
-                entities: new Map<string, any>(),
-            };
+            this.configs = Overworld.entities;
+            this.instances = new Map<string, any>();
 
             this.lastUpdateTime = performance.now();
             this.fixedDelta = 16; // ~60 FPS for logic
@@ -68,7 +56,7 @@ export default class World {
 
     load() {
         // Load entities.
-        for (const entityConfig of this.config.entities.values()) {
+        for (const entityConfig of this.configs.values()) {
             const entityInstance: any = { components: {}, config: entityConfig };
 
             // Attach each component
@@ -111,7 +99,7 @@ export default class World {
                 }
             }
 
-            this.instance.entities.set(entityConfig.id, entityInstance);
+            this.instances.set(entityConfig.id, entityInstance);
         }
 
     }
@@ -146,7 +134,7 @@ export default class World {
     }
 
     update() {
-        movementSystem(this.instance.entities, this.fixedDelta);
+        movementSystem(this.instances, this.fixedDelta);
         // Later: call other systems here, e.g., AI, collision, rendering
     }
 

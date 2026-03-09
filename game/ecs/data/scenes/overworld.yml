@@ -5,6 +5,7 @@ entities:
       Transform:
         position: { x: -65000, y: -35000, z: 1500 }
         rotation: { x: 0, y: -12.56, z: 0 }
+      Movable: true
       Renderable:
         primaryColor: FF0000
         secondaryColor: FFFF00
@@ -22,6 +23,7 @@ entities:
       Transform:
         position: { x: -65000, y: -35000, z: 1500 }
         rotation: { x: 0, y: -12.56, z: 0 }
+      Movable: true
       Renderable:
         primaryColor: 0000FF
         secondaryColor: 00FFFF
@@ -42,6 +44,7 @@ entities:
       Transform:
         position: { x: -65000, y: -35000, z: 1500 }
         rotation: { x: 0, y: -12.56, z: 0 }
+      Movable: true
       Renderable:
         primaryColor: 00FF00
         secondaryColor: FF00FF
@@ -57,6 +60,7 @@ entities:
       Name: Capy One
       Transform:
         position: { x: -35000, y: -2000, z: 10000 }
+      Movable: true
       Renderable:
         object: cargoShip
       AI: passive
@@ -70,6 +74,7 @@ entities:
       Name: Capy Two
       Transform:
         position: { x: -34000, y: -1500, z: 10000 }
+      Movable: true
       Renderable:
         object: cargoShip
       AI: passive
@@ -83,6 +88,7 @@ entities:
       Name: Capy Three
       Transform:
         position: { x: -36000, y: -1500, z: 10000 }
+      Movable: true
       Renderable:
         object: cargoShip
       AI: passive

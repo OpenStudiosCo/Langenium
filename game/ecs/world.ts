@@ -7,12 +7,17 @@
  *
  */
 
-import Overworld from "./scenes/overworld.yml";
 
-import { Vec3 } from "./types";
+// Import YAML configs.
+import CargoShip from "./data/objects/cargoShip.yml";
+import Person from "./data/objects/person.yml";
+import Raven from "./data/objects/raven.yml";
+import Valiant from "./data/objects/valiant.yml";
+import Overworld from "./data/scenes/overworld.yml";
 
 import { Name } from "./components/name";
 import { Transform } from "./components/Transform";
+import { Motion } from "./components/Motion";
 
 import { movementSystem } from "./systems/movement";
 
@@ -77,6 +82,31 @@ export default class World {
                             position: componentData.position,
                             rotation: componentData.rotation
                         } as Transform;
+                        break;
+                    case 'Movable':
+                        entityInstance.components.Motion = {
+                            velocity: {
+                                horizontal: 0,
+                                vertical: 0
+                            },
+                            altitude: 0,
+                            heading: 0
+                        } as Motion;
+                        break;
+                    case 'Renderable':
+                        // Load object specific settings from config.
+                        if (componentData.object === 'cargoShip') {
+                            entityInstance.maxSpeed = CargoShip.maxSpeed;
+                        }
+                        if (componentData.object === 'person') {
+                            entityInstance.maxSpeed = Person.maxSpeed;
+                        }
+                        if (componentData.object === 'raven') {
+                            entityInstance.maxSpeed = Raven.maxSpeed;
+                        }
+                        if (componentData.object === 'valiant') {
+                            entityInstance.maxSpeed = Valiant.maxSpeed;
+                        }
                         break;
                 }
             }

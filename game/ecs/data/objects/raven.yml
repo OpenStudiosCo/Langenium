@@ -1,0 +1,9 @@
+name: Raven
+maxSpeed:
+    forward: 18.5
+    backward: 2.0
+    up: 9.25
+    down: 18.5
+
+primaryColor: FF0000
+secondaryColor: FFFF00

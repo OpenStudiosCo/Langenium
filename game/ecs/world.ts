@@ -15,6 +15,8 @@ import Raven from "./data/objects/raven.yml";
 import Valiant from "./data/objects/valiant.yml";
 import Overworld from "./data/scenes/overworld.yml";
 
+import { Vec3 } from "./types";
+
 import { Name } from "./components/name";
 import { Transform } from "./components/Transform";
 import { Motion } from "./components/Motion";
@@ -67,8 +69,8 @@ export default class World {
                         break;
                     case 'Transform':
                         entityInstance.components.Transform = {
-                            position: componentData.position,
-                            rotation: componentData.rotation
+                            position: componentData.position ? componentData.position : {x: 0, y: 0, z: 0} as Vec3,
+                            rotation: componentData.rotation ? componentData.rotation : {x: 0, y: 0, z: 0} as Vec3
                         } as Transform;
                         break;
                     case 'Movable':

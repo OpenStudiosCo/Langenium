@@ -247,68 +247,66 @@ export default class Director {
 
     async loadInstance() {
         console.log(this.world);
-        debugger;
-        await this.world.entities.forEach( async object_config => {
-            if ( object_config.model == 'extractor' ) {
+        await this.world.entities.forEach(async entity => {
+
+            if ( entity.config.components.Renderable.object == 'extractor' ) {
                 l.scenograph.director.loadObject(
-                object_config,
+                entity,
                 await l.scenograph.objects.structures.extractor.get()
                 );
             }
-            if ( object_config.model == 'platform' ) {
+            if ( entity.config.components.Renderable.model == 'platform' ) {
                 l.scenograph.director.loadObject(
-                object_config,
+                entity,
                 await l.scenograph.objects.structures.platform.get()
                 );
             }
-            if ( object_config.model == 'refinery' ) {
+            if ( entity.config.components.Renderable.model == 'refinery' ) {
                 l.scenograph.director.loadObject(
-                object_config,
+                entity,
                 await l.scenograph.objects.structures.refinery.get()
                 );
             }
 
-            if ( object_config.class == 'cargoShip' ) {
+            if ( entity.config.components.Renderable.class == 'cargoShip' ) {
                 l.scenograph.director.loadObject(
-                object_config,
+                entity,
                 await l.scenograph.objects.vehicles.cargoShip.get()
                 );
             }
-            if ( object_config.class == 'pirate' ) {
+            if ( entity.config.components.Renderable.class == 'pirate' ) {
                 l.scenograph.director.loadObject(
-                object_config,
+                entity,
                 await l.scenograph.objects.vehicles.raven.get()
                 );
             }
 
-        } );
-
-        this.world.instance.actors.forEach(async actorInstance => {
-            if ( actorInstance.config.class == 'player' ) {
-                await l.scenograph.actors.registerActor( actorInstance );
+            if ( entity.config.components.Renderable.class == 'player' ) {
+                await l.scenograph.actors.registerActor( entity );
             }
         });
 
     }
 
-    async loadObject( config, object ) {
-      object.position.x = config.position.x;
-      object.position.y = config.position.y;
-      object.position.z = config.position.z;
+    async loadObject(entity, scenographObject) {
+        console.log(entity, scenographObject);
+      scenographObject.position.x = entity.components.Transform.position.x;
+      scenographObject.position.y = entity.components.Transform.position.y;
+      scenographObject.position.z = entity.components.Transform.position.z;
 
-      if ( config.rotation ) {
-        object.rotation.x = config.rotation.x;
-        object.rotation.y = config.rotation.y;
-        object.rotation.z = config.rotation.z;
+      if ( entity.rotation ) {
+        scenographObject.rotation.x = entity.components.Transform.rotation.x;
+        scenographObject.rotation.y = entity.components.Transform.rotation.y;
+        scenographObject.rotation.z = entity.components.Transform.rotation.z;
       }
 
-      object.name = config.name;
-      object.userData.config = config;
+      scenographObject.name = entity.components.Name;
+      scenographObject.userData.entity = entity;
 
-      // @todo: add to current_scene array relevant to object class.
+      // @todo: add to current_scene array relevant to scenographObject class.
 
       l.current_scene.scene.add(
-        object
+          scenographObject
       );
     }
 

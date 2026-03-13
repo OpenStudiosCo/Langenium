@@ -255,33 +255,33 @@ export default class Director {
                 await l.scenograph.objects.structures.extractor.get()
                 );
             }
-            if ( entity.config.components.Renderable.model == 'platform' ) {
+            if ( entity.config.components.Renderable.object == 'platform' ) {
                 l.scenograph.director.loadObject(
                 entity,
                 await l.scenograph.objects.structures.platform.get()
                 );
             }
-            if ( entity.config.components.Renderable.model == 'refinery' ) {
+            if ( entity.config.components.Renderable.object == 'refinery' ) {
                 l.scenograph.director.loadObject(
                 entity,
                 await l.scenograph.objects.structures.refinery.get()
                 );
             }
 
-            if ( entity.config.components.Renderable.class == 'cargoShip' ) {
+            if ( entity.config.components.Renderable.object == 'cargoShip' ) {
                 l.scenograph.director.loadObject(
                 entity,
                 await l.scenograph.objects.vehicles.cargoShip.get()
                 );
             }
-            if ( entity.config.components.Renderable.class == 'pirate' ) {
+            if ( entity.config.components.Renderable.object == 'pirate' ) {
                 l.scenograph.director.loadObject(
                 entity,
                 await l.scenograph.objects.vehicles.raven.get()
                 );
             }
 
-            if ( entity.config.components.Renderable.class == 'player' ) {
+            if ( entity.config.components.Renderable.object == 'valiant' || entity.config.components.Renderable.object == 'person'  ) {
                 await l.scenograph.actors.registerActor( entity );
             }
         });

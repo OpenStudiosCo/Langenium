@@ -41,7 +41,7 @@ export default class CargoShip {
 
     /**
      * Paths
-     * 
+     *
      * @todo: Refactor into a common path setting and updating class.
      */
     getPath() {
@@ -62,7 +62,7 @@ export default class CargoShip {
     }
 
     async getAll() {
-        
+
         let path = this.getPath();
 
         const path_points = [];
@@ -90,10 +90,10 @@ export default class CargoShip {
         await this.load();
 
         this.locations.forEach( async ( location, i ) => {
-            
+
             let mesh = this.mesh.clone();
             mesh.userData.path = this.getPath();
-            
+
             // Bump each starting point for the cargo ships
             for ( let j = 0; j < i; j++) {
                 mesh.userData.path.advance();
@@ -121,14 +121,17 @@ export default class CargoShip {
         mesh.userData.path = this.getPath();
 
         let i = this.instances.length;
-        
+
         // Bump each starting point for the cargo ships
         for ( let j = 0; j < i; j++) {
             mesh.userData.path.advance();
         }
 
-        mesh.position.copy( mesh.userData.path.current() );
         mesh.name = 'Cargo Ship #' + ( i + 1 );
+
+        console.log(mesh.name, mesh.position, mesh.userData);
+        mesh.position.copy( mesh.userData.path.current() );
+
 
         mesh.userData.objectClass = 'cargoShip';
         mesh.userData.targetable = true;
@@ -139,7 +142,7 @@ export default class CargoShip {
 
         mesh.matrixAutoUpdate = false;
 
-        this.instances.push( mesh );
+        this.instances.push(mesh);
 
         return mesh;
     }
@@ -202,10 +205,10 @@ export default class CargoShip {
 
     /**
      * Animate hook.
-     * 
+     *
      * This method is called within the main animation loop and
      * therefore must only reference global objects or properties.
-     * 
+     *
      * @method animate
      * @memberof CargoShips
      * @global
@@ -217,10 +220,10 @@ export default class CargoShip {
             l.scenograph.objects.vehicles.cargoShip.instances.forEach( ( cargo_ship ) => {
 
                 cargo_ship.userData.actor.animate( delta );
-                
+
             } );
         }
- 
+
     }
-    
+
 }

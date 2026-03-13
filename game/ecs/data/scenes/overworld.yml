@@ -1,4 +1,80 @@
 entities:
+
+  # Static objects
+  - id: einstein_well
+    components:
+      Name: Einstein Well
+      Transform:
+        position: { x: 0, y: -7450, z: -70000 }
+      Renderable:
+        object: extractor
+      FactionStanding: { union: 1.0, winthrom: 0.5, zaar: 0.0 }
+
+  - id: newton_well
+    components:
+      Name: Newton Well
+      Transform:
+        position: { x: 0, y: -7450, z: 70000 }
+      Renderable:
+        object: extractor
+      FactionStanding: { union: 1.0, winthrom: 0.5, zaar: 0.0 }
+
+  - id: galileo_well
+    components:
+      Name: Galileo Well
+      Transform:
+        position: { x: -70000, y: -7450, z: 0 }
+      Renderable:
+        object: extractor
+      FactionStanding: { union: 1.0, winthrom: 0.5, zaar: 0.0 }
+
+  - id: planck_well
+    components:
+      Name: Planck Well
+      Transform:
+        position: { x: 70000, y: -7450, z: 0 }
+      Renderable:
+        object: extractor
+      FactionStanding: { union: 1.0, winthrom: 0.5, zaar: 0.0 }
+
+  - id: lambda_city
+    components:
+      Name: Lambda City
+      Transform:
+        position: { x: -35000, y: 1500, z: -65000 }
+        rotation: { x: 0, y: -12.56, z: 0 }
+      Renderable:
+        object: platform
+      Hangars:
+        - id: hangar_1
+          name: Hangar 1
+          position: { x: 0, y: 6100, z: -8620 }
+          rotation: { x: 0, y: 0, z: 0 }
+        - id: hangar_2
+          name: Hangar 2
+          position: { x: 0, y: 505, z: 0 }
+          rotation: { x: 0, y: 3.14159, z: 0 }
+      FactionStanding: { union: 1.0, winthrom: 0.5, zaar: 0.0 }
+
+  - id: refinery_91
+    components:
+      Name: Refinery 91
+      Transform:
+        position: { x: 20000, y: 153, z: -20000 }
+      Renderable:
+        object: refinery
+      FactionStanding: { union: 1.0, winthrom: 0.5, zaar: 0.0 }
+
+  - id: refinery_92
+    components:
+      Name: Refinery 92
+      Transform:
+        position: { x: -20000, y: 153, z: 20000 }
+      Renderable:
+        object: refinery
+      FactionStanding: { union: 1.0, winthrom: 0.5, zaar: 0.0 }
+
+  # Vehicles
   - id: player1
     components:
       Name: Player One
@@ -96,77 +172,3 @@ entities:
       Health:
         current: 100
         max: 100
-
-  # Static objects
-  - id: einstein_well
-    components:
-      Name: Einstein Well
-      Transform:
-        position: { x: 0, y: -7450, z: -70000 }
-      Renderable:
-        object: extractor
-      FactionStanding: { union: 1.0, winthrom: 0.5, zaar: 0.0 }
-
-  - id: newton_well
-    components:
-      Name: Newton Well
-      Transform:
-        position: { x: 0, y: -7450, z: 70000 }
-      Renderable:
-        object: extractor
-      FactionStanding: { union: 1.0, winthrom: 0.5, zaar: 0.0 }
-
-  - id: galileo_well
-    components:
-      Name: Galileo Well
-      Transform:
-        position: { x: -70000, y: -7450, z: 0 }
-      Renderable:
-        object: extractor
-      FactionStanding: { union: 1.0, winthrom: 0.5, zaar: 0.0 }
-
-  - id: planck_well
-    components:
-      Name: Planck Well
-      Transform:
-        position: { x: 70000, y: -7450, z: 0 }
-      Renderable:
-        object: extractor
-      FactionStanding: { union: 1.0, winthrom: 0.5, zaar: 0.0 }
-
-  - id: lambda_city
-    components:
-      Name: Lambda City
-      Transform:
-        position: { x: -35000, y: 1500, z: -65000 }
-        rotation: { x: 0, y: -12.56, z: 0 }
-      Renderable:
-        object: platform
-      Hangars:
-        - id: hangar_1
-          name: Hangar 1
-          position: { x: 0, y: 6100, z: -8620 }
-          rotation: { x: 0, y: 0, z: 0 }
-        - id: hangar_2
-          name: Hangar 2
-          position: { x: 0, y: 505, z: 0 }
-          rotation: { x: 0, y: 3.14159, z: 0 }
-      FactionStanding: { union: 1.0, winthrom: 0.5, zaar: 0.0 }
-
-  - id: refinery_91
-    components:
-      Name: Refinery 91
-      Transform:
-        position: { x: 20000, y: 153, z: -20000 }
-      Renderable:
-        object: refinery
-      FactionStanding: { union: 1.0, winthrom: 0.5, zaar: 0.0 }
-
-  - id: refinery_92
-    components:
-      Name: Refinery 92
-      Transform:
-        position: { x: -20000, y: 153, z: 20000 }
-      Renderable:
-        object: refinery
-      FactionStanding: { union: 1.0, winthrom: 0.5, zaar: 0.0 }

@@ -23,11 +23,11 @@ export default class Actors {
         this.map = new Map();
     }
 
-    async registerActor(actorInstance) {
-        if ( actorInstance.config.class == 'player' ) {
-            let player = new Player( actorInstance );
+    async registerActor(actorEntity) {
+        if (actorEntity.config.components.PlayerInput) {
+            let player = new Player( actorEntity );
             await player.load();
-            this.map.set(actorInstance.config.name, player);
+            this.map.set(actorEntity.components.Name, player);
         }
     }
 

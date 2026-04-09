@@ -14,9 +14,9 @@ import l from '@/helpers/l.js';
 
 export default class Person {
 
-    constructor(actorInstance) {
+    constructor(actorEntity) {
         // Set internal game accessor to the game world actor instance.
-        this.game = actorInstance;
+        this.game = actorEntity;
 
         this.default_camera_distance = l.scenograph.width < l.scenograph.height ? -5 : -2.5;
 

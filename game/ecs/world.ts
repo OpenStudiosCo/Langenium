@@ -15,12 +15,16 @@ import Raven from "./data/objects/raven.yml";
 import Valiant from "./data/objects/valiant.yml";
 import Overworld from "./data/scenes/overworld.yml";
 
+// Base includes
 import { Vec3 } from "./types";
 
-import { Name } from "./components/name";
-import { Transform } from "./components/Transform";
+// Components.
 import { Motion } from "./components/Motion";
+import { Name } from "./components/name";
+import { PlayerInput } from "./components/playerInput";
+import { Transform } from "./components/Transform";
 
+// Systems.
 import { movementSystem } from "./systems/movement";
 
 export default class World {
@@ -64,6 +68,19 @@ export default class World {
             // Attach each component
             for (const [componentName, componentData] of Object.entries(entityConfig.components)) {
                 switch (componentName) {
+                    case 'PlayerInput':
+                        let initialControlState = {
+                            changing: false,
+                            throttleUp: false,
+                            throttleDown: false,
+                            moveUp: false,
+                            moveDown: false,
+                            moveLeft: false,
+                            moveRight: false,
+                        };
+                        entityInstance.components.PlayerInput = initialControlState as PlayerInput;
+                        break;
+
                     case 'Name':
                         entityInstance.components.Name = componentData as Name;
                         break;

@@ -281,7 +281,7 @@ export default class Director {
                 );
             }
 
-            if ( entity.config.components.Renderable.object == 'valiant' || entity.config.components.Renderable.object == 'person'  ) {
+            if (entity.config.components.Renderable.object == 'valiant' || entity.config.components.Renderable.object == 'person') {
                 await l.scenograph.actors.registerActor( entity );
             }
         });

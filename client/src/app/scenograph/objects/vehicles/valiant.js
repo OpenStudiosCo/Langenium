@@ -417,8 +417,6 @@ export default class Valiant {
 
     // Update the position of the aircraft to spot determined by game logic.
     sync() {
-        // console.log(this.game);
-        // debugger;
         this.mesh.position.x = this.game.components.Transform.position.x;
         this.mesh.position.y = this.game.components.Transform.position.y;
         this.mesh.position.z = this.game.components.Transform.position.z;

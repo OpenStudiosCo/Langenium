@@ -80,7 +80,7 @@ entities:
       Name: Player One
       Transform:
         position: { x: -65000, y: -35000, z: 1500 }
-        rotation: { x: 0, y: -12.56, z: 0 }
+        rotation: { x: 0, y: 0, z: 0 }
       Movable: true
       Renderable:
         primaryColor: FF0000
@@ -98,7 +98,7 @@ entities:
       Name: Player Two
       Transform:
         position: { x: -65000, y: -35000, z: 1500 }
-        rotation: { x: 0, y: -12.56, z: 0 }
+        rotation: { x: 0, y: 0, z: 0 }
       Movable: true
       Renderable:
         primaryColor: 0000FF
@@ -119,7 +119,7 @@ entities:
       Name: Pirate One
       Transform:
         position: { x: -65000, y: -35000, z: 1500 }
-        rotation: { x: 0, y: -12.56, z: 0 }
+        rotation: { x: 0, y: 0, z: 0 }
       Movable: true
       Renderable:
         primaryColor: 00FF00

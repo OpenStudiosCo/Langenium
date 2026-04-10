@@ -417,8 +417,8 @@ export default class Valiant {
 
     // Update the position of the aircraft to spot determined by game logic.
     sync() {
-        console.log(this.game);
-        debugger;
+        // console.log(this.game);
+        // debugger;
         this.mesh.position.x = this.game.components.Transform.position.x;
         this.mesh.position.y = this.game.components.Transform.position.y;
         this.mesh.position.z = this.game.components.Transform.position.z;
@@ -427,12 +427,12 @@ export default class Valiant {
         this.mesh.rotation.z = this.game.components.Transform.rotation.z;
     }
 
-    updateCamera( rY, tY, tZ ) {
+    updateCamera( heading, verticalSpeed, horizontalSpeed ) {
         var radian = ( Math.PI / 180 );
 
         this.camera_distance = this.default_camera_distance + ( l.current_scene.room_depth / 2 );
-        if ( this.game.object.airSpeed < 0 ) {
-            this.camera_distance -= this.game.object.airSpeed * 4;
+        if ( this.game.components.Motion.velocity.horizontal < 0 ) {
+            this.camera_distance -= this.game.components.Motion.velocity.horizontal * 4;
         }
 
         let xDiff = this.mesh.position.x;
@@ -441,8 +441,8 @@ export default class Valiant {
         l.scenograph.cameras.player.position.x = xDiff + this.camera_distance * Math.sin( this.mesh.rotation.y );
         l.scenograph.cameras.player.position.z = zDiff + this.camera_distance * Math.cos( this.mesh.rotation.y );
 
-        if ( rY != 0 && Math.abs(l.scenograph.cameras.player.rotation.y) < .3925 ) {
-            l.scenograph.cameras.player.rotation.y += rY;
+        if ( heading != 0 && Math.abs(l.scenograph.cameras.player.rotation.y) < .3925 ) {
+            l.scenograph.cameras.player.rotation.y += heading;
         }
         else {
             // Check there is y difference and the rotation pad isn't being pressed.
@@ -469,11 +469,11 @@ export default class Valiant {
 
         }
 
-        let xDiff2 = tZ * Math.sin( this.mesh.rotation.y ),
-            zDiff2 = tZ * Math.cos( this.mesh.rotation.y );
+        let xDiff2 = horizontalSpeed * Math.sin( this.mesh.rotation.y ),
+            zDiff2 = horizontalSpeed * Math.cos( this.mesh.rotation.y );
 
-        if ( this.mesh.position.y + tY >= 1 ) {
-            l.scenograph.cameras.player.position.y += tY;
+        if ( this.mesh.position.y + verticalSpeed >= 1 ) {
+            l.scenograph.cameras.player.position.y += verticalSpeed;
         }
 
         l.scenograph.cameras.player.position.x += xDiff2;
@@ -515,37 +515,39 @@ export default class Valiant {
                 this.updateAnimation( delta );
 
             if (this.game) {
+                // console.log(this.game);
+                // debugger;
                 this.sync();
-                this.updateCamera( this.game.object.rY, this.game.object.tY, this.game.object.tZ );
+                this.updateCamera( this.game.components.Motion.heading, this.game.components.Motion.velocity.vertical, this.game.components.Motion.velocity.horizontal );
 
-                this.animateTrail( this.game.object.rY );
+                this.animateTrail( this.game.components.Motion.heading );
             }
 
         }
     }
 
-    animateTrail( rY ) {
+    animateTrail( heading ) {
         if ( this.trail ) {
 
             // Fix the trail being too far behind.
             let trailOffset = 0;
 
             // Only offset the trail effect if we are going forward which is (z-1) in numerical terms
-            if ( this.game.object.airSpeed < 0 ) {
+            if ( this.game.components.Motion.velocity.horizontal < 0 ) {
 
                 // Update ship thruster
-                this.animateThruster( this.game.object.airSpeed, this.thruster.centralConeBurner, .5 );
-                this.animateThruster( this.game.object.airSpeed, this.thruster.outerCylBurner, .5 );
+                this.animateThruster( this.game.components.Motion.velocity.horizontal, this.thruster.centralConeBurner, .5 );
+                this.animateThruster( this.game.components.Motion.velocity.horizontal, this.thruster.outerCylBurner, .5 );
 
-                this.spinThruster( this.game.object.airSpeed, this.thruster.rearConeBurner, -1 );
-                this.spinThruster( this.game.object.airSpeed, this.thruster.centralConeBurner, 1 );
-                this.spinThruster( this.game.object.airSpeed, this.thruster.outerCylBurner, -1 );
-                this.spinThruster( this.game.object.airSpeed, this.thruster.innerCylBurner, 1 );
+                this.spinThruster( this.game.components.Motion.velocity.horizontal, this.thruster.rearConeBurner, -1 );
+                this.spinThruster( this.game.components.Motion.velocity.horizontal, this.thruster.centralConeBurner, 1 );
+                this.spinThruster( this.game.components.Motion.velocity.horizontal, this.thruster.outerCylBurner, -1 );
+                this.spinThruster( this.game.components.Motion.velocity.horizontal, this.thruster.innerCylBurner, 1 );
 
                 // Limit playback rate to 5x as large values freak out the browser.
-                this.thruster.videoElement.playbackRate = Math.min( 5, 0.25 + Math.abs( this.game.object.airSpeed ) );
+                this.thruster.videoElement.playbackRate = Math.min( 5, 0.25 + Math.abs( this.game.components.Motion.velocity.horizontal ) );
 
-                trailOffset += this.trail_position_z - Math.abs( this.game.object.airSpeed );
+                trailOffset += this.trail_position_z - Math.abs( this.game.components.Motion.velocity.horizontal );
 
                 this.trail.mesh.material.uniforms.headColor.value.set( 255 / 255, 212 / 255, 148 / 255, .8 ); // RGBA.
             }
@@ -554,11 +556,11 @@ export default class Valiant {
             }
 
             // Update the trail position based on above calculations.
-            this.trail.targetObject.position.y = this.trail_position_y + this.game.object.verticalSpeed;
+            this.trail.targetObject.position.y = this.trail_position_y + this.game.components.Motion.velocity.vertical;
             this.trail.targetObject.position.z = trailOffset;
 
-            if ( rY != 0 ) {
-                this.trail.targetObject.position.x = rY * this.game.object.airSpeed;
+            if ( heading != 0 ) {
+                this.trail.targetObject.position.x = heading * this.game.components.Motion.velocity.horizontal;
                 this.trail.targetObject.position.y += Math.abs( this.trail.targetObject.position.x ) / 4;
             }
             else {

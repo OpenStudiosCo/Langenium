@@ -77,10 +77,12 @@ export default class HeadsUpDisplay {
             l.scenograph.overlays.hud.container.classList.remove('portrait');
         }
 
-        let aspd = -l.scenograph.overlays.hud.frameToSecond(l.scenograph.actors.player.vehicle.game.object.airSpeed);
+        let aspd = -l.scenograph.overlays.hud.frameToSecond(l.scenograph.actors.player.vehicle.game.components.Motion.velocity.horizontal
+);
         l.scenograph.overlays.hud.aspdElement.innerHTML = `AIRSPEED: ${aspd}km/h`;
 
-        let vspd = l.scenograph.overlays.hud.frameToSecond(l.scenograph.actors.player.vehicle.game.object.verticalSpeed);
+        let vspd = l.scenograph.overlays.hud.frameToSecond(l.scenograph.actors.player.vehicle.game.components.Motion.velocity.vertical
+);
         l.scenograph.overlays.hud.vspdElement.innerHTML = `VERT. SPD: ${vspd}km/h`;
 
         let heading = THREE.MathUtils.radToDeg( l.scenograph.actors.player.vehicle.mesh.rotation.y );

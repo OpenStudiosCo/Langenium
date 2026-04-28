@@ -13,7 +13,6 @@ import * as THREE from 'three';
  */
 import l from '@/helpers/l.js';
 import { brightenMaterial, proceduralMetalMaterial } from '@/scenograph/materials.js';
-import Player from '#/game/src/actors/player';
 
 export default class Valiant {
 
@@ -115,8 +114,10 @@ export default class Valiant {
 
         this.mesh.userData.targetable = true;
         this.mesh.userData.objectClass = 'player';
-        this.mesh.userData.actor = new Player( this.mesh, l.current_scene.scene );
-        l.scenograph.entityManager.add( this.mesh.userData.actor.entity );
+
+        // @todo #31: This needs review to ensure entity manager is populated.
+        //this.mesh.userData.actor = new Player( this.mesh, l.current_scene.scene );
+        //l.scenograph.entityManager.add( this.mesh.userData.actor.entity );
 
         this.createThruster();
 
@@ -505,7 +506,8 @@ export default class Valiant {
                     l.scenograph.modes.multiplayer.socket.emit( 'input', this.game.components.PlayerInput );
                 }
 
-                this.mesh.userData.actor.animate( delta );
+                // @todo: #31: Uncomment once actors are re-implemented in ECS
+                // this.mesh.userData.actor.animate( delta );
 
             }
 

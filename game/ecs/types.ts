@@ -9,3 +9,12 @@ export interface Vec3 {
 export interface AABB {
     halfSize: Vec3;
 }
+
+export interface ScanState {
+    scanTime: number;
+    lostTime: number;
+
+    tracking: boolean;
+    locking: boolean;
+    locked: boolean;
+}

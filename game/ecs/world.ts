@@ -19,15 +19,18 @@ import Overworld from "./data/scenes/overworld.yml";
 import { Vec3 } from "./types";
 
 // Components.
-import { Motion } from "./components/Motion";
+import { Motion } from "./components/motion";
 import { Name } from "./components/name";
 import { PlayerInput } from "./components/playerInput";
-import { Transform } from "./components/Transform";
+import { Scanner } from "./components/scanner";
+import { Transform } from "./components/transform";
 
 // Systems.
 import { movementSystem } from "./systems/movement";
 
 export default class World {
+
+    private objectConfigMap: Record<string, any>;
 
     public configs: Record<string, any>;
     public entities: Record<string, any>;
@@ -48,7 +51,14 @@ export default class World {
      * - loop over config to load game world simulation in here and scenograph in the client
      */
     constructor( sceneName: string ) {
-        if ( sceneName === 'Overworld' ) {
+        if (sceneName === 'Overworld') {
+            this.objectConfigMap = {
+                cargoShip: CargoShip,
+                person: Person,
+                raven: Raven,
+                valiant: Valiant
+            } as const;
+
             this.configs = Overworld.entities;
             this.entities = new Map<string, any>();
 
@@ -103,15 +113,30 @@ export default class World {
                             // Load object specific settings from config.
                             if (entityConfig.components.Renderable.object === 'cargoShip') {
                                 entityInstance.components.Motion.limits = CargoShip.limits;
+                                entityInstance.components.Scanner = {
+                                    range: CargoShip.scanner.range,
+                                    fieldOfView: CargoShip.scanner.fov,
+                                    targets: {}
+                                } as Scanner;
                             }
                             if (entityConfig.components.Renderable.object === 'person') {
                                 entityInstance.components.Motion.limits = Person.limits;
                             }
                             if (entityConfig.components.Renderable.object === 'raven') {
                                 entityInstance.components.Motion.limits = Raven.limits;
+                                entityInstance.components.Scanner = {
+                                    range: Raven.scanner.range,
+                                    fieldOfView: Raven.scanner.fov,
+                                    targets: {}
+                                } as Scanner;
                             }
                             if (entityConfig.components.Renderable.object === 'valiant') {
                                 entityInstance.components.Motion.limits = Valiant.limits;
+                                entityInstance.components.Scanner = {
+                                    range: Valiant.scanner.range,
+                                    fieldOfView: Valiant.scanner.fov,
+                                    targets: {}
+                                } as Scanner;
                             }
                         }
                         break;
@@ -121,6 +146,10 @@ export default class World {
             this.entities.set(entityConfig.id, entityInstance);
         }
 
+    }
+
+    getObjectConfig(objectName) {
+        return this.objectConfigMap.get(objectName);
     }
 
     start() {

@@ -13,3 +13,7 @@ limits:
 
 primaryColor: FF0000
 secondaryColor: FFFF00
+
+scanner:
+  range: 1500
+  fov: 1.57

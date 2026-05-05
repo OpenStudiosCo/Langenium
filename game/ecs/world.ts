@@ -116,7 +116,7 @@ export default class World {
                                 entityInstance.components.Scanner = {
                                     range: CargoShip.scanner.range,
                                     fieldOfView: CargoShip.scanner.fov,
-                                    targets: {}
+                                    targets: []
                                 } as Scanner;
                             }
                             if (entityConfig.components.Renderable.object === 'person') {
@@ -127,7 +127,7 @@ export default class World {
                                 entityInstance.components.Scanner = {
                                     range: Raven.scanner.range,
                                     fieldOfView: Raven.scanner.fov,
-                                    targets: {}
+                                    targets: []
                                 } as Scanner;
                             }
                             if (entityConfig.components.Renderable.object === 'valiant') {
@@ -135,7 +135,7 @@ export default class World {
                                 entityInstance.components.Scanner = {
                                     range: Valiant.scanner.range,
                                     fieldOfView: Valiant.scanner.fov,
-                                    targets: {}
+                                    targets: []
                                 } as Scanner;
                             }
                         }

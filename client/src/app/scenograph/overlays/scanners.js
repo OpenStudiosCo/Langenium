@@ -34,7 +34,7 @@ export default class Scanners {
     /**
      * Get the marker symbol.
      *
-     * @param {*} symbol 
+     * @param {*} symbol
      * @returns custom HTMLElement
      */
     getSymbolElement( symbol ) {
@@ -43,17 +43,17 @@ export default class Scanners {
         element.querySelector('.symbol').innerHTML = l.scenograph.overlays.map.icons[ symbol ];
         element.firstChild.classList.add( symbol );
         const shape = element.querySelector('.symbol path, .symbol rect');
-        
+
         if ( shape.style ) {
             shape.style = '';
         }
-        
+
         return element.firstChild;
     }
 
     /**
      * Obtains the 2D screen co-ordinate for a 3D object target.
-     * 
+     *
      * @param {*} THREE.Object3D currently in the scene
      * @returns [x,y] screen space coordinates
      * @global
@@ -112,24 +112,24 @@ export default class Scanners {
 
     /**
      * Animate hook.
-     * 
+     *
      * This method is called within the main animation loop and
      * therefore must only reference global objects or properties.
-     * 
+     *
      * @method animate
      * @memberof Scanners
      * @global
      * @note All references within this method should be globally accessible.
     **/
     animate( delta ) {
-        
+
         const frustum = new THREE.Frustum()
         const matrix = new THREE.Matrix4().multiplyMatrices(l.scenograph.cameras.active.projectionMatrix, l.scenograph.cameras.active.matrixWorldInverse)
-        frustum.setFromProjectionMatrix(matrix)        
+        frustum.setFromProjectionMatrix(matrix)
         l.scenograph.cameras.active.updateProjectionMatrix();
 
         // Use the players scanners to update the overlays.
-        l.scenograph.actors.player.vehicle.mesh.userData.actor.scanners.targets.forEach( target => l.scenograph.overlays.scanners.animateTarget( delta, target, frustum ) );
+        l.scenograph.actors.get('Player One').vehicle.game.components.Scanner.targets.forEach( target => l.scenograph.overlays.scanners.animateTarget( delta, target, frustum ) );
 
         l.scenograph.overlays.scanners.removeOldTargets();
 
@@ -139,10 +139,10 @@ export default class Scanners {
 
     /**
      * Animate the target in the UI overlay
-     * 
-     * @param {*} delta 
-     * @param {*} trackedObject 
-     * @param {*} frustum 
+     *
+     * @param {*} delta
+     * @param {*} trackedObject
+     * @param {*} frustum
      */
     animateTarget( delta, target, frustum ) {
         let [ x, y ] = l.scenograph.overlays.scanners.getScreenCoordinates( target.mesh, frustum );
@@ -161,8 +161,8 @@ export default class Scanners {
                 else {
                     domElement.classList.add('tracking');
                     domElement.classList.remove('locked');
-                    domElement.classList.remove('locking');    
-                }   
+                    domElement.classList.remove('locking');
+                }
             }
 
         }
@@ -182,9 +182,9 @@ export default class Scanners {
      * Show/hide markers of objects that are respawning.
      */
     toggleRespawningTargets() {
-                
+
         const overlayKeys = Object.keys(l.scenograph.overlays.scanners.trackedObjects);
-        const scannerKeys = l.scenograph.actors.player.vehicle.mesh.userData.actor.scanners.targets.map(t => t.mesh.uuid);
+        const scannerKeys = l.scenograph.actors.get('Player One').vehicle.game.components.Scanner.targets.map(t => t.mesh.uuid);
 
         // Hide targets missing from player scanners, theoretically those are ones being relocated by the engine / respawning.
         const respawningTargets = overlayKeys.filter(k => !scannerKeys.includes(k));
@@ -207,7 +207,7 @@ export default class Scanners {
 
                 // Delete the marker domElement from memory.
                 delete l.scenograph.overlays.scanners.trackedObjects[ uuid ];
-            }            
+            }
         }
 
     }

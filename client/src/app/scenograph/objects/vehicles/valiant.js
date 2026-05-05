@@ -56,7 +56,7 @@ export default class Valiant {
         this.camera_distance = 0;
 
         this.ready = false;
-        console.log(this);
+
 
     }
 

@@ -24,6 +24,7 @@ import { Name } from "./components/name";
 import { PlayerInput } from "./components/playerInput";
 import { Scanner } from "./components/scanner";
 import { Transform } from "./components/transform";
+import { Weapon } from "./components/weapon";
 
 // Systems.
 import { movementSystem } from "./systems/movement";
@@ -116,7 +117,9 @@ export default class World {
                                 entityInstance.components.Scanner = {
                                     range: CargoShip.scanner.range,
                                     fieldOfView: CargoShip.scanner.fov,
-                                    targets: []
+                                    targets: [],
+                                    last: 0,
+                                    timeout: 0,
                                 } as Scanner;
                             }
                             if (entityConfig.components.Renderable.object === 'person') {
@@ -127,7 +130,9 @@ export default class World {
                                 entityInstance.components.Scanner = {
                                     range: Raven.scanner.range,
                                     fieldOfView: Raven.scanner.fov,
-                                    targets: []
+                                    targets: [],
+                                    last: 0,
+                                    timeout: 0,
                                 } as Scanner;
                             }
                             if (entityConfig.components.Renderable.object === 'valiant') {
@@ -135,8 +140,15 @@ export default class World {
                                 entityInstance.components.Scanner = {
                                     range: Valiant.scanner.range,
                                     fieldOfView: Valiant.scanner.fov,
-                                    targets: []
+                                    targets: [],
+                                    last: 0,
+                                    timeout: 0,
                                 } as Scanner;
+                                entityInstance.components.Weapon = {
+                                    scanner: entityInstance.components.Scanner,
+                                    last: 0,
+                                    timeout: 0,
+                                } as Weapon;
                             }
                         }
                         break;

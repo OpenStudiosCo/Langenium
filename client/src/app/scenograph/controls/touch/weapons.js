@@ -1,6 +1,6 @@
 /**
  * Touchscreen Weapon Controls
- * 
+ *
  */
 
 /**
@@ -9,24 +9,24 @@
 import l from '@/helpers/l.js';
 
 export default class WeaponControls {
-    
+
     /**
      * Switch indicating we are currently attacking.
-     * 
-     * @type {boolean} 
+     *
+     * @type {boolean}
      */
     attack;
 
     /**
      * Switch indicating auto attack is on.
-     * 
-     * @type {boolean} 
+     *
+     * @type {boolean}
      */
     autoAttack;
 
     /**
      * HTML Container
-     * 
+     *
      * @type {HTMLElement}
      */
     container;
@@ -39,7 +39,7 @@ export default class WeaponControls {
 
         this.container.querySelector('.switch input').onchange = ()=>{
             l.scenograph.controls.touch.weapons.autoAttack = l.scenograph.controls.touch.weapons.container.querySelector('.switch input').checked;
-        };        
+        };
 
         this.container.querySelector('button').onclick = ()=>{
             l.scenograph.controls.touch.weapons.attack = true;
@@ -53,10 +53,10 @@ export default class WeaponControls {
 
     /**
      * Update hook.
-     * 
+     *
      * This method is called within the UI setInterval updater, allowing
      * HTML content to be updated at different rate than the 3D frame rate.
-     * 
+     *
      * @method update
      * @memberof WeaponControls
      * @global
@@ -67,9 +67,9 @@ export default class WeaponControls {
 
         let timeRemaining = 0;
 
-        if ( parseInt(l.current_scene.stats.currentTime) < parseInt(l.scenograph.actors.player.vehicle.mesh.userData.actor.weapons.last) + parseInt(l.scenograph.actors.player.vehicle.mesh.userData.actor.weapons.timeout) ) {
-            timeRemaining = parseInt(l.scenograph.actors.player.vehicle.mesh.userData.actor.weapons.timeout) - (
-                parseInt(l.current_scene.stats.currentTime) - parseInt(l.scenograph.actors.player.vehicle.mesh.userData.actor.weapons.last)
+        if ( parseInt(l.current_scene.stats.currentTime) < parseInt(l.scenograph.actors.player.vehicle.game.components.Weapon.last) + parseInt(l.scenograph.actors.player.vehicle.game.components.Weapon.timeout) ) {
+            timeRemaining = parseInt(l.scenograph.actors.player.vehicle.game.components.Weapon.timeout) - (
+                parseInt(l.current_scene.stats.currentTime) - parseInt(l.scenograph.actors.player.vehicle.game.components.Weapon.last)
             );
         }
 

@@ -6,5 +6,9 @@ export interface Scanner {
     range: number;
     fieldOfView: number;
 
-    targets: Array<object>;
+    targets: Array<ScanState>;
+
+    // Animation.
+    last;
+    timeout;
 }

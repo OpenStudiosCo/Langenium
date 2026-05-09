@@ -7,6 +7,7 @@
  *
  */
 
+import * as YUKA from 'yuka';
 
 // Import YAML configs.
 import CargoShip from "./data/objects/cargoShip.yml";
@@ -19,6 +20,7 @@ import Overworld from "./data/scenes/overworld.yml";
 import { Vec3 } from "./types";
 
 // Components.
+import { AI } from "./components/ai";
 import { Motion } from "./components/motion";
 import { Name } from "./components/name";
 import { PlayerInput } from "./components/playerInput";
@@ -28,6 +30,7 @@ import { Weapon } from "./components/weapon";
 
 // Systems.
 import { movementSystem } from "./systems/movement";
+import { scannerSystem } from './systems/scanner';
 
 export default class World {
 
@@ -113,42 +116,17 @@ export default class World {
                         if (entityConfig.components.Renderable && entityConfig.components.Renderable.object) {
                             // Load object specific settings from config.
                             if (entityConfig.components.Renderable.object === 'cargoShip') {
-                                entityInstance.components.Motion.limits = CargoShip.limits;
-                                entityInstance.components.Scanner = {
-                                    range: CargoShip.scanner.range,
-                                    fieldOfView: CargoShip.scanner.fov,
-                                    targets: [],
-                                    last: 0,
-                                    timeout: 0,
-                                } as Scanner;
+                                this.loadVehicle(entityInstance, CargoShip);
                             }
                             if (entityConfig.components.Renderable.object === 'person') {
                                 entityInstance.components.Motion.limits = Person.limits;
                             }
                             if (entityConfig.components.Renderable.object === 'raven') {
-                                entityInstance.components.Motion.limits = Raven.limits;
-                                entityInstance.components.Scanner = {
-                                    range: Raven.scanner.range,
-                                    fieldOfView: Raven.scanner.fov,
-                                    targets: [],
-                                    last: 0,
-                                    timeout: 0,
-                                } as Scanner;
+                                this.loadVehicle(entityInstance, Raven, true);
                             }
                             if (entityConfig.components.Renderable.object === 'valiant') {
-                                entityInstance.components.Motion.limits = Valiant.limits;
-                                entityInstance.components.Scanner = {
-                                    range: Valiant.scanner.range,
-                                    fieldOfView: Valiant.scanner.fov,
-                                    targets: [],
-                                    last: 0,
-                                    timeout: 0,
-                                } as Scanner;
-                                entityInstance.components.Weapon = {
-                                    scanner: entityInstance.components.Scanner,
-                                    last: 0,
-                                    timeout: 0,
-                                } as Weapon;
+                                this.loadVehicle(entityInstance, Valiant, true);
+
                             }
                         }
                         break;
@@ -156,6 +134,37 @@ export default class World {
             }
 
             this.entities.set(entityConfig.id, entityInstance);
+        }
+
+    }
+
+    loadVehicle(entityInstance, vehicleConfig, hasWeapon = false) {
+        entityInstance.components.AI = {
+            entity: new YUKA.GameEntity(),
+            tactics: entityInstance.config.components.AI
+        } as AI;
+
+        const vision = new YUKA.Vision( entityInstance.components.AI.entity );
+        vision.range = 1500;
+        vision.fieldOfView = Math.PI / 2; // 90 degrees
+        entityInstance.components.AI.entity.vision = vision;
+
+        entityInstance.components.Motion.limits = vehicleConfig.limits;
+
+        entityInstance.components.Scanner = {
+            range: vehicleConfig.scanner.range,
+            fieldOfView: vehicleConfig.scanner.fov,
+            targets: [],
+            last: 0,
+            timeout: 0,
+        } as Scanner;
+
+        if ( hasWeapon ) {
+            entityInstance.components.Weapon = {
+                scanner: entityInstance.components.Scanner,
+                last: 0,
+                timeout: 0,
+            } as Weapon;
         }
 
     }
@@ -195,6 +204,7 @@ export default class World {
 
     update() {
         movementSystem(this.entities, this.fixedDelta);
+        scannerSystem(this.entities, this.fixedDelta);
         // Later: call other systems here, e.g., AI, collision, rendering
     }
 

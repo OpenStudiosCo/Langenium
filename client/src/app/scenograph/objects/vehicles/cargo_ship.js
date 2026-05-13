@@ -115,12 +115,6 @@ export default class CargoShip {
     }
 
     async get(actorEntity) {
-        if (actorEntity) {
-            // Set internal game accessor to the game world actor entity.
-            this.game = actorEntity;
-            l.scenograph.entityManager.add(this.game.components.AI.entity);
-            console.log(this.game.components.AI.entity)
-        }
 
         let mesh = this.mesh.clone();
         mesh.userData.path = this.getPath();
@@ -134,7 +128,6 @@ export default class CargoShip {
 
         mesh.name = 'Cargo Ship #' + ( i + 1 );
 
-        console.log(mesh.name, mesh.position, mesh.userData);
         mesh.position.copy( mesh.userData.path.current() );
 
 
@@ -145,6 +138,12 @@ export default class CargoShip {
         mesh.matrixAutoUpdate = false;
 
         this.instances.push(mesh);
+
+        if (actorEntity) {
+            // Set internal game accessor to the game world actor entity.
+            mesh.game = actorEntity;
+            l.scenograph.entityManager.add(mesh.game.components.AI.entity);
+        }
 
         return mesh;
     }
@@ -218,13 +217,13 @@ export default class CargoShip {
     **/
     animate( delta ) {
 
-        if ( l.current_scene.settings.game_controls ) {
-            l.scenograph.objects.vehicles.cargoShip.instances.forEach( ( cargo_ship ) => {
+        // if ( l.current_scene.settings.game_controls ) {
+        //     l.scenograph.objects.vehicles.cargoShip.instances.forEach( ( cargo_ship ) => {
 
-                cargo_ship.userData.actor.animate( delta );
+        //         cargo_ship.game.components.AI.entity.animate( delta );
 
-            } );
-        }
+        //     } );
+        // }
 
     }
 

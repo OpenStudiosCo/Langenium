@@ -29,6 +29,7 @@ import { Transform } from "./components/transform";
 import { Weapon } from "./components/weapon";
 
 // Systems.
+import { aiSystem } from "./systems/ai";
 import { movementSystem } from "./systems/movement";
 import { scannerSystem } from './systems/scanner';
 
@@ -203,8 +204,13 @@ export default class World {
     }
 
     update() {
+        aiSystem(this.entities, this.fixedDelta);
         movementSystem(this.entities, this.fixedDelta);
         scannerSystem(this.entities, this.fixedDelta);
+
+        // @todo: move to AI system
+
+
         // Later: call other systems here, e.g., AI, collision, rendering
     }
 

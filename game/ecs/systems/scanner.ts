@@ -23,14 +23,16 @@ export function scannerSystem(entities: Map<string, any>, deltaMs: number) {
                 if (entity.components.Name === target.components.Name) {
                     continue;
                 }
-                console.log(entity, target);
-                debugger;
-                const targetVisible = entity.components.AI.entity.vision.visible(target.mesh.position) === true;
+
+                // debugger;
+                const targetVisible = entity.components.AI.entity.vision.visible(target.components.Transform.position) === true;
+
+                if (targetVisible)
+                    console.log(entity, target, targetVisible);
             }
 
         }
     }
-    debugger;
 }
 
 // getTargetable() {

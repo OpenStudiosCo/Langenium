@@ -271,7 +271,7 @@ export default class Director {
             if ( entity.config.components.Renderable.object == 'cargoShip' ) {
                 l.scenograph.director.loadObject(
                 entity,
-                await l.scenograph.objects.vehicles.cargoShip.get()
+                await l.scenograph.objects.vehicles.cargoShip.get(entity)
                 );
             }
             if ( entity.config.components.Renderable.object == 'pirate' ) {

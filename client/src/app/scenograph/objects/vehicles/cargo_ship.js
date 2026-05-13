@@ -14,7 +14,6 @@ import * as YUKA from 'yuka';
 import l from '@/helpers/l.js';
 import { proceduralMetalMaterial } from '@/scenograph/materials.js';
 import { SUBTRACTION, Brush, Evaluator } from 'three-bvh-csg';
-import cargoShip from '../../../../../../game/src/actors/cargoShip';
 
 export default class CargoShip {
 
@@ -33,7 +32,9 @@ export default class CargoShip {
     // The scale of the mesh.
     size;
 
+
     constructor() {
+
         this.instances = [];
         this.ready = false;
         this.size = 1000;
@@ -105,9 +106,6 @@ export default class CargoShip {
             mesh.userData.objectClass = 'cargoShip';
             mesh.userData.targetable = true;
             mesh.userData.size = this.size;
-            mesh.userData.actor = new cargoShip( mesh, l.current_scene.scene );
-
-            l.scenograph.entityManager.add( mesh.userData.actor.entity );
 
             mesh.matrixAutoUpdate = false;
 
@@ -116,7 +114,14 @@ export default class CargoShip {
 
     }
 
-    async get() {
+    async get(actorEntity) {
+        if (actorEntity) {
+            // Set internal game accessor to the game world actor entity.
+            this.game = actorEntity;
+            l.scenograph.entityManager.add(this.game.components.AI.entity);
+            console.log(this.game.components.AI.entity)
+        }
+
         let mesh = this.mesh.clone();
         mesh.userData.path = this.getPath();
 
@@ -136,9 +141,6 @@ export default class CargoShip {
         mesh.userData.objectClass = 'cargoShip';
         mesh.userData.targetable = true;
         mesh.userData.size = this.size;
-        mesh.userData.actor = new cargoShip( mesh, l.current_scene.scene );
-
-        l.scenograph.entityManager.add( mesh.userData.actor.entity );
 
         mesh.matrixAutoUpdate = false;
 

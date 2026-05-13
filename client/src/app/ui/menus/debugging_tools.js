@@ -73,19 +73,19 @@ export default class Debugging_Tools {
             expanded: false,
         } );
 
-        shipState.addBinding( l.scenograph.actors.player.vehicle.controls, 'throttleUp', {
+        shipState.addBinding( l.scenograph.actors.get('Player One').vehicle.game.components.PlayerInput, 'throttleUp', {
             readonly: true,
             interval: 200
         } )
-        shipState.addBinding( l.scenograph.actors.player.vehicle.controls, 'throttleDown', {
+        shipState.addBinding( l.scenograph.actors.get('Player One').vehicle.game.components.PlayerInput, 'throttleDown', {
             readonly: true,
             interval: 200
         } )
-        shipState.addBinding( l.scenograph.actors.player.vehicle.controls, 'moveLeft', {
+        shipState.addBinding( l.scenograph.actors.get('Player One').vehicle.game.components.PlayerInput, 'moveLeft', {
             readonly: true,
             interval: 200
         } )
-        shipState.addBinding( l.scenograph.actors.player.vehicle.controls, 'moveRight', {
+        shipState.addBinding( l.scenograph.actors.get('Player One').vehicle.game.components.PlayerInput, 'moveRight', {
             readonly: true,
             interval: 200
         } )

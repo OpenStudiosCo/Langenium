@@ -110,9 +110,6 @@ entities:
         hangarId: hangar_1
       FactionStanding: { union: 0.5, winthrom: 1.0, zaar: 0.0 }
       AI: defensive
-      Health:
-        current: 100
-        max: 100
 
   - id: pirate_1
     components:

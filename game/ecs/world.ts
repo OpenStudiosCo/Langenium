@@ -78,7 +78,11 @@ export default class World {
     load() {
         // Load entities.
         for (const entityConfig of this.configs.values()) {
-            const entityInstance: any = { components: {}, config: entityConfig };
+            const entityInstance: any = {
+                id: entityConfig.id,
+                components: {},
+                config: entityConfig
+            };
 
             // Attach each component
             for (const [componentName, componentData] of Object.entries(entityConfig.components)) {

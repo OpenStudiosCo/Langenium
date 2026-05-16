@@ -1,7 +1,5 @@
 // types.ts
 
-import { Name } from "./components/name";
-
 export interface Vec3 {
   x: number
   y: number
@@ -13,7 +11,7 @@ export interface AABB {
 }
 
 export interface ScanState {
-    name: Name;
+    entityId: string;
     scanTime: number;
     lostTime: number;
 

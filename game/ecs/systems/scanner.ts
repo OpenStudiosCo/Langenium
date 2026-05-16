@@ -5,44 +5,39 @@ import { ScanState } from "../types";
 export function scannerSystem(entities: Map<string, any>, deltaMs: number) {
     const dt = deltaMs / 1000; // convert ms to seconds
 
-    let currentTargets = getTargetable(entities);
+    let targetableEntities = getTargetable(entities);
 
     // Update all scanner components with their individual target lists based on line of sight.
     for (const entity of entities.values()) {
         if (entity.components.Scanner) {
             // Check if we are already tracking this target.
-            entity.components.Scanner.targets.forEach( ( target: ScanState, index: number ) => {
-                console.log(target);
-                debugger;
+            entity.components.Scanner.targets.forEach( ( scannerTarget: ScanState, index: number ) => {
 
-                // @todo: figure out the rest once we're up to this!
-                // let trackingObject = currentTargets.filter( object => (object.uuid == target.mesh.uuid ) );
-                // trackingObject = trackingObject.length > 0 ? trackingObject[0] : false;
+                // Check if we are already tracking this target.
+                let trackingObject = targetableEntities.filter( (scannerTarget: ScanState) => (scannerTarget.entityId == entity.id ) );
+                trackingObject = trackingObject.length > 0 ? trackingObject[0] : false;
 
-                // // Remove tracking if object no longer in the scene.
-                // if ( ! trackingObject ) {
-                //     entity.components.Scanner.targets.splice( index, 1 );
-                // }
+                // Remove tracking if object no longer in the scene.
+                if ( ! trackingObject ) {
+                    entity.components.Scanner.targets.splice( index, 1 );
+                }
             });
 
             // Update targets tracked in the array.
-            for ( const target of currentTargets ) {
+            for ( const targetEntity of targetableEntities ) {
 
                 // Skip self.
-                if ( target.components.Name === entity.components.Name ) {
+                if ( targetEntity.id === entity.id ) {
                     continue;
                 }
 
-                console.log(entity.components.Name + ' is scanning ' + target.components.Name);
-
-
                 // Check if we are already tracking this target.
-                let trackingObject = entity.components.Scanner.targets.filter( (scannerTarget: ScanState) => (scannerTarget.name == target.components.Name ) );
+                let trackingObject = entity.components.Scanner.targets.filter( (scannerTarget: ScanState) => (scannerTarget.entityId == targetEntity.id ) );
                 trackingObject = trackingObject.length > 0 ? trackingObject[0] : false;
 
                 if ( ! trackingObject ) {
                     trackingObject = {
-                        name: target.components.Name,
+                        entityId: targetEntity.id,
                         locked: false,
                         locking: false,
                         tracking: false,
@@ -53,77 +48,77 @@ export function scannerSystem(entities: Map<string, any>, deltaMs: number) {
                 }
 
             }
-            debugger;
 
-            entity.components.Scanner.targets.forEach((target: ScanState, index: number) => {
+            entity.components.Scanner.targets.forEach((scannerTarget: ScanState, index: number) => {
 
-                // // Skip self.
-                // if (entity.components.Name === target.Components.Name) {
-                //     continue;
-                // }
+                // Skip self.
+                if (entity.id === scannerTarget.entityId) {
+                    return;
+                }
 
-                // // debugger;
-                // const targetVisible = entity.components.AI.entity.vision.visible(target.components.Transform.position) === true;
+                const targetEntity = entities.get(scannerTarget.entityId);
 
-                // // If the scanner's vision can see the target, start scanning.
-                // if (targetVisible) {
-                //     target.tracking = true;
-                //     target.scanTime += deltaMs;
-                //     target.lostTime = 0;
+                const targetVisible = entity.components.AI.entity.vision.visible(targetEntity.components.Transform.position) === true;
 
-                //     if (target.scanTime >= 1) {
-                //         if (target.scanTime >= 3) {
-                //             target.locked = true;
-                //             target.locking = false;
-                //         }
-                //         else {
-                //             target.locked = false;
-                //             target.locking = true;
-                //         }
-                //     }
-                //     else {
-                //         target.locked = false;
-                //         target.locking = false;
-                //     }
-                // }
-                // else {
-                //     target.lostTime += deltaMs;
+                // If the scanner's vision can see the target, start scanning.
+                if (targetVisible) {
+                    scannerTarget.tracking = true;
+                    scannerTarget.scanTime += deltaMs;
+                    scannerTarget.lostTime = 0;
 
-                //     if (target.scanTime < 1) {
-                //         target.scanTime = 0;
-                //         target.lostTime = 0;
-                //     }
-                //     else {
-                //         // Allow 3 seconds before a target is downgraded when locked.
-                //         if (target.lostTime >= 3 && target.locked) {
-                //             target.locked = false;
+                    if (scannerTarget.scanTime >= 1) {
+                        if (scannerTarget.scanTime >= 3) {
+                            scannerTarget.locked = true;
+                            scannerTarget.locking = false;
+                        }
+                        else {
+                            scannerTarget.locked = false;
+                            scannerTarget.locking = true;
+                        }
+                    }
+                    else {
+                        scannerTarget.locked = false;
+                        scannerTarget.locking = false;
+                    }
+                }
+                else {
+                    scannerTarget.lostTime += deltaMs;
 
-                //             target.lostTime = 0;
-                //         }
-                //         else {
-                //             // Allow 1 seconds before a target is downgraded when locking.
-                //             if (target.lostTime >= 1 && target.locking) {
-                //                 target.locking = false;
+                    if (scannerTarget.scanTime < 1) {
+                        scannerTarget.scanTime = 0;
+                        scannerTarget.lostTime = 0;
+                    }
+                    else {
+                        // Allow 3 seconds before a target is downgraded when locked.
+                        if (scannerTarget.lostTime >= 3 && scannerTarget.locked) {
+                            scannerTarget.locked = false;
 
-                //                 target.lostTime = 0;
-                //             }
-                //         }
+                            scannerTarget.lostTime = 0;
+                        }
+                        else {
+                            // Allow 1 seconds before a target is downgraded when locking.
+                            if (scannerTarget.lostTime >= 1 && scannerTarget.locking) {
+                                scannerTarget.locking = false;
 
-                //         // Allow 1 seconds before a target is lost when tracking.
-                //         if (
-                //             target.lostTime >= 1 &&
-                //             target.tracking &&
-                //             !target.locked &&
-                //             !target.locking
-                //         ) {
-                //             target.scanTime = 0;
-                //             target.lostTime = 0;
-                //             target.locked = false;
-                //             target.locking = false;
-                //         }
+                                scannerTarget.lostTime = 0;
+                            }
+                        }
 
-                //     }
-                // }
+                        // Allow 1 seconds before a target is lost when tracking.
+                        if (
+                            scannerTarget.lostTime >= 1 &&
+                            scannerTarget.tracking &&
+                            !scannerTarget.locked &&
+                            !scannerTarget.locking
+                        ) {
+                            scannerTarget.scanTime = 0;
+                            scannerTarget.lostTime = 0;
+                            scannerTarget.locked = false;
+                            scannerTarget.locking = false;
+                        }
+
+                    }
+                }
             });
 
         }

@@ -13,6 +13,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "three": "^0.184.0",
     "yuka": "^0.7.8"
   }
 }

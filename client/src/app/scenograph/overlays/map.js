@@ -57,7 +57,7 @@ export default class Map {
     /**
      * Adds marker to the map.
      */
-    addMarker( trackedObject ) {
+    addMarker( scannerTarget ) {
         let marker = {
             domElement: false,
         };
@@ -74,12 +74,12 @@ export default class Map {
             'refinery': 'structure',
         }
 
-        let iconName = objectIcons[ trackedObject.mesh.userData.objectClass ];
+        let targetEntity = l.scenograph.director.world.entities.get(scannerTarget.entityId);
+        let iconName = objectIcons[ targetEntity.config.components.Renderable.object ];
 
         marker.domElement = document.createElement('div');
         marker.domElement.classList.add('marker');
-        marker.domElement.classList.add('marker-' + trackedObject.mesh.userData.objectClass);
-
+        marker.domElement.classList.add('marker-' + targetEntity.config.components.Renderable.object);
 
         marker.domElement.innerHTML = l.scenograph.overlays.map.icons[ iconName];
 
@@ -110,14 +110,21 @@ export default class Map {
         let topEdge = l.scenograph.actors.player.vehicle.mesh.position.z - l.scenograph.overlays.map.distance / 2;
 
 
-        l.scenograph.actors.get('Player One').vehicle.game.components.Scanner.targets.forEach( target => {
-            let distance = target.mesh.position.distanceTo( l.scenograph.actors.player.vehicle.mesh.position );
+        l.scenograph.actors.get('Player One').vehicle.game.components.Scanner.targets.forEach(target => {
+            let targetEntity = l.scenograph.director.world.entities.get(target.entityId);
+            let targetPosition = new THREE.Vector3(
+                targetEntity.components.Transform.position.x,
+                targetEntity.components.Transform.position.y,
+                targetEntity.components.Transform.position.z
+            );
+
+            let distance = targetPosition.distanceTo( l.scenograph.actors.player.vehicle.mesh.position );
 
             // Check if the object is within the mapping distance.
             if ( distance <= l.scenograph.overlays.map.distance * 100 ) {
 
                 // Check if the object is already present on the map, move it if so
-                if ( target.mesh.uuid in l.scenograph.overlays.map.markers ) {
+                if ( target.entityId in l.scenograph.overlays.map.markers ) {
 
                     let diffX = ( target.mesh.position.x - leftEdge ) * offset;
                     let diffZ = ( target.mesh.position.z - topEdge ) * offset;
@@ -138,20 +145,20 @@ export default class Map {
                     }
 
                     // Update position.
-                    l.scenograph.overlays.map.markers[ target.mesh.uuid ].domElement.style.left = `${diffX-5}px`;
-                    l.scenograph.overlays.map.markers[ target.mesh.uuid ].domElement.style.top = `${diffZ-5}px`;
+                    l.scenograph.overlays.map.markers[ target.entityId ].domElement.style.left = `${diffX-5}px`;
+                    l.scenograph.overlays.map.markers[ target.entityId ].domElement.style.top = `${diffZ-5}px`;
 
                 }
                 else {
                     // Add the object to the map
-                    l.scenograph.overlays.map.markers[ target.mesh.uuid ] = l.scenograph.overlays.map.addMarker( target );
+                    l.scenograph.overlays.map.markers[ target.entityId ] = l.scenograph.overlays.map.addMarker( target );
                 }
 
             }
             else {
                 // Check if the object is already present on the map, remove it if so
-                if ( target.mesh.uuid in l.scenograph.overlays.map.markers ) {
-                    l.scenograph.overlays.map.removeMarker( target.mesh.uuid, l.scenograph.overlays.map.markers[ target.mesh.uuid ] );
+                if ( target.entityId in l.scenograph.overlays.map.markers ) {
+                    l.scenograph.overlays.map.removeMarker( target.entityId, l.scenograph.overlays.map.markers[ target.entityId ] );
                 }
             }
         } );

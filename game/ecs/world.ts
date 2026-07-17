@@ -24,6 +24,7 @@ import { AI } from "./components/ai";
 import { Motion } from "./components/motion";
 import { Name } from "./components/name";
 import { PlayerInput } from "./components/playerInput";
+import { Render } from "./components/render";
 import { Scanner } from "./components/scanner";
 import { Transform } from "./components/transform";
 import { Weapon } from "./components/weapon";
@@ -103,22 +104,13 @@ export default class World {
                     case 'Name':
                         entityInstance.components.Name = componentData as Name;
                         break;
-                    case 'Transform':
-                        entityInstance.components.Transform = {
-                            position: componentData.position ? componentData.position : {x: 0, y: 0, z: 0} as Vec3,
-                            rotation: componentData.rotation ? componentData.rotation : {x: 0, y: 0, z: 0} as Vec3
-                        } as Transform;
-                        break;
-                    case 'Movable':
-                        entityInstance.components.Motion = {
-                            velocity: {
-                                horizontal: 0,
-                                vertical: 0
-                            },
-                            altitude: 0,
-                            heading: 0
-                        } as Motion;
+                    case 'Renderable':
                         if (entityConfig.components.Renderable && entityConfig.components.Renderable.object) {
+                            entityInstance.components.Render = {
+                                mesh: null,
+                                object: entityConfig.components.Renderable.object
+                            } as Render;
+
                             // Load object specific settings from config.
                             if (entityConfig.components.Renderable.object === 'cargoShip') {
                                 this.loadVehicle(entityInstance, CargoShip);
@@ -134,6 +126,22 @@ export default class World {
 
                             }
                         }
+                        break;
+                    case 'Transform':
+                        entityInstance.components.Transform = {
+                            position: componentData.position ? componentData.position : {x: 0, y: 0, z: 0} as Vec3,
+                            rotation: componentData.rotation ? componentData.rotation : {x: 0, y: 0, z: 0} as Vec3
+                        } as Transform;
+                        break;
+                    case 'Movable':
+                        entityInstance.components.Motion = {
+                            velocity: {
+                                horizontal: 0,
+                                vertical: 0
+                            },
+                            altitude: 0,
+                            heading: 0
+                        } as Motion;
                         break;
                 }
             }

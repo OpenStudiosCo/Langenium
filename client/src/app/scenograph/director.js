@@ -245,41 +245,40 @@ export default class Director {
       this.finishSetup();
     }
 
+    async getMesh(objectName) {
+        let mesh = false;
+
+        switch (objectName) {
+            case 'extractor':
+                mesh = await l.scenograph.objects.structures.extractor.get();
+                break;
+            case 'platform':
+                mesh = await l.scenograph.objects.structures.platform.get();
+                break;
+            case 'refinery':
+                mesh = await l.scenograph.objects.structures.refinery.get();
+                break;
+            case 'cargoShip':
+                mesh = await l.scenograph.objects.vehicles.cargoShip.get();
+                break;
+            case 'pirate':
+                mesh = await l.scenograph.objects.vehicles.raven.get();
+                break;
+        }
+
+        return mesh;
+    }
+
     async loadInstance() {
         console.log(this.world);
         await this.world.entities.forEach(async entity => {
 
-            if ( entity.config.components.Renderable.object == 'extractor' ) {
-                l.scenograph.director.loadObject(
+            let mesh = await this.getMesh(entity.config.components.Renderable.object);
+            entity.components.Render.mesh = mesh;
+            l.scenograph.director.loadObject(
                 entity,
-                await l.scenograph.objects.structures.extractor.get()
-                );
-            }
-            if ( entity.config.components.Renderable.object == 'platform' ) {
-                l.scenograph.director.loadObject(
-                entity,
-                await l.scenograph.objects.structures.platform.get()
-                );
-            }
-            if ( entity.config.components.Renderable.object == 'refinery' ) {
-                l.scenograph.director.loadObject(
-                entity,
-                await l.scenograph.objects.structures.refinery.get()
-                );
-            }
-
-            if ( entity.config.components.Renderable.object == 'cargoShip' ) {
-                l.scenograph.director.loadObject(
-                entity,
-                await l.scenograph.objects.vehicles.cargoShip.get(entity)
-                );
-            }
-            if ( entity.config.components.Renderable.object == 'pirate' ) {
-                l.scenograph.director.loadObject(
-                entity,
-                await l.scenograph.objects.vehicles.raven.get()
-                );
-            }
+                mesh
+            );
 
             if (entity.config.components.Renderable.object == 'valiant' || entity.config.components.Renderable.object == 'person') {
                 await l.scenograph.actors.registerActor( entity );
@@ -289,10 +288,16 @@ export default class Director {
     }
 
     async loadObject(entity, scenographObject) {
-        console.log(entity, scenographObject);
-      scenographObject.position.x = entity.components.Transform.position.x;
-      scenographObject.position.y = entity.components.Transform.position.y;
-      scenographObject.position.z = entity.components.Transform.position.z;
+        if (scenographObject && scenographObject.position && scenographObject.position.x) {
+            scenographObject.position.x = entity.components.Transform.position.x;
+            scenographObject.position.y = entity.components.Transform.position.y;
+            scenographObject.position.z = entity.components.Transform.position.z;
+        }
+        else {
+            console.log('Error getting object position.');
+            console.log(entity, scenographObject);
+        }
+
 
       if ( entity.rotation ) {
         scenographObject.rotation.x = entity.components.Transform.rotation.x;

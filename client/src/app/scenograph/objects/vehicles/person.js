@@ -15,14 +15,19 @@ import l from '@/helpers/l.js';
 export default class Person {
 
     constructor(actorEntity) {
-        // Set internal game accessor to the game world actor instance.
-        this.game = actorEntity;
+
 
         this.default_camera_distance = l.scenograph.width < l.scenograph.height ? -5 : -2.5;
 
         this.camera_distance = 0;
 
         this.mesh = new THREE.Object3D();
+    }
+
+    get(actorEntity) {
+        // Set internal game accessor to the game world actor instance.
+        this.game = actorEntity;
+        return this.mesh;
     }
 
     // Internal helper to manage state changes to the person's character model.

@@ -24,9 +24,11 @@ import World from '#/game/ecs/world';
  */
 import { setupTriggers, updateTriggers } from "@/scenograph/triggers";
 import {
-  setupTweens,
-  updateTweens,
-  startTweening,
+    setupTweens,
+    updateTweens,
+    startTweening,
+    shipEnterY,
+    shipEnterZ
 } from "@/scenograph/tweens";
 
 
@@ -352,17 +354,12 @@ export default class Director {
       l.current_scene.scene.visible = false;
 
       l.scenograph.effects.init();
-
-      l.current_scene.objects.demoShip = new l.scenograph.objects.vehicles.valiant();
-      await l.current_scene.objects.demoShip.load();
+      l.current_scene.objects.demoShip = await l.scenograph.objects.vehicles.valiant.get();
       l.current_scene.scene.add(
-        l.current_scene.objects.demoShip.mesh
+        l.current_scene.objects.demoShip
       );
-      l.current_scene.animation_queue.push(
-        delta => l.current_scene.objects.demoShip.animate(delta)
-      );
-      l.current_scene.tweens.shipEnterY = l.current_scene.objects.demoShip.shipEnterY();
-      l.current_scene.tweens.shipEnterZ = l.current_scene.objects.demoShip.shipEnterZ();
+      l.current_scene.tweens.shipEnterY = shipEnterY();
+      l.current_scene.tweens.shipEnterZ = shipEnterZ();
 
       l.current_scene.objects.door = await l.scenograph.objects.preloader.createDoor();
       l.current_scene.objects.door.position.set(

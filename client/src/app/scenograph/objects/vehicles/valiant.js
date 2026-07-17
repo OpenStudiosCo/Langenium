@@ -14,6 +14,8 @@ import * as THREE from 'three';
 import l from '@/helpers/l.js';
 import { brightenMaterial, proceduralMetalMaterial } from '@/scenograph/materials.js';
 
+
+
 export default class Valiant {
 
     // Camera distance.
@@ -21,6 +23,9 @@ export default class Valiant {
 
     // Default camera distance.
     default_camera_distance;
+
+    // THREE.Mesh clones
+    instances;
 
     // Ship Model (gltf)
     model;
@@ -45,11 +50,6 @@ export default class Valiant {
 
     constructor(actorEntity) {
 
-        if (actorEntity) {
-            // Set internal game accessor to the game world actor entity.
-            this.game = actorEntity;
-        }
-
         this.default_camera_distance = -35;
         this.trail_position_y = 1.2;
         this.trail_position_z = 1.5;
@@ -57,7 +57,22 @@ export default class Valiant {
 
         this.ready = false;
 
+        this.instances = [];
 
+    }
+
+    async get(actorEntity) {
+
+        let mesh = this.mesh.clone();
+
+        if (actorEntity) {
+            // Set internal game accessor to the game world actor entity.
+            mesh.game = actorEntity;
+        }
+
+        this.instances.push( mesh );
+
+        return mesh;
     }
 
     // Loads the ship model inc built-in animations
@@ -127,7 +142,8 @@ export default class Valiant {
 
         //l.current_scene.effects.particles.createShipThruster(this, 1.5, { x: 0, y: 1.2, z: 1.5 });
 
-        this.trail = l.current_scene.effects.trail.createTrail( this.mesh, 0, this.trail_position_y, this.trail_position_z );
+        // @todo #31: This needs review to ensure entity manager is populated.
+        //this.trail = l.current_scene.effects.trail.createTrail( this.mesh, 0, this.trail_position_y, this.trail_position_z );
 
     }
 
@@ -265,60 +281,6 @@ export default class Valiant {
 
         // Add the thruster container to the mesh.
         this.mesh.add( this.thruster.container );
-    }
-
-    // Tween for the ship intro sequence.
-    shipEnterY() {
-        let coords = { y: 60 }; // Start at (0, 0)
-        let target = { y: 8.5 };
-        return new TWEEN.Tween( coords, false ) // Create a new tween that modifies 'coords'.
-            .to( target, l.config.settings.skipintro ? 0 : 2000 ) // Move to (300, 200) in 1 second.
-            .easing( TWEEN.Easing.Circular.Out ) // Use an easing function to make the animation smooth.
-            .onUpdate( () => {
-                l.current_scene.objects.demoShip.mesh.position.y = coords.y;
-            } )
-            .onComplete( () => {
-                //console.log('ready');
-            } );
-    }
-    // Tween for the ship intro sequence.
-    shipEnterZ() {
-        let coords = { x: l.current_scene.room_depth }; // Start at (0, 0)
-        let target = { x: 0 };
-        return new TWEEN.Tween( coords, false ) // Create a new tween that modifies 'coords'.
-            .delay( l.config.settings.skipintro ? 0 : 1000 )
-            .to( target, l.config.settings.skipintro ? 0 : 2000 ) // Move to (300, 200) in 1 second.
-            .easing( TWEEN.Easing.Circular.Out ) // Use an easing function to make the animation smooth.
-            .onUpdate( () => {
-
-                // Called after tween.js updates 'coords'.
-                // Move 'box' to the position described by 'coords' with a CSS translation.
-                l.current_scene.objects.demoShip.mesh.position.z = coords.x;
-
-            } )
-            .onComplete( () => {
-
-                // Turn off bloom from the other scene.
-                if ( l.current_scene.effects.postprocessing && l.current_scene.effects.postprocessing.passes.length > 0 ) {
-                    l.current_scene.effects.postprocessing.passes.forEach( ( effectPass ) => {
-                        if ( effectPass.name == 'EffectPass' ) {
-                            effectPass.effects.forEach( ( effect ) => {
-                                if ( effect.name == 'BloomEffect' ) {
-                                    effect.blendMode.setOpacity( 0 );
-                                }
-                            } );
-                        }
-
-                    } );
-                }
-
-                // Set the ship as ready.
-                l.current_scene.objects.demoShip.ready = true;
-                l.current_scene.objects.demoShip.camera_distance = l.current_scene.objects.demoShip.default_camera_distance + ( l.current_scene.room_depth / 2 );
-                // l.current_scene.objects.demoShip.mesh.userData.object.position.x = l.current_scene.objects.demoShip.mesh.position.x;
-                // l.current_scene.objects.demoShip.mesh.userData.object.position.y = l.current_scene.objects.demoShip.mesh.position.y;
-                // l.current_scene.objects.demoShip.mesh.userData.object.position.z = l.current_scene.objects.demoShip.mesh.position.z;
-            } );
     }
 
     // Internal helper to manage state changes of aircraft controls.
@@ -506,17 +468,13 @@ export default class Valiant {
                     l.scenograph.modes.multiplayer.socket.emit( 'input', this.game.components.PlayerInput );
                 }
 
-                // @todo: #31: Uncomment once actors are re-implemented in ECS
-                // this.mesh.userData.actor.animate( delta );
-
             }
 
             if (  l.mode != 'hangar')
                 this.updateAnimation( delta );
 
             if (this.game) {
-                // console.log(this.game);
-                // debugger;
+
                 this.sync();
                 this.updateCamera( this.game.components.Motion.heading, this.game.components.Motion.velocity.vertical, this.game.components.Motion.velocity.horizontal );
 

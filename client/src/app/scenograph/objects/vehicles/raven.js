@@ -122,16 +122,13 @@ export default class Raven {
     async get() {
         let mesh = this.mesh.clone();
 
-        mesh.userData.object = new RavenObject( mesh );
-        mesh.userData.object.standing = -1;
+        // mesh.userData.object = new RavenObject( mesh );
+        // mesh.userData.object.standing = -1;
         // Set the object start position based on the path.
         // @todo: pluck it dynamically from path.
-        mesh.userData.object.startPosition.x = -2000;
-        mesh.userData.object.startPosition.y = this.mesh.position.y;
-        mesh.userData.object.startPosition.z = -1000;
-
-        mesh.userData.actor = new PirateActor( mesh, l.current_scene.scene );
-        l.scenograph.entityManager.add( mesh.userData.actor.entity );
+        // mesh.userData.object.startPosition.x = -2000;
+        // mesh.userData.object.startPosition.y = this.mesh.position.y;
+        // mesh.userData.object.startPosition.z = -1000;
 
         this.instances.push( mesh );
 
@@ -151,11 +148,12 @@ export default class Raven {
     **/
     animate( delta ) {
 
-        if ( l.current_scene.settings.game_controls ) {
-            l.scenograph.objects.vehicles.raven.instances.forEach( raven => {
-                raven.userData.actor.animate( delta );
-            } );
-        }
+        // @todo: #31: remove?
+        // if ( l.current_scene.settings.game_controls ) {
+        //     l.scenograph.objects.vehicles.raven.instances.forEach( raven => {
+        //         raven.userData.actor.animate( delta );
+        //     } );
+        // }
     }
 
 

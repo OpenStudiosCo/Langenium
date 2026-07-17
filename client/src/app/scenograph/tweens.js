@@ -218,7 +218,7 @@ function flickerEffect() {
  */
 function enterTheOffice() {
     let coords = { x: 15 + l.current_scene.room_depth / 2 }; // Start at (0, 0)
-    let targetZ = l.current_scene.objects.demoShip.default_camera_distance + l.current_scene.room_depth / 2;
+    let targetZ = l.scenograph.objects.vehicles.valiant.default_camera_distance + l.current_scene.room_depth / 2;
     return new TWEEN.Tween( coords, false ) // Create a new tween that modifies 'coords'.
         .to( { x: targetZ }, l.config.settings.skipintro ? 0 : 1000 ) // Move to (300, 200) in 1 second.
         .easing( TWEEN.Easing.Quadratic.InOut ) // Use an easing function to make the animation smooth.
@@ -311,7 +311,7 @@ function dollyUp() {
     return new TWEEN.Tween( l.scenograph.cameras.player.position )
         .to( { y: l.scenograph.cameras.playerY }, l.config.settings.skipintro ? 0 : 500 ) // Set the duration of the animation
         .onUpdate( () => {
-            //l.scenograph.cameras.player.lookAt(l.current_scene.objects.demoShip.mesh.position);
+            //l.scenograph.cameras.player.lookAt(l.current_scene.objects.demoShip.position);
             l.scenograph.cameras.player.updateProjectionMatrix();
         } )
         .onComplete( () => {
@@ -436,5 +436,59 @@ function resetCameraRotation( cameraDefaultRotation ) {
         .easing( TWEEN.Easing.Quadratic.InOut ) // Use desired easing function
         .onUpdate( () => {
             l.scenograph.cameras.player.updateProjectionMatrix();
+        } );
+}
+
+// Tween for the ship intro sequence.
+export function shipEnterY() {
+    let coords = { y: 60 }; // Start at (0, 0)
+    let target = { y: 8.5 };
+    return new TWEEN.Tween( coords, false ) // Create a new tween that modifies 'coords'.
+        .to( target, l.config.settings.skipintro ? 0 : 2000 ) // Move to (300, 200) in 1 second.
+        .easing( TWEEN.Easing.Circular.Out ) // Use an easing function to make the animation smooth.
+        .onUpdate( () => {
+            l.current_scene.objects.demoShip.position.y = coords.y;
+        } )
+        .onComplete( () => {
+            //console.log('ready');
+        } );
+}
+// Tween for the ship intro sequence.
+export function shipEnterZ() {
+    let coords = { x: l.current_scene.room_depth }; // Start at (0, 0)
+    let target = { x: 0 };
+    return new TWEEN.Tween( coords, false ) // Create a new tween that modifies 'coords'.
+        .delay( l.config.settings.skipintro ? 0 : 1000 )
+        .to( target, l.config.settings.skipintro ? 0 : 2000 ) // Move to (300, 200) in 1 second.
+        .easing( TWEEN.Easing.Circular.Out ) // Use an easing function to make the animation smooth.
+        .onUpdate( () => {
+
+            // Called after tween.js updates 'coords'.
+            // Move 'box' to the position described by 'coords' with a CSS translation.
+            l.current_scene.objects.demoShip.position.z = coords.x;
+
+        } )
+        .onComplete( () => {
+
+            // Turn off bloom from the other scene.
+            if ( l.current_scene.effects.postprocessing && l.current_scene.effects.postprocessing.passes.length > 0 ) {
+                l.current_scene.effects.postprocessing.passes.forEach( ( effectPass ) => {
+                    if ( effectPass.name == 'EffectPass' ) {
+                        effectPass.effects.forEach( ( effect ) => {
+                            if ( effect.name == 'BloomEffect' ) {
+                                effect.blendMode.setOpacity( 0 );
+                            }
+                        } );
+                    }
+
+                } );
+            }
+
+            // Set the ship as ready.
+            l.current_scene.objects.demoShip.ready = true;
+            l.current_scene.objects.demoShip.camera_distance = l.scenograph.objects.vehicles.valiant.default_camera_distance + ( l.current_scene.room_depth / 2 );
+            // l.current_scene.objects.demoShip.userData.object.position.x = l.current_scene.objects.demoShip.position.x;
+            // l.current_scene.objects.demoShip.userData.object.position.y = l.current_scene.objects.demoShip.position.y;
+            // l.current_scene.objects.demoShip.userData.object.position.z = l.current_scene.objects.demoShip.position.z;
         } );
 }

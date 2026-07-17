@@ -53,22 +53,15 @@ export default class Player {
     async load() {
 
         // Setup aircraft, used for the intro sequence.
-        this.vehicle = new l.scenograph.objects.vehicles.valiant(this.actorEntity);
-        await this.vehicle.load();
+        this.vehicle = await l.scenograph.objects.vehicles.valiant.get(this.actorEntity);
         l.current_scene.scene.add(
-          this.vehicle.mesh
-        );
-        l.current_scene.animation_queue.push(
-            delta => this.vehicle.animate(delta)
+          this.vehicle
         );
 
         // Setup person, used for the hangar scene.
-        this.person = new l.scenograph.objects.vehicles.person(this.actorEntity);
+        this.person = await l.scenograph.objects.vehicles.person.get(this.actorEntity);
         l.current_scene.scene.add(
-            this.person.mesh
-        );
-        l.current_scene.animation_queue.push(
-            delta => this.person.animate(delta)
+            this.person
         );
 
     }

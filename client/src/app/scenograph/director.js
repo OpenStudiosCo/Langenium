@@ -261,9 +261,20 @@ export default class Director {
             case 'cargoShip':
                 mesh = await l.scenograph.objects.vehicles.cargoShip.get();
                 break;
-            case 'pirate':
+            case 'raven':
                 mesh = await l.scenograph.objects.vehicles.raven.get();
                 break;
+            case 'person':
+                mesh = await l.scenograph.objects.vehicles.person.get();
+                break;
+            case 'valiant':
+                mesh = await l.scenograph.objects.vehicles.valiant.get();
+                break;
+        }
+
+        if (!mesh) {
+            console.log('Error getting mesh for object:', objectName);
+            debugger;
         }
 
         return mesh;
@@ -296,6 +307,7 @@ export default class Director {
         else {
             console.log('Error getting object position.');
             console.log(entity, scenographObject);
+            debugger;
         }
 
 

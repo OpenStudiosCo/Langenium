@@ -286,7 +286,7 @@ export default class Director {
 
             let mesh = await this.getMesh(entity.config.components.Renderable.object);
             entity.components.Render.mesh = mesh;
-            l.scenograph.director.loadObject(
+            await l.scenograph.director.loadObject(
                 entity,
                 mesh
             );
@@ -299,14 +299,14 @@ export default class Director {
     }
 
     async loadObject(entity, scenographObject) {
-        if (scenographObject && scenographObject.position && scenographObject.position.x) {
+        if (scenographObject !== undefined && scenographObject.position !== undefined && scenographObject.position.x !== undefined) {
             scenographObject.position.x = entity.components.Transform.position.x;
             scenographObject.position.y = entity.components.Transform.position.y;
             scenographObject.position.z = entity.components.Transform.position.z;
         }
         else {
-            console.log('Error getting object position.');
-            console.log(entity, scenographObject);
+            console.log('Error getting object position.', (scenographObject && scenographObject.position && scenographObject.position.x));
+            console.log('Game entity', entity);
             debugger;
         }
 

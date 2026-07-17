@@ -111,11 +111,12 @@ export default class Map {
 
 
         l.scenograph.actors.get('Player One').vehicle.game.components.Scanner.targets.forEach(target => {
-            let targetEntity = l.scenograph.director.world.entities.get(target.entityId);
+            const targetEntity = l.current_scene.world.entities.get(target.entityId);
+            const targetMesh = targetEntity.components.Render.mesh;
             let targetPosition = new THREE.Vector3(
-                targetEntity.components.Transform.position.x,
-                targetEntity.components.Transform.position.y,
-                targetEntity.components.Transform.position.z
+                targetMesh.position.x,
+                targetMesh.position.y,
+                targetMesh.position.z
             );
 
             let distance = targetPosition.distanceTo( l.scenograph.actors.player.vehicle.position );
@@ -126,8 +127,8 @@ export default class Map {
                 // Check if the object is already present on the map, move it if so
                 if ( target.entityId in l.scenograph.overlays.map.markers ) {
 
-                    let diffX = ( target.mesh.position.x - leftEdge ) * offset;
-                    let diffZ = ( target.mesh.position.z - topEdge ) * offset;
+                    let diffX = ( targetMesh.position.x - leftEdge ) * offset;
+                    let diffZ = ( targetMesh.position.z - topEdge ) * offset;
 
                      // Calculate the distance from the center of the minimap
                     let dx = diffX - halfMapSize;

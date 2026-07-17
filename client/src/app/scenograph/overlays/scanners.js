@@ -190,7 +190,11 @@ export default class Scanners {
     toggleRespawningTargets() {
 
         const overlayKeys = Object.keys(l.scenograph.overlays.scanners.trackedObjects);
-        const scannerKeys = l.scenograph.actors.get('Player One').vehicle.game.components.Scanner.targets.map(t => t.mesh.uuid);
+        const scannerKeys = l.scenograph.actors.get('Player One').vehicle.game.components.Scanner.targets.map(target => {
+            const targetEntity = l.current_scene.world.entities.get(target.entityId);
+            const targetMesh = targetEntity.components.Render.mesh;
+            return targetMesh.uuid;
+        } );
 
         // Hide targets missing from player scanners, theoretically those are ones being relocated by the engine / respawning.
         const respawningTargets = overlayKeys.filter(k => !scannerKeys.includes(k));
@@ -230,13 +234,13 @@ export default class Scanners {
 
             // Object icon look up table.
             const objectIcons = {
-                'bot': 'aircraft',
+                'raven': 'aircraft',
                 'cargoShip': 'ship',
                 'city': 'structure',
                 'extractors': 'structure',
                 'hangar': 'structure',
                 'missiles': 'aircraft',
-                'player': 'aircraft',
+                'valiant': 'aircraft',
                 'refinery': 'structure',
             }
 

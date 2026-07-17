@@ -106,8 +106,8 @@ export default class Map {
         let offset = mapSize / l.scenograph.overlays.map.distance;  // Pixels per world unit
         let halfMapSize = (mapSize / 2) - 2.5;  // Half the map size to center objects
 
-        let leftEdge = l.scenograph.actors.player.vehicle.mesh.position.x - l.scenograph.overlays.map.distance / 2;
-        let topEdge = l.scenograph.actors.player.vehicle.mesh.position.z - l.scenograph.overlays.map.distance / 2;
+        let leftEdge = l.scenograph.actors.player.vehicle.position.x - l.scenograph.overlays.map.distance / 2;
+        let topEdge = l.scenograph.actors.player.vehicle.position.z - l.scenograph.overlays.map.distance / 2;
 
 
         l.scenograph.actors.get('Player One').vehicle.game.components.Scanner.targets.forEach(target => {
@@ -118,7 +118,7 @@ export default class Map {
                 targetEntity.components.Transform.position.z
             );
 
-            let distance = targetPosition.distanceTo( l.scenograph.actors.player.vehicle.mesh.position );
+            let distance = targetPosition.distanceTo( l.scenograph.actors.player.vehicle.position );
 
             // Check if the object is within the mapping distance.
             if ( distance <= l.scenograph.overlays.map.distance * 100 ) {
@@ -178,7 +178,7 @@ export default class Map {
      * @note All references within this method should be globally accessible.
     **/
     animate() {
-        let heading = THREE.MathUtils.radToDeg( l.scenograph.actors.player.vehicle.mesh.rotation.y );
+        let heading = THREE.MathUtils.radToDeg( l.scenograph.actors.player.vehicle.rotation.y );
         heading = heading % 360;
         if (heading < 0) {
             heading += 360;

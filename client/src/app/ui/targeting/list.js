@@ -58,7 +58,7 @@ export default class List {
 
             // Check if targetable and not the current player.
             let targetable = mesh.userData && mesh.userData.targetable ? true : false;
-            if ( targetable && mesh.uuid != l.scenograph.actors.player.vehicle.mesh.uuid ) {
+            if ( targetable && mesh.uuid != l.scenograph.actors.player.vehicle.uuid ) {
                 let item = JSON.parse( JSON.stringify( l.ui.targeting.list.item_template ) );
 
                 let icon_class = '';
@@ -143,7 +143,7 @@ export default class List {
             let targetObject = l.current_scene.scene.getObjectByProperty( 'uuid', targetIcon.dataset.uuid );
 
             // Update the distance to target.
-            let distance = targetObject.position.distanceTo( l.scenograph.actors.player.vehicle.mesh.position );
+            let distance = targetObject.position.distanceTo( l.scenograph.actors.player.vehicle.position );
             if ( distance > 1000 ) {
                 distance = Math.round( Math.round( distance ) / 10 ) / 100;
                 targetIcon.querySelector( '.distance' ).innerHTML = distance + 'km';
@@ -158,10 +158,10 @@ export default class List {
 
     /**
      * Update hook.
-     * 
+     *
      * This method is called within the UI setInterval updater, allowing
      * HTML content to be updated at different rate than the 3D frame rate.
-     * 
+     *
      * @method update
      * @memberof List
      * @global

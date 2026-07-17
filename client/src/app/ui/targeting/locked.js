@@ -36,7 +36,7 @@ export default class Locked {
 
     /**
      * Prepares a HTML row of locked targets
-     * 
+     *
      * @uses l.scenograph.overlays.scanners.trackedObjects
      */
     getTargets() {
@@ -80,7 +80,7 @@ export default class Locked {
             let targetObject = l.current_scene.scene.getObjectByProperty( 'uuid', targetIcon.dataset.uuid);
 
             // Update the distance to target.
-            let distance = targetObject.position.distanceTo( l.scenograph.actors.player.vehicle.mesh.position );
+            let distance = targetObject.position.distanceTo( l.scenograph.actors.player.vehicle.position );
             if ( distance > 1000 ) {
                 distance = Math.round(Math.round(distance) / 10) / 100;
                 targetIcon.querySelector('.distance').innerHTML = distance + 'km';
@@ -89,15 +89,15 @@ export default class Locked {
                 distance = Math.round(distance);
                 targetIcon.querySelector('.distance').innerHTML = distance + 'm';
             }
-        } );        
+        } );
     }
 
     /**
      * Update hook.
-     * 
+     *
      * This method is called within the UI setInterval updater, allowing
      * HTML content to be updated at different rate than the 3D frame rate.
-     * 
+     *
      * @method update
      * @memberof Locked
      * @global
@@ -106,7 +106,7 @@ export default class Locked {
     update() {
 
         // Check if we need to rebuild the target lock list HTML.
-        if ( l.ui.targeting.locked.needsUpdate ) {  
+        if ( l.ui.targeting.locked.needsUpdate ) {
 
             // Populate the current target lock icons HTML.
             l.ui.targeting.locked.container.innerHTML = l.ui.targeting.locked.getTargets();

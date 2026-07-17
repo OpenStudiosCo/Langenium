@@ -44,6 +44,10 @@ export default class Scanners {
         element.firstChild.classList.add( symbol );
         const shape = element.querySelector('.symbol path, .symbol rect');
 
+        if (!shape) {
+            debugger;
+        }
+
         if ( shape.style ) {
             shape.style = '';
         }
@@ -144,8 +148,10 @@ export default class Scanners {
      * @param {*} trackedObject
      * @param {*} frustum
      */
-    animateTarget( delta, target, frustum ) {
-        let [ x, y ] = l.scenograph.overlays.scanners.getScreenCoordinates( target.mesh, frustum );
+    animateTarget(delta, target, frustum) {
+        const targetEntity = l.current_scene.world.entities.get(target.entityId);
+        const targetMesh = targetEntity.components.Render.mesh;
+        let [ x, y ] = l.scenograph.overlays.scanners.getScreenCoordinates( targetMesh, frustum );
         let domElement = l.scenograph.overlays.scanners.getTargetDomElement( target );
 
         if ( target.scanTime > 0 ) {
@@ -215,8 +221,10 @@ export default class Scanners {
     /**
      * Grabs or creates a Dom Element for each target.
      */
-    getTargetDomElement( target ) {
-        let trackedObject = l.scenograph.overlays.scanners.trackedObjects[ target.mesh.uuid ];
+    getTargetDomElement(target) {
+        const targetEntity = l.current_scene.world.entities.get(target.entityId);
+        const targetMesh = targetEntity.components.Render.mesh;
+        let trackedObject = l.scenograph.overlays.scanners.trackedObjects[ targetMesh.uuid ];
 
         if ( ! trackedObject ) {
 
@@ -232,10 +240,14 @@ export default class Scanners {
                 'refinery': 'structure',
             }
 
-            let symbol = objectIcons[ target.mesh.userData.objectClass ];
+            let symbol = objectIcons[targetEntity.components.Render.object];
 
-            l.scenograph.overlays.scanners.trackedObjects[ target.mesh.uuid ] = l.scenograph.overlays.scanners.getSymbolElement( symbol );
-            trackedObject = l.scenograph.overlays.scanners.trackedObjects[ target.mesh.uuid ];
+            if (!symbol) {
+                debugger;
+            }
+
+            l.scenograph.overlays.scanners.trackedObjects[ targetMesh.uuid ] = l.scenograph.overlays.scanners.getSymbolElement( symbol );
+            trackedObject = l.scenograph.overlays.scanners.trackedObjects[ targetMesh.uuid ];
             l.scenograph.overlays.scanners.container.appendChild( trackedObject );
         }
 

@@ -74,10 +74,10 @@ export default class Missile {
 
     async targetLost( targetMeshUuid ) {
 
-        l.current_scene.objects.projectiles.missile.active.forEach( ( missile, index ) => {
+        l.scenograph.objects.projectiles.missile.active.forEach( ( missile, index ) => {
             // Detonate early if missile target was lost.
             if ( missile.userData.destMesh.uuid == targetMeshUuid ) {
-                l.current_scene.objects.projectiles.missile.animateMissileEnd( missile, index );
+                l.scenograph.objects.projectiles.missile.animateMissileEnd( missile, index );
             }
         } );
     }
@@ -159,7 +159,7 @@ export default class Missile {
 
         l.current_scene.scene.add( mesh );
 
-        l.current_scene.objects.projectiles.missile.explosions.push( mesh );
+        l.scenograph.objects.projectiles.missile.explosions.push( mesh );
     }
 
     /**
@@ -171,7 +171,7 @@ export default class Missile {
      * @param {*} destCoords Destination coordinates for flight path
      */
     async fireMissile( originMesh, originCoords, destMesh, destCoords ) {
-        let newMissile = l.current_scene.objects.projectiles.missile.mesh.clone();
+        let newMissile = l.scenograph.objects.projectiles.missile.mesh.clone();
 
         // Attach metas.
         newMissile.userData.created = l.current_scene.stats.currentTime;
@@ -192,7 +192,7 @@ export default class Missile {
         l.current_scene.scene.add(newMissile);
 
         // Add missile to the active missiles array (for animation etc)
-        l.current_scene.objects.projectiles.missile.active.push( newMissile );
+        l.scenograph.objects.projectiles.missile.active.push( newMissile );
 
         // Add a trail to the missile.
         newMissile.userData.trail = l.current_scene.effects.trail.createTrail( newMissile, 0, 0, -1.5 );
@@ -233,7 +233,7 @@ export default class Missile {
         const destroyedTargets = new Set();
 
         // @todo: v7: This has to be simulated on the server somehow..
-        l.current_scene.objects.projectiles.missile.active.forEach( ( missile, index ) => {
+        l.scenograph.objects.projectiles.missile.active.forEach( ( missile, index ) => {
             const [ damage, targetDestroyed ] = missile.userData.object.hitCalculation();
             
             if ( targetDestroyed ) {
@@ -247,22 +247,22 @@ export default class Missile {
                 ( parseFloat( l.current_scene.stats.currentTime ) >= parseFloat( missile.userData.created ) + 10000 ) ||
                 ( damage )
             ) {
-                l.current_scene.objects.projectiles.missile.animateMissileEnd( missile, index );
+                l.scenograph.objects.projectiles.missile.animateMissileEnd( missile, index );
             }
             // Otherwise keep flying forward.
             else {
-                l.current_scene.objects.projectiles.missile.animateMissileFlight( missile );
+                l.scenograph.objects.projectiles.missile.animateMissileFlight( missile );
             }
         } );
 
         // Destroy all missiles headed toward the target.
-        l.current_scene.objects.projectiles.missile.active = l.current_scene.objects.projectiles.missile.active.filter( missile => {
+        l.scenograph.objects.projectiles.missile.active = l.scenograph.objects.projectiles.missile.active.filter( missile => {
             const remove = destroyedTargets.has( missile.userData.destMesh.uuid );
-            if (remove) l.current_scene.objects.projectiles.missile.targetLost( missile.userData.destMesh.uuid );
+            if (remove) l.scenograph.objects.projectiles.missile.targetLost( missile.userData.destMesh.uuid );
             return !remove;
         });
 
-        l.current_scene.objects.projectiles.missile.explosions.forEach( ( explosion, index ) => {
+        l.scenograph.objects.projectiles.missile.explosions.forEach( ( explosion, index ) => {
             // Check if it's been 2 seconds since the explosion started, remove if so
             if ( parseFloat( l.current_scene.stats.currentTime ) >= parseFloat( explosion.userData.created ) + 2000 ) {               
                 // Remove the explosion from the scene.
@@ -284,7 +284,7 @@ export default class Missile {
                 explosion = null;
 
                 // Remove from the tracking array.
-                l.current_scene.objects.projectiles.missile.explosions.splice( index, 1 );
+                l.scenograph.objects.projectiles.missile.explosions.splice( index, 1 );
             }
             else {
                 explosion.lookAt( l.scenograph.cameras.active.position );
@@ -310,11 +310,11 @@ export default class Missile {
     }
 
     animateMissileEnd( missile, activeIndex ) {
-        l.current_scene.objects.projectiles.missile.active.splice( activeIndex, 1 );
+        l.scenograph.objects.projectiles.missile.active.splice( activeIndex, 1 );
         l.current_scene.scene.remove( missile );
         missile.userData.trail.destroyMesh();
         missile.userData.trail.deactivate();
-        l.current_scene.objects.projectiles.missile.loadExplosion( missile.userData.destMesh.position );
+        l.scenograph.objects.projectiles.missile.loadExplosion( missile.userData.destMesh.position );
     }
 
 }

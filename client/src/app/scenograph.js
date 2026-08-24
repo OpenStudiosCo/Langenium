@@ -20,21 +20,20 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import l from "@/helpers/l.js";
 import { calculateAdjustedGapSize } from '@/helpers/math.js';
 
+import Actors from "@/scenograph/actors.js";
 import Cameras from "@/scenograph/cameras.js";
 import Controls from "@/scenograph/controls.js";
+import Director from "@/scenograph/director.js";
 import Effects from "@/scenograph/effects";
 import Events from "./scenograph/events";
 import Materials from "@/scenograph/materials.js";
+import Objects from "@/scenograph/objects";
 import Overlays from "@/scenograph/overlays.js";
+
 
 import Debugging from '@/scenograph/modes/debugging.js';
 import Fast from '@/scenograph/modes/fast.js';
 import Multiplayer from "@/scenograph/modes/multiplayer.js";
-
-/**
- * Scenes 
- */
-import Overworld from '@/scenograph/scenes/overworld.js';
 
 /**
  * Scene controllers
@@ -45,6 +44,8 @@ import {
 } from "@/scenograph/tweens";
 
 export default class Scenograph {
+
+    actors;
 
     cameras;
 
@@ -59,7 +60,11 @@ export default class Scenograph {
 
     modes;
 
+    objects;
+
     overlays;
+
+    sceneManager;
 
     /**
      * @instance YUKA.EntityManager;
@@ -78,6 +83,11 @@ export default class Scenograph {
     constructor() {
 
         this.modes = {};
+
+        /**
+         * Cameras.
+         */
+        this.actors = new Actors();
 
         /**
          * Cameras.
@@ -105,9 +115,19 @@ export default class Scenograph {
         this.materials = new Materials();
 
         /**
+         * Objects.
+         */
+        this.objects = new Objects();
+
+        /**
          * Overlays.
          */
         this.overlays = new Overlays();
+
+        /**
+         * Scene Manager.
+         */
+        this.director = new Director();
 
         /**
          * Setup the different game modes (controllers)
@@ -136,14 +156,6 @@ export default class Scenograph {
 
     }
 
-    load( sceneName ) {
-        let scene = false;
-
-        if ( sceneName == 'Overworld' ) {
-            scene = new Overworld();
-        }
-        return scene;
-    }
 
     /**
      * Game 3D initialiser, called by l when it's finished loading.
@@ -173,6 +185,9 @@ export default class Scenograph {
 
         // Reusable raycaster for tracking what the user tried to hit.
         l.current_scene.raycaster = new THREE.Raycaster();
+
+        // Load all object classes.
+        await this.objects.init();
 
         // Scene Setup.
         l.current_scene.setup();
@@ -222,6 +237,7 @@ export default class Scenograph {
         const delta = l.scenograph.time.update().getDelta();
 
         if ( l.current_scene.started ) {
+
             if ( l.current_scene.animation_queue.length > 0 ) {
                 for (
                     var i = 0;

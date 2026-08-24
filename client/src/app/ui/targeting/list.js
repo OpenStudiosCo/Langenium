@@ -58,7 +58,7 @@ export default class List {
 
             // Check if targetable and not the current player.
             let targetable = mesh.userData && mesh.userData.targetable ? true : false;
-            if ( targetable && mesh.uuid != l.current_scene.objects.player.mesh.uuid ) {
+            if ( targetable && mesh.uuid != l.scenograph.actors.player.vehicle.mesh.uuid ) {
                 let item = JSON.parse( JSON.stringify( l.ui.targeting.list.item_template ) );
 
                 let icon_class = '';
@@ -143,7 +143,7 @@ export default class List {
             let targetObject = l.current_scene.scene.getObjectByProperty( 'uuid', targetIcon.dataset.uuid );
 
             // Update the distance to target.
-            let distance = targetObject.position.distanceTo( l.current_scene.objects.player.mesh.position );
+            let distance = targetObject.position.distanceTo( l.scenograph.actors.player.vehicle.mesh.position );
             if ( distance > 1000 ) {
                 distance = Math.round( Math.round( distance ) / 10 ) / 100;
                 targetIcon.querySelector( '.distance' ).innerHTML = distance + 'km';

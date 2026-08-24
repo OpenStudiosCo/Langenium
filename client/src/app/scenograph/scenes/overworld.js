@@ -20,11 +20,13 @@ import Sky2 from "@/scenograph/objects/environment/sky2";
 
 // Structures
 import Extractors from "@/scenograph/objects/structures/extractors";
+import Hangar from "@/scenograph/objects/structures/hangar";
 import Platform from "@/scenograph/objects/structures/platform";
 import Refineries from "@/scenograph/objects/structures/refineries";
 
 // Vehicles
 import CargoShips from "@/scenograph/objects/vehicles/cargo_ships";
+import Person from "@/scenograph/objects/vehicles/person";
 import Raven from "@/scenograph/objects/vehicles/raven";
 import Valiant from "@/scenograph/objects/vehicles/valiant";
 
@@ -104,14 +106,23 @@ export default class Overworld extends SceneBase {
     //   l.current_scene.objects.sky.animate
     // );
 
-    // Setup Player, currently hardcoded to Valiant aircraft
-    l.current_scene.objects.player = new Valiant();
-    await l.current_scene.objects.player.load();
+    // Setup Player aircraft, used for the intro sequence.
+    l.scenograph.actors.player.vehicle = new Valiant();
+    await l.scenograph.actors.player.vehicle.load();
     l.current_scene.scene.add(
-      l.current_scene.objects.player.mesh
+      l.scenograph.actors.player.vehicle.mesh
     );
     l.current_scene.animation_queue.push(
-      l.current_scene.objects.player.animate
+      l.scenograph.actors.player.vehicle.animate
+    );
+
+    // Setup Player person, used for the hangar scene.
+    l.scenograph.actors.player.person = new Person();
+    l.current_scene.scene.add(
+      l.scenograph.actors.player.person.mesh
+    );
+    l.current_scene.animation_queue.push(
+      l.scenograph.actors.player.person.animate
     );
 
     // let scale = 500;
@@ -170,6 +181,19 @@ export default class Overworld extends SceneBase {
     );
     l.current_scene.animation_queue.push(
       l.current_scene.objects.bot.animate
+    );
+
+    // Setup hangar
+    // @todo: #31 Implement first person mode and a way to go between being in the hangar and being in the aircraft
+    l.current_scene.objects.hangar = new Hangar();
+    await l.current_scene.objects.hangar.load();
+    // Hide the hangar so we can load it when needed.
+    l.current_scene.objects.hangar.mesh.visible = false;
+    l.current_scene.scene.add(
+      l.current_scene.objects.hangar.mesh
+    );
+    l.current_scene.animation_queue.push(
+      l.current_scene.objects.hangar.animate
     );
 
 

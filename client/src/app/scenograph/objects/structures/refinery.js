@@ -10,7 +10,7 @@ import l from '@/helpers/l.js';
 import { proceduralMetalMaterial2, proceduralBuilding } from '@/scenograph/materials.js';
 import { Brush, Evaluator, INTERSECTION } from 'three-bvh-csg';
 
-export default class Refineries {
+export default class Refinery {
 
     // Array of three.vector3's defining X/Z coordinates and radius of where extractors are in the ocean.
     locations;
@@ -22,6 +22,7 @@ export default class Refineries {
     size;
 
     constructor() {
+        this.instances = [];
         this.ready = false;
         this.size = 1000;
 
@@ -33,25 +34,16 @@ export default class Refineries {
         ];
     }
 
-    async getAll() {
-        let meshes = [];
+    async get() {
+        let refinery = this.mesh.clone();
 
-        await this.load();
+        let i = this.instances.length;
 
-        this.locations.forEach( async ( location, i ) => {
-            let mesh = this.mesh.clone();
+        refinery.name = 'Extractor #' + ( i + 1 );
 
-            mesh.position.x = location.x;
-            mesh.position.y = this.size / 6.5;
-            mesh.position.z = location.y;
-            mesh.name = 'Refinery #' + ( i + 1 );
-            mesh.userData.targetable = true;
-            mesh.userData.objectClass = 'refinery';
+        this.instances.push( refinery );
 
-            meshes.push( mesh );
-        } );
-
-        return meshes;
+        return refinery;
     }
 
     async load() {
@@ -141,7 +133,7 @@ export default class Refineries {
     **/
     animate( delta ) {
 
-        l.current_scene.objects.refineries.forEach( ( refinery, i ) => {
+        l.scenograph.objects.structures.refinery.instances.forEach( ( refinery, i ) => {
             let inner = refinery.getObjectByName( 'inner' );
             inner.material.uniforms.time.value += 0.00005;
         } );

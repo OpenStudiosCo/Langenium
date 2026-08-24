@@ -67,9 +67,9 @@ export default class WeaponControls {
 
         let timeRemaining = 0;
 
-        if ( parseInt(l.current_scene.stats.currentTime) < parseInt(l.current_scene.objects.player.mesh.userData.actor.weapons.last) + parseInt(l.current_scene.objects.player.mesh.userData.actor.weapons.timeout) ) {
-            timeRemaining = parseInt(l.current_scene.objects.player.mesh.userData.actor.weapons.timeout) - (
-                parseInt(l.current_scene.stats.currentTime) - parseInt(l.current_scene.objects.player.mesh.userData.actor.weapons.last)
+        if ( parseInt(l.current_scene.stats.currentTime) < parseInt(l.scenograph.actors.player.vehicle.mesh.userData.actor.weapons.last) + parseInt(l.scenograph.actors.player.vehicle.mesh.userData.actor.weapons.timeout) ) {
+            timeRemaining = parseInt(l.scenograph.actors.player.vehicle.mesh.userData.actor.weapons.timeout) - (
+                parseInt(l.current_scene.stats.currentTime) - parseInt(l.scenograph.actors.player.vehicle.mesh.userData.actor.weapons.last)
             );
         }
 

@@ -68,6 +68,7 @@ export default class Map {
             'cargoShip': 'ship',
             'city': 'structure',
             'extractors': 'structure',
+            'hangar': 'structure',
             'missiles': 'aircraft',
             'player': 'aircraft',
             'refinery': 'structure',
@@ -105,16 +106,16 @@ export default class Map {
         let offset = mapSize / l.scenograph.overlays.map.distance;  // Pixels per world unit
         let halfMapSize = (mapSize / 2) - 2.5;  // Half the map size to center objects
 
-        let leftEdge = l.current_scene.objects.player.mesh.position.x - l.scenograph.overlays.map.distance / 2;
-        let topEdge = l.current_scene.objects.player.mesh.position.z - l.scenograph.overlays.map.distance / 2;
+        let leftEdge = l.scenograph.actors.player.vehicle.mesh.position.x - l.scenograph.overlays.map.distance / 2;
+        let topEdge = l.scenograph.actors.player.vehicle.mesh.position.z - l.scenograph.overlays.map.distance / 2;
 
 
-        l.current_scene.objects.player.mesh.userData.actor.scanners.targets.forEach( target => {
-            let distance = target.mesh.position.distanceTo( l.current_scene.objects.player.mesh.position );
+        l.scenograph.actors.player.vehicle.mesh.userData.actor.scanners.targets.forEach( target => {
+            let distance = target.mesh.position.distanceTo( l.scenograph.actors.player.vehicle.mesh.position );
 
             // Check if the object is within the mapping distance.
             if ( distance <= l.scenograph.overlays.map.distance * 100 ) {
-                
+
                 // Check if the object is already present on the map, move it if so
                 if ( target.mesh.uuid in l.scenograph.overlays.map.markers ) {
 
@@ -160,17 +161,17 @@ export default class Map {
 
     /**
      * Animate hook.
-     * 
+     *
      * This method is called within the main animation loop andw
      * therefore must only reference global objects or properties.
-     * 
+     *
      * @method animate
      * @memberof Map
      * @global
      * @note All references within this method should be globally accessible.
     **/
     animate() {
-        let heading = THREE.MathUtils.radToDeg( l.current_scene.objects.player.rotation.y );
+        let heading = THREE.MathUtils.radToDeg( l.scenograph.actors.player.vehicle.mesh.rotation.y );
         heading = heading % 360;
         if (heading < 0) {
             heading += 360;

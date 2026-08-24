@@ -1,6 +1,6 @@
 /**
  * Base Aircraft class
- * 
+ *
  * @todo:
  * - Add weight and wind resistance
  */
@@ -8,6 +8,7 @@
 import { normaliseSpeedDelta, easeOutExpo, easeInQuad, easeInOutExpo } from '../../helpers';
 
 export default class BaseAircraft {
+    public mesh;
     public score:           { kills: number; deaths: number }   = { kills: 0, deaths: 0 };
     public standing:        number                              = 0;
     public hitPoints:       number                              = 100;
@@ -43,38 +44,46 @@ export default class BaseAircraft {
         moveRight: false
     };
 
-    constructor() {
+    constructor( mesh ) {
+        this.mesh = mesh;
     }
 
     public blowUp( meshPosition ) {
         let seed = Math.round(Math.random() * 10);
 
-        for ( var i = 0; i < seed; i++ ) {
-            let xOffset = 10 - Math.random() * 20;
-            let yOffset = 10 - Math.random() * 20;
-            let zOffset = 10 - Math.random() * 20;
+        if ( window.location.pathname == 'https://langenium.com' && l.config.settings.fast == false ) {
+          for ( var i = 0; i < seed; i++ ) {
+              let xOffset = 10 - Math.random() * 20;
+              let yOffset = 10 - Math.random() * 20;
+              let zOffset = 10 - Math.random() * 20;
 
-            let explosionPosition = meshPosition.clone();
-            explosionPosition.x += xOffset;
-            explosionPosition.y += yOffset;
-            explosionPosition.z += zOffset;
+              let explosionPosition = meshPosition.clone();
+              explosionPosition.x += xOffset;
+              explosionPosition.y += yOffset;
+              explosionPosition.z += zOffset;
 
-            setTimeout( () => {
-                l.current_scene.objects.projectiles.missile.loadExplosion( explosionPosition );
-            }, 250 * Math.random() )
-            
+              setTimeout( () => {
+                  l.scenograph.objects.projectiles.missile.loadExplosion( explosionPosition );
+              }, 250 * Math.random() )
+
+          }
+        }
+        else {
+          setTimeout( () => {
+              l.scenograph.objects.projectiles.missile.loadExplosion( meshPosition );
+          }, 250 * Math.random() )
         }
 
     };
 
     /**
      * Damages the aircraft based on the incoming damage.
-     * 
+     *
      * Returns the calculated final damage amount.
-     * 
-     * @param damagePoints 
+     *
+     * @param damagePoints
      * @param originMesh
-     * @returns 
+     * @returns
      */
     public damage( damagePoints, originMesh ): number {
         let targetDestroyed = false;
@@ -111,12 +120,6 @@ export default class BaseAircraft {
             this.score.deaths += 1;
             originMesh.userData.object.score.kills += 1;
 
-            // Hide the scanner marker during respawn.
-            const scannerMarker = l.scenograph.overlays.scanners.trackedObjects[ this.mesh.uuid ];
-            if ( scannerMarker )
-                scannerMarker.style.display = 'none';
-
-
             // Wait 3 seconds before 'respawn'.
             setTimeout( () => {
                 // Reset hitpoints
@@ -136,9 +139,6 @@ export default class BaseAircraft {
                 this.mesh.userData.targetable = true;
                 this.mesh.visible = true;
 
-                // Restore the scanner marker after respawn.
-                if ( scannerMarker )
-                    scannerMarker.style.display = 'block';
             }, 3000 );
 
         }
@@ -151,10 +151,10 @@ export default class BaseAircraft {
 
     /**
      * Change aircraft velocity based on current and what buttons are pushed by the player.
-     * 
+     *
      * @param currentVelocity
-     * @param increasePushed 
-     * @param decreasePushed 
+     * @param increasePushed
+     * @param decreasePushed
      */
     private _changeVelocity(stepIncrease, stepDecrease, currentVelocity, increasePushed, decreasePushed, increaseMax, decreaseMax, dragFactor): number {
         let newVelocity = currentVelocity;
@@ -185,7 +185,7 @@ export default class BaseAircraft {
                         newVelocity = 0;
                     }
                 }
-                
+
             }
         }
 
@@ -194,13 +194,13 @@ export default class BaseAircraft {
 
     /**
      * Move the aircraft based on velocity, direction and time delta between frames.
-     * 
-     * @param time_delta 
+     *
+     * @param time_delta
      */
     public move( time_delta: number ): object {
         let stepSize:           number = .05 * normaliseSpeedDelta( time_delta ),
-            rY:                 number = 0, 
-            tZ:                 number = 0, 
+            rY:                 number = 0,
+            tZ:                 number = 0,
             tY:                 number = 0,
             radian:             number = (Math.PI / 180);
 
@@ -258,7 +258,7 @@ export default class BaseAircraft {
         ) {
             this.rotation.x *= .9;
         }
-        
+
         if (rY != 0) {
             if (Math.abs(this.rotation.z) < Math.PI / 4) {
                 this.rotation.z += rY / Math.PI;
@@ -272,7 +272,7 @@ export default class BaseAircraft {
 
         let xDiff = tZ * Math.sin(this.rotation.y),
             zDiff = tZ * Math.cos(this.rotation.y);
-        
+
         // "1" is the floor limit as it's the ocean surface and the camera clips through the water any lower.
         if (this.position.y + tY >= 1 ) {
             this.position.y += tY;
@@ -284,7 +284,7 @@ export default class BaseAircraft {
         this.position.z += zDiff;
 
         return [ rY, tY, tZ ];
-    
+
     }
 
 }

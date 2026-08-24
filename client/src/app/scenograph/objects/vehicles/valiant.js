@@ -508,15 +508,16 @@ export default class Valiant {
                 this.updateAnimation( delta );
 
 
-            // Update the ships state model.
-            let [ rY, tY, tZ ] = this.mesh.userData.object.move( l.current_scene.stats.currentTime - l.current_scene.stats.lastTime );
+            if ( ! this.demo ) {
+                // Update the ships state model.
+                let [ rY, tY, tZ ] = this.mesh.userData.object.move( l.current_scene.stats.currentTime - l.current_scene.stats.lastTime );
 
-            this.updateMesh();
+                this.updateMesh();
 
-            this.updateCamera( rY, tY, tZ );
+                this.updateCamera( rY, tY, tZ );
 
-            this.animateTrail( rY );
-
+                this.animateTrail( rY );
+            }
         }
     }
 

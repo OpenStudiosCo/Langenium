@@ -45,13 +45,15 @@ export default class Valiant {
     // TrailRenderer effect showing a trailing effect on the thruster.
     trail;
 
-    constructor() {
+    constructor( isDemo = false ) {
         this.default_camera_distance = -35;
         this.trail_position_y = 1.2;
         this.trail_position_z = 1.5;
         this.camera_distance = 0;
 
         this.ready = false;
+
+        this.demo = isDemo;
 
     }
 
@@ -487,7 +489,7 @@ export default class Valiant {
 
         if ( l.current_scene.objects.demoShip.ready ) {
 
-            if ( l.current_scene.settings.game_controls ) {
+            if ( l.current_scene.settings.game_controls && ! this.demo ) {
 
                 if ( l.scenograph.actors.player.mode == 'vehicle' ) {
                     // Detect keyboard input and pass it to the ship state model.

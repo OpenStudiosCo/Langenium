@@ -339,7 +339,7 @@ export default class Director {
 
       l.scenograph.effects.init();
 
-      l.current_scene.objects.demoShip = new l.scenograph.objects.vehicles.valiant();
+      l.current_scene.objects.demoShip = new l.scenograph.objects.vehicles.valiant(true);
       await l.current_scene.objects.demoShip.load();
       l.current_scene.scene.add(
         l.current_scene.objects.demoShip.mesh

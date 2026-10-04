@@ -347,8 +347,7 @@ export default class Director {
       l.current_scene.animation_queue.push(
         delta => l.current_scene.objects.demoShip.animate(delta)
       );
-      l.current_scene.tweens.shipEnterY = l.current_scene.objects.demoShip.shipEnterY();
-      l.current_scene.tweens.shipEnterZ = l.current_scene.objects.demoShip.shipEnterZ();
+
 
       l.current_scene.objects.door = await l.scenograph.objects.preloader.createDoor();
       l.current_scene.objects.door.position.set(

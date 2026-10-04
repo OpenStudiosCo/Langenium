@@ -22,6 +22,7 @@ export default class Actors {
 
     constructor() {
         this.map = new Map();
+        this.map.set('Demo Ship', new DemoShip());
     }
 
     async registerActor(actorInstance) {

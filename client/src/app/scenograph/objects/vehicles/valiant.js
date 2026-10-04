@@ -2,8 +2,6 @@
  * Valiant Aircraft
  *
  * Provides a Valiant aircraft that can be added and updated in the game world.
- *
- * @todo: Uncouple player actor from this ship class.
  */
 
 import * as THREE from 'three';
@@ -13,7 +11,6 @@ import * as THREE from 'three';
  */
 import l from '@/helpers/l.js';
 import { brightenMaterial, proceduralMetalMaterial } from '@/scenograph/materials.js';
-import Player from '#/game/src/actors/player';
 import ValiantObject from '#/game/src/objects/aircraft/valiant';
 
 export default class Valiant {
@@ -104,15 +101,11 @@ export default class Valiant {
         } );
 
         this.mesh = this.model.scene;
-        this.mesh.name = 'Player Ship';
         this.mesh.position.z = l.current_scene.room_depth;
         this.mesh.rotation.order = 'YXZ';
         this.mesh.scale.setScalar(2);
 
         this.mesh.userData.targetable = true;
-        this.mesh.userData.objectClass = 'player';
-        this.mesh.userData.actor = new Player( this.mesh, l.current_scene.scene );
-        l.scenograph.entityManager.add( this.mesh.userData.actor.entity );
 
         this.createThruster();
 
@@ -263,64 +256,6 @@ export default class Valiant {
         this.mesh.add( this.thruster.container );
     }
 
-    // Internal helper to manage state changes of aircraft controls.
-    updateControls() {
-        let mappings = {
-            throttleUp  :  'W',
-            throttleDown:  'S',
-            moveUp      :  ' ',
-            moveDown    :  'shift',
-            moveLeft    :  'A',
-            moveRight   :  'D',
-        }
-        let changing = false;
-        for ( const [ controlName, keyMapping ] of Object.entries( mappings ) ) {
-            if ( l.scenograph.controls.keyboard.pressed( keyMapping ) ) {
-                this.mesh.userData.object.controls[ controlName ] = true;
-                changing = true;
-            }
-            else {
-
-                this.mesh.userData.object.controls[ controlName ] = false;
-
-                if ( l.scenograph.controls.touch ) {
-                    // Check if any touchpad controls are being pressed
-                    if (
-                        l.scenograph.controls.touch.controls.moveUp ||
-                        l.scenograph.controls.touch.controls.moveDown ||
-                        l.scenograph.controls.touch.controls.moveForward ||
-                        l.scenograph.controls.touch.controls.moveBackward ||
-                        l.scenograph.controls.touch.controls.moveLeft ||
-                        l.scenograph.controls.touch.controls.moveRight
-                    ) {
-                        changing = true;
-                        if ( l.scenograph.controls.touch.controls.moveUp ) {
-                            this.mesh.userData.object.controls.moveUp = true;
-                        }
-                        if ( l.scenograph.controls.touch.controls.moveDown ) {
-                            this.mesh.userData.object.controls.moveDown = true;
-                        }
-                        if ( l.scenograph.controls.touch.controls.moveForward ) {
-                            this.mesh.userData.object.controls.throttleUp = true;
-                        }
-                        if ( l.scenograph.controls.touch.controls.moveBackward ) {
-                            this.mesh.userData.object.controls.throttleDown = true;
-                        }
-                        if ( l.scenograph.controls.touch.controls.moveLeft ) {
-                            this.mesh.userData.object.controls.moveLeft = true;
-                        }
-                        if ( l.scenograph.controls.touch.controls.moveRight ) {
-                            this.mesh.userData.object.controls.moveRight = true;
-                        }
-                    }
-
-                }
-            }
-        }
-        this.mesh.userData.object.controls.changing = changing;
-
-    }
-
     updateAnimation( delta ) {
         if ( this.mixer ) {
             this.mixer.update( delta );
@@ -344,15 +279,6 @@ export default class Valiant {
             if ( Math.abs( this.mesh.rotation.x ) < 1 / 8 ) {
                 this.mesh.rotation.x += elevationChange / 10 / 180;
             }
-
-            if ( Math.abs( l.scenograph.cameras.player.rotation.x ) < 1 / 8 ) {
-                let radian = ( Math.PI / 180 );
-                l.scenograph.cameras.player.rotation.x += elevationChange * radian / 10;
-            }
-        }
-        else {
-            if ( l.scenograph.controls.touch && !l.scenograph.controls.touch.controls.rotationPad.mouseDown )
-                l.scenograph.cameras.player.rotation.x *= .9;
         }
     }
 
@@ -366,60 +292,6 @@ export default class Valiant {
         this.mesh.rotation.z = this.mesh.userData.object.rotation.z;
     }
 
-    updateCamera( rY, tY, tZ ) {
-        var radian = ( Math.PI / 180 );
-
-        this.camera_distance = this.default_camera_distance + ( l.current_scene.room_depth / 2 );
-        if ( this.mesh.userData.object.airSpeed < 0 ) {
-            this.camera_distance -= this.mesh.userData.object.airSpeed * 4;
-        }
-
-        let xDiff = this.mesh.position.x;
-        let zDiff = this.mesh.position.z;
-
-        l.scenograph.cameras.player.position.x = xDiff + this.camera_distance * Math.sin( this.mesh.rotation.y );
-        l.scenograph.cameras.player.position.z = zDiff + this.camera_distance * Math.cos( this.mesh.rotation.y );
-
-        if ( rY != 0 && Math.abs(l.scenograph.cameras.player.rotation.y) < .3925 ) {
-            l.scenograph.cameras.player.rotation.y += rY;
-        }
-        else {
-            // Check there is y difference and the rotation pad isn't being pressed.
-            if (
-                l.scenograph.cameras.player.rotation.y != this.mesh.rotation.y &&
-                ( l.scenograph.controls.touch && !l.scenograph.controls.touch.controls.rotationPad.mouseDown )
-            ) {
-
-                // Get the difference in y rotation betwen the camera and ship
-                let yDiff = this.mesh.rotation.y - l.scenograph.cameras.player.rotation.y;
-
-                // Check the y difference is larger than 1/100th of a radian
-                if (
-                    Math.abs( yDiff ) > radian / 100
-                ) {
-                    // Add 1/60th of the difference in rotation, as FPS currently capped to 60.
-                    l.scenograph.cameras.player.rotation.y += ( this.mesh.rotation.y - l.scenograph.cameras.player.rotation.y ) * 1 / 60;
-                }
-                else {
-                    l.scenograph.cameras.player.rotation.y = this.mesh.rotation.y;
-                }
-
-            }
-
-        }
-
-        let xDiff2 = tZ * Math.sin( this.mesh.rotation.y ),
-            zDiff2 = tZ * Math.cos( this.mesh.rotation.y );
-
-        if ( this.mesh.position.y + tY >= 1 ) {
-            l.scenograph.cameras.player.position.y += tY;
-        }
-
-        l.scenograph.cameras.player.position.x += xDiff2;
-        l.scenograph.cameras.player.position.z += zDiff2;
-
-        l.scenograph.cameras.player.updateProjectionMatrix();
-    }
     /**
      * Animate hook.
      *
@@ -433,37 +305,8 @@ export default class Valiant {
     **/
     animate( delta ) {
 
-        if ( l.current_scene.objects.demoShip.ready ) {
-
-            if ( l.current_scene.settings.game_controls && ! this.demo ) {
-
-                if ( l.scenograph.actors.player.mode == 'vehicle' ) {
-                    // Detect keyboard input and pass it to the ship state model.
-                    this.updateControls();
-                }
-
-                if ( l.scenograph.modes.multiplayer.connected ) {
-                    l.scenograph.modes.multiplayer.socket.emit( 'input', this.mesh.userData.object.controls );
-                }
-
-                this.mesh.userData.actor.animate( delta );
-
-            }
-
-            if (  l.mode != 'hangar')
-                this.updateAnimation( delta );
-
-
-            if ( ! this.demo ) {
-                // Update the ships state model.
-                let [ rY, tY, tZ ] = this.mesh.userData.object.move( l.current_scene.stats.currentTime - l.current_scene.stats.lastTime );
-
-                this.updateMesh();
-
-                this.updateCamera( rY, tY, tZ );
-
-                this.animateTrail( rY );
-            }
+        if ( l.current_scene.objects.demoShip.ready && l.mode != 'hangar' ) {
+            this.updateAnimation( delta );
         }
     }
 

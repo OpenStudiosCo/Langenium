@@ -12,6 +12,7 @@
  * Internal libs and helpers.
  */
 import l from '@/helpers/l.js';
+import DemoShip from '@/scenograph/actors/demoShip.js';
 import Player from '@/scenograph/actors/player.js';
 
 export default class Actors {

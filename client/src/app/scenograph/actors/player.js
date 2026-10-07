@@ -51,6 +51,25 @@ export default class Player {
         }
     }
 
+    resetFlight() {
+        const object = this.vehicle?.mesh?.userData?.object;
+        if ( object ) {
+            object.airSpeed = 0;
+            object.verticalSpeed = 0;
+            object.controls.changing = false;
+            object.controls.throttleUp = false;
+            object.controls.throttleDown = false;
+            object.controls.moveUp = false;
+            object.controls.moveDown = false;
+            object.controls.moveLeft = false;
+            object.controls.moveRight = false;
+        }
+
+        if ( this.person && this.person.mesh ) {
+            this.person.mesh.visible = false;
+        }
+    }
+
     async load() {
 
         // Setup aircraft, used for the intro sequence.
@@ -227,6 +246,10 @@ export default class Player {
         }
 
         if ( ! l.current_scene.objects.demoShip || ! l.current_scene.objects.demoShip.ready ) {
+            return;
+        }
+
+        if ( l.mode !== 'single_player' && l.mode !== 'multi_player' ) {
             return;
         }
 

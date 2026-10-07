@@ -47,26 +47,43 @@ export default class Overlays {
     }
 
     deactivate() {
-        // Heads Up Display (HUD).
-        l.scenograph.overlays.hud.container.innerHTML = '';
-        l.current_scene.animation_queue.filter(
-            animation_queue_update => animation_queue_update !== l.scenograph.overlays.hud.animate
-        );
-        //l.scenograph.overlays.hud = false;
+        const drop = new Set();
 
-        // Mini Map.
-        l.scenograph.overlays.map.container.innerHTML = '';
-        l.current_scene.animation_queue.filter(
-            animation_queue_update => animation_queue_update !== l.scenograph.overlays.map.animate
-        );
-        l.scenograph.overlays.map.container.style.display = 'none';
-        //l.scenograph.overlays.map = false;
+        if ( this.hud ) {
+            drop.add( this.hud.animate );
+            if ( this.hud.container ) {
+                this.hud.container.innerHTML = '';
+            }
+            this.hud = false;
+        }
 
-        // Scanners.
-        l.scenograph.overlays.scanners.container.innerHTML = '';
-        l.current_scene.animation_queue.filter(
-            animation_queue_update => animation_queue_update !== l.scenograph.overlays.scanners.animate
-        );
-        //l.scenograph.overlays.scanners = false;
+        if ( this.map ) {
+            drop.add( this.map.animate );
+            if ( this.map.container ) {
+                this.map.container.innerHTML = '';
+                this.map.container.style.display = 'none';
+            }
+            this.map = false;
+        }
+
+        if ( this.scanners ) {
+            drop.add( this.scanners.animate );
+            if ( this.scanners.container ) {
+                this.scanners.container.innerHTML = '';
+            }
+            this.scanners = false;
+        }
+
+        if ( drop.size ) {
+            l.current_scene.animation_queue = l.current_scene.animation_queue.filter(
+                fn => ! drop.has( fn )
+            );
+        }
+
+        if ( l.ui && l.ui.update_queue ) {
+            l.ui.update_queue = l.ui.update_queue.filter(
+                item => item.callback !== 'l.scenograph.controls.touch.weapons.update'
+            );
+        }
     }
 }

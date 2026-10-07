@@ -35,10 +35,7 @@ export default class Main_Menu {
             hidden: true
         } );
         this.buttons.exit_game.on( 'click', () => {
-            console.log( 'Exit to Main Menu, closing game session' );
-            l.scenograph.controls.deactivate()
-            l.scenograph.overlays.deactivate()
-            //l.ui.hide_flight_instruments();
+            l.routes.exitGame();
 
             // Show game mode buttons.
             this.buttons.player_one.hidden = false;
@@ -51,15 +48,9 @@ export default class Main_Menu {
             // Hide the score table button.
             this.buttons.scores.hidden = true;
 
-            // Restore the main menu title.
+            // Restore the main menu.
+            this.pane.expanded = true;
             this.pane.title = this.default_title;
-
-            if ( l.scenograph.modes.multiplayer.connected ) {
-                l.scenograph.modes.multiplayer.disconnect();
-            }
-
-            // Set client mode.
-            l.mode = 'home';
         } );
 
         this.buttons.scores = this.pane.addButton( {

@@ -424,9 +424,34 @@ export default class hangarRoute {
     }
 
     unloadHangar() {
-        const hangar = l.scenograph.objects.structures.hangar.mesh;
+        const hangar = l.scenograph.objects.structures.hangar?.mesh;
+        if ( ! hangar ) {
+            return;
+        }
         hangar.visible = false;
         l.current_scene.scene.remove( hangar );
+    }
+
+    /**
+     * Stop hangar/overworld session work when returning to the main menu.
+     */
+    cancelSession() {
+        if ( l.current_scene.tweens.shipDepart ) {
+            l.current_scene.tweens.shipDepart.stop();
+        }
+        if ( l.current_scene.tweens.cameraHandoff ) {
+            l.current_scene.tweens.cameraHandoff.stop();
+        }
+
+        this.departing = false;
+        this.promptDismissed = false;
+        this.lastShipPos = null;
+
+        if ( this.prompt ) {
+            this.prompt.classList.remove('visible');
+        }
+
+        this.unloadHangar();
     }
 
     /**

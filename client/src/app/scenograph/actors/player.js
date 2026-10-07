@@ -251,8 +251,6 @@ export default class Player {
         this.vehicle.updateMesh();
 
         this.updateCamera( rY, tY, tZ );
-
-        this.vehicle.animateTrail( rY );
     }
 
 }

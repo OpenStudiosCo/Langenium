@@ -307,51 +307,40 @@ export default class Valiant {
 
         if ( l.current_scene.objects.demoShip.ready && l.mode != 'hangar' ) {
             this.updateAnimation( delta );
+            if ( ! this.demo ) {
+                this.animateTrail();
+            }
         }
     }
 
-    animateTrail( rY ) {
-        if ( this.trail ) {
-
-            // Fix the trail being too far behind.
-            let trailOffset = 0;
-
-            // Only offset the trail effect if we are going forward which is (z-1) in numerical terms
-            if ( this.mesh.userData.object.airSpeed < 0 ) {
-
-                // Update ship thruster
-                this.animateThruster( this.mesh.userData.object.airSpeed, this.thruster.centralConeBurner, .5 );
-                this.animateThruster( this.mesh.userData.object.airSpeed, this.thruster.outerCylBurner, .5 );
-
-                this.spinThruster( this.mesh.userData.object.airSpeed, this.thruster.rearConeBurner, -1 );
-                this.spinThruster( this.mesh.userData.object.airSpeed, this.thruster.centralConeBurner, 1 );
-                this.spinThruster( this.mesh.userData.object.airSpeed, this.thruster.outerCylBurner, -1 );
-                this.spinThruster( this.mesh.userData.object.airSpeed, this.thruster.innerCylBurner, 1 );
-
-                // Limit playback rate to 5x as large values freak out the browser.
-                this.thruster.videoElement.playbackRate = Math.min( 5, 0.25 + Math.abs( this.mesh.userData.object.airSpeed ) );
-
-                trailOffset += this.trail_position_z - Math.abs( this.mesh.userData.object.airSpeed );
-
-                this.trail.mesh.material.uniforms.headColor.value.set( 255 / 255, 212 / 255, 148 / 255, .8 ); // RGBA.
-            }
-            else {
-                this.trail.mesh.material.uniforms.headColor.value.set( 255 / 255, 212 / 255, 148 / 255, 0 ); // RGBA.
-            }
-
-            // Update the trail position based on above calculations.
-            this.trail.targetObject.position.y = this.trail_position_y + this.mesh.userData.object.verticalSpeed;
-            this.trail.targetObject.position.z = trailOffset;
-
-            if ( rY != 0 ) {
-                this.trail.targetObject.position.x = rY * this.mesh.userData.object.airSpeed;
-                this.trail.targetObject.position.y += Math.abs( this.trail.targetObject.position.x ) / 4;
-            }
-            else {
-                this.trail.targetObject.position.x = 0;
-            }
-            this.trail.update();
+    animateTrail() {
+        if ( ! this.trail ) {
+            return;
         }
+
+        const object = this.mesh.userData.object;
+
+        if ( object.airSpeed < 0 ) {
+            this.animateThruster( object.airSpeed, this.thruster.centralConeBurner, .5 );
+            this.animateThruster( object.airSpeed, this.thruster.outerCylBurner, .5 );
+
+            this.spinThruster( object.airSpeed, this.thruster.rearConeBurner, -1 );
+            this.spinThruster( object.airSpeed, this.thruster.centralConeBurner, 1 );
+            this.spinThruster( object.airSpeed, this.thruster.outerCylBurner, -1 );
+            this.spinThruster( object.airSpeed, this.thruster.innerCylBurner, 1 );
+
+            this.thruster.videoElement.playbackRate = Math.min( 5, 0.25 + Math.abs( object.airSpeed ) );
+            this.trail.mesh.material.uniforms.headColor.value.set( 255 / 255, 212 / 255, 148 / 255, .8 );
+        }
+        else {
+            this.trail.mesh.material.uniforms.headColor.value.set( 255 / 255, 212 / 255, 148 / 255, 0 );
+        }
+
+        // Head is a child of the ship; keep it on the nozzle. Do not add
+        // airSpeed / verticalSpeed here — that double-counted parent motion.
+        this.trail.targetObject.position.set( 0, this.trail_position_y, this.trail_position_z );
+        this.mesh.updateMatrixWorld( true );
+        this.trail.update();
     }
 
     animateThruster( airSpeed, burnerMesh, ratio ) {

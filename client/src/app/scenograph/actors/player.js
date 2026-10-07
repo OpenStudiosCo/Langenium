@@ -41,8 +41,6 @@ export default class Player {
 
         // Chase cam yaw, lags behind the ship so turns stay framed.
         this.chaseYaw = 0;
-        this.chaseLookAhead = 12;
-        this._chaseLookAt = new THREE.Vector3();
 
         this.setMode();
     }
@@ -165,33 +163,12 @@ export default class Player {
 
     }
 
-    chaseCameraDistance() {
-        let distance = this.vehicle.default_camera_distance + ( l.current_scene.room_depth / 2 );
-        if ( this.vehicle.mesh.userData.object.airSpeed < 0 ) {
-            distance -= this.vehicle.mesh.userData.object.airSpeed * 4;
-        }
-        return distance;
-    }
-
     getChaseCameraPosition( yaw = this.chaseYaw ) {
-        const ship = this.vehicle.mesh;
-        const distance = this.chaseCameraDistance();
-        return {
-            x: ship.position.x + distance * Math.sin( yaw ),
-            y: ship.position.y + ( l.scenograph.cameras.playerY - 8.5 ),
-            z: ship.position.z + distance * Math.cos( yaw )
-        };
+        return this.vehicle.getChaseCameraPosition( yaw );
     }
 
     aimChaseCamera() {
-        const ship = this.vehicle.mesh;
-        const heading = ship.rotation.y;
-        this._chaseLookAt.set(
-            ship.position.x - Math.sin( heading ) * this.chaseLookAhead,
-            ship.position.y + 1.2,
-            ship.position.z - Math.cos( heading ) * this.chaseLookAhead
-        );
-        l.scenograph.cameras.player.lookAt( this._chaseLookAt );
+        this.vehicle.aimChaseCamera();
     }
 
     updateCamera( rY, tY, tZ ) {
@@ -199,7 +176,7 @@ export default class Player {
         const cam = l.scenograph.cameras.player;
         const heading = ship.rotation.y;
 
-        this.vehicle.camera_distance = this.chaseCameraDistance();
+        this.vehicle.camera_distance = this.vehicle.chaseCameraDistance();
 
         // Lag placement yaw behind the ship so the camera sits outside the turn.
         let yawError = Math.atan2( Math.sin( heading - this.chaseYaw ), Math.cos( heading - this.chaseYaw ) );
@@ -211,14 +188,14 @@ export default class Player {
             this.chaseYaw = heading - Math.sign( yawError ) * maxLag;
         }
 
-        const pos = this.getChaseCameraPosition();
+        const pos = this.vehicle.getChaseCameraPosition( this.chaseYaw );
         cam.position.set( pos.x, pos.y, pos.z );
 
         const rotationPadDown = l.scenograph.controls.touch
             && l.scenograph.controls.touch.controls.rotationPad.mouseDown;
 
         if ( ! rotationPadDown ) {
-            this.aimChaseCamera();
+            this.vehicle.aimChaseCamera();
         }
 
         cam.updateProjectionMatrix();

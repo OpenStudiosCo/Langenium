@@ -29,7 +29,9 @@ export default class singlePlayerRoute {
 
         l.scenograph.actors.player = l.scenograph.actors.get('Player One');
         l.scenograph.actors.player.setMode('vehicle');
+        l.scenograph.actors.player.vehicle.updateMesh();
         l.scenograph.actors.player.chaseYaw = l.scenograph.actors.player.vehicle.mesh.rotation.y;
+        l.scenograph.actors.player.vehicle.applyChaseCamera( l.scenograph.actors.player.chaseYaw );
 
         l.routes.hangar.watchOverworld();
 

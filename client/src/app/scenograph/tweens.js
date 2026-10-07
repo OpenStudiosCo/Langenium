@@ -354,6 +354,7 @@ function shipEnterZ() {
             l.current_scene.objects.demoShip.mesh.userData.object.position.x = l.current_scene.objects.demoShip.mesh.position.x;
             l.current_scene.objects.demoShip.mesh.userData.object.position.y = l.current_scene.objects.demoShip.mesh.position.y;
             l.current_scene.objects.demoShip.mesh.userData.object.position.z = l.current_scene.objects.demoShip.mesh.position.z;
+            l.current_scene.objects.demoShip.applyChaseCamera();
         } );
 }
 /**
@@ -376,10 +377,15 @@ function dollyUp() {
     return new TWEEN.Tween( l.scenograph.cameras.player.position )
         .to( { y: l.scenograph.cameras.playerY }, l.config.settings.skipintro ? 0 : 500 ) // Set the duration of the animation
         .onUpdate( () => {
-            //l.scenograph.cameras.player.lookAt(l.current_scene.objects.demoShip.mesh.position);
+            if ( l.current_scene.objects.demoShip ) {
+                l.current_scene.objects.demoShip.aimChaseCamera();
+            }
             l.scenograph.cameras.player.updateProjectionMatrix();
         } )
         .onComplete( () => {
+            if ( l.current_scene.objects.demoShip ) {
+                l.current_scene.objects.demoShip.applyChaseCamera();
+            }
             l.ui.show_menus();
             // Activate debugging if requested.
             if ( l.config.settings.debug ) {

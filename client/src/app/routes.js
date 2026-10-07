@@ -66,21 +66,12 @@ export default class routes {
 
     restoreDemoView() {
         const demo = l.current_scene.objects.demoShip;
-        const cam = l.scenograph.cameras.player;
-
-        if ( ! demo || ! cam ) {
+        if ( ! demo ) {
             return;
         }
 
         this.setDemoVisible( true );
-
-        cam.position.set(
-            0,
-            l.scenograph.cameras.playerY,
-            demo.default_camera_distance + ( l.current_scene.room_depth / 2 )
-        );
-        cam.rotation.set( 0, 0, 0 );
-        cam.updateProjectionMatrix();
+        demo.applyChaseCamera();
         l.current_scene.moving = false;
     }
 

@@ -47,6 +47,8 @@ export default class Valiant {
         this.trail_position_y = 1.2;
         this.trail_position_z = 1.5;
         this.camera_distance = 0;
+        this.chaseLookAhead = 12;
+        this._chaseLookAt = new THREE.Vector3();
 
         this.ready = false;
 
@@ -283,6 +285,42 @@ export default class Valiant {
                 this.mesh.rotation.x += elevationChange / 10 / 180;
             }
         }
+    }
+
+    chaseCameraDistance() {
+        let distance = this.default_camera_distance + ( l.current_scene.room_depth / 2 );
+        if ( this.mesh.userData.object && this.mesh.userData.object.airSpeed < 0 ) {
+            distance -= this.mesh.userData.object.airSpeed * 4;
+        }
+        return distance;
+    }
+
+    getChaseCameraPosition( yaw = this.mesh.rotation.y ) {
+        const ship = this.mesh;
+        const distance = this.chaseCameraDistance();
+        return {
+            x: ship.position.x + distance * Math.sin( yaw ),
+            y: ship.position.y + ( l.scenograph.cameras.playerY - 8.5 ),
+            z: ship.position.z + distance * Math.cos( yaw )
+        };
+    }
+
+    aimChaseCamera() {
+        const ship = this.mesh;
+        const heading = ship.rotation.y;
+        this._chaseLookAt.set(
+            ship.position.x - Math.sin( heading ) * this.chaseLookAhead,
+            ship.position.y + 1.2,
+            ship.position.z - Math.cos( heading ) * this.chaseLookAhead
+        );
+        l.scenograph.cameras.player.lookAt( this._chaseLookAt );
+    }
+
+    applyChaseCamera( yaw = this.mesh.rotation.y ) {
+        const pos = this.getChaseCameraPosition( yaw );
+        l.scenograph.cameras.player.position.set( pos.x, pos.y, pos.z );
+        this.aimChaseCamera();
+        l.scenograph.cameras.player.updateProjectionMatrix();
     }
 
     // Update the position of the aircraft to spot determined by game logic.

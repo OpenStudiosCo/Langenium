@@ -330,6 +330,9 @@ function shipEnterZ() {
             // Called after tween.js updates 'coords'.
             // Move 'box' to the position described by 'coords' with a CSS translation.
             l.current_scene.objects.demoShip.mesh.position.z = coords.x;
+            if ( l.current_scene.tweens.dollyUp && l.current_scene.tweens.dollyUp._introLanded ) {
+                l.current_scene.objects.demoShip.aimChaseCamera();
+            }
 
         } )
         .onComplete( () => {
@@ -384,7 +387,8 @@ function dollyUp() {
         } )
         .onComplete( () => {
             if ( l.current_scene.objects.demoShip ) {
-                l.current_scene.objects.demoShip.applyChaseCamera();
+                l.current_scene.tweens.dollyUp._introLanded = true;
+                l.current_scene.objects.demoShip.aimChaseCamera();
                 l.current_scene.objects.demoShip.beginAfterIntro();
             }
             l.ui.show_menus();

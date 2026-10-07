@@ -60,7 +60,7 @@ export default class routes {
 
         demo.mesh.visible = visible;
         if ( demo.trail && demo.trail.mesh ) {
-            demo.trail.mesh.visible = visible;
+            demo.trail.mesh.visible = false;
         }
     }
 

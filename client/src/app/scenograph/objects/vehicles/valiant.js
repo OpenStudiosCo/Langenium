@@ -116,6 +116,9 @@ export default class Valiant {
         //l.current_scene.effects.particles.createShipThruster(this, 1.5, { x: 0, y: 1.2, z: 1.5 });
 
         this.trail = l.current_scene.effects.trail.createTrail( this.mesh, 0, this.trail_position_y, this.trail_position_z );
+        this.trail.mesh.visible = false;
+        this.trail.mesh.material.uniforms.headColor.value.w = 0;
+        this.trail.mesh.material.uniforms.tailColor.value.w = 0;
 
         this.mesh.userData.object = new ValiantObject( this.mesh );
     }
@@ -319,8 +322,9 @@ export default class Valiant {
         }
 
         const object = this.mesh.userData.object;
+        const thrusting = object.airSpeed < 0;
 
-        if ( object.airSpeed < 0 ) {
+        if ( thrusting ) {
             this.animateThruster( object.airSpeed, this.thruster.centralConeBurner, .5 );
             this.animateThruster( object.airSpeed, this.thruster.outerCylBurner, .5 );
 
@@ -330,10 +334,22 @@ export default class Valiant {
             this.spinThruster( object.airSpeed, this.thruster.innerCylBurner, 1 );
 
             this.thruster.videoElement.playbackRate = Math.min( 5, 0.25 + Math.abs( object.airSpeed ) );
+
+            if ( ! this.trail.mesh.visible ) {
+                this.mesh.updateMatrixWorld( true );
+                this.trail.reset();
+                this.trail.lastAdvanceTime = 0;
+                this.trail.mesh.visible = true;
+            }
+
             this.trail.mesh.material.uniforms.headColor.value.set( 255 / 255, 212 / 255, 148 / 255, .8 );
+            this.trail.mesh.material.uniforms.tailColor.value.set( 132 / 255, 42 / 255, 36 / 255, 1 );
         }
         else {
             this.trail.mesh.material.uniforms.headColor.value.set( 255 / 255, 212 / 255, 148 / 255, 0 );
+            this.trail.mesh.material.uniforms.tailColor.value.set( 132 / 255, 42 / 255, 36 / 255, 0 );
+            this.trail.mesh.visible = false;
+            return;
         }
 
         // Head is a child of the ship; keep it on the nozzle. Do not add

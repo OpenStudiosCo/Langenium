@@ -465,6 +465,7 @@ export default class hangarRoute {
         }
         l.mode = 'single_player';
         l.scenograph.actors.player.setMode('vehicle');
+        l.scenograph.actors.player.chaseYaw = l.scenograph.actors.player.vehicle.mesh.rotation.y;
         l.current_scene.settings.game_controls = true;
         this.departing = false;
         this.promptDismissed = true;

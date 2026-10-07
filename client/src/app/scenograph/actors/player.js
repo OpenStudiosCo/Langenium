@@ -39,6 +39,10 @@ export default class Player {
 
         this.vehicle = false;
 
+        // Chase cam yaw, lags behind the ship so turns stay framed.
+        this.chaseYaw = 0;
+        this._chaseLookAt = new THREE.Vector3();
+
         this.setMode();
     }
 
@@ -68,6 +72,8 @@ export default class Player {
         if ( this.person && this.person.mesh ) {
             this.person.mesh.visible = false;
         }
+
+        this.chaseYaw = this.vehicle?.mesh?.rotation.y ?? 0;
     }
 
     async load() {
@@ -159,74 +165,46 @@ export default class Player {
     }
 
     updateCamera( rY, tY, tZ ) {
-        var radian = ( Math.PI / 180 );
-        let vehicle = this.vehicle;
+        const vehicle = this.vehicle;
+        const ship = vehicle.mesh;
+        const cam = l.scenograph.cameras.player;
+        const heading = ship.rotation.y;
 
         vehicle.camera_distance = vehicle.default_camera_distance + ( l.current_scene.room_depth / 2 );
-        if ( vehicle.mesh.userData.object.airSpeed < 0 ) {
-            vehicle.camera_distance -= vehicle.mesh.userData.object.airSpeed * 4;
+        if ( ship.userData.object.airSpeed < 0 ) {
+            vehicle.camera_distance -= ship.userData.object.airSpeed * 4;
         }
 
-        let xDiff = vehicle.mesh.position.x;
-        let zDiff = vehicle.mesh.position.z;
+        // Lag placement yaw behind the ship so the camera sits outside the turn.
+        let yawError = Math.atan2( Math.sin( heading - this.chaseYaw ), Math.cos( heading - this.chaseYaw ) );
+        this.chaseYaw += yawError * ( rY != 0 ? 0.12 : 0.22 );
 
-        l.scenograph.cameras.player.position.x = xDiff + vehicle.camera_distance * Math.sin( vehicle.mesh.rotation.y );
-        l.scenograph.cameras.player.position.z = zDiff + vehicle.camera_distance * Math.cos( vehicle.mesh.rotation.y );
-
-        if ( rY != 0 && Math.abs(l.scenograph.cameras.player.rotation.y) < .3925 ) {
-            l.scenograph.cameras.player.rotation.y += rY;
-        }
-        else {
-            // Check there is y difference and the rotation pad isn't being pressed.
-            if (
-                l.scenograph.cameras.player.rotation.y != vehicle.mesh.rotation.y &&
-                ( l.scenograph.controls.touch && !l.scenograph.controls.touch.controls.rotationPad.mouseDown )
-            ) {
-
-                // Get the difference in y rotation betwen the camera and ship
-                let yDiff = vehicle.mesh.rotation.y - l.scenograph.cameras.player.rotation.y;
-
-                // Check the y difference is larger than 1/100th of a radian
-                if (
-                    Math.abs( yDiff ) > radian / 100
-                ) {
-                    // Add 1/60th of the difference in rotation, as FPS currently capped to 60.
-                    l.scenograph.cameras.player.rotation.y += ( vehicle.mesh.rotation.y - l.scenograph.cameras.player.rotation.y ) * 1 / 60;
-                }
-                else {
-                    l.scenograph.cameras.player.rotation.y = vehicle.mesh.rotation.y;
-                }
-
-            }
-
+        yawError = Math.atan2( Math.sin( heading - this.chaseYaw ), Math.cos( heading - this.chaseYaw ) );
+        const maxLag = 0.45;
+        if ( Math.abs( yawError ) > maxLag ) {
+            this.chaseYaw = heading - Math.sign( yawError ) * maxLag;
         }
 
-        let xDiff2 = tZ * Math.sin( vehicle.mesh.rotation.y ),
-            zDiff2 = tZ * Math.cos( vehicle.mesh.rotation.y );
+        cam.position.x = ship.position.x + vehicle.camera_distance * Math.sin( this.chaseYaw );
+        cam.position.z = ship.position.z + vehicle.camera_distance * Math.cos( this.chaseYaw );
+        cam.position.y = ship.position.y + ( l.scenograph.cameras.playerY - 8.5 );
 
-        if ( vehicle.mesh.position.y + tY >= 1 ) {
-            l.scenograph.cameras.player.position.y += tY;
+        const rotationPadDown = l.scenograph.controls.touch
+            && l.scenograph.controls.touch.controls.rotationPad.mouseDown;
+
+        if ( ! rotationPadDown ) {
+            // Look at a point ahead of the ship so it stays framed and the
+            // turn direction fills the rest of the view.
+            const lookAhead = 12;
+            this._chaseLookAt.set(
+                ship.position.x - Math.sin( heading ) * lookAhead,
+                ship.position.y + 1.2,
+                ship.position.z - Math.cos( heading ) * lookAhead
+            );
+            cam.lookAt( this._chaseLookAt );
         }
 
-        l.scenograph.cameras.player.position.x += xDiff2;
-        l.scenograph.cameras.player.position.z += zDiff2;
-
-        if (
-            vehicle.mesh.userData.object.controls.moveDown
-            ||
-            vehicle.mesh.userData.object.controls.moveUp
-        ) {
-            let elevationChange = vehicle.mesh.userData.object.controls.moveDown ? -1 : 1;
-            if ( Math.abs( l.scenograph.cameras.player.rotation.x ) < 1 / 8 ) {
-                l.scenograph.cameras.player.rotation.x += elevationChange * radian / 10;
-            }
-        }
-        else {
-            if ( l.scenograph.controls.touch && !l.scenograph.controls.touch.controls.rotationPad.mouseDown )
-                l.scenograph.cameras.player.rotation.x *= .9;
-        }
-
-        l.scenograph.cameras.player.updateProjectionMatrix();
+        cam.updateProjectionMatrix();
     }
 
     /**

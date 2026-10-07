@@ -52,6 +52,18 @@ export default class routes {
         this.restoreDemoView();
     }
 
+    setDemoVisible( visible ) {
+        const demo = l.current_scene.objects.demoShip;
+        if ( ! demo || ! demo.mesh ) {
+            return;
+        }
+
+        demo.mesh.visible = visible;
+        if ( demo.trail && demo.trail.mesh ) {
+            demo.trail.mesh.visible = visible;
+        }
+    }
+
     restoreDemoView() {
         const demo = l.current_scene.objects.demoShip;
         const cam = l.scenograph.cameras.player;
@@ -59,6 +71,8 @@ export default class routes {
         if ( ! demo || ! cam ) {
             return;
         }
+
+        this.setDemoVisible( true );
 
         cam.position.set(
             0,

@@ -29,6 +29,8 @@ export default class multiPlayerRoute {
         // Set client mode.
         l.mode = 'multi_player';
 
+        l.routes.setDemoVisible( false );
+
     }
 
 }

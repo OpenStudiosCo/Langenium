@@ -25,6 +25,8 @@ export default class singlePlayerRoute {
         // Set client mode.
         l.mode = 'single_player';
 
+        l.routes.setDemoVisible( false );
+
         l.scenograph.actors.player = l.scenograph.actors.get('Player One');
         l.scenograph.actors.player.setMode('vehicle');
 

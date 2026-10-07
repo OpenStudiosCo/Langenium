@@ -32,6 +32,8 @@ export default class hangarRoute {
         // Set client mode.
         l.mode = 'hangar';
 
+        l.routes.setDemoVisible( false );
+
         this.targetStructure = l.scenograph.objects.structures.platform.instances[0];
 
         l.scenograph.actors.player = l.scenograph.actors.get('Player Two');

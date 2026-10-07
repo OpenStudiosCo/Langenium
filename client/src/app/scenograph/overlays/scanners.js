@@ -38,16 +38,19 @@ export default class Scanners {
      * @returns custom HTMLElement
      */
     getSymbolElement( symbol ) {
+        if ( ! l.scenograph.overlays.map.icons[ symbol ] ) {
+            symbol = 'aircraft';
+        }
         let element = document.createElement('div');
         element.innerHTML = this.item_template;
         element.querySelector('.symbol').innerHTML = l.scenograph.overlays.map.icons[ symbol ];
         element.firstChild.classList.add( symbol );
         const shape = element.querySelector('.symbol path, .symbol rect');
-        
-        if ( shape.style ) {
-            shape.style = '';
+
+        if ( shape ) {
+            shape.removeAttribute('style');
         }
-        
+
         return element.firstChild;
     }
 
@@ -232,7 +235,7 @@ export default class Scanners {
                 'refinery': 'structure',
             }
 
-            let symbol = objectIcons[ target.mesh.userData.objectClass ];
+            let symbol = objectIcons[ target.mesh.userData.objectClass ] || 'aircraft';
 
             l.scenograph.overlays.scanners.trackedObjects[ target.mesh.uuid ] = l.scenograph.overlays.scanners.getSymbolElement( symbol );
             trackedObject = l.scenograph.overlays.scanners.trackedObjects[ target.mesh.uuid ];

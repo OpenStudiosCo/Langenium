@@ -66,6 +66,7 @@ export default class hangarRoute {
     }
 
     setupDepartPrompt() {
+        this.departing = false;
         this.promptDismissed = false;
         this.promptKeyHeld = false;
         this.prompt = document.querySelector('#depart_prompt');
@@ -89,6 +90,9 @@ export default class hangarRoute {
                     this.promptDismissed = true;
                     this.prompt.classList.remove('visible');
                 }
+                if ( action === 'depart' ) {
+                    this.depart();
+                }
                 event.target.closest('button')?.blur();
             });
             l.current_scene.animation_queue.push( () => this.updateDepartPrompt() );
@@ -96,7 +100,7 @@ export default class hangarRoute {
     }
 
     updateDepartPrompt() {
-        if ( l.mode !== 'hangar' ) {
+        if ( l.mode !== 'hangar' || this.departing ) {
             this.prompt.classList.remove('visible');
             return;
         }
@@ -119,11 +123,85 @@ export default class hangarRoute {
 
         const ePressed = l.scenograph.controls.keyboard.pressed('E');
         const escPressed = l.scenograph.controls.keyboard.pressed('escape');
+        if ( ePressed && !this.promptKeyHeld ) {
+            this.depart();
+        }
         if ( escPressed && !this.promptKeyHeld ) {
             this.promptDismissed = true;
             this.prompt.classList.remove('visible');
         }
         this.promptKeyHeld = ePressed || escPressed;
+    }
+
+    /**
+     * Keep the chase cam just behind the ship so it stays inside the bay.
+     */
+    followDepartCamera( player ) {
+        const mesh = player.vehicle.mesh;
+        const back = 8;
+        l.scenograph.cameras.player.position.x = mesh.position.x + back * Math.sin( mesh.rotation.y );
+        l.scenograph.cameras.player.position.z = mesh.position.z + back * Math.cos( mesh.rotation.y );
+        l.scenograph.cameras.player.rotation.x = 0;
+        l.scenograph.cameras.player.rotation.y = mesh.rotation.y;
+        l.scenograph.cameras.player.updateProjectionMatrix();
+    }
+
+    /**
+     * Board the ship, roll it forward, then hand off to overworld flight.
+     */
+    depart() {
+        if ( this.departing ) {
+            return;
+        }
+        this.departing = true;
+        this.prompt.classList.remove('visible');
+
+        const player = l.scenograph.actors.player;
+        const ship = player.vehicle.mesh.userData.object;
+
+        if ( player.person && player.person.mesh ) {
+            player.person.mesh.visible = false;
+        }
+
+        l.current_scene.settings.game_controls = false;
+        player.vehicle.updateMesh();
+        this.followDepartCamera( player );
+
+        const heading = ship.rotation.y;
+        l.current_scene.tweens.shipDepart = new TWEEN.Tween( ship.position )
+            .to( {
+                x: ship.position.x - 20 * Math.sin( heading ),
+                z: ship.position.z - 20 * Math.cos( heading )
+            }, 2000 )
+            .easing( TWEEN.Easing.Quadratic.InOut )
+            .onUpdate( () => {
+                player.vehicle.updateMesh();
+                this.followDepartCamera( player );
+            } )
+            .onComplete( () => {
+                this.unloadHangar();
+                this.enterOverworld();
+            } )
+            .start();
+    }
+
+    unloadHangar() {
+        const hangar = l.scenograph.objects.structures.hangar.mesh;
+        hangar.visible = false;
+        l.current_scene.scene.remove( hangar );
+    }
+
+    /**
+     * Same overworld handoff as P1: vehicle mode, HUD overlays, flight controls.
+     */
+    enterOverworld() {
+        if ( l.current_scene.objects.demoShip ) {
+            l.current_scene.objects.demoShip.ready = true;
+        }
+        l.mode = 'single_player';
+        l.scenograph.actors.player.setMode('vehicle');
+        l.current_scene.settings.game_controls = true;
+        l.scenograph.overlays.activate();
     }
 
 }

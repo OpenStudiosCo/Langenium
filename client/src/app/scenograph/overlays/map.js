@@ -74,7 +74,7 @@ export default class Map {
             'refinery': 'structure',
         }
 
-        let iconName = objectIcons[ trackedObject.mesh.userData.objectClass ];
+        let iconName = objectIcons[ trackedObject.mesh.userData.objectClass ] || 'aircraft';
 
         marker.domElement = document.createElement('div');
         marker.domElement.classList.add('marker');

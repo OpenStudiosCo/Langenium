@@ -87,6 +87,12 @@ export default class Controls {
 
     }
 
+    setAircraftChrome( show ) {
+        if ( this.touch ) {
+            this.touch.setAircraftChrome( show );
+        }
+    }
+
     /**
      * Animate hook.
      * 

@@ -26,11 +26,12 @@ export default class hangarRoute {
 
         l.scenograph.hangar = this;
 
-        // Start controls.
-        l.scenograph.controls.activate();
-
         // Set client mode.
         l.mode = 'hangar';
+
+        // Start controls. Move + camera only; climb/weapons stay hidden.
+        l.scenograph.controls.activate();
+        l.scenograph.controls.setAircraftChrome( false );
 
         l.routes.setDemoVisible( false );
 
@@ -472,6 +473,7 @@ export default class hangarRoute {
         this.lastShipPos = null;
         this.setPromptMode('enter');
         l.scenograph.overlays.activate();
+        l.scenograph.controls.setAircraftChrome( true );
         hangarRoute.watchOverworld();
     }
 
@@ -499,6 +501,7 @@ export default class hangarRoute {
         this.targetStructure = l.scenograph.objects.structures.platform.instances[0];
         this.loadHangar();
         this.setPromptMode('depart');
+        l.scenograph.controls.setAircraftChrome( false );
     }
 
 }

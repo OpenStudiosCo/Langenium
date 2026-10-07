@@ -28,6 +28,8 @@ export default class singlePlayerRoute {
         l.scenograph.actors.player = l.scenograph.actors.get('Player One');
         l.scenograph.actors.player.setMode('vehicle');
 
+        l.routes.hangar.watchOverworld();
+
     }
 
 }

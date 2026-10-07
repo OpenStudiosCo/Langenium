@@ -459,6 +459,7 @@ export default class hangarRoute {
             l.current_scene.objects.demoShip.ready = true;
         }
         l.mode = 'single_player';
+        l.scenograph.actors.player.setVehicleVisible( true );
         l.scenograph.actors.player.setMode('vehicle');
         l.scenograph.actors.player.chaseYaw = l.scenograph.actors.player.vehicle.mesh.rotation.y;
         l.current_scene.settings.game_controls = true;
@@ -487,6 +488,11 @@ export default class hangarRoute {
         }
 
         l.mode = 'hangar';
+        for ( const actor of l.scenograph.actors.getAll() ) {
+            if ( typeof actor.setVehicleVisible === 'function' ) {
+                actor.setVehicleVisible( false );
+            }
+        }
         l.scenograph.actors.player = l.scenograph.actors.get('Player Two');
         l.scenograph.actors.player.setMode('person');
         if ( l.scenograph.actors.player.person && l.scenograph.actors.player.person.mesh ) {

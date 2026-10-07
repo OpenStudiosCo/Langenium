@@ -103,6 +103,18 @@ export default class Player {
             delta => this.person.animate(delta)
         );
 
+        this.setVehicleVisible( false );
+
+    }
+
+    setVehicleVisible( visible ) {
+        if ( ! this.vehicle || ! this.vehicle.mesh ) {
+            return;
+        }
+        this.vehicle.mesh.visible = visible;
+        if ( this.vehicle.trail && this.vehicle.trail.mesh ) {
+            this.vehicle.trail.mesh.visible = false;
+        }
     }
 
     // Internal helper to manage state changes of aircraft controls.

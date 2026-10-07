@@ -70,6 +70,11 @@ export default class routes {
             return;
         }
 
+        for ( const actor of l.scenograph.actors.getAll() ) {
+            if ( typeof actor.setVehicleVisible === 'function' ) {
+                actor.setVehicleVisible( false );
+            }
+        }
         this.setDemoVisible( true );
         demo.resumeTour();
         l.current_scene.moving = false;

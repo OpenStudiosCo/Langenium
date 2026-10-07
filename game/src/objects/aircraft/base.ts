@@ -135,9 +135,14 @@ export default class BaseAircraft {
                 this.airSpeed = 0;
                 this.verticalSpeed = 0;
 
-                // Re-enable targeting after respawn.
-                this.mesh.userData.targetable = true;
-                this.mesh.visible = true;
+                // Only the ship still in play comes back as a target.
+                const demo = l.current_scene.objects.demoShip;
+                const active = l.scenograph.actors.player;
+                const demoInWorld = demo && this.mesh === demo.mesh && ( ! l.mode || l.mode === 'home' );
+                const playerInWorld = active && active.mode === 'vehicle' && active.vehicle && this.mesh === active.vehicle.mesh;
+                const inWorld = demoInWorld || playerInWorld;
+                this.mesh.userData.targetable = inWorld;
+                this.mesh.visible = inWorld;
 
             }, 3000 );
 

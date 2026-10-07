@@ -82,6 +82,7 @@ export default class Player {
         await this.vehicle.load();
         this.vehicle.mesh.name = 'Player Ship';
         this.vehicle.mesh.userData.objectClass = 'player';
+        this.vehicle.mesh.userData.targetable = false;
         this.vehicle.mesh.userData.actor = new ActorPlayer( this.vehicle.mesh, l.current_scene.scene );
         l.scenograph.entityManager.add( this.vehicle.mesh.userData.actor.entity );
         l.current_scene.scene.add(
@@ -107,11 +108,12 @@ export default class Player {
 
     }
 
-    setVehicleVisible( visible ) {
+    setVehicleVisible( visible, targetable = visible ) {
         if ( ! this.vehicle || ! this.vehicle.mesh ) {
             return;
         }
         this.vehicle.mesh.visible = visible;
+        this.vehicle.mesh.userData.targetable = targetable;
         if ( this.vehicle.trail && this.vehicle.trail.mesh ) {
             this.vehicle.trail.mesh.visible = false;
         }

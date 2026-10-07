@@ -109,6 +109,7 @@ export default class hangarRoute {
       person.rotation.z = hangarConfig.rotation.z;
 
       l.scenograph.actors.player.vehicle.updateMesh();
+      l.scenograph.actors.player.setVehicleVisible( true, false );
 
       l.scenograph.cameras.active.position.copy(l.scenograph.actors.player.actorInstance.object.position);
 

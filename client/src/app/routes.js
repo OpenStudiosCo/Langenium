@@ -59,6 +59,7 @@ export default class routes {
         }
 
         demo.mesh.visible = visible;
+        demo.mesh.userData.targetable = visible;
         if ( demo.trail && demo.trail.mesh ) {
             demo.trail.mesh.visible = false;
         }

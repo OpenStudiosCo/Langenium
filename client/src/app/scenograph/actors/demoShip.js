@@ -254,22 +254,23 @@ export default class DemoShip {
             return;
         }
 
-        if ( this.tourStarted ) {
+        if ( this.tourStarted && l.mode === 'home' ) {
             this.vehicle.updateAnimation( delta );
             this.vehicle.mesh.userData.object.airSpeed = -2;
             this.vehicle.animateTrail();
+            this.updateTour( delta );
+        }
+        else if ( this.tourStarted ) {
+            this.vehicle.mesh.userData.object.airSpeed = 0;
+            this.vehicle.animateTrail();
+            if ( this._fadeEl ) {
+                this.fading = 0;
+                this.hold = false;
+                this.setFade( 0 );
+            }
         }
         else if ( this._ready && l.mode !== 'hangar' ) {
             this.vehicle.updateAnimation( delta );
-        }
-
-        if ( this.tourStarted && l.mode === 'home' ) {
-            this.updateTour( delta );
-        }
-        else if ( this._fadeEl ) {
-            this.fading = 0;
-            this.hold = false;
-            this.setFade( 0 );
         }
     }
 

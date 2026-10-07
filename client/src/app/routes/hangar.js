@@ -397,10 +397,9 @@ export default class hangarRoute {
      * Dolly from the close hangar follow into the overworld chase cam.
      */
     handoffCamera( player ) {
-        const mesh = player.vehicle.mesh;
         const cam = l.scenograph.cameras.player;
-        const heading = mesh.rotation.y;
-        const flightBack = player.vehicle.default_camera_distance + ( l.current_scene.room_depth / 2 );
+        player.chaseYaw = player.vehicle.mesh.rotation.y;
+        const target = player.getChaseCameraPosition();
         const coords = {
             x: cam.position.x,
             y: cam.position.y,
@@ -408,16 +407,11 @@ export default class hangarRoute {
         };
 
         l.current_scene.tweens.cameraHandoff = new TWEEN.Tween( coords )
-            .to( {
-                x: mesh.position.x + flightBack * Math.sin( heading ),
-                z: mesh.position.z + flightBack * Math.cos( heading )
-            }, 1400 )
+            .to( target, 1400 )
             .easing( TWEEN.Easing.Quadratic.InOut )
             .onUpdate( () => {
-                cam.position.x = coords.x;
-                cam.position.z = coords.z;
-                cam.rotation.x = 0;
-                cam.rotation.y = heading;
+                cam.position.set( coords.x, coords.y, coords.z );
+                player.aimChaseCamera();
                 cam.updateProjectionMatrix();
             } )
             .onComplete( () => {

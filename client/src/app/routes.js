@@ -71,7 +71,7 @@ export default class routes {
         }
 
         this.setDemoVisible( true );
-        demo.applyChaseCamera();
+        demo.resumeTour();
         l.current_scene.moving = false;
     }
 

@@ -385,6 +385,7 @@ function dollyUp() {
         .onComplete( () => {
             if ( l.current_scene.objects.demoShip ) {
                 l.current_scene.objects.demoShip.applyChaseCamera();
+                l.current_scene.objects.demoShip.beginAfterIntro();
             }
             l.ui.show_menus();
             // Activate debugging if requested.

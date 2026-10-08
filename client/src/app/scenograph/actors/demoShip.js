@@ -233,6 +233,8 @@ export default class DemoShip {
     animate( delta ) {
         if ( ! this.vehicle ) return;
 
+        this.vehicle.updateAnimation( delta );
+
         if ( this.rest > 0 ) {
             if ( l.mode === 'home' ) {
                 this.rest -= delta;
@@ -255,7 +257,6 @@ export default class DemoShip {
         }
 
         if ( this.tourStarted && l.mode === 'home' ) {
-            this.vehicle.updateAnimation( delta );
             this.vehicle.mesh.userData.object.airSpeed = -2;
             this.vehicle.animateTrail();
             this.updateTour( delta );
@@ -268,9 +269,6 @@ export default class DemoShip {
                 this.hold = false;
                 this.setFade( 0 );
             }
-        }
-        else if ( this._ready && l.mode !== 'hangar' ) {
-            this.vehicle.updateAnimation( delta );
         }
     }
 

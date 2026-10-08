@@ -346,9 +346,10 @@ export default class Valiant {
     **/
     animate( delta ) {
 
-        if ( l.current_scene.objects.demoShip.ready && l.mode != 'hangar' ) {
+        const departing = l.mode === 'hangar' && l.scenograph.hangar && l.scenograph.hangar.departing;
+        if ( departing || ( l.current_scene.objects.demoShip.ready && l.mode != 'hangar' ) ) {
             this.updateAnimation( delta );
-            if ( ! this.demo ) {
+            if ( ! this.demo && l.mode != 'hangar' ) {
                 this.animateTrail();
             }
         }

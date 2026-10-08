@@ -134,21 +134,28 @@ export default class hangarRoute {
             this.prompt = document.createElement('div');
             this.prompt.id = 'depart_prompt';
             document.querySelector('#game_overlay').appendChild(this.prompt);
-            this.prompt.addEventListener('click', event => {
-                const action = event.target.closest('button')?.dataset.action;
-                if ( action === 'stay' ) {
-                    this.promptDismissed = true;
-                    this.prompt.classList.remove('visible');
-                }
-                if ( action === 'depart' ) {
-                    this.depart();
-                }
-                if ( action === 'enter' ) {
-                    this.enterHangar();
-                }
-                event.target.closest('button')?.blur();
-            });
         }
+        else {
+            const fresh = this.prompt.cloneNode(false);
+            this.prompt.replaceWith(fresh);
+            this.prompt = fresh;
+        }
+
+        this.prompt.addEventListener('click', event => {
+            const hangar = l.scenograph.hangar;
+            const action = event.target.closest('button')?.dataset.action;
+            if ( action === 'stay' ) {
+                hangar.promptDismissed = true;
+                hangar.prompt.classList.remove('visible');
+            }
+            if ( action === 'depart' ) {
+                hangar.depart();
+            }
+            if ( action === 'enter' ) {
+                hangar.enterHangar();
+            }
+            event.target.closest('button')?.blur();
+        });
 
         this.promptMode = null;
         this.setPromptMode( l.mode === 'hangar' ? 'depart' : 'enter' );

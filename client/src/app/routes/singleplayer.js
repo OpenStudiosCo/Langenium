@@ -28,6 +28,7 @@ export default class singlePlayerRoute {
         l.routes.setDemoVisible( false );
 
         l.scenograph.actors.player = l.scenograph.actors.get('Player One');
+        l.scenograph.actors.player.resetFlight();
         l.scenograph.actors.player.setVehicleVisible( true );
         l.scenograph.actors.player.setMode('vehicle');
         l.scenograph.actors.player.vehicle.updateMesh();

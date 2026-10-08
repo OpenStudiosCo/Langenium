@@ -66,6 +66,17 @@ export default class Player {
             object.controls.moveDown = false;
             object.controls.moveLeft = false;
             object.controls.moveRight = false;
+
+            if ( this.spawn ) {
+                object.position.x = this.spawn.position.x;
+                object.position.y = this.spawn.position.y;
+                object.position.z = this.spawn.position.z;
+                object.rotation.x = this.spawn.rotation.x;
+                object.rotation.y = this.spawn.rotation.y;
+                object.rotation.z = this.spawn.rotation.z;
+            }
+
+            this.vehicle.updateMesh();
         }
 
         if ( this.person && this.person.mesh ) {
@@ -105,6 +116,12 @@ export default class Player {
         );
 
         this.setVehicleVisible( false );
+
+        const object = this.vehicle.mesh.userData.object;
+        this.spawn = {
+            position: { x: object.position.x, y: object.position.y, z: object.position.z },
+            rotation: { x: object.rotation.x, y: object.rotation.y, z: object.rotation.z },
+        };
 
     }
 

@@ -356,7 +356,37 @@ export default class hangarRoute {
     }
 
     /**
-     * Board the ship, roll it forward, then hand off to overworld flight.
+     * How far to roll so the ship clears this hangar, then sits 100m outside it.
+     */
+    departDistance( shipMesh ) {
+        const clearance = 100;
+        const hangar = l.scenograph.objects.structures.hangar?.mesh;
+        if ( ! hangar ) {
+            return clearance;
+        }
+
+        const heading = shipMesh.rotation.y;
+        const forward = new THREE.Vector3( -Math.sin( heading ), 0, -Math.cos( heading ) );
+        hangar.updateWorldMatrix( true, true );
+        const box = new THREE.Box3().setFromObject( hangar );
+        const origin = shipMesh.position;
+        let ahead = 0;
+        const corner = new THREE.Vector3();
+        for ( const x of [ box.min.x, box.max.x ] ) {
+            for ( const y of [ box.min.y, box.max.y ] ) {
+                for ( const z of [ box.min.z, box.max.z ] ) {
+                    const along = corner.set( x, y, z ).sub( origin ).dot( forward );
+                    if ( along > ahead ) {
+                        ahead = along;
+                    }
+                }
+            }
+        }
+        return ahead + clearance;
+    }
+
+    /**
+     * Board the ship, roll it clear of the bay, then hand off to overworld flight.
      */
     depart() {
         if ( this.departing ) {
@@ -377,11 +407,12 @@ export default class hangarRoute {
         this.followDepartCamera( player );
 
         const heading = ship.rotation.y;
+        const distance = this.departDistance( player.vehicle.mesh );
         l.current_scene.tweens.shipDepart = new TWEEN.Tween( ship.position )
             .to( {
-                x: ship.position.x - 20 * Math.sin( heading ),
-                z: ship.position.z - 20 * Math.cos( heading )
-            }, 2000 )
+                x: ship.position.x - distance * Math.sin( heading ),
+                z: ship.position.z - distance * Math.cos( heading )
+            }, Math.min( 5000, Math.max( 2500, distance * 30 ) ) )
             .easing( TWEEN.Easing.Quadratic.InOut )
             .onUpdate( () => {
                 player.vehicle.updateMesh();
@@ -466,6 +497,7 @@ export default class hangarRoute {
         l.current_scene.settings.game_controls = true;
         this.departing = false;
         this.promptDismissed = true;
+        this.promptKeyHeld = false;
         this.lastShipPos = null;
         this.setPromptMode('enter');
         l.scenograph.overlays.activate();

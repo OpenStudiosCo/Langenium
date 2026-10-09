@@ -137,10 +137,14 @@ vec4 colorFilter (float n) {
 
 vec4 reflectionFilter( float n , vec4 reflection ) {
 
-	reflection.r = limitColor(0.02, 0.07 / n, reflection.r);
-	reflection.g = limitColor(0.04 / n, 0.16 / n, reflection.g);
-	reflection.b = limitColor(0.09 / n, 0.3 / n, reflection.b);
-	reflection.a = 1.0 - n;
+	// Keep the 1/n limits from exploding when the height map is near zero.
+	// Those spikes blow the half-float composer and the adaptive tone map.
+	float height = max( n, 0.35 );
+
+	reflection.r = limitColor(0.02, 0.07 / height, reflection.r);
+	reflection.g = limitColor(0.04 / height, 0.16 / height, reflection.g);
+	reflection.b = limitColor(0.09 / height, 0.3 / height, reflection.b);
+	reflection.a = 1.0 - clamp( n, 0.0, 1.0 );
 
 	return reflection;
 }
@@ -194,7 +198,9 @@ void main(void) {
 
 	vLightWeighting += vec3( 1.0, 0.5, 0.0 ) * dirSpecularWeight * n * 2.0;
 
-	gl_FragColor *= vec4( vLightWeighting, 1.0 ); //
+	gl_FragColor *= vec4( vLightWeighting, 1.0 );
+	gl_FragColor.rgb = clamp( gl_FragColor.rgb, 0.0, 1.0 );
+	gl_FragColor.a = clamp( gl_FragColor.a, 0.0, 1.0 );
 
 	
 

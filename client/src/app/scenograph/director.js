@@ -2,6 +2,8 @@
  * Director.
  *
  * Scene Management class.
+ * 
+ * Produces a scene graph based on the game world simulation and maps it to client functions.
  */
 
 /**

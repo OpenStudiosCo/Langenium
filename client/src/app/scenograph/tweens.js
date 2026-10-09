@@ -3,7 +3,6 @@
  *
  * Helpers for managing scene tweens.
  *
- * @todo: Move overworld specific tweens into the scenes/overworld folder
  */
 
 /**

@@ -87,6 +87,12 @@ export default class Controls {
 
     }
 
+    setAircraftChrome( show ) {
+        if ( this.touch ) {
+            this.touch.setAircraftChrome( show );
+        }
+    }
+
     /**
      * Animate hook.
      * 
@@ -137,7 +143,7 @@ export default class Controls {
         this.orbit = false;
 
         // Reset camera y position after disengaging orbit controls.
-        // l.scenograph.cameras.player.position.copy( l.current_scene.objects.player.mesh.position );
+        // l.scenograph.cameras.player.position.copy( l.scenograph.actors.player.vehicle.mesh.position );
         // l.scenograph.cameras.player.position.y += 10.775 / 4;
     }
 }

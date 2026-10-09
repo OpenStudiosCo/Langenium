@@ -147,6 +147,102 @@
         
     }
 
+    #depart_prompt {
+        position: absolute;
+        left: 50%;
+        bottom: @css{ max(15rem, 32dvh) };
+        z-index: 3;
+        width: @css{ min(22rem, calc(100dvw - 2rem)) };
+        padding: 1rem 1.15rem;
+        color: #d7f7ff;
+        font-family: ui-monospace, Menlo, Consolas, monospace;
+        background: rgba(4, 12, 28, 0.9);
+        border: 2px ridge rgb(0, 40, 120);
+        border-radius: 6px;
+        box-shadow: 0 0 24px rgba(0, 180, 220, 0.18);
+        opacity: 0;
+        pointer-events: none;
+        transform: translate(-50%, 10px);
+        transition: opacity 180ms ease, transform 180ms ease;
+        user-select: none;
+
+        &.visible {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translate(-50%, 0);
+        }
+
+        p {
+            margin: 0 0 0.35rem;
+            color: rgba(215, 247, 255, 0.75);
+            font-size: 0.85rem;
+            &:first-child {
+                color: #00eeff;
+                font-size: 0.7rem;
+                letter-spacing: 0.22em;
+                text-transform: uppercase;
+            }
+        }
+
+        h2 {
+            margin: 0 0 0.35rem;
+            color: #fff;
+            font-size: 1.15rem;
+        }
+
+        div {
+            display: flex;
+            gap: 0.65rem;
+            margin-top: 0.6rem;
+        }
+
+        button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+            min-height: 44px;
+            padding: 0.45rem 0.85rem;
+            color: rgba(215, 247, 255, 0.85);
+            font: inherit;
+            font-size: 0.8rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            cursor: pointer;
+            background: transparent;
+            border: 1px solid rgba(0, 160, 200, 0.35);
+            border-radius: 4px;
+        }
+
+        button:first-child {
+            flex: 1;
+            color: #041018;
+            background: #00c8e0;
+            border-color: #9ffffb;
+        }
+
+        kbd {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 1.7rem;
+            height: 1.7rem;
+            color: #00eeff;
+            font-size: 0.72rem;
+            letter-spacing: 0;
+            text-transform: none;
+            background: rgba(0, 8, 24, 0.85);
+            border: 1px solid rgba(0, 238, 255, 0.55);
+            border-radius: 3px;
+        }
+
+        button:first-child kbd {
+            color: #032028;
+            background: rgba(255, 255, 255, 0.72);
+            border-color: rgba(0, 40, 60, 0.3);
+        }
+    }
+
     #map {
         display: none;
         position: absolute;

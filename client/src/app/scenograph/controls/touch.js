@@ -40,22 +40,27 @@ export default class TouchControls {
 
     activate() {
         this.controls.enabled = true;
-        l.scenograph.controls.touch.controls.movementPad.padElement.style.filter = 'invert(1)';
-        l.scenograph.controls.touch.controls.rotationPad.padElement.style.filter = 'invert(1)';
-        l.scenograph.controls.touch.controls.sliderStick.stickElement.style.filter = 'invert(1)';
+        this.controls.movementPad.padElement.style.filter = 'invert(1)';
+        this.controls.rotationPad.padElement.style.filter = 'invert(1)';
+        this.controls.sliderStick.stickElement.style.filter = 'invert(1)';
 
-        l.scenograph.controls.touch.controls.movementPad.padElement.style.display = '';
-        l.scenograph.controls.touch.controls.rotationPad.padElement.style.display = '';
-        l.scenograph.controls.touch.controls.sliderStick.stickElement.style.display = '';
+        this.controls.movementPad.padElement.style.display = '';
+        this.controls.rotationPad.padElement.style.display = '';
+        this.setAircraftChrome( l.mode !== 'hangar' );
+    }
 
-        l.scenograph.controls.touch.weapons.container.style.display = 'flex';
+    /**
+     * Climb slider and weapons are aircraft-only. Hangar uses move, camera, and overlays.
+     */
+    setAircraftChrome( show ) {
+        this.controls.sliderStick.stickElement.style.display = show ? '' : 'none';
+        this.weapons.container.style.display = show ? 'flex' : 'none';
     }
 
     deactivate() {
         this.controls.enabled = false;
-        l.scenograph.controls.touch.controls.movementPad.padElement.style.display = 'none';
-        l.scenograph.controls.touch.controls.rotationPad.padElement.style.display = 'none';
-        l.scenograph.controls.touch.controls.sliderStick.stickElement.style.display = 'none';
-        l.scenograph.controls.touch.weapons.container.style.display = 'none';
+        this.controls.movementPad.padElement.style.display = 'none';
+        this.controls.rotationPad.padElement.style.display = 'none';
+        this.setAircraftChrome( false );
     }
 }

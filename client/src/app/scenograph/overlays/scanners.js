@@ -38,16 +38,19 @@ export default class Scanners {
      * @returns custom HTMLElement
      */
     getSymbolElement( symbol ) {
+        if ( ! l.scenograph.overlays.map.icons[ symbol ] ) {
+            symbol = 'aircraft';
+        }
         let element = document.createElement('div');
         element.innerHTML = this.item_template;
         element.querySelector('.symbol').innerHTML = l.scenograph.overlays.map.icons[ symbol ];
         element.firstChild.classList.add( symbol );
         const shape = element.querySelector('.symbol path, .symbol rect');
-        
-        if ( shape.style ) {
-            shape.style = '';
+
+        if ( shape ) {
+            shape.removeAttribute('style');
         }
-        
+
         return element.firstChild;
     }
 
@@ -129,9 +132,11 @@ export default class Scanners {
         l.scenograph.cameras.active.updateProjectionMatrix();
 
         // Use the players scanners to update the overlays.
-        l.current_scene.objects.player.mesh.userData.actor.scanners.targets.forEach( target => l.scenograph.overlays.scanners.animateTarget( delta, target, frustum ) );
+        l.scenograph.actors.player.vehicle.mesh.userData.actor.scanners.targets.forEach( target => l.scenograph.overlays.scanners.animateTarget( delta, target, frustum ) );
 
         l.scenograph.overlays.scanners.removeOldTargets();
+
+        l.scenograph.overlays.scanners.toggleRespawningTargets();
 
     }
 
@@ -170,8 +175,26 @@ export default class Scanners {
             domElement.classList.remove('locking');
         }
 
+        domElement.style.display = `block`;
         domElement.style.left = `${x-10}px`;
         domElement.style.top = `${y-10}px`;
+    }
+
+
+    /**
+     * Show/hide markers of objects that are respawning.
+     */
+    toggleRespawningTargets() {
+                
+        const overlayKeys = Object.keys(l.scenograph.overlays.scanners.trackedObjects);
+        const scannerKeys = l.scenograph.actors.player.vehicle.mesh.userData.actor.scanners.targets.map(t => t.mesh.uuid);
+
+        // Hide targets missing from player scanners, theoretically those are ones being relocated by the engine / respawning.
+        const respawningTargets = overlayKeys.filter(k => !scannerKeys.includes(k));
+        respawningTargets.map( uuid => {
+            l.scenograph.overlays.scanners.trackedObjects[ uuid ].style.display = 'none';
+        } );
+
     }
 
     /**
@@ -187,7 +210,7 @@ export default class Scanners {
 
                 // Delete the marker domElement from memory.
                 delete l.scenograph.overlays.scanners.trackedObjects[ uuid ];
-            }
+            }            
         }
 
     }
@@ -206,12 +229,13 @@ export default class Scanners {
                 'cargoShip': 'ship',
                 'city': 'structure',
                 'extractors': 'structure',
+                'hangar': 'structure',
                 'missiles': 'aircraft',
                 'player': 'aircraft',
                 'refinery': 'structure',
             }
 
-            let symbol = objectIcons[ target.mesh.userData.objectClass ];
+            let symbol = objectIcons[ target.mesh.userData.objectClass ] || 'aircraft';
 
             l.scenograph.overlays.scanners.trackedObjects[ target.mesh.uuid ] = l.scenograph.overlays.scanners.getSymbolElement( symbol );
             trackedObject = l.scenograph.overlays.scanners.trackedObjects[ target.mesh.uuid ];

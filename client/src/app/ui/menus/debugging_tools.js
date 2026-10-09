@@ -4,6 +4,11 @@
 
 import { Pane } from 'tweakpane';
 
+function flightControl( name ) {
+    const controls = l.scenograph.actors.player?.vehicle?.mesh?.userData?.object?.controls;
+    return controls ? controls[ name ] : false;
+}
+
 export default class Debugging_Tools {
     pane;
     settings;
@@ -73,19 +78,25 @@ export default class Debugging_Tools {
             expanded: false,
         } );
 
-        shipState.addBinding( l.current_scene.objects.player.controls, 'throttleUp', {
+        const shipControls = {
+            get throttleUp() { return flightControl( 'throttleUp' ); },
+            get throttleDown() { return flightControl( 'throttleDown' ); },
+            get moveLeft() { return flightControl( 'moveLeft' ); },
+            get moveRight() { return flightControl( 'moveRight' ); },
+        };
+        shipState.addBinding( shipControls, 'throttleUp', {
             readonly: true,
             interval: 200
         } )
-        shipState.addBinding( l.current_scene.objects.player.controls, 'throttleDown', {
+        shipState.addBinding( shipControls, 'throttleDown', {
             readonly: true,
             interval: 200
         } )
-        shipState.addBinding( l.current_scene.objects.player.controls, 'moveLeft', {
+        shipState.addBinding( shipControls, 'moveLeft', {
             readonly: true,
             interval: 200
         } )
-        shipState.addBinding( l.current_scene.objects.player.controls, 'moveRight', {
+        shipState.addBinding( shipControls, 'moveRight', {
             readonly: true,
             interval: 200
         } )

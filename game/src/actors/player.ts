@@ -1,8 +1,8 @@
 /**
  * Player Agent
- * 
+ *
  * Defines a player entity in the game world.
- * 
+ *
  * @todo: Remove this file if not used.
  */
 
@@ -14,7 +14,7 @@ export default class Player extends BaseActor {
 
     constructor( mesh, scene ) {
         super( mesh, scene );
-    
+
          if ( this.type == 'vehicle' ) {
             this.entity.position.z = this.mesh.position.z;
             this.entity.position.y = this.mesh.position.y;

@@ -1,6 +1,6 @@
 /**
  * Pirate NPC
- * 
+ *
  * Defines an aggressive pirate NPC that attacks nearby aircraft.
  */
 
@@ -16,11 +16,11 @@ export default class Pirate extends BaseActor {
 
     path;
 
-    pursue;
+    targets;
 
     constructor( mesh, scene ) {
         super( mesh, scene );
-        
+
         this.marker = document.querySelector('#map .marker-bot svg path');
 
         if ( this.type == 'vehicle' ) {
@@ -40,15 +40,11 @@ export default class Pirate extends BaseActor {
             this.path.add( new YUKA.Vector3( loopDistance, this.mesh.position.y, - loopDistance ) );
             this.path.add( new YUKA.Vector3( - loopDistance, this.mesh.position.y, - loopDistance ) );
             this.path.add( new YUKA.Vector3( - loopDistance, this.mesh.position.y, loopDistance ) );
-    
+
             this.follow = new YUKA.FollowPathBehavior( this.path );
             this.entity.steering.add( this.follow );
 
-            // @todo: v7 Figure out a way to signal this to happen without l. global object access
-            this.pursue = new YUKA.PursuitBehavior( l.current_scene.objects.player.mesh.userData.actor.entity, 1 );
-            this.pursue.active = false;
-			this.entity.steering.add( this.pursue );
-
+            this.targets = new Map();
         }
     }
 
@@ -60,18 +56,30 @@ export default class Pirate extends BaseActor {
         }
 
         // @todo: v7 Figure out a way to signal this to happen without l. global object access
-        if ( this.entity.vision.visible( l.current_scene.objects.player.position ) === true ) {
-            this.pursue.active = true;
-            this.follow.active = false;
+        for (let actor in l.scenograph.actors.getAll()) {
+            if ( this.targets.size < l.scenograph.actors.size ) {
+                this.targets.set(actor.name, actor);
+                let pursue = new YUKA.PursuitBehavior( actor.vehicle.mesh.userData.actor.entity, 1 );
+                pursue.active = false;
+                this.entity.steering.add( pursue );
+            }
 
-            if ( this.marker )
-                this.marker.style.stroke = 'rgb( 255, 0, 0 )';
-        } else {
-            this.pursue.active = false;
-            this.follow.active = true;
-            
-            if ( this.marker )
-                this.marker.style.stroke = 'rgb( 255, 255, 0 )';
+            // @todo: v7 Figure out a way to signal this to happen without l. global object access
+            if ( this.entity.vision.visible( actor.vehicle.mesh.position ) === true ) {
+                this.pursue.active = true;
+                this.follow.active = false;
+
+                if ( this.marker )
+                    this.marker.style.stroke = 'rgb( 255, 0, 0 )';
+            } else {
+                this.pursue.active = false;
+                this.follow.active = true;
+
+                if ( this.marker )
+                    this.marker.style.stroke = 'rgb( 255, 255, 0 )';
+            }
         }
+
+
     }
 }

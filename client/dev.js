@@ -13,7 +13,7 @@ run('build:esbuild');
 chokidar.watch(['src', '../game'], { }).on('all', (event, path) => {
   if (event === 'change') {
     console.log(event, path);
-    if (path.endsWith('.js') || path.endsWith('.ts')) {
+    if (path.endsWith('.js') || path.endsWith('.ts') || path.endsWith('.yml')) {
         run('build:esbuild');
     }
   }

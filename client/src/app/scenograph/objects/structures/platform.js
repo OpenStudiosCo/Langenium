@@ -13,6 +13,8 @@ import { proceduralBuilding, proceduralMetalMaterial2, proceduralSolarPanel } fr
 
 export default class Platform {
 
+    instances;
+
     // THREE.Mesh
     mesh;
 
@@ -20,6 +22,7 @@ export default class Platform {
     model;
 
     constructor() {
+        this.instances = [];
         this.ready = false;
     }
 
@@ -109,6 +112,14 @@ export default class Platform {
         this.mesh.userData.targetable = true;
         this.mesh.userData.objectClass = 'city';
         this.ready = true;
+    }
+
+    async get() {
+        let platform = this.mesh.clone();
+
+        this.instances.push( platform );
+
+        return platform;
     }
 
     /**

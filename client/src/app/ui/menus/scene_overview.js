@@ -2,6 +2,7 @@
  * Scene Overview window
  */
 import { Pane } from 'tweakpane';
+import l from '@/helpers/l.js';
 
 export default class Scene_Overview {
     container;

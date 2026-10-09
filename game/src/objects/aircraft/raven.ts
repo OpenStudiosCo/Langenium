@@ -11,8 +11,8 @@ class Raven extends BaseAircraft {
     public maxUp:           number                              = 3.7 * 2.5;
     public maxDown:         number                              = 3.7 * 5;  // gravity?
 
-    constructor() {
-        super(); // Call the constructor of the base class
+    constructor( mesh ) {
+        super( mesh ); // Call the constructor of the base class
     }
 
 }

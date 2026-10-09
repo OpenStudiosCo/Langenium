@@ -35,13 +35,11 @@ export default class Main_Menu {
             hidden: true
         } );
         this.buttons.exit_game.on( 'click', () => {
-            console.log( 'Exit to Main Menu, closing game session' );
-            l.scenograph.controls.deactivate()
-            l.scenograph.overlays.deactivate()
-            //l.ui.hide_flight_instruments();
+            l.routes.exitGame();
 
             // Show game mode buttons.
-            this.buttons.single_player.hidden = false;
+            this.buttons.player_one.hidden = false;
+            this.buttons.player_two.hidden = false;
             this.buttons.multi_player.hidden = false;
 
             // Hide game exit button to return to main menu.
@@ -50,15 +48,9 @@ export default class Main_Menu {
             // Hide the score table button.
             this.buttons.scores.hidden = true;
 
-            // Restore the main menu title.
+            // Restore the main menu.
+            this.pane.expanded = true;
             this.pane.title = this.default_title;
-
-            if ( l.scenograph.modes.multiplayer.connected ) {
-                l.scenograph.modes.multiplayer.disconnect();
-            }
-
-            // Set client mode.
-            l.mode = 'home';
         } );
 
         this.buttons.scores = this.pane.addButton( {
@@ -70,22 +62,15 @@ export default class Main_Menu {
             l.ui.score_table.show();
         });
 
-        this.buttons.single_player = this.pane.addButton( {
-            title: 'Single Player',
+        this.buttons.player_one = this.pane.addButton( {
+            title: 'P1: Overworld',
         } );
-        this.buttons.single_player.on( 'click', () => {
-            console.log( 'Single player launched' );
-
-            // Start controls.
-            l.scenograph.controls.activate();
-
-            // Start overlays.
-            l.scenograph.overlays.activate();
-
-            //l.ui.show_flight_instruments();
+        this.buttons.player_one.on( 'click', () => {
+            new l.routes.singlePlayer();
 
             // Hide game mode buttons.
-            this.buttons.single_player.hidden = true;
+            this.buttons.player_one.hidden = true;
+            this.buttons.player_two.hidden = true;
             this.buttons.multi_player.hidden = true;
 
             // Hide main menu and change it's title
@@ -98,8 +83,29 @@ export default class Main_Menu {
             // Show game scores button
             this.buttons.scores.hidden = false;
 
-            // Set client mode.
-            l.mode = 'single_player';
+        } );
+
+        this.buttons.player_two = this.pane.addButton( {
+            title: 'P2: Hangar',
+        } );
+        this.buttons.player_two.on( 'click', () => {
+            new l.routes.hangar();
+
+            // Hide game mode buttons.
+            this.buttons.player_one.hidden = true;
+            this.buttons.player_two.hidden = true;
+            this.buttons.multi_player.hidden = true;
+
+            // Hide main menu and change it's title
+            this.pane.expanded = false;
+            this.pane.title = "Menu";
+
+            // Show game exit button to return to main menu.
+            this.buttons.exit_game.hidden = false;
+
+            // Show game scores button
+            this.buttons.scores.hidden = false;
+
         } );
 
         this.buttons.multi_player = this.pane.addButton( {
@@ -107,14 +113,11 @@ export default class Main_Menu {
             disabled: true // @todo: v7 Restore multiplayer and server tracking of scene objects.
         } );
         this.buttons.multi_player.on( 'click', () => {
-            console.log( 'Multi player launched' );
-
-            l.scenograph.controls.activate();
-
-            //l.ui.show_flight_instruments();
+            new l.routes.multiPlayer();
 
             // Hide game mode buttons.
-            this.buttons.single_player.hidden = true;
+            this.buttons.player_one.hidden = true;
+            this.buttons.player_two.hidden = true;
             this.buttons.multi_player.hidden = true;
 
             // Hide main menu
@@ -127,12 +130,7 @@ export default class Main_Menu {
             // Show game scores button
             this.buttons.scores.hidden = false;
 
-            let serverLocation = l.env == 'Dev' ? 'lcl.langenium.com:8090' : 'test.langenium.com:42069';
 
-            l.scenograph.modes.multiplayer.connect( '//' + serverLocation );
-
-            // Set client mode.
-            l.mode = 'multi_player';
         } );
 
         this.buttons.settings = this.pane.addButton( {
@@ -144,7 +142,8 @@ export default class Main_Menu {
             // Hide all the other buttons.
             this.buttons.scores.hidden = true;
             this.buttons.exit_game.hidden = true;
-            this.buttons.single_player.hidden = true;
+            this.buttons.player_one.hidden = true;
+            this.buttons.player_two.hidden = true;
             this.buttons.multi_player.hidden = true;
             this.buttons.settings.hidden = true;
             this.buttons.help.hidden = true;
@@ -170,7 +169,8 @@ export default class Main_Menu {
             // Show all the other buttons.
             this.buttons.scores.hidden = l.mode !== 'home' ? false : true;
             this.buttons.exit_game.hidden = l.mode !== 'home' ? false : true;
-            this.buttons.single_player.hidden = l.mode !== 'home' ? true : false;
+            this.buttons.player_one.hidden = l.mode !== 'home' ? true : false;
+            this.buttons.player_two.hidden = l.mode !== 'home' ? true : false;
             this.buttons.multi_player.hidden = l.mode !== 'home' ? true : false;
             this.buttons.settings.hidden = false;
             this.buttons.help.hidden = l.mode !== 'home' ? true : false;

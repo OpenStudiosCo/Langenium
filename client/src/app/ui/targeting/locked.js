@@ -80,7 +80,7 @@ export default class Locked {
             let targetObject = l.current_scene.scene.getObjectByProperty( 'uuid', targetIcon.dataset.uuid);
 
             // Update the distance to target.
-            let distance = targetObject.position.distanceTo( l.current_scene.objects.player.mesh.position );
+            let distance = targetObject.position.distanceTo( l.scenograph.actors.player.vehicle.mesh.position );
             if ( distance > 1000 ) {
                 distance = Math.round(Math.round(distance) / 10) / 100;
                 targetIcon.querySelector('.distance').innerHTML = distance + 'km';

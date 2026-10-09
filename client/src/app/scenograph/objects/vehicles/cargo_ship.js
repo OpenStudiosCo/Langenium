@@ -16,13 +16,10 @@ import { proceduralMetalMaterial } from '@/scenograph/materials.js';
 import { SUBTRACTION, Brush, Evaluator } from 'three-bvh-csg';
 import cargoShip from '../../../../../../game/src/actors/cargoShip';
 
-export default class CargoShips {
+export default class CargoShip {
 
     // THREE.Mesh clones
     instances;
-
-    // Array of three.vector3's defining X/Z coordinates and radius of where extractors are in the ocean.
-    locations;
 
     // THREE.Mesh
     mesh;
@@ -36,28 +33,10 @@ export default class CargoShips {
     // The scale of the mesh.
     size;
 
-    // Locations the cargo ships will randomly select and travel to.
-    targets;
-
     constructor() {
         this.instances = [];
         this.ready = false;
         this.size = 1000;
-
-        // Cargo ship start locations
-        this.locations = [
-            //new THREE.Vector3( 0, -500, this.size * 10 ),              // Test ship
-            new THREE.Vector3( -35000, -2000, this.size * 10 ),
-            new THREE.Vector3( -36000, -1500, this.size * 10 ),
-            new THREE.Vector3( -34000, -1500, this.size * 10 ),
-        ];
-
-        // Cargo ship destinations, use the current scene's extractor positions.
-        this.destinations = [];
-        l.current_scene.objects.extractors.forEach( (extractor) => {
-            this.destinations.push( new THREE.Vector3( extractor.position.x, 0, extractor.position.z ) );
-        });
-
     }
 
     /**
@@ -69,14 +48,15 @@ export default class CargoShips {
         let path = new YUKA.Path();
         path.loop = true;
 
-        // Add the union platform
-        const platform_location = l.current_scene.objects.platform.mesh.position;
-        path.add( new YUKA.Vector3( platform_location.x, 0, platform_location.z ) );
-
-        this.destinations.forEach( ( destination ) => {
-            path.add( new YUKA.Vector3( destination.x, 0, destination.z ) );
+        // Add the union platforms
+        l.scenograph.objects.structures.platform.instances.forEach( (platform) => {
+            path.add( new YUKA.Vector3( platform.position.x, 0, platform.position.z ) );
         });
-        path.add( new YUKA.Vector3( platform_location.x, 0, platform_location.z ) );
+
+        // Add the extractors.
+        l.scenograph.objects.structures.extractor.instances.forEach( (extractor) => {
+            path.add( new YUKA.Vector3( extractor.position.x, 0, extractor.position.z ) );
+        });
 
         return path;
     }
@@ -136,6 +116,35 @@ export default class CargoShips {
 
     }
 
+    async get() {
+        let mesh = this.mesh.clone();
+        mesh.userData.path = this.getPath();
+
+        let i = this.instances.length;
+        
+        // Bump each starting point for the cargo ships
+        for ( let j = 0; j < i; j++) {
+            mesh.userData.path.advance();
+        }
+
+        mesh.position.copy( mesh.userData.path.current() );
+        mesh.name = 'Cargo Ship #' + ( i + 1 );
+
+        mesh.userData.objectClass = 'cargoShip';
+        mesh.userData.targetable = true;
+        mesh.userData.size = this.size;
+        mesh.userData.actor = new cargoShip( mesh, l.current_scene.scene );
+
+        l.scenograph.entityManager.add( mesh.userData.actor.entity );
+
+        mesh.matrixAutoUpdate = false;
+
+        this.instances.push( mesh );
+
+        return mesh;
+    }
+
+    // Note: has to be loaded after extractors!
     async load() {
 
         //const material = new THREE.MeshBasicMaterial( {color: 0xff0000, transparent: true, opacity: 1.0, side: THREE.DoubleSide} );
@@ -205,7 +214,7 @@ export default class CargoShips {
     animate( delta ) {
 
         if ( l.current_scene.settings.game_controls ) {
-            l.current_scene.objects.cargo_ships.forEach( ( cargo_ship ) => {
+            l.scenograph.objects.vehicles.cargoShip.instances.forEach( ( cargo_ship ) => {
 
                 cargo_ship.userData.actor.animate( delta );
                 

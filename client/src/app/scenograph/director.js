@@ -313,13 +313,6 @@ export default class Director {
       );
     }
 
-    /**
-     * @todo: Make this dynamic and not hard codo
-     */
-    async temp_addPlayer() {
-
-    }
-
     async setupSceneDefaults() {
 
       /**

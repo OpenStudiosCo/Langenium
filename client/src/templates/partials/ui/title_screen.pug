@@ -1,0 +1,65 @@
+//- Home-mode front menu.
+//- The logo region is empty on purpose: the extruded SVG mesh is added in the scene later and occupies this space.
+#title_screen
+    .title_screen_logo(data-mount="langenium-logo" aria-hidden="true")
+    nav(aria-label="Main menu")
+        ul.primary
+            li
+                button(type="button" data-action="play" data-label="Play")
+                    span(aria-hidden="true") Play
+                    | Play
+            li
+                button(type="button" data-action="stories" data-label="Stories")
+                    span(aria-hidden="true") Stories
+                    | Stories
+            li
+                button(type="button" data-action="lore" data-label="Lore")
+                    span(aria-hidden="true") Lore
+                    | Lore
+        ul.secondary
+            li
+                button(type="button" data-action="settings")
+                    span(aria-hidden="true") Settings
+                    | Settings
+            li
+                button(type="button" data-action="help")
+                    span(aria-hidden="true") Help
+                    | Help
+            li
+                button(type="button" data-action="about")
+                    span(aria-hidden="true") About
+                    | About
+    .title_screen_detail
+        section(data-panel="stories" hidden)
+            h2 Stories
+            p The scenes you can enter.
+            ul
+                li
+                    button(type="button" data-action="story" data-story="overworld") Overworld
+                li
+                    button(type="button" data-action="story" data-story="hangar") Hangar
+                li
+                    button(type="button" data-action="story" data-story="multiplayer" disabled) Multiplayer
+        section(data-panel="lore" hidden)
+            h2 Lore
+            p Langenium is an open source game project with the long term goal of producing an MMO in the browser.
+            p The current build is a flight scene over the ocean, reached from the hangar or straight from Play.
+        //- Visual only. These boxes are not bound to l.config.settings.
+        section(data-panel="settings" hidden)
+            h2 Settings
+            label
+                input(type="checkbox" tabindex="-1")
+                span Debugging mode
+            label
+                input(type="checkbox" tabindex="-1")
+                span Performance mode
+            label
+                input(type="checkbox" tabindex="-1")
+                span Skip title sequence
+        section(data-panel="about" hidden)
+            h2 About
+            p
+                | Langenium 
+                span(data-version)
+            p
+                a(href="https://github.com/OpenStudiosCo/Langenium" target="_blank" rel="noopener") Project on GitHub

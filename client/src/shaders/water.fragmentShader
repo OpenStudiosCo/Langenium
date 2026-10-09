@@ -137,13 +137,12 @@ vec4 colorFilter (float n) {
 
 vec4 reflectionFilter( float n , vec4 reflection ) {
 
-	// Keep the 1/n limits from exploding when the height map is near zero.
-	// Those spikes blow the half-float composer and the adaptive tone map.
-	float height = max( n, 0.35 );
+	// Caustic peaks follow 1/height and stop at white.
+	float height = max( n, 0.001 );
 
-	reflection.r = limitColor(0.02, 0.07 / height, reflection.r);
-	reflection.g = limitColor(0.04 / height, 0.16 / height, reflection.g);
-	reflection.b = limitColor(0.09 / height, 0.3 / height, reflection.b);
+	reflection.r = limitColor(0.02, min( 0.07 / height, 1.0 ), reflection.r);
+	reflection.g = limitColor(0.04 / height, min( 0.16 / height, 1.0 ), reflection.g);
+	reflection.b = limitColor(0.09 / height, min( 0.3 / height, 1.0 ), reflection.b);
 	reflection.a = 1.0 - clamp( n, 0.0, 1.0 );
 
 	return reflection;

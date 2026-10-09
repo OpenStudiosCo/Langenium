@@ -374,6 +374,13 @@ export default class Director {
         l.current_scene.objects.ocean.animate
       );
 
+      l.current_scene.objects.logo = new l.scenograph.objects.logo();
+      await l.current_scene.objects.logo.load();
+      l.current_scene.scene.add( l.current_scene.objects.logo.mesh );
+      l.current_scene.animation_queue.push(
+        l.current_scene.objects.logo.animate
+      );
+
       // Adjust ambient light intensity
       l.current_scene.objects.ambientLight = new THREE.AmbientLight(
         l.config.settings.fast ? 0x555555 : 0x444444

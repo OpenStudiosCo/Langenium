@@ -39,11 +39,19 @@ export default class Title_Screen {
     show() {
         this.closePanel();
         this.container.classList.add( 'active' );
+
+        if ( l.current_scene && l.current_scene.objects && l.current_scene.objects.logo ) {
+            l.current_scene.objects.logo.show();
+        }
     }
 
     hide() {
         this.closePanel();
         this.container.classList.remove( 'active' );
+
+        if ( l.current_scene && l.current_scene.objects && l.current_scene.objects.logo ) {
+            l.current_scene.objects.logo.hide();
+        }
     }
 
     onAction( action, button ) {

@@ -253,6 +253,10 @@ export default class Scenograph {
             updateTriggers( currentTime );
 
             updateTweens( currentTime );
+
+            if ( l.current_scene.objects.logo && l.current_scene.objects.logo.mesh.visible ) {
+                l.current_scene.objects.logo.place();
+            }
         }
 
 

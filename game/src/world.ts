@@ -10,7 +10,7 @@ import Overworld from "./scenes/overworld.yml";
 import ActorPlayer from './actors/player2';
 
 import ObjectHangar from './objects/structures/hangar';
-import ObjectPerson from './objects/person2';
+import ObjectPerson from './objects/person';
 
 interface WorldConfig {
     actors: Record<string, any>;

@@ -1,15 +1,19 @@
 /**
- * Base Aircraft class
- *
- * @todo:
- * - Add weight and wind resistance
+ * Person class
  */
 
-import { normaliseSpeedDelta, easeOutExpo, easeInQuad, easeInOutExpo } from '../helpers';
+import ObjectBase from './base';
+import BaseActor from '../actors/base2';
+import { changeVelocity, normaliseSpeedDelta, easeOutExpo, easeInQuad, easeInOutExpo } from '../helpers';
+import { Vec3 } from '../types';
 
-export default class Person {
-    public score:           { kills: number; deaths: number }   = { kills: 0, deaths: 0 };
-    public standing:        number                              = 0;
+
+export default class Person extends ObjectBase {
+
+    // Actor that controls this object.
+    public actor?:          BaseActor;
+
+    // Object world parameters
     public hitPoints:       number                              = 100;
     public airSpeed:        number                              = 0;
     public verticalSpeed:   number                              = 0;
@@ -18,94 +22,31 @@ export default class Person {
     public maxUp:           number                              = 4 / 60;
     public maxDown:         number                              = 16 / 60;  // gravity?
 
-    public position:        { x: number; y: number; z: number } = { x: 0, y: 8.5, z: 0 };
-    public startPosition:   { x: number; y: number; z: number } = { x: 0, y: 8.5, z: 0 };
-    public rotation:        { x: number; y: number; z: number } = { x: 0, y: 0, z: 0 };
-
-    public controls: {
-        changing: boolean,
-        forward: boolean;
-        back: boolean;
-        jump: boolean;
-        crouch: boolean;
-        turnLeft: boolean;
-        turnRight: boolean;
-    } = {
-        changing: false,
-        forward: false,
-        back: false,
-        jump: false,
-        crouch: false,
-        turnLeft: false,
-        turnRight: false
-    };
-
     constructor() {
+        super();
+        this.aabb = {
+            halfSize: { x: 0.5, y: 0.75, z: 0.3 }
+        };
     }
 
-    /**
-     * Change aircraft velocity based on current and what buttons are pushed by the player.
-     *
-     * @param currentVelocity
-     * @param increasePushed
-     * @param decreasePushed
-     */
-    private _changeVelocity(stepIncrease, stepDecrease, currentVelocity, increasePushed, decreasePushed, increaseMax, decreaseMax, dragFactor): number {
-        let newVelocity = currentVelocity;
+    update( time_delta: number  ) {
+        if (!this.actor) return;
+        this.nextPosition = { ...this.position }; // start with current position
 
-        if (increasePushed) {
-
-            // Check if the change puts us over the max.
-            let tempVelocity = newVelocity - stepIncrease;
-            if (Math.abs(increaseMax) >= Math.abs(tempVelocity))
-                newVelocity = tempVelocity;
-        }
-        else {
-            if (decreasePushed) {
-
-                // Check if the change puts us over the max.
-                let tempVelocity = newVelocity + stepDecrease;
-                if (Math.abs(decreaseMax) >= tempVelocity)
-                    newVelocity = tempVelocity;
-            }
-            else {
-                if (newVelocity != 0) {
-
-                    if (Math.abs(newVelocity) > 0.1) {
-                        // Ease out the velocity exponentially to simulate drag
-                        newVelocity *= dragFactor;
-                    }
-                    else {
-                        newVelocity = 0;
-                    }
-                }
-
-            }
-        }
-
-        return newVelocity;
-    }
-
-    /**
-     * Move the aircraft based on velocity, direction and time delta between frames.
-     *
-     * @param time_delta
-     */
-    public move( time_delta: number ): object {
         let stepSize:           number = .025 * normaliseSpeedDelta( time_delta ),
             rY:                 number = 0,
             tZ:                 number = 0,
             tY:                 number = 0,
             radian:             number = - (Math.PI / 180) * stepSize * 100;
 
-        if ( this.controls.forward || this.controls.back ){
+        if ( this.actor.controls.forward || this.actor.controls.back ){
             // Update Airspeed (horizontal velocity)
-            this.airSpeed = this._changeVelocity(
+            this.airSpeed = changeVelocity(
                 stepSize * easeInOutExpo( 1 - ( Math.abs ( this.airSpeed ) / this.maxForward ) ),
                 stepSize,
                 this.airSpeed,
-                this.controls.forward,
-                this.controls.back,
+                this.actor.controls.forward,
+                this.actor.controls.back,
                 this.maxForward,
                 this.maxBackward,
                 easeOutExpo( 0.987 )
@@ -115,30 +56,29 @@ export default class Person {
             this.airSpeed = 0;
         }
 
-
         // Update Vertical Speed (velocity)
-        this.verticalSpeed = this._changeVelocity(
+        this.verticalSpeed = changeVelocity(
             stepSize * easeInOutExpo( 1 - ( Math.abs ( this.verticalSpeed ) / this.maxUp ) ),
             stepSize * easeInOutExpo( 1 - ( Math.abs ( this.verticalSpeed ) / this.maxDown ) ),
             this.verticalSpeed,
-            this.controls.crouch,     // Note: Move Down/Up is reversed by design.
-            this.controls.jump,
+            this.actor.controls.crouch,     // Note: Move Down/Up is reversed by design.
+            this.actor.controls.jump,
             this.maxDown,
             this.maxUp,
             easeInQuad( 0.321 )
         );
 
-         // Check the vertical speed exceeds minimum threshold for change in vertical position
-         if (Math.abs(this.verticalSpeed) > 0.01) {
+        // Check the vertical speed exceeds minimum threshold for change in vertical position
+        if (Math.abs(this.verticalSpeed) > 0.01) {
             tY = this.verticalSpeed;
         }
 
         // Turning
-        if (this.controls.turnRight) {
+        if (this.actor.controls.turnRight) {
             rY += radian;
         }
         else {
-            if (this.controls.turnLeft) {
+            if (this.actor.controls.turnLeft) {
                 rY -= radian;
             }
         }
@@ -163,17 +103,23 @@ export default class Person {
             zDiff = tZ * Math.cos(this.rotation.y);
 
         // "1" is the floor limit as it's the ocean surface and the camera clips through the water any lower.
-        if (this.position.y + tY >= 1 ) {
-            this.position.y += tY;
+        if (this.nextPosition.y + tY >= 1 ) {
+            this.nextPosition.y += tY;
         } else {
             this.verticalSpeed = 0;
         }
 
-        this.position.x += xDiff;
-        this.position.z += zDiff;
+        this.nextPosition.x += xDiff;
+        this.nextPosition.z += zDiff;
 
-        return [ rY, tY, tZ ];
+        this.rY = rY;
+        this.tY = tY;
+        this.tZ = tZ;
 
+    }
+
+    commitNextPosition() {
+        this.position = this.nextPosition;
     }
 
 }

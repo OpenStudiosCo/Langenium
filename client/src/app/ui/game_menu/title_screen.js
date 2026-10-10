@@ -56,7 +56,7 @@ export default class Title_Screen {
 
     onAction( action, button ) {
         if ( action === 'play' ) {
-            this.startStory( 'overworld' );
+            this.startStory( 'hangar' );
             return;
         }
 

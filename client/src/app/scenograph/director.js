@@ -376,7 +376,6 @@ export default class Director {
 
       l.current_scene.objects.logo = new l.scenograph.objects.logo();
       await l.current_scene.objects.logo.load();
-      l.current_scene.scene.add( l.current_scene.objects.logo.mesh );
       l.current_scene.animation_queue.push(
         l.current_scene.objects.logo.animate
       );

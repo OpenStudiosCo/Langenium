@@ -2,6 +2,9 @@
  * Title-screen logo. io_three Geometry JSON: material 0 is water, material 1
  * is the platform casing metal. Held near the top of the screen, left
  * aligned with the title-screen logo mount.
+ *
+ * Drawn on its own transparent canvas, above the scene-change fade and
+ * under the menu, so a background cut does not take the letters with it.
  */
 
 import * as THREE from 'three';
@@ -20,6 +23,7 @@ export default class Logo {
         this.mesh.visible = false;
         this.width = 1;
         this.height = 1;
+        this._size = new THREE.Vector2();
     }
 
     async load() {
@@ -39,9 +43,47 @@ export default class Logo {
         this.width = size.x || 1;
         this.height = size.y || 1;
 
+        this.mountLayer();
+
         const screen = document.getElementById( 'title_screen' );
         if ( screen && screen.classList.contains( 'active' ) ) {
             this.show();
+        }
+    }
+
+    // Scene canvas, then the fade, then this. The menu sits above all three.
+    mountLayer() {
+        this.layerScene = new THREE.Scene();
+        this.layerScene.add( this.mesh );
+
+        this.canvas = document.createElement( 'canvas' );
+        this.canvas.id = 'langenium_logo_layer';
+        this.canvas.style.cssText = 'position:absolute;top:0;left:0;pointer-events:none;z-index:4';
+        ( document.getElementById( 'webgl-wrapper' ) || document.body ).appendChild( this.canvas );
+
+        this.renderer = new THREE.WebGLRenderer( {
+            canvas: this.canvas,
+            alpha: true,
+            antialias: true,
+        } );
+        this.renderer.setClearColor( 0x000000, 0 );
+        this.renderer.autoClear = true;
+        this.syncSize();
+    }
+
+    syncSize() {
+        const main = l.current_scene.renderers && l.current_scene.renderers.webgl;
+        if ( ! main ) {
+            return;
+        }
+
+        const ratio = main.getPixelRatio();
+        const size = main.getSize( this._size );
+        if ( this.renderer.getPixelRatio() !== ratio ) {
+            this.renderer.setPixelRatio( ratio );
+        }
+        if ( this.canvas.width !== Math.round( size.x * ratio ) || this.canvas.height !== Math.round( size.y * ratio ) ) {
+            this.renderer.setSize( size.x, size.y );
         }
     }
 
@@ -52,6 +94,9 @@ export default class Logo {
 
     hide() {
         this.mesh.visible = false;
+        if ( this.renderer ) {
+            this.renderer.clear();
+        }
     }
 
     animate() {
@@ -61,6 +106,20 @@ export default class Logo {
         }
 
         logo.water.material.uniforms.time.value += ( 1 / 60 ) / 20;
+    }
+
+    render() {
+        if ( ! this.renderer || ! this.mesh.visible ) {
+            return;
+        }
+
+        const camera = l.scenograph.cameras.active;
+        if ( ! camera ) {
+            return;
+        }
+
+        this.syncSize();
+        this.renderer.render( this.layerScene, camera );
     }
 
     place() {

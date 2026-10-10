@@ -81,32 +81,31 @@ export default class hangarRoute {
 
       l.current_scene.scene.add(l.scenograph.objects.structures.hangar.mesh);
 
-      l.scenograph.objects.structures.hangar.mesh.visible = true;
+      const hangars = this.targetStructure.userData.config.hangars;
+      const name = l.scenograph.actors.player.actorInstance.config.hangar.hangarName;
+      const hangarConfig = hangars.find( ( hangar ) => hangar.name === name );
+      const hangarMesh = l.scenograph.objects.structures.hangar.mesh;
+      hangarMesh.visible = true;
+      hangarMesh.position.set( hangarConfig.position.x, hangarConfig.position.y, hangarConfig.position.z );
+      hangarMesh.rotation.set( hangarConfig.rotation.x, hangarConfig.rotation.y, hangarConfig.rotation.z );
 
-      l.scenograph.objects.structures.hangar.mesh.position.x = this.targetStructure.userData.config.hangars[0].position.x;
-      l.scenograph.objects.structures.hangar.mesh.position.y = this.targetStructure.userData.config.hangars[0].position.y;
-      l.scenograph.objects.structures.hangar.mesh.position.z = this.targetStructure.userData.config.hangars[0].position.z;
+      // Local -Z is out the bay door.
+      const place = ( object, x, y, z ) => {
+          const spot = new THREE.Vector3( x, y, z ).applyEuler( hangarMesh.rotation ).add( hangarMesh.position );
+          object.position.x = spot.x;
+          object.position.y = spot.y;
+          object.position.z = spot.z;
+          object.rotation.x = hangarMesh.rotation.x;
+          object.rotation.y = hangarMesh.rotation.y;
+          object.rotation.z = hangarMesh.rotation.z;
+      };
 
-      const hangarConfig = this.targetStructure.userData.config.hangars[0];
       const ship = l.scenograph.actors.player.vehicle.mesh.userData.object;
-      const person = l.scenograph.actors.player.actorInstance.object;
-
-      ship.position.x = hangarConfig.position.x;
-      ship.position.z = - 2.5 + hangarConfig.position.z;
-      ship.position.y = l.scenograph.objects.structures.hangar.mesh.position.y - 7.5;
-      // Face the open bay so depart rolls outward, not into a wall.
-      ship.rotation.x = hangarConfig.rotation.x;
-      ship.rotation.y = hangarConfig.rotation.y;
-      ship.rotation.z = hangarConfig.rotation.z;
+      place( ship, 0, -7.5, -2.5 );
       ship.airSpeed = 0;
       ship.verticalSpeed = 0;
 
-      person.position.x = hangarConfig.position.x;
-      person.position.z = 10 + hangarConfig.position.z;
-      person.position.y = l.scenograph.objects.structures.hangar.mesh.position.y - 2.5;
-      person.rotation.x = hangarConfig.rotation.x;
-      person.rotation.y = hangarConfig.rotation.y;
-      person.rotation.z = hangarConfig.rotation.z;
+      place( l.scenograph.actors.player.actorInstance.object, 0, -2.5, 10 );
 
       l.scenograph.actors.player.vehicle.updateMesh();
       l.scenograph.actors.player.setVehicleVisible( true, false );

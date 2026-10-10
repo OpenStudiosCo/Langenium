@@ -231,6 +231,69 @@
             cursor: default
             pointer-events: none
 
+        [data-panel="stories"]
+            h2
+                margin-bottom: 1.15rem
+                font-family: "Liberation Sans Narrow", "Nimbus Sans Narrow", "Arial Narrow", "Helvetica Condensed", sans-serif
+                font-style: italic
+                font-weight: 700
+                font-stretch: condensed
+                font-size: clamp(2.15rem, 3.2vw, 2.85rem)
+                line-height: 1
+                letter-spacing: 0.02em
+
+            p
+                margin: 0
+                max-width: 36ch
+
+            .story_lede
+                margin-bottom: 1.4rem
+
+            .story_parts
+                margin: 0
+                padding: 0
+                list-style: none
+
+                li
+                    display: grid
+                    grid-template-columns: 2.25rem minmax(0, 1fr) auto
+                    column-gap: 0.8rem
+                    align-items: baseline
+                    margin: 0
+                    padding: 0.65rem 0
+                    border-top: 1px solid rgba(255, 255, 255, 0.72)
+                    box-shadow: inset 0 1px 0 rgba(0, 8, 30, 0.28)
+
+                    &:last-child
+                        border-bottom: 1px solid rgba(255, 255, 255, 0.72)
+                        box-shadow: inset 0 1px 0 rgba(0, 8, 30, 0.28), inset 0 -1px 0 rgba(0, 8, 30, 0.28)
+
+            .story_index
+                font-family: "Arial Narrow", "Nimbus Sans Narrow", "Helvetica Condensed", sans-serif
+                font-weight: 700
+                font-size: 0.95rem
+                letter-spacing: 0.12em
+                opacity: 0.72
+
+            .story_name
+                font-family: "Arial Narrow", "Nimbus Sans Narrow", "Helvetica Condensed", sans-serif
+                font-weight: 700
+                font-size: clamp(1.2rem, 1.8vw, 1.5rem)
+                letter-spacing: 0.03em
+                line-height: 1.15
+
+            .story_time
+                font-size: 0.78rem
+                letter-spacing: 0.08em
+                opacity: 0.75
+                white-space: nowrap
+
+            .story_note
+                margin-top: 1.05rem
+                font-size: 0.9rem
+                line-height: 1.45
+                opacity: 0.82
+
         a
             color: inherit
 

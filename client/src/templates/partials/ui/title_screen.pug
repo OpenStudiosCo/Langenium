@@ -31,15 +31,25 @@
                     | About
     .title_screen_detail
         section(data-panel="stories" hidden)
-            h2 Stories
-            p The scenes you can enter.
-            ul
+            h2
+                | The Langenium
+                br
+                | Prologue Trilogy
+            p.story_lede In the near future, human civilisation is in decline.
+            ol.story_parts
                 li
-                    button(type="button" data-action="story" data-story="overworld") Overworld
+                    span.story_index(aria-hidden="true") 01
+                    span.story_name The End of All Limits
+                    span.story_time 25 min
                 li
-                    button(type="button" data-action="story" data-story="hangar") Hangar
+                    span.story_index(aria-hidden="true") 02
+                    span.story_name Hell on Earth
+                    span.story_time 90 min
                 li
-                    button(type="button" data-action="story" data-story="multiplayer" disabled) Multiplayer
+                    span.story_index(aria-hidden="true") 03
+                    span.story_name Extinction Level Event
+                    span.story_time 95 min
+            p.story_note About three and a half hours. Read them in order, or on their own.
         section(data-panel="lore" hidden)
             h2 Lore
             p Langenium is an open source game project with the long term goal of producing an MMO in the browser.

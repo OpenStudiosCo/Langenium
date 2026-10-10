@@ -21,6 +21,11 @@ export default class Title_Screen {
         }
 
         this.container.addEventListener( 'click', ( event ) => {
+            if ( event.target.closest( '[data-action="close-help"]' ) ) {
+                l.ui.help.hide();
+                return;
+            }
+
             const story = event.target.closest( '[data-story]' );
             if ( story ) {
                 this.startStory( story.dataset.story );
@@ -38,6 +43,7 @@ export default class Title_Screen {
 
     show() {
         this.closePanel();
+        this.container.classList.remove( 'help-session' );
         this.container.classList.add( 'active' );
 
         if ( l.current_scene && l.current_scene.objects && l.current_scene.objects.logo ) {
@@ -47,7 +53,7 @@ export default class Title_Screen {
 
     hide() {
         this.closePanel();
-        this.container.classList.remove( 'active' );
+        this.container.classList.remove( 'active', 'help-session' );
 
         if ( l.current_scene && l.current_scene.objects && l.current_scene.objects.logo ) {
             l.current_scene.objects.logo.hide();
@@ -57,11 +63,6 @@ export default class Title_Screen {
     onAction( action, button ) {
         if ( action === 'play' ) {
             this.startStory( 'hangar' );
-            return;
-        }
-
-        if ( action === 'help' ) {
-            l.ui.help.show();
             return;
         }
 

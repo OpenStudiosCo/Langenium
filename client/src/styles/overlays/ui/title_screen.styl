@@ -187,6 +187,10 @@
         left: min(46vw, 34rem)
         top: 30vh
         width: min(24rem, 40vw)
+        max-height: 62vh
+        overflow-y: auto
+        scrollbar-width: thin
+        scrollbar-color: rgba(255, 255, 255, 0.45) transparent
         pointer-events: auto
         text-shadow: 0 2px 12px rgba(0, 10, 40, 0.45)
 
@@ -294,8 +298,38 @@
                 line-height: 1.45
                 opacity: 0.82
 
+        [data-panel="about"] p,
+        [data-panel="lore"] p,
+        [data-panel="help"] p
+            margin: 0 0 0.75rem
+
+        [data-panel="help"]
+            h3
+                margin: 1.15rem 0 0.4rem
+                font-family: "Arial Narrow", "Nimbus Sans Narrow", "Helvetica Condensed", sans-serif
+                font-size: clamp(1.05rem, 1.5vw, 1.2rem)
+                font-weight: 700
+                letter-spacing: 0.12em
+
+            h3:first-of-type
+                margin-top: 0.2rem
+
+        .help_close
+            display: none
+
         a
             color: inherit
+
+    &.help-session
+        .title_screen_logo,
+        nav
+            display: none
+
+        .help_close
+            display: block
+            margin: 0 0 1.1rem
+            font-size: 1.05rem
+            letter-spacing: 0.14em
 
     @media (max-width: 720px)
         padding-left: 1.25rem

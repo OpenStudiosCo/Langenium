@@ -138,19 +138,34 @@ export default class Logo {
 
         const ndcLeft = ( ( rect.left - view.left ) / view.width ) * 2 - 1;
         const ndcTop = 1 - 0.04 * 2;
+        const narrow = view.width <= 720 || view.height <= 520;
         const visibleHeight = 2 * Math.tan( THREE.MathUtils.degToRad( camera.fov ) / 2 ) * CAMERA_DISTANCE;
         const visibleWidth = visibleHeight * ( view.width / view.height );
         const worldPerPixel = visibleHeight / view.height;
-        const scale = Math.min(
+        let scale = Math.min(
             ( rect.width * worldPerPixel ) / this.width,
             ( rect.height * worldPerPixel ) / this.height
-        ) * 1.5;
+        ) * ( narrow ? 1 : 1.5 );
+
+        if ( narrow ) {
+            const maxWidth = Math.max( 1, view.width - ( rect.left - view.left ) - 16 );
+            const maxHeight = view.height * 0.2;
+            scale = Math.min(
+                scale,
+                ( maxWidth * worldPerPixel ) / this.width,
+                ( maxHeight * worldPerPixel ) / this.height
+            );
+        }
+
+        const topNdc = narrow
+            ? 1 - ( ( rect.top - view.top ) / view.height ) * 2
+            : ndcTop;
 
         this.mesh.scale.setScalar( scale );
         this.mesh.position.copy( camera.position );
         this.mesh.quaternion.copy( camera.quaternion );
         this.mesh.translateX( ndcLeft * visibleWidth / 2 + ( this.width * scale ) / 2 );
-        this.mesh.translateY( ndcTop * visibleHeight / 2 - ( this.height * scale ) / 2 );
+        this.mesh.translateY( topNdc * visibleHeight / 2 - ( this.height * scale ) / 2 );
         this.mesh.translateZ( -CAMERA_DISTANCE );
     }
 

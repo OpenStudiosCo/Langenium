@@ -22,7 +22,7 @@
         pointer-events: auto
 
     .title_screen_logo
-        width: min(42vw, 28rem)
+        width: unquote("min(42vw, 28rem)")
         height: 14vh
         margin-bottom: 6vh
         flex: 0 0 auto
@@ -184,9 +184,9 @@
 
     .title_screen_detail
         position: absolute
-        left: min(46vw, 34rem)
+        left: unquote("min(46vw, 34rem)")
         top: 30vh
-        width: min(24rem, 40vw)
+        width: unquote("min(24rem, 40vw)")
         max-height: 62vh
         overflow-y: auto
         scrollbar-width: thin
@@ -331,14 +331,102 @@
             font-size: 1.05rem
             letter-spacing: 0.14em
 
-    @media (max-width: 720px)
-        padding-left: 1.25rem
+    @media (max-width: 720px) and (min-height: 521px)
+        padding: 4.5vh 1.25rem 1.5rem
+        overflow-x: hidden
+        overflow-y: auto
+
+        .title_screen_logo
+            width: unquote("min(78vw, 16rem)")
+            height: 9vh
+            margin-bottom: 2vh
+
+        nav
+            flex: 1 1 auto
+            display: flex
+            flex-direction: column
+            justify-content: space-between
+            width: 100%
+
+        .primary
+            position: absolute
+            top: 50%
+            left: 1.25rem
+            transform: translateY(-50%)
+            font-size: clamp(2.75rem, 15vw, 4.6rem)
+
+            li + li
+                margin-top: 0.28em
+
+        .secondary
+            margin-top: auto
+            padding-bottom: 0.25rem
 
         .title_screen_detail
             position: static
+            top: auto
+            left: auto
             width: auto
-            max-width: 90vw
+            max-width: 100%
             margin-top: 1.5rem
+
+        &.panel-open
+            nav
+                flex: 0 0 auto
+                justify-content: flex-start
+
+            .primary
+                position: static
+                top: auto
+                left: auto
+                transform: none
+
+            .secondary
+                margin-top: 1.25rem
+
+            .title_screen_detail
+                position: absolute
+                left: 1.25rem
+                right: 1.25rem
+                bottom: 1.25rem
+                width: auto
+                max-height: 42vh
+                margin-top: 0
+
+    @media (max-height: 520px)
+        padding: 0.7rem 1.5rem 0.65rem
+        overflow-x: hidden
+        overflow-y: auto
+
+        .title_screen_logo
+            width: unquote("min(42vw, 22rem)")
+            height: 18vh
+            margin-bottom: 0.65rem
+
+        nav
+            flex: 0 0 auto
+            display: block
+
+        .primary
+            font-size: clamp(2.15rem, 10vh, 3.8rem)
+
+            li + li
+                margin-top: 0.42em
+
+        .secondary
+            margin-top: 1.15rem
+            font-size: clamp(1.05rem, 4.6vh, 1.4rem)
+
+            li + li
+                margin-top: 0.55em
+
+        .title_screen_detail
+            left: auto
+            right: 3vw
+            top: 0.7rem
+            width: unquote("min(20rem, 42vw)")
+            max-height: unquote("calc(100vh - 1.4rem)")
+            max-width: none
 
 @keyframes title_bloom
     0%

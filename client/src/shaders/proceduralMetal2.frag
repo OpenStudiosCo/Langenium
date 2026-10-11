@@ -27,7 +27,8 @@ void main() {
     float height = min(plates, cellLip);
 
     float pixel = max(length(dFdx(vViewPosition)), length(dFdy(vViewPosition)));
-    vec3 perturbedNormal = bumpMapping(vViewPosition, normalize(vNormal), 1.0, pixel * panelBevel, 0.0, dFdx(height), dFdy(height), false);
+
+    vec3 perturbedNormal = bumpMapping(vViewPosition, normalize(vNormal), 0.5, pixel * panelBevel, 0.0, dFdx(height), dFdy(height), false);
 
     vec3 lightWeighting = calculateMergedLighting(baseColor, perturbedNormal, baseColor.r, 0.35);
 

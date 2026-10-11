@@ -248,7 +248,7 @@ export default class Player {
             return;
         }
 
-        if ( ! l.current_scene.objects.demoShip || ! l.current_scene.objects.demoShip.ready ) {
+        if ( ! l.current_scene.objects.demoTour || ! l.current_scene.objects.demoTour.ready ) {
             return;
         }
 

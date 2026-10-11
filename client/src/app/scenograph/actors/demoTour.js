@@ -1,6 +1,6 @@
 /**
- * @name            DemoShip
- * @description     Menu-screen Valiant: looping patrol plus a fading camera tour.
+ * @name            DemoTour
+ * @description     Title-screen Valiant, its camera tour, and the fades between shots and into a game.
  * @memberof        l.scenograph.actors
  * @global
  */
@@ -21,7 +21,7 @@ const LANDMARKS = {
     extractor: { radius: 2400, height: 16000, spin: 0.1 }
 };
 
-export default class DemoShip {
+export default class DemoTour {
 
     constructor() {
         this.vehicle = null;
@@ -34,6 +34,8 @@ export default class DemoShip {
         this.angle = 0;
         this.fade = 0;
         this.fading = 0;
+        this.launchFade = false;
+        this.onBlack = null;
         this.hold = false;
         this.departOnBlack = false;
         this.pendingShot = null;
@@ -56,7 +58,7 @@ export default class DemoShip {
     async load() {
         this.vehicle = new Valiant( true );
         await this.vehicle.load();
-        this.vehicle.mesh.name = 'Demo Ship';
+        this.vehicle.mesh.name = 'Demo Tour';
         this.vehicle.ready = this._ready;
     }
 
@@ -184,6 +186,37 @@ export default class DemoShip {
         this._fadeEl.style.opacity = String( opacity );
     }
 
+    advanceFade( delta ) {
+        this.fade = Math.min( 1, this.fade - this.fading * delta / FADE_SECONDS );
+        const u = this.fade * this.fade * ( 3 - 2 * this.fade );
+        this.setFade( u );
+    }
+
+    // Same cut as the tour, with the veil lifted over the menu.
+    throughBlack( then ) {
+        this.onBlack = then;
+        this.launchFade = true;
+        this.fade = 0;
+        this.fading = -1;
+        this.setFade( 0 );
+        this._fadeEl.style.position = 'fixed';
+        this._fadeEl.style.zIndex = '6';
+        document.body.appendChild( this._fadeEl );
+    }
+
+    releaseFade() {
+        this.launchFade = false;
+        this.fading = 0;
+        this.fade = 0;
+        this.setFade( 0 );
+        const wrap = document.getElementById( 'webgl-wrapper' );
+        if ( wrap && this._fadeEl ) {
+            this._fadeEl.style.position = 'absolute';
+            this._fadeEl.style.zIndex = '3';
+            wrap.appendChild( this._fadeEl );
+        }
+    }
+
     cutToNext() {
         if ( this.views.length < 2 ) this.collectViews();
         const count = Math.max( 1, this.views.length );
@@ -211,9 +244,7 @@ export default class DemoShip {
             if ( this.shotT >= SHOT_SECONDS && this.views.length > 1 ) this.fading = -1;
         }
         else {
-            this.fade = Math.min( 1, this.fade - this.fading * delta / FADE_SECONDS );
-            const u = this.fade * this.fade * ( 3 - 2 * this.fade );
-            this.setFade( u );
+            this.advanceFade( delta );
             if ( this.fading < 0 && this.fade >= 1 ) {
                 if ( this.departOnBlack ) {
                     this.departOnBlack = false;
@@ -234,6 +265,20 @@ export default class DemoShip {
         if ( ! this.vehicle ) return;
 
         this.vehicle.updateAnimation( delta );
+
+        if ( this.launchFade ) {
+            this.advanceFade( delta );
+            if ( this.fading < 0 && this.fade >= 1 ) {
+                const then = this.onBlack;
+                this.onBlack = null;
+                this.fading = 1;
+                if ( then ) then();
+            }
+            else if ( this.fading > 0 && this.fade <= 0 ) {
+                this.releaseFade();
+            }
+            return;
+        }
 
         if ( this.rest > 0 ) {
             if ( l.mode === 'home' ) {

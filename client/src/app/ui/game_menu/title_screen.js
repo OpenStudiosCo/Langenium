@@ -28,7 +28,7 @@ export default class Title_Screen {
 
             const story = event.target.closest( '[data-story]' );
             if ( story ) {
-                this.startStory( story.dataset.story );
+                this.startStory( story.dataset.story, story );
                 return;
             }
 
@@ -62,7 +62,7 @@ export default class Title_Screen {
 
     onAction( action, button ) {
         if ( action === 'play' ) {
-            this.startStory( 'hangar' );
+            this.startStory( 'hangar', button );
             return;
         }
 
@@ -77,19 +77,34 @@ export default class Title_Screen {
     /**
      * @param {string} story overworld | hangar | multiplayer
      */
-    startStory( story ) {
-        if ( story === 'multiplayer' ) {
+    startStory( story, button ) {
+        if ( story === 'multiplayer' || this.launching ) {
             return;
         }
 
-        l.ui.menus.main_menu.enterSession();
-
-        if ( story === 'hangar' ) {
-            new l.routes.hangar();
-            return;
+        this.launching = true;
+        if ( button ) {
+            button.classList.add( 'selected' );
         }
 
-        new l.routes.singlePlayer();
+        window.setTimeout( () => {
+            const launch = () => {
+                this.launching = false;
+
+                if ( story === 'hangar' ) {
+                    new l.routes.hangar();
+                }
+                else {
+                    new l.routes.singlePlayer();
+                }
+
+                l.ui.menus.main_menu.enterSession();
+            };
+
+            const tour = l.current_scene && l.current_scene.objects && l.current_scene.objects.demoTour;
+            if ( tour ) tour.throughBlack( launch );
+            else launch();
+        }, 500 );
     }
 
     openPanel( name, button ) {

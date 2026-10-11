@@ -132,6 +132,10 @@ export default class Logo {
 
     hide() {
         this.mesh.visible = false;
+        if ( this.canvas ) {
+            this.canvas.style.transition = '';
+            this.canvas.style.opacity = '';
+        }
         if ( this.renderer ) {
             this.renderer.clear();
         }

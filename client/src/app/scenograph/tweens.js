@@ -229,7 +229,7 @@ function flickerEffect() {
  */
 function enterTheOffice() {
     let coords = { x: 15 + l.current_scene.room_depth / 2 }; // Start at (0, 0)
-    let targetZ = l.current_scene.objects.demoShip.default_camera_distance + l.current_scene.room_depth / 2;
+    let targetZ = l.current_scene.objects.demoTour.default_camera_distance + l.current_scene.room_depth / 2;
     return new TWEEN.Tween( coords, false ) // Create a new tween that modifies 'coords'.
         .to( { x: targetZ }, l.config.settings.skipintro ? 0 : 1000 ) // Move to (300, 200) in 1 second.
         .easing( TWEEN.Easing.Quadratic.InOut ) // Use an easing function to make the animation smooth.
@@ -310,7 +310,7 @@ function shipEnterY() {
         .to( target, l.config.settings.skipintro ? 0 : 2000 ) // Move to (300, 200) in 1 second.
         .easing( TWEEN.Easing.Circular.Out ) // Use an easing function to make the animation smooth.
         .onUpdate( () => {
-            l.current_scene.objects.demoShip.mesh.position.y = coords.y;
+            l.current_scene.objects.demoTour.mesh.position.y = coords.y;
         } )
         .onComplete( () => {
             //console.log('ready');
@@ -328,9 +328,9 @@ function shipEnterZ() {
 
             // Called after tween.js updates 'coords'.
             // Move 'box' to the position described by 'coords' with a CSS translation.
-            l.current_scene.objects.demoShip.mesh.position.z = coords.x;
+            l.current_scene.objects.demoTour.mesh.position.z = coords.x;
             if ( l.current_scene.tweens.dollyUp && l.current_scene.tweens.dollyUp._introLanded ) {
-                l.current_scene.objects.demoShip.aimChaseCamera();
+                l.current_scene.objects.demoTour.aimChaseCamera();
             }
 
         } )
@@ -351,12 +351,12 @@ function shipEnterZ() {
             }
 
             // Set the ship as ready.
-            l.current_scene.objects.demoShip.ready = true;
-            l.current_scene.objects.demoShip.camera_distance = l.current_scene.objects.demoShip.default_camera_distance + ( l.current_scene.room_depth / 2 );
-            l.current_scene.objects.demoShip.mesh.userData.object.position.x = l.current_scene.objects.demoShip.mesh.position.x;
-            l.current_scene.objects.demoShip.mesh.userData.object.position.y = l.current_scene.objects.demoShip.mesh.position.y;
-            l.current_scene.objects.demoShip.mesh.userData.object.position.z = l.current_scene.objects.demoShip.mesh.position.z;
-            l.current_scene.objects.demoShip.applyChaseCamera();
+            l.current_scene.objects.demoTour.ready = true;
+            l.current_scene.objects.demoTour.camera_distance = l.current_scene.objects.demoTour.default_camera_distance + ( l.current_scene.room_depth / 2 );
+            l.current_scene.objects.demoTour.mesh.userData.object.position.x = l.current_scene.objects.demoTour.mesh.position.x;
+            l.current_scene.objects.demoTour.mesh.userData.object.position.y = l.current_scene.objects.demoTour.mesh.position.y;
+            l.current_scene.objects.demoTour.mesh.userData.object.position.z = l.current_scene.objects.demoTour.mesh.position.z;
+            l.current_scene.objects.demoTour.applyChaseCamera();
         } );
 }
 /**
@@ -379,16 +379,16 @@ function dollyUp() {
     return new TWEEN.Tween( l.scenograph.cameras.player.position )
         .to( { y: l.scenograph.cameras.playerY }, l.config.settings.skipintro ? 0 : 500 ) // Set the duration of the animation
         .onUpdate( () => {
-            if ( l.current_scene.objects.demoShip ) {
-                l.current_scene.objects.demoShip.aimChaseCamera();
+            if ( l.current_scene.objects.demoTour ) {
+                l.current_scene.objects.demoTour.aimChaseCamera();
             }
             l.scenograph.cameras.player.updateProjectionMatrix();
         } )
         .onComplete( () => {
-            if ( l.current_scene.objects.demoShip ) {
+            if ( l.current_scene.objects.demoTour ) {
                 l.current_scene.tweens.dollyUp._introLanded = true;
-                l.current_scene.objects.demoShip.aimChaseCamera();
-                l.current_scene.objects.demoShip.beginAfterIntro();
+                l.current_scene.objects.demoTour.aimChaseCamera();
+                l.current_scene.objects.demoTour.beginAfterIntro();
             }
             l.ui.show_menus();
             // Activate debugging if requested.

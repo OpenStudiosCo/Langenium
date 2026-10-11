@@ -110,7 +110,14 @@ export default class hangarRoute {
       l.scenograph.actors.player.vehicle.updateMesh();
       l.scenograph.actors.player.setVehicleVisible( true, false );
 
-      l.scenograph.cameras.active.position.copy(l.scenograph.actors.player.actorInstance.object.position);
+      const actor = l.scenograph.actors.player.actorInstance.object;
+      const camera = l.scenograph.cameras.player;
+      camera.position.copy( actor.position );
+      camera.rotation.set( 0, actor.rotation.y, 0 );
+      if ( l.scenograph.cameras.active !== camera ) {
+          l.scenograph.cameras.active.position.copy( camera.position );
+          l.scenograph.cameras.active.rotation.copy( camera.rotation );
+      }
 
       if ( l.scenograph.controls.orbit ) {
           l.scenograph.cameras.orbit.updateProjectionMatrix();
@@ -493,8 +500,8 @@ export default class hangarRoute {
      * Same overworld handoff as P1: vehicle mode, HUD overlays, flight controls.
      */
     enterOverworld() {
-        if ( l.current_scene.objects.demoShip ) {
-            l.current_scene.objects.demoShip.ready = true;
+        if ( l.current_scene.objects.demoTour ) {
+            l.current_scene.objects.demoTour.ready = true;
         }
         l.mode = 'single_player';
         l.scenograph.actors.player.setVehicleVisible( true );

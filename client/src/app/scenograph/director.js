@@ -334,14 +334,14 @@ export default class Director {
 
       l.scenograph.effects.init();
 
-      const demoShip = l.scenograph.actors.get( 'Demo Ship' );
-      await demoShip.load();
-      l.current_scene.objects.demoShip = demoShip;
+      const demoTour = l.scenograph.actors.get( 'Demo Tour' );
+      await demoTour.load();
+      l.current_scene.objects.demoTour = demoTour;
       l.current_scene.scene.add(
-        demoShip.mesh
+        demoTour.mesh
       );
       l.current_scene.animation_queue.push(
-        delta => demoShip.animate( delta )
+        delta => demoTour.animate( delta )
       );
 
 

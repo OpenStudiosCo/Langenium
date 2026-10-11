@@ -1,10 +1,9 @@
 /**
- * Title-screen logo. io_three Geometry JSON: material 0 is water, material 1
- * is the platform casing metal. Held near the top of the screen, left
- * aligned with the title-screen logo mount.
+ * Title screen logo.
  *
- * Drawn on its own transparent canvas, above the scene-change fade and
- * under the menu, so a background cut does not take the letters with it.
+ * Own canvas, above the scene fade and under the menu. Geometry material 0
+ * is water, material 1 is casing metal. Both shaders sample the orbiting
+ * point light through uniforms.
  */
 
 import * as THREE from 'three';
@@ -14,6 +13,36 @@ import { proceduralMetalMaterial2 } from '@/scenograph/materials.js';
 
 const LOGO_URL = './assets/models/langenium%20logo.json';
 const CAMERA_DISTANCE = 6;
+const ORBIT_STEP = 0.012;
+
+const lightUniforms = `
+uniform vec3 logoLightPos;
+uniform float logoLightIntensity;
+uniform float logoLightRange;
+`;
+
+const metalLightUniform = 'uniform vec3 logoFixedLightDir;\n';
+
+const metalPointLight = `
+    vec3 toLight = logoLightPos - (cameraPosition - vViewPosition);
+    float lightDist = max(length(toLight), 1e-4);
+    float ndotl = max(dot(normalize(perturbedNormal), toLight / lightDist), 0.0);
+    float falloff = 1.0 / (1.0 + pow(lightDist / max(logoLightRange, 1e-4), 2.0));
+    gl_FragColor.rgb += ndotl * falloff * logoLightIntensity;
+`;
+
+const waterPointLight = `
+    vec3 toLight = (viewMatrix * vec4(logoLightPos, 1.0)).xyz + vViewPosition;
+    float lightDist = max(length(toLight), 1e-4);
+    float ndotl = max(dot(normalize(normal), toLight / lightDist), 0.0);
+    float falloff = 1.0 / (1.0 + pow(lightDist / max(logoLightRange, 1e-4), 2.0));
+    gl_FragColor.rgb += vec3(0.12, 0.42, 0.85) * ndotl * falloff * logoLightIntensity;
+    gl_FragColor.rgb = clamp(gl_FragColor.rgb, 0.0, 1.0);
+`;
+
+function patch( source, from, to ) {
+    return source.replace( from, to );
+}
 
 export default class Logo {
 
@@ -24,24 +53,33 @@ export default class Logo {
         this.width = 1;
         this.height = 1;
         this._size = new THREE.Vector2();
+        this._logoCenter = new THREE.Vector3();
+        this._localLightDir = new THREE.Vector3( 0.1, 1.0, 0.1 ).normalize();
+        this.logoLightPos = new THREE.Vector3();
+        this.logoFixedLightDir = this._localLightDir.clone();
+        this.logoLightIntensity = { value: 1 };
+        this.logoLightRange = { value: 0.1 };
+        this.lightAngle = 0;
     }
 
     async load() {
         const json = await ( await fetch( LOGO_URL ) ).json();
         const geometries = splitLogo( json );
 
-        this.water = new THREE.Mesh( geometries[ 0 ], logoWater() );
+        this.water = new THREE.Mesh( geometries[ 0 ], logoWater( this ) );
         this.water.name = 'Langenium Logo Water';
 
-        const metal = new THREE.Mesh( geometries[ 1 ], casingMetal() );
+        const metal = new THREE.Mesh( geometries[ 1 ], casingMetal( this ) );
         metal.name = 'Langenium Logo Metal';
-        metal.castShadow = true;
-
         this.mesh.add( metal, this.water );
 
         const size = new THREE.Box3().setFromObject( this.mesh ).getSize( new THREE.Vector3() );
         this.width = size.x || 1;
         this.height = size.y || 1;
+
+        this.light = new THREE.PointLight( 0xffffff, this.logoLightIntensity.value );
+        this.light.name = 'Langenium Logo Light';
+        this.mesh.add( this.light );
 
         this.mountLayer();
 
@@ -51,7 +89,7 @@ export default class Logo {
         }
     }
 
-    // Scene canvas, then the fade, then this. The menu sits above all three.
+    // z-index 4: above the scene fade, under the menu.
     mountLayer() {
         this.layerScene = new THREE.Scene();
         this.layerScene.add( this.mesh );
@@ -99,6 +137,17 @@ export default class Logo {
         }
     }
 
+    /**
+     * Animate hook.
+     *
+     * This method is called within the main animation loop and
+     * therefore must only reference global objects or properties.
+     *
+     * @method animate
+     * @memberof Logo
+     * @global
+     * @note All references within this method should be globally accessible.
+    **/
     animate() {
         const logo = l.current_scene.objects.logo;
         if ( ! logo || ! logo.water || ! logo.mesh.visible ) {
@@ -119,7 +168,28 @@ export default class Logo {
         }
 
         this.syncSize();
+        this.orbitLight();
         this.renderer.render( this.layerScene, camera );
+    }
+
+    // Left to right across the front. Half speed in front, double speed behind.
+    orbitLight() {
+        const facing = Math.sin( this.lightAngle );
+        this.lightAngle -= ORBIT_STEP * ( 1.25 - 0.75 * facing );
+
+        const radius = Math.max( this.width, this.height ) * 0.6;
+        this.light.position.set(
+            Math.cos( this.lightAngle ) * radius,
+            radius * 0.15,
+            Math.sin( this.lightAngle ) * radius
+        );
+
+        this.light.updateWorldMatrix( true, false );
+        this.light.getWorldPosition( this.logoLightPos );
+        this.logoFixedLightDir.copy( this._localLightDir ).transformDirection( this.mesh.matrixWorld );
+        this.mesh.getWorldPosition( this._logoCenter );
+        this.logoLightIntensity.value = this.light.intensity;
+        this.logoLightRange.value = Math.max( this._logoCenter.distanceTo( this.logoLightPos ), 0.001 );
     }
 
     place() {
@@ -137,7 +207,6 @@ export default class Logo {
         }
 
         const ndcLeft = ( ( rect.left - view.left ) / view.width ) * 2 - 1;
-        const ndcTop = 1 - 0.04 * 2;
         const narrow = view.width <= 720 || view.height <= 520;
         const visibleHeight = 2 * Math.tan( THREE.MathUtils.degToRad( camera.fov ) / 2 ) * CAMERA_DISTANCE;
         const visibleWidth = visibleHeight * ( view.width / view.height );
@@ -159,7 +228,7 @@ export default class Logo {
 
         const topNdc = narrow
             ? 1 - ( ( rect.top - view.top ) / view.height ) * 2
-            : ndcTop;
+            : 1 - 0.04 * 2;
 
         this.mesh.scale.setScalar( scale );
         this.mesh.position.copy( camera.position );
@@ -171,47 +240,91 @@ export default class Logo {
 
 }
 
-function casingMetal() {
+function shaderLightUniforms( logo, fixedDir ) {
+    const uniforms = {
+        logoLightPos: { value: logo.logoLightPos },
+        logoLightIntensity: logo.logoLightIntensity,
+        logoLightRange: logo.logoLightRange,
+    };
+
+    if ( fixedDir ) {
+        uniforms.logoFixedLightDir = { value: logo.logoFixedLightDir };
+    }
+
+    return uniforms;
+}
+
+// Inlined so the metal light direction can follow the mesh instead of viewMatrix.
+function casingMetal( logo ) {
     const material = proceduralMetalMaterial2( {
         uniforms: {
             scale: { value: 3.55 },
             lacunarity: { value: 2.0 },
             randomness: { value: 1.0 },
+            ...shaderLightUniforms( logo, true ),
         }
     } );
 
+    const normal = patch( document.getElementById( 'normalGLSL' ).textContent,
+        'vec3 lightDir = normalize(vec3(0.1, 1.0, 0.1) - vViewPosition);',
+        'vec3 lightDir = normalize(logoFixedLightDir);' )
+        .replace(
+            'vec3 viewDir = normalize(vViewPosition - vTexCoord3D);',
+            'vec3 viewDir = normalize(vViewPosition);'
+        )
+        .replace(
+            'vec4 lDirection = viewMatrix * vec4(normalize(vec3(0.1, 1.0, 0.1)), 0.0);',
+            'vec4 lDirection = vec4(lightDir, 0.0);'
+        );
+
     material.side = THREE.DoubleSide;
-    material.fragmentShader = material.fragmentShader.replace(
+    material.fragmentShader = lightUniforms + metalLightUniform + patch(
+        material.fragmentShader,
+        '#include <normal>',
+        normal
+    ).replace(
         'gl_FragColor += vec4(baseColor * lightWeighting, 1.0);',
-        'gl_FragColor += vec4(baseColor * lightWeighting, 1.0);\n    gl_FragColor.rgb = gl_FragColor.rgb * 1.75 + 0.06;'
+        'gl_FragColor += vec4(baseColor * lightWeighting, 1.0);\n    gl_FragColor.rgb = gl_FragColor.rgb * 1.75 + 0.06;' + metalPointLight
     );
 
     return material;
 }
 
-function logoWater() {
+function logoWater( logo ) {
     const mirror = new THREE.DataTexture( new Uint8Array( [ 22, 72, 120, 255 ] ), 1, 1 );
     mirror.needsUpdate = true;
+
+    let fragmentShader = document.getElementById( 'logoWaterFragShader' ).textContent;
+    fragmentShader = patch( fragmentShader,
+        'vec4 lDirection = viewMatrix * vec4( normalize( vec3( 1.0, 0.0, 0.5 ) ), 0.0 );',
+        'vec4 lDirection = vec4( normalize( vec3( 0.2, 1.0, 0.4 ) ), 0.0 );' );
+    fragmentShader = patch( fragmentShader,
+        'vLightWeighting += vec3( 1.0, 0.5, 0.0 ) * dirSpecularWeight * n * 2.0;',
+        'vLightWeighting += vec3( 0.15, 0.55, 1.0 ) * dirSpecularWeight * n * 2.0;' );
+    fragmentShader = patch( fragmentShader,
+        'gl_FragColor.rgb = clamp( gl_FragColor.rgb, 0.0, 1.0 );',
+        waterPointLight );
 
     return new THREE.ShaderMaterial( {
         uniforms: {
             textureMatrix: { value: new THREE.Matrix4() },
             time: { value: 0 },
-            scale: { value: 1 },
+            scale: { value: 0.125 },
             alpha: { value: 0.85 },
             bias: { value: 0 },
             mirrorColor: { value: new THREE.Color( 0x186090 ) },
             mirrorSampler: { value: mirror },
+            ...shaderLightUniforms( logo, false ),
         },
         vertexShader: document.getElementById( 'logoWaterVertShader' ).textContent,
-        fragmentShader: document.getElementById( 'logoWaterFragShader' ).textContent,
+        fragmentShader: lightUniforms + fragmentShader,
         transparent: true,
         side: THREE.DoubleSide,
     } );
 }
 
-// Type 34 faces only: triangle, material index, three vertex normals.
-// The mesh lies flat; stand it up and flip the letter axis upright.
+// Face type 34: triangle, material index, three vertex normals.
+// Source mesh lies flat; this stands it up.
 function splitLogo( json ) {
     const { faces, vertices } = json;
     const buckets = [ [], [] ];

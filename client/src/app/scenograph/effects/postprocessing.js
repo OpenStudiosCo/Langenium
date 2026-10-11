@@ -87,7 +87,15 @@ export default function setupPostProcessing() {
             resolutionScale: 1
         } );
 
-    bloom.inverted = true;
+    bloom.inverted = false;
+    // Only objects marked for bloom are selected. The door neon sign is the one.
+    if ( l.current_scene.scene ) {
+        l.current_scene.scene.traverse( ( object ) => {
+            if ( object.userData && object.userData.bloom ) {
+                bloom.selection.add( object );
+            }
+        } );
+    }
 
     const textureEffect = new TextureEffect( {
         blendFunction: BlendFunction.SKIP,
@@ -119,4 +127,26 @@ export default function setupPostProcessing() {
     composer.addPass( new EffectPass( l.scenograph.cameras.active, ssao, smaa, textureEffect, bloom, toneMappingEffect ) );
     return composer;
 
+}
+
+// Add an object to the bloom selection. Layer 11 is left as the camera draws it.
+export function includeInBloom( object ) {
+    object.userData.bloom = true;
+
+    const composer = l.current_scene.effects && l.current_scene.effects.postprocessing;
+    if ( !composer || !composer.passes ) {
+        return;
+    }
+
+    composer.passes.forEach( ( pass ) => {
+        if ( !pass.effects ) {
+            return;
+        }
+
+        pass.effects.forEach( ( effect ) => {
+            if ( effect.name == 'BloomEffect' && effect.selection ) {
+                effect.selection.add( object );
+            }
+        } );
+    } );
 }

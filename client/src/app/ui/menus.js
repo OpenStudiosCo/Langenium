@@ -18,8 +18,7 @@ export default class Menus {
 
     constructor() {
 
-        // Main menu
-        // Position: Top right.
+        // In-session tools. Position: top right. Starts collapsed.
         this.main_menu = new Main_Menu();
 
     }

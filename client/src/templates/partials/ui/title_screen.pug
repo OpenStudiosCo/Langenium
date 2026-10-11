@@ -1,0 +1,92 @@
+//- Home-mode front menu.
+//- The logo region is empty on purpose: the extruded SVG mesh is added in the scene later and occupies this space.
+#title_screen
+    .title_screen_logo(data-mount="langenium-logo" aria-hidden="true")
+    nav(aria-label="Main menu")
+        ul.primary
+            li
+                button(type="button" data-action="play" data-label="Play")
+                    span(aria-hidden="true") Play
+                    | Play
+            li
+                button(type="button" data-action="stories" data-label="Stories")
+                    span(aria-hidden="true") Stories
+                    | Stories
+            li
+                button(type="button" data-action="lore" data-label="Lore")
+                    span(aria-hidden="true") Lore
+                    | Lore
+        ul.secondary
+            li
+                button(type="button" data-action="settings")
+                    span(aria-hidden="true") Settings
+                    | Settings
+            li
+                button(type="button" data-action="help")
+                    span(aria-hidden="true") Help
+                    | Help
+            li
+                button(type="button" data-action="about")
+                    span(aria-hidden="true") About
+                    | About
+    .title_screen_detail
+        section(data-panel="stories" hidden)
+            h2
+                | The Langenium
+                br
+                | Prologue Trilogy
+            p.story_lede In the near future, human civilisation is in decline.
+            ol.story_parts
+                li
+                    span.story_index(aria-hidden="true") 01
+                    span.story_name The End of All Limits
+                    span.story_time 25 min
+                li
+                    span.story_index(aria-hidden="true") 02
+                    span.story_name Hell on Earth
+                    span.story_time 90 min
+                li
+                    span.story_index(aria-hidden="true") 03
+                    span.story_name Extinction Level Event
+                    span.story_time 95 min
+            p.story_note About three and a half hours. Read them in order, or on their own.
+        section(data-panel="lore" hidden)
+            h2 Lore
+            p Coming soon
+        //- Visual only. These boxes are not bound to l.config.settings.
+        section(data-panel="settings" hidden)
+            h2 Settings
+            label
+                input(type="checkbox" tabindex="-1")
+                span Debugging mode
+            label
+                input(type="checkbox" tabindex="-1")
+                span Performance mode
+            label
+                input(type="checkbox" tabindex="-1")
+                span Skip title sequence
+        section(data-panel="about" hidden)
+            h2 About
+            p Langenium is an open source game project with the long term goal of producing an MMO in the browser.
+            p Starting in 2012, the current build of Langenium is a culmination of over a decade of work.
+            p Please enjoy this current version of the game!
+            p
+                | Langenium 
+                span(data-version)
+            p
+                | p.s. If you are a developer or interested in games development, visit Langenium on 
+                a(href="https://github.com/OpenStudiosCo/Langenium" target="_blank" rel="noopener") Github
+        section(data-panel="help" hidden)
+            button.help_close(type="button" data-action="close-help") Close
+            h2 Help
+            h3 Gameplay
+            p Bots and players use the same scanner and weapons subsystems for combat.
+            h3 PC Controls
+            p [W][A][S][D] to turn your aircraft and control acceleration.
+            p [Shift] and [Spacebar] to control your aircrafts elevation.
+            h3 On-screen controls
+            p These controls are always visible and therefore usable using your mouse on PC and touch on mobile and other touchscreen devices.
+            p The D-PAD in the bottom left can be used like a thumbstick to turn your aircraft and control acceleration.
+            p The slider on the right controls elevation and the camera button can be used to peak around the scene.
+            p The weapons console can be used to toggle auto attack and manually fire weapons if auto attack is off.
+            p When weapons fire, the attack button shows the time remaining till the next attack is ready.

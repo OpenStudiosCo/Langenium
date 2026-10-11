@@ -13,6 +13,7 @@ import { SVGLoader } from 'three/addons/loaders/SVGLoader.js';
  * Internal libs and helpers.
  */
 import l from '@/helpers/l.js';
+import { includeInBloom } from '@/scenograph/effects/postprocessing.js';
 
 // Create door geometry
 export var doorWidth = 8.2;
@@ -121,6 +122,7 @@ export async function createDoor() {
                     const mesh = new THREE.Mesh( geometry, material );
                     mesh.renderOrder = renderOrder++;
                     mesh.layers.set( 11 );
+                    includeInBloom( mesh );
 
                     group.add( mesh );
                 }
@@ -144,6 +146,7 @@ export async function createDoor() {
                         const mesh = new THREE.Mesh( geometry, material );
                         mesh.renderOrder = renderOrder++;
                         mesh.layers.set( 11 );
+                        includeInBloom( mesh );
 
                         group.add( mesh );
 

@@ -16,6 +16,7 @@ import l from '@/helpers/l.js';
 import Flight_Instruments from '@/ui/flight_instruments.js';
 import Help from '@/ui/help.js';
 import Targeting from '@/ui/targeting.js';
+import Game_Menu from '@/ui/game_menu.js';
 import Menus from '@/ui/menus.js';
 import ScoreTable from '@/ui/score_table.js';
 
@@ -26,6 +27,9 @@ export default class UI {
 
     // Control the menu pane, needed by touch controls which activate later.
     menus;
+
+    // Player-facing menu. Parallel to the Tweakpane menus.
+    game_menu;
 
     // Controls the score table.
     score_table;    
@@ -104,6 +108,7 @@ export default class UI {
      */
     show_menus() {
         l.ui.menus = new Menus();
+        l.ui.game_menu = new Game_Menu();
 
         l.ui.updater = setInterval( this.update, 100 );
     }

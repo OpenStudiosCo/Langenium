@@ -37,7 +37,7 @@ actors:
     class: player
     hangar:
       structure: Lambda City
-      hangarName: Hangar 1
+      hangarName: Hangar 2
     position:
       x: -65000
       y: -35000
@@ -106,8 +106,8 @@ objects:
       - name: Hangar 2
         position:
           x: 0
-          y: 505
-          z: 0
+          y: 6100
+          z: 8620
         rotation:
           x: 0
           y: 3.14159

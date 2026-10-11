@@ -16,6 +16,8 @@ varying vec3 vUv;
 #include <normal>       // Include the normal functions
 #include <voronoi> // Include the voronoi functions
 
+const float panelBevel = 4.5;
+
 void main() {
 
     vec4 voronoiValue = voronoi(vTexCoord3D.xzy); // Get the distance from Voronoi function
@@ -44,8 +46,10 @@ void main() {
 
     gl_FragColor = vec4( baseColor, 1.0) ;
 
-    // Using the bump mapping function
-    vec3 perturbedNormal = bumpMapping(vViewPosition, normalize(vNormal), 1.5, 0.75, 0.0, baseColor.r, baseColor.r, false);
+    // Chamfer only the voronoi cell borders. Same bevel as procedural metal 2.
+    float cellLip = smoothstep(0.0, 0.0075, voronoiEdge);
+    float pixel = max(length(dFdx(vViewPosition)), length(dFdy(vViewPosition)));
+    vec3 perturbedNormal = bumpMapping(vViewPosition, normalize(vNormal), 0.5, pixel * panelBevel, 0.0, dFdx(cellLip), dFdy(cellLip), false);
 
     vec3 lightWeighting = calculateMergedLighting(baseColor, perturbedNormal, gray, 0.5);
     gl_FragColor *= vec4( lightWeighting, 1.0 ); //

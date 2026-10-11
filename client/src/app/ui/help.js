@@ -4,29 +4,33 @@
 
 export default class Help {
 
-    containerSelector;
-
-    constructor() {
-
-        this.containerSelector = '#help';
-        this.container = document.querySelector( this.containerSelector );
-
-    }
-
     /**
-     * Activate Help
-     * 
-     * Adds itself to the ui classes update queue.
+     * Open the help panel. During a session the title menu is hidden,
+     * so this shows the same panel on its own until it is closed.
      */
     show() {
-        l.ui.help.container.classList.add( 'active' );
+        const screen = l.ui.game_menu.title_screen;
+        const button = screen.container.querySelector( 'nav [data-action="help"]' );
+
+        if ( !screen.container.classList.contains( 'active' ) ) {
+            screen.container.classList.add( 'active', 'help-session' );
+        }
+
+        screen.openPanel( 'help', button );
     }
 
     /**
      * Deactivate Help
      */
     hide() {
-        l.ui.help.container.classList.remove( 'active' );
+        const screen = l.ui.game_menu.title_screen;
+        const session = screen.container.classList.contains( 'help-session' );
+
+        screen.closePanel();
+
+        if ( session ) {
+            screen.container.classList.remove( 'active', 'help-session' );
+        }
     }
 
 }

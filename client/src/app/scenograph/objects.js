@@ -20,6 +20,7 @@ import l from '@/helpers/l.js';
  */
 
 // Environment
+import Logo from "@/scenograph/objects/logo";
 import Ocean from "@/scenograph/objects/environment/ocean";
 import Sky from "@/scenograph/objects/environment/sky";
 import Sky2 from "@/scenograph/objects/environment/sky2";
@@ -57,6 +58,7 @@ export default class Objects {
             ocean: Ocean,
             sky: Sky,
         };
+        this.logo = Logo;
         this.preloader = {
             createDoor: createDoor,
             createOfficeRoom: createOfficeRoom,

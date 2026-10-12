@@ -529,6 +529,13 @@ export default class hangarRoute {
         this.promptDismissed = false;
         this.departing = false;
 
+        if ( l.current_scene.tweens.shipDepart ) {
+            l.current_scene.tweens.shipDepart.stop();
+        }
+        if ( l.current_scene.tweens.cameraHandoff ) {
+            l.current_scene.tweens.cameraHandoff.stop();
+        }
+
         if ( l.scenograph.overlays.hud ) {
             l.scenograph.overlays.deactivate();
         }

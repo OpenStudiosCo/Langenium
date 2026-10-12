@@ -12,6 +12,7 @@ export default class BaseAircraft {
     public score:           { kills: number; deaths: number }   = { kills: 0, deaths: 0 };
     public standing:        number                              = 0;
     public hitPoints:       number                              = 100;
+    public respawning:      boolean                             = false;
     public airSpeed:        number                              = 0;
     public verticalSpeed:   number                              = 0;
     public maxForward:      number                              = 3.7 * 5;    // Reading as 200 knots on the airspeed instrument, may not be correct.
@@ -101,9 +102,14 @@ export default class BaseAircraft {
         }
 
         // Apply damage to the aircrafts hitpoints.
+        if ( this.respawning ) {
+            return [ 0, false ];
+        }
+
         if ( this.hitPoints <= damage ) {
             targetDestroyed = true;
             this.hitPoints = 0;
+            this.respawning = true;
             // Add an explosion special effect
             // @todo: v7 Figure out a way to signal this to happen without l. global object access
             this.blowUp( this.mesh.position );
@@ -120,30 +126,35 @@ export default class BaseAircraft {
             this.score.deaths += 1;
             originMesh.userData.object.score.kills += 1;
 
+            this.airSpeed = 0;
+            this.verticalSpeed = 0;
+            this.controls.changing = false;
+            this.controls.throttleUp = false;
+            this.controls.throttleDown = false;
+            this.controls.moveUp = false;
+            this.controls.moveDown = false;
+            this.controls.moveLeft = false;
+            this.controls.moveRight = false;
+
+            const active = l.scenograph.actors.player;
+            const playerDown = active
+                && active.vehicle
+                && this.mesh === active.vehicle.mesh
+                && active.mode === 'vehicle'
+                && l.mode !== 'home'
+                && l.mode !== 'hangar';
+
             // Wait 3 seconds before 'respawn'.
             setTimeout( () => {
-                // Reset hitpoints
                 this.hitPoints = 100;
+                this.respawning = false;
 
-                // Reset object to start position,rotation and speed.
-                this.mesh.userData.actor.entity.position.x = this.startPosition.x;
-                this.mesh.userData.actor.entity.position.y = this.startPosition.y;
-                this.mesh.userData.actor.entity.position.z = this.startPosition.z;
-                this.rotation.x = 0;
-                this.rotation.y = 0;
-                this.rotation.z = 0;
-                this.airSpeed = 0;
-                this.verticalSpeed = 0;
+                if ( playerDown && l.scenograph.hangar && l.mode !== 'home' ) {
+                    l.scenograph.hangar.enterHangar();
+                    return;
+                }
 
-                // Only the ship still in play comes back as a target.
-                const demo = l.current_scene.objects.demoShip;
-                const active = l.scenograph.actors.player;
-                const demoInWorld = demo && this.mesh === demo.mesh && ( ! l.mode || l.mode === 'home' );
-                const playerInWorld = active && active.mode === 'vehicle' && active.vehicle && this.mesh === active.vehicle.mesh;
-                const inWorld = demoInWorld || playerInWorld;
-                this.mesh.userData.targetable = inWorld;
-                this.mesh.visible = inWorld;
-
+                this.respawnAtStart();
             }, 3000 );
 
         }
@@ -152,6 +163,48 @@ export default class BaseAircraft {
         }
 
         return [ damage, targetDestroyed ];
+    }
+
+    /**
+     * Bring this craft back at its start, on its existing patrol.
+     * Player ships and the demo tour stay hidden unless that craft is in play.
+     */
+    respawnAtStart() {
+        const actor = this.mesh.userData.actor;
+        const entity = actor && actor.entity;
+        if ( entity ) {
+            entity.position.set( this.startPosition.x, this.startPosition.y, this.startPosition.z );
+            if ( entity.velocity ) {
+                entity.velocity.set( 0, 0, 0 );
+            }
+        }
+
+        this.rotation.x = 0;
+        this.rotation.y = 0;
+        this.rotation.z = 0;
+        this.airSpeed = 0;
+        this.verticalSpeed = 0;
+
+        const demo = l.current_scene.objects.demoTour;
+        let sessionShip = demo && this.mesh === demo.mesh;
+        if ( l.scenograph.actors ) {
+            for ( const pilot of l.scenograph.actors.getAll() ) {
+                if ( pilot.vehicle && pilot.vehicle.mesh === this.mesh ) {
+                    sessionShip = true;
+                }
+            }
+        }
+
+        let inWorld = true;
+        if ( sessionShip ) {
+            const active = l.scenograph.actors.player;
+            const demoInWorld = demo && this.mesh === demo.mesh && ( ! l.mode || l.mode === 'home' );
+            const playerInWorld = active && active.mode === 'vehicle' && active.vehicle && this.mesh === active.vehicle.mesh;
+            inWorld = demoInWorld || playerInWorld;
+        }
+
+        this.mesh.userData.targetable = inWorld;
+        this.mesh.visible = inWorld;
     }
 
     /**

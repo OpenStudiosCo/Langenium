@@ -260,6 +260,10 @@ export default class Player {
             return;
         }
 
+        if ( this.vehicle.mesh.userData.object.respawning ) {
+            return;
+        }
+
         if ( l.current_scene.settings.game_controls ) {
 
             this.updateControls();

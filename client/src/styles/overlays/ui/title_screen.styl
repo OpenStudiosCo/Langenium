@@ -250,8 +250,11 @@
                 margin: 0
                 max-width: 36ch
 
-            .story_lede
-                margin-bottom: 1.4rem
+            .story_synopsis
+                margin-bottom: 1.5rem
+
+                p + p
+                    margin-top: 0.8rem
 
             .story_parts
                 margin: 0
@@ -259,18 +262,30 @@
                 list-style: none
 
                 li
-                    display: grid
-                    grid-template-columns: 2.25rem minmax(0, 1fr) auto
-                    column-gap: 0.8rem
-                    align-items: baseline
+                    display: block
                     margin: 0
-                    padding: 0.65rem 0
+                    padding: 0
                     border-top: 1px solid rgba(255, 255, 255, 0.72)
                     box-shadow: inset 0 1px 0 rgba(0, 8, 30, 0.28)
 
                     &:last-child
                         border-bottom: 1px solid rgba(255, 255, 255, 0.72)
                         box-shadow: inset 0 1px 0 rgba(0, 8, 30, 0.28), inset 0 -1px 0 rgba(0, 8, 30, 0.28)
+
+                button
+                    display: grid
+                    grid-template-columns: 2.25rem minmax(0, 1fr) auto
+                    column-gap: 0.8rem
+                    align-items: baseline
+                    width: 100%
+                    margin: 0
+                    padding: 0.7rem 0
+                    font-family: inherit
+                    font-size: inherit
+                    font-weight: inherit
+                    letter-spacing: inherit
+                    line-height: inherit
+                    text-transform: none
 
             .story_index
                 font-family: "Arial Narrow", "Nimbus Sans Narrow", "Helvetica Condensed", sans-serif
@@ -297,6 +312,64 @@
                 font-size: 0.9rem
                 line-height: 1.45
                 opacity: 0.82
+
+        .story_reader
+            h2
+                margin-bottom: 1.15rem
+                font-family: "Liberation Sans Narrow", "Nimbus Sans Narrow", "Arial Narrow", "Helvetica Condensed", sans-serif
+                font-style: italic
+                font-weight: 700
+                font-stretch: condensed
+                line-height: 1
+                letter-spacing: 0.02em
+
+        .story_text
+            max-width: 68ch
+            user-select: text
+            text-transform: none
+
+            p
+                margin: 0 0 0.95rem
+                max-width: none
+                font-size: clamp(1.02rem, 1.25vw, 1.16rem)
+                line-height: 1.6
+
+            .story_act
+                margin-top: 1.8rem
+                font-family: "Arial Narrow", "Nimbus Sans Narrow", "Helvetica Condensed", sans-serif
+                font-size: clamp(1.2rem, 1.8vw, 1.45rem)
+                font-weight: 700
+                letter-spacing: 0.08em
+                line-height: 1.2
+
+            hr
+                width: 3.25rem
+                height: 0
+                margin: 0.2rem 0 1.15rem
+                border: 0
+                border-top: 1px solid rgba(255, 255, 255, 0.55)
+
+            a,
+            .story_ref
+                display: inline
+                padding: 0
+                background-image: none
+                font: inherit
+                letter-spacing: inherit
+                line-height: inherit
+                text-transform: none
+                text-decoration: underline
+                text-underline-offset: 0.16em
+                cursor: pointer
+
+            figure
+                margin: 0.35rem 0 1.15rem
+
+            img
+                display: block
+                width: 100%
+                max-width: 40rem
+                height: auto
 
         [data-panel="about"] p,
         [data-panel="lore"] p,
@@ -432,8 +505,7 @@
             max-width: none
             max-height: none
             margin: 0
-            overflow-x: hidden
-            overflow-y: auto
+            overflow: hidden
             transform: none
 
             [data-panel][hidden]
@@ -441,8 +513,10 @@
 
             [data-panel]:not([hidden])
                 flex: 1 1 auto
+                min-height: 0
                 display: flex
                 flex-direction: column
+                overflow: hidden
 
                 h2
                     font-size: clamp(2.75rem, 4.6vw, 4.6rem)
@@ -450,10 +524,18 @@
                 p
                     max-width: 68ch
 
+                .panel_back
+                    flex: 0 0 auto
+
                 .panel_body
                     flex: 1 1 auto
+                    min-height: 0
                     display: flex
                     flex-direction: column
+                    overflow-x: hidden
+                    overflow-y: auto
+                    scrollbar-width: thin
+                    scrollbar-color: rgba(255, 255, 255, 0.45) transparent
                     padding: clamp(1.6rem, 3vh, 2.6rem) clamp(1.6rem, 3vw, 3.2rem)
 
             [data-panel="stories"] .story_name

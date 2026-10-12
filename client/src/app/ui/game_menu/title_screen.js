@@ -28,11 +28,29 @@ export default class Title_Screen {
                 }
 
                 const panel = event.target.closest( '[data-panel]' );
+
+                if ( panel && panel.dataset.return ) {
+                    const returnTo = this.container.querySelector( 'nav [data-action="' + panel.dataset.return + '"]' );
+                    this.openPanel( panel.dataset.return, returnTo );
+                    const storyButton = this.container.querySelector( '[data-read="' + panel.dataset.panel + '"]' );
+                    if ( storyButton ) {
+                        storyButton.focus();
+                    }
+                    return;
+                }
+
                 const returnTo = panel && this.container.querySelector( 'nav [data-action="' + panel.dataset.panel + '"]' );
                 this.closePanel();
                 if ( returnTo ) {
                     returnTo.focus();
                 }
+                return;
+            }
+
+            const read = event.target.closest( '[data-read]' );
+            if ( read ) {
+                const stories = this.container.querySelector( 'nav [data-action="stories"]' );
+                this.openPanel( read.dataset.read, stories );
                 return;
             }
 
@@ -133,8 +151,21 @@ export default class Title_Screen {
         }
 
         this.actions.forEach( ( item ) => item.classList.remove( 'selected' ) );
-        button.classList.add( 'selected' );
+        if ( button ) {
+            button.classList.add( 'selected' );
+        }
         this.container.classList.add( 'panel-open' );
+
+        this.container.scrollTop = 0;
+        const detail = this.container.querySelector( '.title_screen_detail' );
+        if ( detail ) {
+            detail.scrollTop = 0;
+        }
+
+        const body = this.container.querySelector( '[data-panel="' + name + '"] .panel_body' );
+        if ( body ) {
+            body.scrollTop = 0;
+        }
 
         const back = this.container.querySelector( '[data-panel="' + name + '"] .panel_back' );
         if ( back ) {

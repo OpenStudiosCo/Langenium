@@ -37,21 +37,48 @@
                     | The Langenium
                     br
                     | Prologue Trilogy
-                p.story_lede In the near future, human civilisation is in decline.
+                .story_synopsis
+                    p This is a series of short stories that sets up the setting of the Langenium game world. I recommend reading them in order, however, they are told as standalone short stories that can be read on their own.
+                    p In the near future, human civilisation is in decline.
+                    p Following decades of conflict between nations, technology companies no longer produce the components needed to power the age of computing. The creation of an AI that can help humanity seems all but out of reach.
+                    p Deep in the frozen tundra of Canada there is hope. His name is Geoffrey Weyun. Geoffrey believes he and his online friends can build a new AI that will help rebuild what’s been lost.
+                    p He has no idea what he’s about to set in motion.
+                    p In New York City, Kate O’Connor is addressing the UN about a new medical breakthrough. FBI Agent Tim Goth is investigating an international crime ring conducting experiments that may hold the secret to immortality. And Robert Francisco, one of the world’s most famous actors, finds himself in a relationship unlike any he has known before.
                 ol.story_parts
                     li
-                        span.story_index(aria-hidden="true") 01
-                        span.story_name The End of All Limits
-                        span.story_time 25 min
+                        button(type="button" data-read="story-end-of-all-limits")
+                            span.story_index(aria-hidden="true") 01
+                            span.story_name The End of All Limits
+                            span.story_time 25 min
                     li
-                        span.story_index(aria-hidden="true") 02
-                        span.story_name Hell on Earth
-                        span.story_time 90 min
+                        button(type="button" data-read="story-hell-on-earth")
+                            span.story_index(aria-hidden="true") 02
+                            span.story_name Hell on Earth
+                            span.story_time 90 min
                     li
-                        span.story_index(aria-hidden="true") 03
-                        span.story_name Extinction Level Event
-                        span.story_time 95 min
-                p.story_note About three and a half hours. Read them in order, or on their own.
+                        button(type="button" data-read="story-extinction-level-event")
+                            span.story_index(aria-hidden="true") 03
+                            span.story_name Extinction Level Event
+                            span.story_time 95 min
+                p.story_note About three and a half hours.
+        section.story_reader(data-panel="story-end-of-all-limits" data-return="stories" hidden)
+            button.panel_back(type="button" data-action="close-panel") Back
+            .panel_body
+                h2 The End of All Limits
+                .story_text
+                    include ./stories/end_of_all_limits.html
+        section.story_reader(data-panel="story-hell-on-earth" data-return="stories" hidden)
+            button.panel_back(type="button" data-action="close-panel") Back
+            .panel_body
+                h2 Hell on Earth
+                .story_text
+                    include ./stories/hell_on_earth.html
+        section.story_reader(data-panel="story-extinction-level-event" data-return="stories" hidden)
+            button.panel_back(type="button" data-action="close-panel") Back
+            .panel_body
+                h2 Extinction Level Event
+                .story_text
+                    include ./stories/extinction_level_event.html
         section(data-panel="lore" hidden)
             button.panel_back(type="button" data-action="close-panel") Back
             .panel_body

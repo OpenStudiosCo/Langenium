@@ -182,6 +182,20 @@ export default class Main_Menu {
         if ( l.ui.game_menu && l.ui.game_menu.title_screen ) {
             l.ui.game_menu.title_screen.hide();
         }
+
+        if ( l.ui.dialog ) {
+            l.ui.dialog.show( {
+                text: "Welcome to Langenium! This is a early preview release. If you're not sure how to play, click the help button below",
+                actions: [
+                    {
+                        label: "Help",
+                        run: () => {
+                            l.ui.help.show();
+                        }
+                    }
+                ]
+            } );
+        }
     }
 
     /**
@@ -197,6 +211,10 @@ export default class Main_Menu {
 
         this.pane.expanded = false;
         this.pane.title = this.default_title;
+
+        if ( l.ui.dialog ) {
+            l.ui.dialog.hide();
+        }
 
         if ( l.ui.game_menu && l.ui.game_menu.title_screen ) {
             l.ui.game_menu.title_screen.show();

@@ -1,0 +1,10 @@
+//- Shared dialog for the opening welcome, NPC lines, and narration.
+#game_dialog(hidden)
+    .dialog_frame(role="dialog" aria-modal="true" aria-labelledby="game_dialog_label")
+        p#game_dialog_label.dialog_label
+        p.dialog_speaker(hidden)
+        p.dialog_text(aria-hidden="true")
+            span.dialog_line
+            span.dialog_caret(aria-hidden="true")
+        .dialog_actions
+            button.dialog_action(type="button" data-action="close-dialog") Close

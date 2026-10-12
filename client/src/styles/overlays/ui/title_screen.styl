@@ -314,8 +314,19 @@
             h3:first-of-type
                 margin-top: 0.2rem
 
-        .help_close
-            display: none
+        .panel_body
+            padding: 1.35rem 1.45rem 1.4rem
+            background: rgba(0, 8, 22, 0.62)
+            border: 1px solid rgba(255, 255, 255, 0.18)
+            text-shadow: none
+
+        .panel_back
+            margin: 0 0 1.15rem
+            font-family: "Arial Narrow", "Nimbus Sans Narrow", "Helvetica Condensed", sans-serif
+            font-size: clamp(1.15rem, 2vw, 1.65rem)
+            font-weight: 600
+            letter-spacing: 0.12em
+            line-height: 1.15
 
         a
             color: inherit
@@ -324,12 +335,6 @@
         .title_screen_logo,
         nav
             display: none
-
-        .help_close
-            display: block
-            margin: 0 0 1.1rem
-            font-size: 1.05rem
-            letter-spacing: 0.14em
 
     @media (max-width: 720px) and (min-height: 521px)
         padding: 4.5vh 1.25rem 1.5rem
@@ -370,29 +375,6 @@
             max-width: 100%
             margin-top: 1.5rem
 
-        &.panel-open
-            nav
-                flex: 0 0 auto
-                justify-content: flex-start
-
-            .primary
-                position: static
-                top: auto
-                left: auto
-                transform: none
-
-            .secondary
-                margin-top: 1.25rem
-
-            .title_screen_detail
-                position: absolute
-                left: 1.25rem
-                right: 1.25rem
-                bottom: 1.25rem
-                width: auto
-                max-height: 42vh
-                margin-top: 0
-
     @media (max-height: 520px)
         padding: 0.7rem 1.5rem 0.65rem
         overflow-x: hidden
@@ -427,6 +409,76 @@
             width: unquote("min(20rem, 42vw)")
             max-height: unquote("calc(100vh - 1.4rem)")
             max-width: none
+
+    &.panel-open
+        right: 0
+        align-items: stretch
+        overflow-y: auto
+
+        nav
+            display: none
+
+        // Logo top inset is 4vh. The panel starts one logo-height below that, plus twice the inset.
+        // 5.486 is the wordmark's width/height. The mount itself is left alone.
+        .title_screen_detail
+            position: absolute
+            left: 6vw
+            right: 6vw
+            bottom: 6vw
+            top: unquote("calc(12vh + 1.5 * min(min(42vw, 28rem) / 5.486, 14vh))")
+            display: flex
+            flex-direction: column
+            width: auto
+            max-width: none
+            max-height: none
+            margin: 0
+            overflow-x: hidden
+            overflow-y: auto
+            transform: none
+
+            [data-panel][hidden]
+                display: none !important
+
+            [data-panel]:not([hidden])
+                flex: 1 1 auto
+                display: flex
+                flex-direction: column
+
+                h2
+                    font-size: clamp(2.75rem, 4.6vw, 4.6rem)
+
+                p
+                    max-width: 68ch
+
+                .panel_body
+                    flex: 1 1 auto
+                    display: flex
+                    flex-direction: column
+                    padding: clamp(1.6rem, 3vh, 2.6rem) clamp(1.6rem, 3vw, 3.2rem)
+
+            [data-panel="stories"] .story_name
+                font-size: clamp(1.35rem, 2.2vw, 2.05rem)
+
+        @media (max-width: 720px)
+            .title_screen_detail
+                left: 1.25rem
+                right: 1.25rem
+                bottom: 1.25rem
+                top: unquote("calc(13.5vh + min(min(78vw, 16rem) / 5.486, 9vh, 20vh))")
+
+                [data-panel]:not([hidden])
+                    h2
+                        font-size: clamp(2.15rem, 9vw, 3rem)
+
+                    .panel_body
+                        padding: 1.25rem 1.15rem 1.2rem
+
+        @media (max-height: 520px)
+            .title_screen_detail
+                left: 1.5rem
+                right: 1.5rem
+                bottom: 0.65rem
+                top: unquote("calc(2.1rem + min(min(42vw, 22rem) / 5.486, 18vh, 20vh))")
 
 @keyframes title_bloom
     0%

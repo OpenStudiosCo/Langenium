@@ -21,8 +21,18 @@ export default class Title_Screen {
         }
 
         this.container.addEventListener( 'click', ( event ) => {
-            if ( event.target.closest( '[data-action="close-help"]' ) ) {
-                l.ui.help.hide();
+            if ( event.target.closest( '[data-action="close-panel"]' ) ) {
+                if ( this.container.classList.contains( 'help-session' ) ) {
+                    l.ui.help.hide();
+                    return;
+                }
+
+                const panel = event.target.closest( '[data-panel]' );
+                const returnTo = panel && this.container.querySelector( 'nav [data-action="' + panel.dataset.panel + '"]' );
+                this.closePanel();
+                if ( returnTo ) {
+                    returnTo.focus();
+                }
                 return;
             }
 
@@ -125,6 +135,11 @@ export default class Title_Screen {
         this.actions.forEach( ( item ) => item.classList.remove( 'selected' ) );
         button.classList.add( 'selected' );
         this.container.classList.add( 'panel-open' );
+
+        const back = this.container.querySelector( '[data-panel="' + name + '"] .panel_back' );
+        if ( back ) {
+            back.focus();
+        }
     }
 
     closePanel() {

@@ -13,6 +13,12 @@
     &[hidden]
         display: none
 
+    &.dialog-passive
+        pointer-events: none
+
+        .dialog_frame
+            pointer-events: auto
+
     .dialog_label
         position: absolute
         width: 1px
@@ -92,16 +98,18 @@
         pointer-events: auto
 
     .dialog_action
-        display: inline-block
+        display: inline-flex
+        align-items: center
+        justify-content: center
         box-sizing: border-box
         margin: 0
         padding: 0.25rem 0.35rem 0.15rem
         border-style: solid
         border-color: transparent
-        border-width: 30px
+        border-width: 20px
         border-image-source: url("/assets/borders/border-05.png")
         border-image-slice: unquote("80 fill")
-        border-image-width: 30px
+        border-image-width: 40px
         border-image-repeat: round
         background-color: transparent
         background-clip: padding-box
@@ -120,9 +128,31 @@
         &:active
             border-image-source: url("/assets/borders/border-07.png")
 
+        &[hidden]
+            display: none !important
+
         &:focus-visible
-            outline: 1px solid rgba(255, 255, 255, 0.65)
-            outline-offset: 4px
+            outline: none
+
+        kbd
+            display: inline-flex
+            align-items: center
+            justify-content: center
+            min-width: 1.35rem
+            height: 1.35rem
+            margin-right: 0.45rem
+            padding: 0 0.28rem
+            color: #fff
+            font-family: ui-monospace, Menlo, Consolas, monospace
+            font-style: normal
+            font-size: 0.72rem
+            font-weight: 700
+            letter-spacing: 0
+            line-height: 1
+            text-transform: none
+            background: rgba(0, 0, 0, 0.35)
+            border: 1px solid rgba(255, 255, 255, 0.45)
+            border-radius: 3px
 
     @media (max-width: 720px)
         padding: 1.25rem

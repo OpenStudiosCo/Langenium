@@ -43,9 +43,16 @@ export default class Dialog {
         this.timer = 0;
         this.queue = [];
         this.line = null;
+        this.owner = null;
         this.typing = false;
 
         this.container.addEventListener( 'click', ( event ) => {
+            if ( this.typing ) {
+                window.clearTimeout( this.timer );
+                this.complete();
+                return;
+            }
+
             if ( event.target.closest( '[data-action="close-dialog"]' ) ) {
                 this.dismiss();
                 return;
@@ -66,11 +73,20 @@ export default class Dialog {
         } );
 
         document.addEventListener( 'keydown', ( event ) => {
-            if ( this.container.hidden ) {
+            if ( this.container.hidden || !this.line ) {
+                return;
+            }
+
+            const actions = this.line.actions || [];
+            const index = actions.findIndex( ( action ) => this.keyMatches( action.key, event ) );
+            if ( index !== -1 ) {
+                event.preventDefault();
+                this.choose( index );
                 return;
             }
 
             if ( event.key === 'Escape' ) {
+                event.preventDefault();
                 this.dismiss();
             }
         } );
@@ -89,7 +105,7 @@ export default class Dialog {
     /**
      * Play lines in order.
      *
-     * A click finishes the line being typed. With no actions, the next click continues.
+     * A click while the line is typing finishes it. The next click dismisses or continues.
      *
      * @param {object[]} lines
      */
@@ -116,7 +132,9 @@ export default class Dialog {
         }
 
         this.line = line;
+        this.owner = line.owner || null;
         this.container.hidden = false;
+        this.container.classList.toggle( 'dialog-passive', line.modal === false );
         this.container.classList.remove( 'dialog-written' );
         this.label.textContent = line.speaker ? line.speaker + '. ' + line.text : line.text;
 
@@ -133,7 +151,7 @@ export default class Dialog {
         this.text.textContent = '';
 
         const reduce = window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
-        if ( reduce ) {
+        if ( reduce || line.instant ) {
             this.complete();
             return;
         }
@@ -188,17 +206,29 @@ export default class Dialog {
         }
     }
 
+    /**
+     * True while a line is on screen.
+     */
+    isShowing() {
+        return !!this.container && !this.container.hidden;
+    }
+
     dismiss() {
+        const line = this.line;
         this.queue = [];
         this.close();
+        if ( line && line.onDismiss ) {
+            line.onDismiss();
+        }
     }
 
     close() {
         window.clearTimeout( this.timer );
         this.typing = false;
         this.line = null;
+        this.owner = null;
         this.container.hidden = true;
-        this.container.classList.remove( 'dialog-written' );
+        this.container.classList.remove( 'dialog-written', 'dialog-passive' );
         this.clearActions();
     }
 
@@ -206,13 +236,34 @@ export default class Dialog {
         this.clearActions();
 
         const close = this.actions.querySelector( '[data-action="close-dialog"]' );
+        const showClose = !( this.line && this.line.close === false );
+        if ( close ) {
+            close.hidden = !showClose;
+            close.style.display = showClose ? '' : 'none';
+            close.querySelectorAll( 'kbd' ).forEach( ( key ) => {
+                key.remove();
+            } );
+
+            if ( showClose && this.line && this.line.closeKey ) {
+                const key = document.createElement( 'kbd' );
+                key.textContent = this.line.closeKey;
+                close.insertBefore( key, close.firstChild );
+            }
+        }
 
         actions.forEach( ( action, index ) => {
             const button = document.createElement( 'button' );
             button.type = 'button';
             button.className = 'dialog_action';
             button.dataset.dialogAction = String( index );
-            button.textContent = action.label;
+
+            if ( action.key ) {
+                const key = document.createElement( 'kbd' );
+                key.textContent = action.key;
+                button.appendChild( key );
+            }
+
+            button.appendChild( document.createTextNode( action.label ) );
             this.actions.insertBefore( button, close );
         } );
     }
@@ -221,6 +272,22 @@ export default class Dialog {
         this.actions.querySelectorAll( '[data-dialog-action]' ).forEach( ( button ) => {
             button.remove();
         } );
+    }
+
+    /**
+     * True when a button's key label matches this keydown.
+     */
+    keyMatches( label, event ) {
+        if ( !label ) {
+            return false;
+        }
+
+        const name = String( label ).toLowerCase();
+        if ( name === 'esc' || name === 'escape' ) {
+            return event.key === 'Escape';
+        }
+
+        return event.key.toLowerCase() === name;
     }
 
 }

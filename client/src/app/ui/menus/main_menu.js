@@ -184,17 +184,26 @@ export default class Main_Menu {
         }
 
         if ( l.ui.dialog ) {
-            l.ui.dialog.show( {
+            const line = {
                 text: "Welcome to Langenium! This is a early preview release. If you're not sure how to play, click the help button below",
+                closeKey: "Esc",
                 actions: [
                     {
+                        key: "F1",
                         label: "Help",
                         run: () => {
-                            l.ui.help.show();
+                            l.ui.help.show( {
+                                restore: () => {
+                                    line.instant = true;
+                                    l.ui.dialog.show( line );
+                                }
+                            } );
                         }
                     }
                 ]
-            } );
+            };
+
+            l.ui.dialog.show( line );
         }
     }
 

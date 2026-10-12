@@ -71,41 +71,58 @@
         display: none
 
     .dialog_actions
-        display: none
+        display: grid
+        grid-template-rows: 0fr
+        margin-top: 0
+        opacity: 0
+        pointer-events: none
+        transition: grid-template-rows 640ms cubic-bezier(0.22, 1, 0.36, 1), margin-top 640ms cubic-bezier(0.22, 1, 0.36, 1), opacity 420ms ease 80ms
+
+    .dialog_actions_row
+        display: flex
         flex-wrap: wrap
         gap: 0.4rem 1.4rem
-        margin-top: 1.35rem
+        min-height: 0
+        overflow: hidden
 
     &.dialog-written .dialog_actions
-        display: flex
+        grid-template-rows: 1fr
+        margin-top: 1.35rem
+        opacity: 1
+        pointer-events: auto
 
     .dialog_action
         display: inline-block
+        box-sizing: border-box
+        margin: 0
+        padding: 0.25rem 0.35rem 0.15rem
+        border-style: solid
+        border-color: transparent
+        border-width: 30px
+        border-image-source: url("/assets/borders/border-05.png")
+        border-image-slice: unquote("80 fill")
+        border-image-width: 30px
+        border-image-repeat: round
         background-color: transparent
-        background-image: linear-gradient(rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.72))
-        background-repeat: no-repeat
-        background-position: left bottom
-        background-size: 0 1px
-        border: 0
-        padding: 0 0.15em 0.14em 0
+        background-clip: padding-box
         color: inherit
         font-family: "Liberation Sans Narrow", "Nimbus Sans Narrow", "Arial Narrow", "Helvetica Condensed", sans-serif
         font-style: italic
         font-weight: 700
-        font-size: clamp(1.55rem, 2.6vw, 2.15rem)
-        letter-spacing: 0.06em
+        font-size: clamp(0.95rem, 1.4vw, 1.15rem)
+        letter-spacing: 0.08em
         line-height: 1.1
         text-transform: uppercase
         cursor: pointer
-        transition: background-size 520ms cubic-bezier(0.16, 1, 0.3, 1)
 
         &:hover,
-        &:focus-visible
-            background-size: 100% 1px
+        &:focus-visible,
+        &:active
+            border-image-source: url("/assets/borders/border-07.png")
 
         &:focus-visible
             outline: 1px solid rgba(255, 255, 255, 0.65)
-            outline-offset: 6px
+            outline-offset: 4px
 
     @media (max-width: 720px)
         padding: 1.25rem
@@ -115,7 +132,15 @@
             border-image-width: 28px
             padding: 1rem 1.05rem 0.95rem
 
+        .dialog_action
+            border-width: 32px
+            border-image-width: 32px
+            padding: 0.1rem 0.9rem 0.15rem
+
     @media (prefers-reduced-motion: reduce)
+        .dialog_actions
+            transition: none
+
         .dialog_caret
             animation: none
 

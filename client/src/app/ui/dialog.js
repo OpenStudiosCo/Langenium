@@ -38,7 +38,7 @@ export default class Dialog {
         this.label = this.container.querySelector( '.dialog_label' );
         this.speaker = this.container.querySelector( '.dialog_speaker' );
         this.text = this.container.querySelector( '.dialog_line' );
-        this.actions = this.container.querySelector( '.dialog_actions' );
+        this.actions = this.container.querySelector( '.dialog_actions_row' );
 
         this.timer = 0;
         this.queue = [];

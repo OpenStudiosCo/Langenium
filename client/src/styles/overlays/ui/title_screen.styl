@@ -388,10 +388,17 @@
                 margin-top: 0.2rem
 
         .panel_body
-            padding: 1.35rem 1.45rem 1.4rem
-            background: rgba(0, 8, 22, 0.62)
-            border: 1px solid rgba(255, 255, 255, 0.18)
-            text-shadow: none
+            box-sizing: border-box
+            padding: 1.15rem 1.25rem 1.2rem
+            border-style: solid
+            border-color: transparent
+            border-width: 80px
+            border-image-source: url("/assets/borders/border-01.png")
+            border-image-slice: unquote("80 fill")
+            border-image-width: 80px
+            border-image-repeat: round
+            background-color: transparent
+            background-clip: padding-box
 
         .panel_back
             margin: 0 0 1.15rem
@@ -554,6 +561,8 @@
 
                     .panel_body
                         padding: 1.25rem 1.15rem 1.2rem
+                        border-width: 56px
+                        border-image-width: 56px
 
         @media (max-height: 520px)
             .title_screen_detail
@@ -561,6 +570,11 @@
                 right: 1.5rem
                 bottom: 0.65rem
                 top: unquote("calc(2.1rem + min(min(42vw, 22rem) / 5.486, 18vh, 20vh))")
+
+                .panel_body
+                    border-width: 44px
+                    border-image-width: 44px
+                    padding: 0.75rem 0.85rem
 
 @keyframes title_bloom
     0%

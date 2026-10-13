@@ -28,6 +28,7 @@ export default class Title_Screen {
         }
 
         this.bindSettings();
+        this.bindStoryScroll();
 
         this.depth = 0;
         this.launchTimer = 0;
@@ -288,6 +289,8 @@ export default class Title_Screen {
     openPanel( name, button ) {
         let found = false;
 
+        this.rememberOpenStory();
+
         this.panels.forEach( ( panel ) => {
             const open = panel.dataset.panel === name;
             panel.hidden = !open;
@@ -317,7 +320,11 @@ export default class Title_Screen {
         }
 
         const body = this.container.querySelector( '[data-panel="' + name + '"] .panel_body' );
-        if ( body ) {
+        const story = body && body.closest( '.story_reader' );
+        if ( story ) {
+            this.restoreStoryScroll( story );
+        }
+        else if ( body ) {
             body.scrollTop = 0;
         }
 
@@ -386,7 +393,82 @@ export default class Title_Screen {
         this.applying = false;
     }
 
+    bindStoryScroll() {
+        this.storyScrollTimer = 0;
+
+        this.container.querySelectorAll( '.story_reader .panel_body' ).forEach( ( body ) => {
+            body.addEventListener( 'scroll', () => {
+                window.clearTimeout( this.storyScrollTimer );
+                this.storyScrollTimer = window.setTimeout( () => {
+                    this.rememberStoryScroll( body.closest( '.story_reader' ) );
+                }, 150 );
+            }, { passive: true } );
+        } );
+
+        window.addEventListener( 'pagehide', () => {
+            this.rememberOpenStory();
+        } );
+    }
+
+    readStoryScroll() {
+        try {
+            const saved = JSON.parse( localStorage.getItem( 'storyScroll' ) || '{}' );
+            return saved && typeof saved === 'object' ? saved : {};
+        }
+        catch ( error ) {
+            return {};
+        }
+    }
+
+    rememberOpenStory() {
+        this.rememberStoryScroll( this.container.querySelector( '.story_reader:not([hidden])' ) );
+    }
+
+    rememberStoryScroll( panel ) {
+        if ( !panel || !panel.dataset.path ) {
+            return;
+        }
+
+        const body = panel.querySelector( '.panel_body' );
+        if ( !body ) {
+            return;
+        }
+
+        const saved = this.readStoryScroll();
+        saved[ panel.dataset.path ] = body.scrollTop;
+
+        try {
+            localStorage.setItem( 'storyScroll', JSON.stringify( saved ) );
+        }
+        catch ( error ) {
+            // Private browsing can refuse storage. The open panel still keeps its place.
+        }
+    }
+
+    restoreStoryScroll( panel ) {
+        const body = panel.querySelector( '.panel_body' );
+        const top = Number( this.readStoryScroll()[ panel.dataset.path ] );
+
+        if ( !body || !Number.isFinite( top ) || top <= 0 ) {
+            if ( body ) {
+                body.scrollTop = 0;
+            }
+            return;
+        }
+
+        const apply = () => {
+            body.scrollTop = top;
+        };
+
+        apply();
+        if ( Math.abs( body.scrollTop - top ) > 1 ) {
+            window.requestAnimationFrame( apply );
+        }
+    }
+
     closePanel() {
+        this.rememberOpenStory();
+
         this.panels.forEach( ( panel ) => {
             panel.hidden = true;
         } );

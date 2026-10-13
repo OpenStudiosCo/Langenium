@@ -16,7 +16,7 @@ varying vec2 vUv;
 #include <normal>       // Include the normal functions
 #include <voronoi>      // Include the voronoi functions
 
-const float bumpScale = 250.;
+const float panelBevel = 4.5;
 
 void main() {
 
@@ -56,7 +56,12 @@ void main() {
         }
     }
 
-    vec3 perturbedNormal = bumpMapping(vViewPosition, normalize(vNormal), bumpScale, 1.0, 0.0, buildingSegments.r, buildingSegments.r, true);
+    vec3 panelCoord = vTexCoord3D.xzy * voronoiValue.a * 3.92;
+    float plates = brick_height(panelCoord, 0.5, 1.5);
+    float cellLip = smoothstep(0.0, 0.0075, voronoiEdge);
+    float height = min(plates, cellLip);
+    float pixel = max(length(dFdx(vViewPosition)), length(dFdy(vViewPosition)));
+    vec3 perturbedNormal = bumpMapping(vViewPosition, normalize(vNormal), 0.5, pixel * panelBevel, 0.0, dFdx(height), dFdy(height), false);
 
     // Calculate the base detailing of the building.
     float baseShade = snoise(vTexCoord3D.xzy / 1000., 14.0 , 35.0);

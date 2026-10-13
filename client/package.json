@@ -1,7 +1,7 @@
 {
   "name": "Langenium",
   "author": "Open Studios < team@openstudios.xyz >",
-  "version": "0.6.0-Alpha",
+  "version": "0.7.0-alpha",
   "description": "The Langenium Game, Server and Client",
   "repository": "https://github.com/paulbrzeski/Langenium",
   "engines": {

@@ -27,7 +27,7 @@ export default class Main_Menu {
         this.pane = new Pane( {
             title: this.default_title,
             container: document.getElementById( 'main_menu' ),
-            expanded: true
+            expanded: false
         } );
 
         this.buttons.exit_game = this.pane.addButton( {
@@ -36,21 +36,7 @@ export default class Main_Menu {
         } );
         this.buttons.exit_game.on( 'click', () => {
             l.routes.exitGame();
-
-            // Show game mode buttons.
-            this.buttons.player_one.hidden = false;
-            this.buttons.player_two.hidden = false;
-            this.buttons.multi_player.hidden = false;
-
-            // Hide game exit button to return to main menu.
-            this.buttons.exit_game.hidden = true;
-
-            // Hide the score table button.
-            this.buttons.scores.hidden = true;
-
-            // Restore the main menu.
-            this.pane.expanded = true;
-            this.pane.title = this.default_title;
+            this.returnHome();
         } );
 
         this.buttons.scores = this.pane.addButton( {
@@ -66,46 +52,16 @@ export default class Main_Menu {
             title: 'P1: Overworld',
         } );
         this.buttons.player_one.on( 'click', () => {
+            this.enterSession();
             new l.routes.singlePlayer();
-
-            // Hide game mode buttons.
-            this.buttons.player_one.hidden = true;
-            this.buttons.player_two.hidden = true;
-            this.buttons.multi_player.hidden = true;
-
-            // Hide main menu and change it's title
-            this.pane.expanded = false;
-            this.pane.title = "Menu";
-
-            // Show game exit button to return to main menu.
-            this.buttons.exit_game.hidden = false;
-
-            // Show game scores button
-            this.buttons.scores.hidden = false;
-
         } );
 
         this.buttons.player_two = this.pane.addButton( {
             title: 'P2: Hangar',
         } );
         this.buttons.player_two.on( 'click', () => {
+            this.enterSession();
             new l.routes.hangar();
-
-            // Hide game mode buttons.
-            this.buttons.player_one.hidden = true;
-            this.buttons.player_two.hidden = true;
-            this.buttons.multi_player.hidden = true;
-
-            // Hide main menu and change it's title
-            this.pane.expanded = false;
-            this.pane.title = "Menu";
-
-            // Show game exit button to return to main menu.
-            this.buttons.exit_game.hidden = false;
-
-            // Show game scores button
-            this.buttons.scores.hidden = false;
-
         } );
 
         this.buttons.multi_player = this.pane.addButton( {
@@ -113,24 +69,8 @@ export default class Main_Menu {
             disabled: true // @todo: v7 Restore multiplayer and server tracking of scene objects.
         } );
         this.buttons.multi_player.on( 'click', () => {
+            this.enterSession();
             new l.routes.multiPlayer();
-
-            // Hide game mode buttons.
-            this.buttons.player_one.hidden = true;
-            this.buttons.player_two.hidden = true;
-            this.buttons.multi_player.hidden = true;
-
-            // Hide main menu
-            this.pane.expanded = false;
-            this.pane.title = "Menu";
-
-            // Show game exit button to return to main menu.
-            this.buttons.exit_game.hidden = false;
-
-            // Show game scores button
-            this.buttons.scores.hidden = false;
-
-
         } );
 
         this.buttons.settings = this.pane.addButton( {
@@ -191,8 +131,7 @@ export default class Main_Menu {
         } );
 
         this.settings.debug.on( 'change', () => {
-            l.scenograph.modes.debugging.toggle();
-            l.config.save_settings();
+            this.onSettingChanged( 'debug' );
         } );
 
         this.settings.fast = this.pane.addBinding( l.config.settings, 'fast', {
@@ -202,8 +141,7 @@ export default class Main_Menu {
         } );
 
         this.settings.fast.on( 'change', () => {
-            l.scenograph.modes.fast.toggle();
-            l.config.save_settings();
+            this.onSettingChanged( 'fast' );
         } );
 
         this.settings.skipintro = this.pane.addBinding( l.config.settings, 'skipintro', {
@@ -212,7 +150,7 @@ export default class Main_Menu {
         } );
 
         this.settings.skipintro.on( 'change', () => {
-            l.config.save_settings();
+            this.onSettingChanged( 'skipintro' );
         } );
 
         this.buttons.help = this.pane.addButton( {
@@ -223,6 +161,96 @@ export default class Main_Menu {
         } );
 
         return this;
+    }
+
+    /**
+     * The title screen owns the same settings. Its handler updates the mode and both controls.
+     */
+    onSettingChanged( name ) {
+        const screen = l.ui.game_menu && l.ui.game_menu.title_screen;
+
+        if ( screen ) {
+            screen.applySetting( name, !!l.config.settings[ name ] );
+            return;
+        }
+
+        if ( name === 'debug' ) {
+            l.scenograph.modes.debugging.toggle();
+        }
+
+        if ( name === 'fast' ) {
+            l.scenograph.modes.fast.toggle();
+        }
+
+        l.config.save_settings();
+    }
+
+    /**
+     * Leave the title screen and keep this pane collapsed as the in-session menu.
+     */
+    enterSession() {
+        this.buttons.player_one.hidden = true;
+        this.buttons.player_two.hidden = true;
+        this.buttons.multi_player.hidden = true;
+
+        this.pane.expanded = false;
+        this.pane.title = "Menu";
+
+        this.buttons.exit_game.hidden = false;
+        this.buttons.scores.hidden = false;
+
+        if ( l.ui.game_menu && l.ui.game_menu.title_screen ) {
+            l.ui.game_menu.title_screen.hide();
+        }
+
+        if ( l.ui.dialog ) {
+            const line = {
+                text: "Welcome to Langenium! This is a early preview release. If you're not sure how to play, click the help button below",
+                closeKey: "Esc",
+                actions: [
+                    {
+                        key: "F1",
+                        label: "Help",
+                        run: () => {
+                            l.ui.help.show( {
+                                restore: () => {
+                                    line.instant = true;
+                                    l.ui.dialog.show( line );
+                                }
+                            } );
+                        }
+                    }
+                ]
+            };
+
+            l.ui.dialog.show( line );
+        }
+    }
+
+    /**
+     * Home again: title screen in front, this pane stays minimised.
+     */
+    returnHome( options ) {
+        this.buttons.player_one.hidden = false;
+        this.buttons.player_two.hidden = false;
+        this.buttons.multi_player.hidden = false;
+
+        this.buttons.exit_game.hidden = true;
+        this.buttons.scores.hidden = true;
+
+        this.pane.expanded = false;
+        this.pane.title = this.default_title;
+
+        if ( l.ui.dialog ) {
+            l.ui.dialog.hide();
+        }
+
+        if ( l.ui.game_menu && l.ui.game_menu.title_screen ) {
+            l.ui.game_menu.title_screen.show();
+            if ( !options || !options.keepUrl ) {
+                l.ui.game_menu.title_screen.replaceHome();
+            }
+        }
     }
 
 }

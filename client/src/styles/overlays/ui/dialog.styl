@@ -1,0 +1,181 @@
+#game_dialog
+    position: fixed
+    inset: 0
+    z-index: 7
+    display: flex
+    align-items: center
+    justify-content: center
+    padding: 6vw
+    box-sizing: border-box
+    pointer-events: auto
+    color: #fff
+
+    &[hidden]
+        display: none
+
+    &.dialog-passive
+        pointer-events: none
+
+        .dialog_frame
+            pointer-events: auto
+
+    .dialog_label
+        position: absolute
+        width: 1px
+        height: 1px
+        padding: 0
+        margin: -1px
+        overflow: hidden
+        clip: rect(0, 0, 0, 0)
+        white-space: nowrap
+        border: 0
+
+    .dialog_frame
+        box-sizing: border-box
+        width: min(40rem, 100%)
+        padding: 1.35rem 1.5rem 1.25rem
+        border-style: solid
+        border-color: transparent
+        border-width: 40px
+        border-image-source: url("/assets/borders/border-02.png")
+        border-image-slice: unquote("40 fill")
+        border-image-width: 40px
+        border-image-repeat: round
+        background-color: transparent
+        background-clip: padding-box
+        text-shadow: 0 2px 12px rgba(0, 10, 40, 0.55)
+
+    .dialog_speaker
+        margin: 0 0 0.55rem
+        font-family: "Liberation Sans Narrow", "Nimbus Sans Narrow", "Arial Narrow", "Helvetica Condensed", sans-serif
+        font-style: italic
+        font-weight: 700
+        font-size: clamp(1.15rem, 2vw, 1.45rem)
+        letter-spacing: 0.08em
+        line-height: 1.1
+        text-transform: uppercase
+
+    .dialog_text
+        margin: 0
+        min-height: 1.2em
+        font-family: system-ui, sans-serif
+        font-size: clamp(1.05rem, 2vw, 1.3rem)
+        line-height: 1.45
+        letter-spacing: 0.03em
+        text-transform: none
+
+    .dialog_caret
+        display: inline-block
+        width: 0.55ch
+        height: 0.85em
+        margin-left: 0.08em
+        background: #fff
+        vertical-align: -0.05em
+        animation: dialog_caret 1s steps(1) infinite
+
+    &.dialog-written .dialog_caret
+        display: none
+
+    .dialog_actions
+        display: grid
+        grid-template-rows: 0fr
+        margin-top: 0
+        opacity: 0
+        pointer-events: none
+        transition: grid-template-rows 640ms cubic-bezier(0.22, 1, 0.36, 1), margin-top 640ms cubic-bezier(0.22, 1, 0.36, 1), opacity 420ms ease 80ms
+
+    .dialog_actions_row
+        display: flex
+        flex-wrap: wrap
+        gap: 0.4rem 1.4rem
+        min-height: 0
+        overflow: hidden
+
+    &.dialog-written .dialog_actions
+        grid-template-rows: 1fr
+        margin-top: 1.35rem
+        opacity: 1
+        pointer-events: auto
+
+    .dialog_action
+        display: inline-flex
+        align-items: center
+        justify-content: center
+        box-sizing: border-box
+        margin: 0
+        padding: 0.25rem 0.35rem 0.15rem
+        border-style: solid
+        border-color: transparent
+        border-width: 20px
+        border-image-source: url("/assets/borders/border-05.png")
+        border-image-slice: unquote("80 fill")
+        border-image-width: 40px
+        border-image-repeat: round
+        background-color: transparent
+        background-clip: padding-box
+        color: inherit
+        font-family: "Liberation Sans Narrow", "Nimbus Sans Narrow", "Arial Narrow", "Helvetica Condensed", sans-serif
+        font-style: italic
+        font-weight: 700
+        font-size: clamp(0.95rem, 1.4vw, 1.15rem)
+        letter-spacing: 0.08em
+        line-height: 1.1
+        text-transform: uppercase
+        cursor: pointer
+
+        &:hover,
+        &:focus-visible,
+        &:active
+            border-image-source: url("/assets/borders/border-07.png")
+
+        &[hidden]
+            display: none !important
+
+        &:focus-visible
+            outline: none
+
+        kbd
+            display: inline-flex
+            align-items: center
+            justify-content: center
+            min-width: 1.35rem
+            height: 1.35rem
+            margin-right: 0.45rem
+            padding: 0 0.28rem
+            color: #fff
+            font-family: ui-monospace, Menlo, Consolas, monospace
+            font-style: normal
+            font-size: 0.72rem
+            font-weight: 700
+            letter-spacing: 0
+            line-height: 1
+            text-transform: none
+            background: rgba(0, 0, 0, 0.35)
+            border: 1px solid rgba(255, 255, 255, 0.45)
+            border-radius: 3px
+
+    @media (max-width: 720px)
+        padding: 1.25rem
+
+        .dialog_frame
+            border-width: 28px
+            border-image-width: 28px
+            padding: 1rem 1.05rem 0.95rem
+
+        .dialog_action
+            border-width: 32px
+            border-image-width: 32px
+            padding: 0.1rem 0.9rem 0.15rem
+
+    @media (prefers-reduced-motion: reduce)
+        .dialog_actions
+            transition: none
+
+        .dialog_caret
+            animation: none
+
+@keyframes dialog_caret
+    0%, 50%
+        opacity: 1
+    50.01%, 100%
+        opacity: 0

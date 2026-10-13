@@ -53,7 +53,7 @@ export default class routes {
     }
 
     setDemoVisible( visible ) {
-        const demo = l.current_scene.objects.demoShip;
+        const demo = l.current_scene.objects.demoTour;
         if ( ! demo || ! demo.mesh ) {
             return;
         }
@@ -66,7 +66,7 @@ export default class routes {
     }
 
     restoreDemoView() {
-        const demo = l.current_scene.objects.demoShip;
+        const demo = l.current_scene.objects.demoTour;
         if ( ! demo ) {
             return;
         }

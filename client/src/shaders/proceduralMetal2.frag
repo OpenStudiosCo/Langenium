@@ -11,7 +11,7 @@ varying vec2 vUv;
 #include <normal>       // Include the normal functions
 #include <voronoi>      // Include the voronoi functions
 
-const float bumpScale = 250.;
+const float panelBevel = 4.5;
 
 void main() {
     vec4 voronoiValue = voronoi(vTexCoord3D * 0.75);
@@ -19,8 +19,16 @@ void main() {
 
     vec3 baseColor = brick_color(vTexCoord3D * 3.21 * gray, 0.5, 1.5, false);
 
-    // Using the bump mapping function
-    vec3 perturbedNormal = bumpMapping(vViewPosition, normalize(vNormal), bumpScale, 0.75, 0.0, baseColor.r, baseColor.r, true);
+    // Faces stay flat. Height only falls across the brick seams and the
+    // voronoi cell borders, which is the chamfer on sci-fi panel edges.
+    // voronoiEdge is written by the voronoi() call above.
+    float plates = brick_height(vTexCoord3D * 3.21 * gray, 0.5, 1.5);
+    float cellLip = smoothstep(0.0, 0.0075, voronoiEdge);
+    float height = min(plates, cellLip);
+
+    float pixel = max(length(dFdx(vViewPosition)), length(dFdy(vViewPosition)));
+
+    vec3 perturbedNormal = bumpMapping(vViewPosition, normalize(vNormal), 0.5, pixel * panelBevel, 0.0, dFdx(height), dFdy(height), false);
 
     vec3 lightWeighting = calculateMergedLighting(baseColor, perturbedNormal, baseColor.r, 0.35);
 

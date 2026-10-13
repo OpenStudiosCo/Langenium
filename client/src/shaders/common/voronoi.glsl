@@ -21,15 +21,17 @@ float voronoi_distance_3d(vec3 a,vec3 b){
     return Checyshev3D(b - a);
 }
 
+// Set by voronoi(). 0 on a cell boundary, rising toward the interior.
+float voronoiEdge;
+
 vec4 voronoi(vec3 coord) {
     vec3 cellPosition = floor(coord);
     vec3 localPosition = coord - cellPosition;
 
-    float minDistance = 3.402823466e+38;  // max value
-;
+    float minDistance = 3.402823466e+38;
+    float secondDistance = 3.402823466e+38;
     vec3 targetOffset = vec3(0);
-    vec3 targetPosition = vec3(0);
-    vec4 result = vec4(0.0); // Initialize result as vec4 to store color and displacement
+    vec4 result = vec4(0.0);
     
     for(int j = -1; j <= 1; j++){
         for(int i = -1; i<=1; i++){
@@ -39,9 +41,11 @@ vec4 voronoi(vec3 coord) {
                 
                 float distanceToPoint = voronoi_distance_3d(pointPosition,localPosition);
                 if(distanceToPoint < minDistance){
+                    secondDistance = minDistance;
                     minDistance = distanceToPoint;
                     targetOffset = cellOffset;
-                    targetPosition = pointPosition;
+                } else if (distanceToPoint < secondDistance) {
+                    secondDistance = distanceToPoint;
                 }
             }
         }
@@ -49,6 +53,7 @@ vec4 voronoi(vec3 coord) {
     
     result.a = minDistance;
     result.rgb = Hash_3D_to_3D(cellPosition + targetOffset);
+    voronoiEdge = secondDistance - minDistance;
 
     return result;
 }

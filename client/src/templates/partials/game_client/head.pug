@@ -1,5 +1,5 @@
 //- Favicon
-link(rel='apple-touch-icon' sizes='180x180' href='./assets/favicon/apple-touch-icon.png')
+link(rel='apple-touch-icon' sizes='180x180' href='/assets/favicon/apple-touch-icon.png')
 link(rel='icon' type='image/png' sizes='32x32' href='/assets/favicon/favicon-32x32.png')
 link(rel='icon' type='image/png' sizes='16x16' href='/assets/favicon/favicon-16x16.png')
 link(rel='manifest' href='/assets/favicon/site.webmanifest' crossorigin='use-credentials')
@@ -10,11 +10,18 @@ meta(name='theme-color' content='#000000')
 //- Captcha
 script(src="https://www.google.com/recaptcha/api.js")
 
-//- SEO
-link(rel="canonical" href='https://langenium.com' + page.url.replace('/iframes',''))
+//- SEO. Public addresses omit the .html file name.
+- var canonicalPath = (page.url || '/').replace('/iframes', '')
+- canonicalPath = canonicalPath.replace(/index\.html$/, '')
+- canonicalPath = canonicalPath.replace(/\.html$/, '')
+- if (canonicalPath.length > 1 && canonicalPath.endsWith('/')) canonicalPath = canonicalPath.slice(0, -1)
+- if (!canonicalPath) canonicalPath = '/'
+- var canonical = 'https://langenium.com' + canonicalPath
+link(rel="canonical" href=canonical)
+meta(property='og:url' content=canonical)
 meta(property='og:title' content=title)
 meta(property='og:description' content=description || title )
-meta(property='og:type' content='article')
+meta(property='og:type' content=ogtype || 'website')
 meta(property='og:image' content=cover || 'https://langenium.com/assets/images/virtual_office.jpg')
 meta(property='og:image:width' content='1024')
 meta(property='og:image:height' content='768')

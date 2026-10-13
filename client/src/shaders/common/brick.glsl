@@ -59,3 +59,20 @@ vec3 brick_color(in vec3 vTexCoord3D, float brickHeight, float edgePos, bool swa
         return outlineColor;
     return brick;
 }
+
+// 1 across the panel face, falling to 0 across the border. The smoothstep
+// is the chamfer, so the bump only tilts along that gradient and the seam.
+float brick_height(in vec3 tex, float brickHeight, float edgePos)
+{
+    tex.y *= (1.0 - brickHeight);
+
+    vec3 gv = fract(tex);
+
+    float offset = floor(mod(tex.y, 2.0)) * edgePos;
+    float verticalEdge = max(abs(cos(tex.x + offset)), abs(cos(tex.z + offset)));
+
+    float vGroove = smoothstep(0.99975, 0.99997, verticalEdge);
+    float hGroove = max(1.0 - smoothstep(0.0005, 0.005, gv.y), smoothstep(0.995, 0.9995, gv.y));
+
+    return 1.0 - max(vGroove, hGroove);
+}

@@ -253,6 +253,10 @@ export default class Scenograph {
             updateTriggers( currentTime );
 
             updateTweens( currentTime );
+
+            if ( l.current_scene.objects.logo && l.current_scene.objects.logo.mesh.visible ) {
+                l.current_scene.objects.logo.place();
+            }
         }
 
 
@@ -266,6 +270,10 @@ export default class Scenograph {
             l.current_scene.effects.postprocessing.render();
         } else {
             l.current_scene.renderers.webgl.render( l.current_scene.scene, l.scenograph.cameras.active ); // Render the scene without the effects
+        }
+
+        if ( l.current_scene.objects.logo ) {
+            l.current_scene.objects.logo.render();
         }
 
         requestAnimationFrame( l.scenograph.animate );

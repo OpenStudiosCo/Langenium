@@ -8,12 +8,15 @@ eleventyExcludeFromCollections: true
 
 urlset(xmlns="http://www.sitemaps.org/schemas/sitemap/0.9")
     each page in collections.all
+        - var canonicalPath = (page.url || '/').replace(/index\.html$/, '').replace(/\.html$/, '')
+        - if (canonicalPath.length > 1 && canonicalPath.endsWith('/')) canonicalPath = canonicalPath.slice(0, -1)
+        - if (!canonicalPath) canonicalPath = '/'
         url
-            - urlstring = 'https://langenium.com' + page.url
-            loc= urlstring
-            lastmod= page.date.toISOString()
-            if page.data.changefreq || page.url == '/'
-                changefreq= page.data.changefreq
+            loc= 'https://langenium.com' + canonicalPath
+            if page.date
+                lastmod= page.date.toISOString()
+            if page.data.changefreq || canonicalPath == '/'
+                changefreq= page.data.changefreq || 'daily'
             else
                 changefreq weekly
             if page.data.priority

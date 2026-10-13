@@ -100,20 +100,27 @@ class Hangar extends ObjectBase {
     }
 
     /**
-     * Returns world-space AABBs for all solid components
+     * Returns world-space AABBs for all solid components.
+     * Yaw turns local offsets onto the same side as the mesh. Both bays
+     * face along Z, so the box sizes stay as authored.
      */
     public getComponentAABBs(): AABB[] {
+        const cos = Math.cos( this.rotation.y || 0 );
+        const sin = Math.sin( this.rotation.y || 0 );
+
         return this.design.components.map(component => {
             const halfSize = {
                 x: component.width,
                 y: component.height,
                 z: component.depth
             };
+            const localX = component.position.x * 2.5;
+            const localZ = component.position.z * 2.5;
 
             const worldPos = {
-                x: this.position.x + component.position.x * 2.5,
+                x: this.position.x + localX * cos + localZ * sin,
                 y: this.position.y + component.position.y * 2.5,
-                z: this.position.z + component.position.z  * 2.5
+                z: this.position.z - localX * sin + localZ * cos
             };
 
             return {

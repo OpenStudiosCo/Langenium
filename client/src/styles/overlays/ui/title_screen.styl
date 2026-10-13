@@ -1,0 +1,737 @@
+#ui_overlay #title_screen
+    position: absolute
+    top: 0
+    left: 0
+    height: 100%
+    display: none
+    flex-direction: column
+    justify-content: flex-start
+    align-items: flex-start
+    padding: 12vh 0 0 6vw
+    box-sizing: border-box
+    pointer-events: none
+    color: #fff
+    text-transform: uppercase
+    user-select: none
+
+    &.active
+        display: flex
+
+    nav,
+    .title_screen_detail
+        pointer-events: auto
+
+    .title_screen_logo
+        width: unquote("min(42vw, 28rem)")
+        height: 14vh
+        margin-bottom: 6vh
+        flex: 0 0 auto
+        transform-origin: top left
+        transition: transform 720ms cubic-bezier(0.16, 1, 0.3, 1)
+
+    nav
+        pointer-events: auto
+
+    ul
+        list-style: none
+        margin: 0
+        padding: 0
+
+    button
+        display: block
+        position: relative
+        background-color: transparent
+        background-image: linear-gradient(rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.72))
+        background-repeat: no-repeat
+        background-position: left bottom
+        background-size: 0 1px
+        border: 0
+        padding: 0 0.15em 0.14em 0
+        color: inherit
+        font: inherit
+        text-transform: uppercase
+        text-align: left
+        cursor: pointer
+        text-shadow: 0 2px 16px rgba(0, 10, 40, 0.45)
+        transition: background-size 520ms cubic-bezier(0.16, 1, 0.3, 1)
+
+        &:hover,
+        &:focus-visible,
+        &.selected
+            background-size: 100% 1px
+
+        &:focus-visible
+            outline: 1px solid rgba(255, 255, 255, 0.65)
+            outline-offset: 6px
+
+        &:disabled,
+        &:disabled:hover,
+        &:disabled:focus-visible
+            opacity: 0.35
+            background-size: 0 1px
+            cursor: default
+
+            &::before,
+            &::after,
+            > span
+                animation: none
+                opacity: 0
+
+    &.panel-open nav button:not(.selected)
+        opacity: 0.45
+
+        &:hover,
+        &:focus-visible
+            opacity: 1
+
+    .primary
+        font-size: clamp(3.4rem, 7.2vw, 6.6rem)
+
+        li + li
+            margin-top: 0.22em
+
+        button
+            font-family: "Liberation Sans Narrow", "Nimbus Sans Narrow", "Arial Narrow", "Helvetica Condensed", sans-serif
+            font-style: italic
+            font-weight: 700
+            font-stretch: condensed
+            font-size: 1em
+            line-height: 1.08
+            letter-spacing: 0.03em
+
+            // Roman ghost of the same word, shown only as two thin bands.
+            // It disagrees with the italic for a moment, then disappears.
+            &::before,
+            &::after
+                content: attr(data-label)
+                position: absolute
+                left: 0
+                top: 0
+                width: 100%
+                font-style: normal
+                font-weight: 700
+                letter-spacing: 0.03em
+                color: #fff
+                text-shadow: none
+                pointer-events: none
+                opacity: 0
+
+            &::before
+                clip-path: inset(32% 0 54% 0)
+
+            &::after
+                clip-path: inset(64% 0 20% 0)
+
+            > span
+                position: absolute
+                left: -0.04em
+                top: 50%
+                z-index: 1
+                font-size: 1.78em
+                line-height: 0.85
+                white-space: nowrap
+                pointer-events: none
+                color: #fff
+                text-shadow: none
+                opacity: 0
+                mix-blend-mode: screen
+                transform: translate3d(0, -50%, 0) scale(0.96)
+                transform-origin: left center
+
+            &:hover,
+            &:focus-visible
+                &::before
+                    animation: title_band 0.72s cubic-bezier(0.22, 1, 0.36, 1)
+
+                &::after
+                    animation: title_band_late 0.84s cubic-bezier(0.22, 1, 0.36, 1)
+
+                > span
+                    animation: title_bloom 0.82s cubic-bezier(0.16, 1, 0.3, 1)
+
+    .secondary
+        margin-top: 2.1rem
+        font-size: clamp(1.15rem, 2vw, 1.65rem)
+
+        li + li
+            margin-top: 0.42em
+
+        button
+            font-family: "Arial Narrow", "Nimbus Sans Narrow", "Helvetica Condensed", sans-serif
+            font-weight: 600
+            font-stretch: condensed
+            font-size: 1em
+            line-height: 1.15
+            letter-spacing: 0.12em
+
+            > span
+                position: absolute
+                left: 0
+                top: 50%
+                font-size: 1.55em
+                line-height: 1
+                white-space: nowrap
+                pointer-events: none
+                color: #fff
+                text-shadow: none
+                opacity: 0
+                mix-blend-mode: screen
+                transform: translate3d(0, -50%, 0)
+                transform-origin: left center
+
+            &:hover,
+            &:focus-visible
+                > span
+                    animation: title_bloom 0.82s cubic-bezier(0.16, 1, 0.3, 1)
+
+    .title_screen_detail
+        position: absolute
+        left: unquote("min(46vw, 34rem)")
+        top: 30vh
+        width: unquote("min(24rem, 40vw)")
+        max-height: 62vh
+        transition: top 720ms cubic-bezier(0.16, 1, 0.3, 1)
+        overflow-y: auto
+        scrollbar-width: thin
+        scrollbar-color: rgba(255, 255, 255, 0.45) transparent
+        pointer-events: auto
+        text-shadow: 0 2px 12px rgba(0, 10, 40, 0.45)
+
+        h2
+            margin: 0 0 0.75rem
+            font-family: "Arial Narrow", "Nimbus Sans Narrow", "Helvetica Condensed", sans-serif
+            font-size: clamp(1.4rem, 2.4vw, 2rem)
+            font-weight: 700
+            letter-spacing: 0.08em
+
+        p,
+        label,
+        li
+            font-family: system-ui, sans-serif
+            font-size: 1rem
+            line-height: 1.45
+            letter-spacing: 0.04em
+            text-transform: none
+
+        ul
+            margin-top: 0.5rem
+
+        li + li
+            margin-top: 0.65rem
+
+        button
+            font-family: "Arial Narrow", "Nimbus Sans Narrow", "Helvetica Condensed", sans-serif
+            font-size: clamp(1.4rem, 2.2vw, 1.9rem)
+            font-weight: 700
+            letter-spacing: 0.06em
+            text-transform: uppercase
+
+        label
+            display: flex
+            align-items: center
+            gap: 0.6rem
+            margin: 0.45rem 0
+            cursor: pointer
+
+        [data-panel="settings"] input
+            width: 1rem
+            height: 1rem
+            margin: 0
+            accent-color: #fff
+
+        [data-panel="settings"] label:has(input:disabled)
+            opacity: 0.4
+            cursor: default
+
+        [data-panel="stories"]
+            h2
+                margin-bottom: 1.15rem
+                font-family: "Liberation Sans Narrow", "Nimbus Sans Narrow", "Arial Narrow", "Helvetica Condensed", sans-serif
+                font-style: italic
+                font-weight: 700
+                font-stretch: condensed
+                font-size: clamp(2.15rem, 3.2vw, 2.85rem)
+                line-height: 1
+                letter-spacing: 0.02em
+
+            p
+                margin: 0
+                max-width: 36ch
+
+            .story_synopsis
+                margin-bottom: 1.5rem
+
+                p + p
+                    margin-top: 0.8rem
+
+            .story_parts
+                margin: 0
+                padding: 0
+                list-style: none
+
+                li
+                    display: block
+                    margin: 0
+                    padding: 0
+                    border-top: 1px solid rgba(255, 255, 255, 0.72)
+                    box-shadow: inset 0 1px 0 rgba(0, 8, 30, 0.28)
+
+                    &:last-child
+                        border-bottom: 1px solid rgba(255, 255, 255, 0.72)
+                        box-shadow: inset 0 1px 0 rgba(0, 8, 30, 0.28), inset 0 -1px 0 rgba(0, 8, 30, 0.28)
+
+                button
+                    display: grid
+                    grid-template-columns: 2.25rem minmax(0, 1fr) auto
+                    column-gap: 0.8rem
+                    align-items: baseline
+                    width: 100%
+                    margin: 0
+                    padding: 0.7rem 0
+                    font-family: inherit
+                    font-size: inherit
+                    font-weight: inherit
+                    letter-spacing: inherit
+                    line-height: inherit
+                    text-transform: none
+
+            .story_index
+                font-family: "Arial Narrow", "Nimbus Sans Narrow", "Helvetica Condensed", sans-serif
+                font-weight: 700
+                font-size: 0.95rem
+                letter-spacing: 0.12em
+                opacity: 0.72
+
+            .story_name
+                display: flex
+                flex-direction: column
+                align-items: flex-start
+                gap: 0.18rem
+                font-family: "Arial Narrow", "Nimbus Sans Narrow", "Helvetica Condensed", sans-serif
+                font-weight: 700
+                font-size: clamp(1.2rem, 1.8vw, 1.5rem)
+                letter-spacing: 0.03em
+                line-height: 1.15
+
+            .story_by
+                font-family: system-ui, sans-serif
+                font-size: 0.72rem
+                font-weight: 500
+                letter-spacing: 0.04em
+                line-height: 1.2
+                text-transform: none
+                opacity: 0.75
+
+            .story_time
+                font-size: 0.78rem
+                letter-spacing: 0.08em
+                opacity: 0.75
+                white-space: nowrap
+
+            .story_note
+                margin-top: 1.05rem
+                font-size: 0.9rem
+                line-height: 1.45
+                opacity: 0.82
+
+        .story_reader
+            h2
+                margin-bottom: 0.35rem
+                font-family: "Liberation Sans Narrow", "Nimbus Sans Narrow", "Arial Narrow", "Helvetica Condensed", sans-serif
+                font-style: italic
+                font-weight: 700
+                font-stretch: condensed
+                line-height: 1
+                letter-spacing: 0.02em
+
+            .story_by
+                margin: 0 0 1.15rem
+                font-size: 0.95rem
+
+        .story_text
+            max-width: 68ch
+            user-select: text
+            text-transform: none
+
+            p
+                margin: 0 0 0.95rem
+                max-width: none
+                font-size: clamp(1.02rem, 1.25vw, 1.16rem)
+                line-height: 1.6
+
+            .story_act
+                margin-top: 1.8rem
+                font-family: "Arial Narrow", "Nimbus Sans Narrow", "Helvetica Condensed", sans-serif
+                font-size: clamp(1.2rem, 1.8vw, 1.45rem)
+                font-weight: 700
+                letter-spacing: 0.08em
+                line-height: 1.2
+
+            hr
+                width: 3.25rem
+                height: 0
+                margin: 0.2rem 0 1.15rem
+                border: 0
+                border-top: 1px solid rgba(255, 255, 255, 0.55)
+
+            a,
+            .story_ref
+                display: inline
+                padding: 0
+                background-image: none
+                font: inherit
+                letter-spacing: inherit
+                line-height: inherit
+                text-transform: none
+                text-decoration: underline
+                text-underline-offset: 0.16em
+                cursor: pointer
+
+            figure
+                margin: 0.35rem 0 1.15rem
+
+            img
+                display: block
+                width: 100%
+                max-width: 40rem
+                height: auto
+
+        [data-panel="about"] p,
+        [data-panel="lore"] p,
+        [data-panel="help"] p
+            margin: 0 0 0.75rem
+
+        [data-panel="help"]
+            h3
+                margin: 1.15rem 0 0.4rem
+                font-family: "Arial Narrow", "Nimbus Sans Narrow", "Helvetica Condensed", sans-serif
+                font-size: clamp(1.05rem, 1.5vw, 1.2rem)
+                font-weight: 700
+                letter-spacing: 0.12em
+
+            h3:first-of-type
+                margin-top: 0.2rem
+
+        .panel_body
+            box-sizing: border-box
+            padding: 1.15rem 1.25rem 1.2rem
+            border-style: solid
+            border-color: transparent
+            border-width: 80px
+            border-image-source: url("/assets/borders/border-01.png")
+            border-image-slice: unquote("80 fill")
+            border-image-width: 80px
+            border-image-repeat: round
+            background-color: transparent
+            background-clip: padding-box
+
+        .panel_back
+            margin: 0 0 1.15rem
+            font-family: "Arial Narrow", "Nimbus Sans Narrow", "Helvetica Condensed", sans-serif
+            font-size: clamp(1.15rem, 2vw, 1.65rem)
+            font-weight: 600
+            letter-spacing: 0.12em
+            line-height: 1.15
+
+        a
+            color: inherit
+
+    &.help-session
+        .title_screen_logo,
+        nav
+            display: none
+
+    @media (max-width: 720px) and (min-height: 521px)
+        padding: 4.5vh 1.25rem 1.5rem
+        overflow-x: hidden
+        overflow-y: auto
+
+        .title_screen_logo
+            width: unquote("min(78vw, 16rem)")
+            height: 9vh
+            margin-bottom: 2vh
+
+        nav
+            flex: 1 1 auto
+            display: flex
+            flex-direction: column
+            justify-content: space-between
+            width: 100%
+
+        .primary
+            position: absolute
+            top: 50%
+            left: 1.25rem
+            transform: translateY(-50%)
+            font-size: clamp(2.75rem, 15vw, 4.6rem)
+
+            li + li
+                margin-top: 0.28em
+
+        .secondary
+            margin-top: auto
+            padding-bottom: 0.25rem
+
+        .title_screen_detail
+            position: static
+            top: auto
+            left: auto
+            width: auto
+            max-width: 100%
+            margin-top: 1.5rem
+
+    @media (max-height: 520px)
+        padding: 0.7rem 1.5rem 0.65rem
+        overflow-x: hidden
+        overflow-y: auto
+
+        .title_screen_logo
+            width: unquote("min(42vw, 22rem)")
+            height: 18vh
+            margin-bottom: 0.65rem
+
+        nav
+            flex: 0 0 auto
+            display: block
+
+        .primary
+            font-size: clamp(2.15rem, 10vh, 3.8rem)
+
+            li + li
+                margin-top: 0.42em
+
+        .secondary
+            margin-top: 1.15rem
+            font-size: clamp(1.05rem, 4.6vh, 1.4rem)
+
+            li + li
+                margin-top: 0.55em
+
+        .title_screen_detail
+            left: auto
+            right: 3vw
+            top: 0.7rem
+            width: unquote("min(20rem, 42vw)")
+            max-height: unquote("calc(100vh - 1.4rem)")
+            max-width: none
+
+    &.panel-open
+        right: 0
+        align-items: stretch
+        overflow-y: auto
+
+        nav
+            display: none
+
+        .title_screen_logo
+            transform: scale(0.5)
+
+        // Logo top inset is 4vh. Open panels use a half-size wordmark, so the panel
+        // starts just below that. 5.486 is the wordmark's width/height.
+        .title_screen_detail
+            position: absolute
+            left: 6vw
+            right: 6vw
+            bottom: 6vw
+            top: unquote("calc(7vh + 0.75 * min(min(42vw, 28rem) / 5.486, 14vh))")
+            display: flex
+            flex-direction: column
+            width: auto
+            max-width: none
+            max-height: none
+            margin: 0
+            overflow: hidden
+            transform: none
+
+            [data-panel][hidden]
+                display: none !important
+
+            [data-panel]:not([hidden])
+                flex: 1 1 auto
+                min-height: 0
+                display: flex
+                flex-direction: column
+                overflow: hidden
+
+                h2
+                    font-size: clamp(2.75rem, 4.6vw, 4.6rem)
+
+                p
+                    max-width: 68ch
+
+                .panel_back
+                    flex: 0 0 auto
+
+                .panel_body
+                    flex: 1 1 auto
+                    min-height: 0
+                    display: flex
+                    flex-direction: column
+                    overflow-x: hidden
+                    overflow-y: auto
+                    scrollbar-width: thin
+                    scrollbar-color: rgba(255, 255, 255, 0.45) transparent
+                    padding: clamp(1.6rem, 3vh, 2.6rem) clamp(1.6rem, 3vw, 3.2rem)
+
+            [data-panel="stories"] .story_name
+                font-size: clamp(1.35rem, 2.2vw, 2.05rem)
+
+        @media (max-width: 720px)
+            .title_screen_detail
+                left: 1.25rem
+                right: 1.25rem
+                bottom: 1.25rem
+                top: unquote("calc(8vh + 0.5 * min(min(78vw, 16rem) / 5.486, 9vh, 20vh))")
+
+                [data-panel]:not([hidden])
+                    h2
+                        font-size: clamp(2.15rem, 9vw, 3rem)
+
+                    .panel_body
+                        padding: 1.25rem 1.15rem 1.2rem
+                        border-width: 56px
+                        border-image-width: 56px
+
+        @media (max-height: 520px)
+            .title_screen_detail
+                left: 1.5rem
+                right: 1.5rem
+                bottom: 0.65rem
+                top: unquote("calc(1.4rem + 0.5 * min(min(42vw, 22rem) / 5.486, 18vh, 20vh))")
+
+                .panel_body
+                    border-width: 44px
+                    border-image-width: 44px
+                    padding: 0.75rem 0.85rem
+
+    .title_engine,
+    .title_studio
+        pointer-events: auto
+        color: inherit
+        text-decoration: none
+
+    .title_engine
+        position: fixed
+        top: 1.15rem
+        right: 1.4rem
+        z-index: 2
+        font-family: "Arial Narrow", "Nimbus Sans Narrow", "Helvetica Condensed", sans-serif
+        font-weight: 700
+        font-size: clamp(1.05rem, 1.7vw, 1.4rem)
+        letter-spacing: 0.14em
+        text-transform: none
+        text-shadow: 0 2px 16px rgba(0, 10, 40, 0.45)
+
+        &:hover,
+        &:focus-visible
+            text-decoration: underline
+
+        &:focus-visible
+            outline: 1px solid rgba(255, 255, 255, 0.65)
+            outline-offset: 6px
+
+    .title_studio
+        position: fixed
+        right: 1.35rem
+        bottom: 1.15rem
+        z-index: 2
+        width: unquote("min(10.5rem, 32vw)")
+        line-height: 0
+
+        img
+            display: block
+            width: 100%
+            height: auto
+
+    &.panel-open .title_studio
+        visibility: hidden
+        pointer-events: none
+
+#ui_overlay #exit_game
+    position: fixed
+    top: 1.15rem
+    right: 1.4rem
+    z-index: 6
+    display: block
+    padding: 0 0.15em 0.14em 0
+    border: 0
+    background-color: transparent
+    background-image: linear-gradient(rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.72))
+    background-repeat: no-repeat
+    background-position: left bottom
+    background-size: 0 1px
+    color: #fff
+    font-family: "Arial Narrow", "Nimbus Sans Narrow", "Helvetica Condensed", sans-serif
+    font-weight: 700
+    font-size: clamp(1.05rem, 1.7vw, 1.4rem)
+    letter-spacing: 0.14em
+    line-height: 1.15
+    text-transform: uppercase
+    text-shadow: 0 2px 16px rgba(0, 10, 40, 0.45)
+    cursor: pointer
+    pointer-events: auto
+    transition: background-size 520ms cubic-bezier(0.16, 1, 0.3, 1)
+
+    &:hover,
+    &:focus-visible
+        background-size: 100% 1px
+
+    &:focus-visible
+        outline: 1px solid rgba(255, 255, 255, 0.65)
+        outline-offset: 6px
+
+    &[hidden]
+        display: none !important
+
+@keyframes title_bloom
+    0%
+        opacity: 0
+        transform: translate3d(0, -48%, 0) scale(0.94)
+    14%
+        opacity: 0.42
+        transform: translate3d(-0.02em, -52%, 0) scale(1)
+    100%
+        opacity: 0
+        transform: translate3d(-0.05em, -58%, 0) scale(1.07)
+
+@keyframes title_band
+    0%
+        opacity: 0
+        transform: translate3d(0, 0, 0)
+    16%
+        opacity: 0.92
+        transform: translate3d(0.06em, 0, 0)
+    38%
+        opacity: 0.5
+        transform: translate3d(-0.085em, 0, 0)
+    68%
+        opacity: 0.16
+        transform: translate3d(0.02em, 0, 0)
+    100%
+        opacity: 0
+        transform: translate3d(0, 0, 0)
+
+@keyframes title_band_late
+    0%,
+    10%
+        opacity: 0
+        transform: translate3d(0, 0, 0)
+    32%
+        opacity: 0.8
+        transform: translate3d(-0.075em, 0, 0)
+    58%
+        opacity: 0.28
+        transform: translate3d(0.05em, 0, 0)
+    100%
+        opacity: 0
+        transform: translate3d(0, 0, 0)
+
+@media (prefers-reduced-motion: reduce)
+    #ui_overlay #title_screen button::before,
+    #ui_overlay #title_screen button::after,
+    #ui_overlay #title_screen button > span
+        animation: none
+
+    #ui_overlay #title_screen .title_screen_logo,
+    #ui_overlay #title_screen .title_screen_detail
+        transition: none

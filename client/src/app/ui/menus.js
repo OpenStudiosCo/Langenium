@@ -18,13 +18,17 @@ export default class Menus {
 
     constructor() {
 
-        // Main menu
-        // Position: Top right.
+        // In-session tools. Position: top right. Starts collapsed.
         this.main_menu = new Main_Menu();
 
     }
 
     debug_on() {
+
+        const overlay = document.getElementById( 'ui_overlay' );
+        if ( overlay ) {
+            overlay.classList.add( 'debug' );
+        }
 
         // Debugging tools
         // Position: Bottom right.
@@ -47,6 +51,11 @@ export default class Menus {
     }
 
     debug_off(){
+
+        const overlay = document.getElementById( 'ui_overlay' );
+        if ( overlay ) {
+            overlay.classList.remove( 'debug' );
+        }
 
         // Dispose of the panes and then delete the controls so they're fresh if reactivated.
         this.debugging_tools.pane.dispose();

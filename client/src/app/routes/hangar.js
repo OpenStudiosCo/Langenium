@@ -81,37 +81,43 @@ export default class hangarRoute {
 
       l.current_scene.scene.add(l.scenograph.objects.structures.hangar.mesh);
 
-      l.scenograph.objects.structures.hangar.mesh.visible = true;
+      const hangars = this.targetStructure.userData.config.hangars;
+      const name = l.scenograph.actors.player.actorInstance.config.hangar.hangarName;
+      const hangarConfig = hangars.find( ( hangar ) => hangar.name === name );
+      const hangarMesh = l.scenograph.objects.structures.hangar.mesh;
+      hangarMesh.visible = true;
+      hangarMesh.position.set( hangarConfig.position.x, hangarConfig.position.y, hangarConfig.position.z );
+      hangarMesh.rotation.set( hangarConfig.rotation.x, hangarConfig.rotation.y, hangarConfig.rotation.z );
 
-      l.scenograph.objects.structures.hangar.mesh.position.x = this.targetStructure.userData.config.hangars[0].position.x;
-      l.scenograph.objects.structures.hangar.mesh.position.y = this.targetStructure.userData.config.hangars[0].position.y;
-      l.scenograph.objects.structures.hangar.mesh.position.z = this.targetStructure.userData.config.hangars[0].position.z;
+      // Local -Z is out the bay door.
+      const place = ( object, x, y, z ) => {
+          const spot = new THREE.Vector3( x, y, z ).applyEuler( hangarMesh.rotation ).add( hangarMesh.position );
+          object.position.x = spot.x;
+          object.position.y = spot.y;
+          object.position.z = spot.z;
+          object.rotation.x = hangarMesh.rotation.x;
+          object.rotation.y = hangarMesh.rotation.y;
+          object.rotation.z = hangarMesh.rotation.z;
+      };
 
-      const hangarConfig = this.targetStructure.userData.config.hangars[0];
       const ship = l.scenograph.actors.player.vehicle.mesh.userData.object;
-      const person = l.scenograph.actors.player.actorInstance.object;
-
-      ship.position.x = hangarConfig.position.x;
-      ship.position.z = - 2.5 + hangarConfig.position.z;
-      ship.position.y = l.scenograph.objects.structures.hangar.mesh.position.y - 7.5;
-      // Face the open bay so depart rolls outward, not into a wall.
-      ship.rotation.x = hangarConfig.rotation.x;
-      ship.rotation.y = hangarConfig.rotation.y;
-      ship.rotation.z = hangarConfig.rotation.z;
+      place( ship, 0, -7.5, -2.5 );
       ship.airSpeed = 0;
       ship.verticalSpeed = 0;
 
-      person.position.x = hangarConfig.position.x;
-      person.position.z = 10 + hangarConfig.position.z;
-      person.position.y = l.scenograph.objects.structures.hangar.mesh.position.y - 2.5;
-      person.rotation.x = hangarConfig.rotation.x;
-      person.rotation.y = hangarConfig.rotation.y;
-      person.rotation.z = hangarConfig.rotation.z;
+      place( l.scenograph.actors.player.actorInstance.object, 0, -2.5, 10 );
 
       l.scenograph.actors.player.vehicle.updateMesh();
       l.scenograph.actors.player.setVehicleVisible( true, false );
 
-      l.scenograph.cameras.active.position.copy(l.scenograph.actors.player.actorInstance.object.position);
+      const actor = l.scenograph.actors.player.actorInstance.object;
+      const camera = l.scenograph.cameras.player;
+      camera.position.copy( actor.position );
+      camera.rotation.set( 0, actor.rotation.y, 0 );
+      if ( l.scenograph.cameras.active !== camera ) {
+          l.scenograph.cameras.active.position.copy( camera.position );
+          l.scenograph.cameras.active.rotation.copy( camera.rotation );
+      }
 
       if ( l.scenograph.controls.orbit ) {
           l.scenograph.cameras.orbit.updateProjectionMatrix();
@@ -126,67 +132,95 @@ export default class hangarRoute {
         this.departing = this.departing || false;
         this.promptDismissed = this.promptDismissed || false;
         this.promptKeyHeld = false;
+        this.promptOpen = false;
+        this.promptMode = null;
         this.lastShipPos = this.lastShipPos || null;
         this.cityRay = this.cityRay || new THREE.Raycaster();
-        this.prompt = document.querySelector('#depart_prompt');
-
-        if ( !this.prompt ) {
-            this.prompt = document.createElement('div');
-            this.prompt.id = 'depart_prompt';
-            document.querySelector('#game_overlay').appendChild(this.prompt);
-        }
-        else {
-            const fresh = this.prompt.cloneNode(false);
-            this.prompt.replaceWith(fresh);
-            this.prompt = fresh;
-        }
-
-        this.prompt.addEventListener('click', event => {
-            const hangar = l.scenograph.hangar;
-            const action = event.target.closest('button')?.dataset.action;
-            if ( action === 'stay' ) {
-                hangar.promptDismissed = true;
-                hangar.prompt.classList.remove('visible');
-            }
-            if ( action === 'depart' ) {
-                hangar.depart();
-            }
-            if ( action === 'enter' ) {
-                hangar.enterHangar();
-            }
-            event.target.closest('button')?.blur();
-        });
-
-        this.promptMode = null;
-        this.setPromptMode( l.mode === 'hangar' ? 'depart' : 'enter' );
     }
 
-    setPromptMode( mode ) {
-        if ( ! this.prompt || this.promptMode === mode ) {
-            return;
-        }
-        this.promptMode = mode;
+    promptLine( mode ) {
+        const hangar = this;
+        const stay = () => {
+            hangar.promptDismissed = true;
+            hangar.promptOpen = false;
+        };
+
         if ( mode === 'enter' ) {
-            this.prompt.innerHTML = `
-                <p>Lambda City</p>
-                <h2>Enter hangar?</h2>
-                <p>Land and walk to your aircraft.</p>
-                <div>
-                    <button type="button" data-action="enter"><kbd>E</kbd> Enter</button>
-                    <button type="button" data-action="stay"><kbd>Esc</kbd> Stay</button>
-                </div>
-            `;
+            return {
+                owner: 'hangar',
+                modal: false,
+                close: false,
+                speaker: 'Lambda City',
+                text: 'Enter hangar?',
+                onDismiss: stay,
+                actions: [
+                    {
+                        key: 'E',
+                        label: 'Enter',
+                        run: () => {
+                            hangar.promptOpen = false;
+                            hangar.enterHangar();
+                        }
+                    },
+                    { key: 'Esc', label: 'Cancel', run: stay }
+                ]
+            };
+        }
+
+        return {
+            owner: 'hangar',
+            modal: false,
+            close: false,
+            speaker: 'Aircraft ready',
+            text: 'Depart hangar?',
+            onDismiss: stay,
+            actions: [
+                {
+                    key: 'E',
+                    label: 'Depart',
+                    run: () => {
+                        hangar.promptOpen = false;
+                        hangar.depart();
+                    }
+                },
+                { key: 'Esc', label: 'Cancel', run: stay }
+            ]
+        };
+    }
+
+    syncPrompt( show, mode ) {
+        if ( ! l.ui || ! l.ui.dialog ) {
             return;
         }
-        this.prompt.innerHTML = `
-            <p>Aircraft ready</p>
-            <h2>Depart hangar?</h2>
-            <p>Board your aircraft and take off.</p>
-            <div>
-                <button type="button" data-action="depart"><kbd>E</kbd> Depart</button>
-                <button type="button" data-action="stay"><kbd>Esc</kbd> Stay</button>
-            </div>
-        `;
+
+        if ( ! show ) {
+            this.hidePrompt();
+            return;
+        }
+
+        if ( this.promptOpen && this.promptMode === mode ) {
+            return;
+        }
+
+        if ( l.ui.dialog.isShowing() && l.ui.dialog.owner !== 'hangar' ) {
+            return;
+        }
+
+        this.promptOpen = true;
+        this.promptMode = mode;
+        l.ui.dialog.show( this.promptLine( mode ) );
+    }
+
+    hidePrompt() {
+        if ( ! this.promptOpen ) {
+            return;
+        }
+
+        this.promptOpen = false;
+
+        if ( l.ui && l.ui.dialog && l.ui.dialog.owner === 'hangar' ) {
+            l.ui.dialog.hide();
+        }
     }
 
     tick() {
@@ -202,11 +236,9 @@ export default class hangarRoute {
 
     updateDepartPrompt() {
         if ( this.departing ) {
-            this.prompt.classList.remove('visible');
+            this.hidePrompt();
             return;
         }
-
-        this.setPromptMode('depart');
 
         const person = l.scenograph.actors.player.actorInstance.object.position;
         const ship = l.scenograph.actors.player.vehicle.mesh.userData.object.position;
@@ -217,9 +249,9 @@ export default class hangarRoute {
         }
 
         const show = near && !this.promptDismissed;
-        this.prompt.classList.toggle('visible', show);
+        this.syncPrompt( show, 'depart' );
 
-        if ( !show ) {
+        if ( !show || !this.promptOpen ) {
             this.promptKeyHeld = false;
             return;
         }
@@ -231,7 +263,7 @@ export default class hangarRoute {
         }
         if ( escPressed && !this.promptKeyHeld ) {
             this.promptDismissed = true;
-            this.prompt.classList.remove('visible');
+            this.hidePrompt();
         }
         this.promptKeyHeld = ePressed || escPressed;
     }
@@ -239,11 +271,9 @@ export default class hangarRoute {
     updateEnterPrompt() {
         const player = l.scenograph.actors.player;
         if ( ! player || player.mode !== 'vehicle' || this.departing ) {
-            this.prompt.classList.remove('visible');
+            this.hidePrompt();
             return;
         }
-
-        this.setPromptMode('enter');
 
         const ship = player.vehicle.mesh.userData.object.position;
         const near = this.distanceToCity( ship ) <= 50;
@@ -253,9 +283,9 @@ export default class hangarRoute {
         }
 
         const show = near && !this.promptDismissed;
-        this.prompt.classList.toggle('visible', show);
+        this.syncPrompt( show, 'enter' );
 
-        if ( !show ) {
+        if ( !show || !this.promptOpen ) {
             this.promptKeyHeld = false;
             return;
         }
@@ -267,7 +297,7 @@ export default class hangarRoute {
         }
         if ( escPressed && !this.promptKeyHeld ) {
             this.promptDismissed = true;
-            this.prompt.classList.remove('visible');
+            this.hidePrompt();
         }
         this.promptKeyHeld = ePressed || escPressed;
     }
@@ -400,7 +430,7 @@ export default class hangarRoute {
             return;
         }
         this.departing = true;
-        this.prompt.classList.remove('visible');
+        this.hidePrompt();
 
         const player = l.scenograph.actors.player;
         const ship = player.vehicle.mesh.userData.object;
@@ -483,9 +513,7 @@ export default class hangarRoute {
         this.promptDismissed = false;
         this.lastShipPos = null;
 
-        if ( this.prompt ) {
-            this.prompt.classList.remove('visible');
-        }
+        this.hidePrompt();
 
         this.unloadHangar();
     }
@@ -494,8 +522,8 @@ export default class hangarRoute {
      * Same overworld handoff as P1: vehicle mode, HUD overlays, flight controls.
      */
     enterOverworld() {
-        if ( l.current_scene.objects.demoShip ) {
-            l.current_scene.objects.demoShip.ready = true;
+        if ( l.current_scene.objects.demoTour ) {
+            l.current_scene.objects.demoTour.ready = true;
         }
         l.mode = 'single_player';
         l.scenograph.actors.player.setVehicleVisible( true );
@@ -506,7 +534,7 @@ export default class hangarRoute {
         this.promptDismissed = true;
         this.promptKeyHeld = false;
         this.lastShipPos = null;
-        this.setPromptMode('enter');
+        this.promptMode = 'enter';
         l.scenograph.overlays.activate();
         l.scenograph.controls.setAircraftChrome( true );
         hangarRoute.watchOverworld();
@@ -519,9 +547,16 @@ export default class hangarRoute {
         if ( l.mode === 'hangar' ) {
             return;
         }
-        this.prompt.classList.remove('visible');
+        this.hidePrompt();
         this.promptDismissed = false;
         this.departing = false;
+
+        if ( l.current_scene.tweens.shipDepart ) {
+            l.current_scene.tweens.shipDepart.stop();
+        }
+        if ( l.current_scene.tweens.cameraHandoff ) {
+            l.current_scene.tweens.cameraHandoff.stop();
+        }
 
         if ( l.scenograph.overlays.hud ) {
             l.scenograph.overlays.deactivate();
@@ -540,7 +575,7 @@ export default class hangarRoute {
         }
         this.targetStructure = l.scenograph.objects.structures.platform.instances[0];
         this.loadHangar();
-        this.setPromptMode('depart');
+        this.promptMode = 'depart';
         l.scenograph.controls.setAircraftChrome( false );
     }
 

@@ -147,6 +147,8 @@ export default class Person {
             // l.scenograph.cameras.player.position.x += xDiff2;
             // l.scenograph.cameras.player.position.z += zDiff2;
 
+            l.scenograph.cameras.player.rotation.x = 0;
+            l.scenograph.cameras.player.rotation.z = 0;
             l.scenograph.cameras.player.updateProjectionMatrix();
         }
 

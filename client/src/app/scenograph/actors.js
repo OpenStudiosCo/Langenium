@@ -12,7 +12,7 @@
  * Internal libs and helpers.
  */
 import l from '@/helpers/l.js';
-import DemoShip from '@/scenograph/actors/demoShip.js';
+import DemoTour from '@/scenograph/actors/demoTour.js';
 import Player from '@/scenograph/actors/player.js';
 
 export default class Actors {
@@ -22,7 +22,7 @@ export default class Actors {
 
     constructor() {
         this.map = new Map();
-        this.map.set('Demo Ship', new DemoShip());
+        this.map.set('Demo Tour', new DemoTour());
     }
 
     async registerActor(actorInstance) {

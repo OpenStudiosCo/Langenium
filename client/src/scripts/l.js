@@ -35,7 +35,7 @@ function _init( wait ) {
 	l.scenograph = false;
 
 	// Engine settings
-	l.version = '0.6.0-Alpha';
+	l.version = '0.7.0-alpha';
 	l.url = '//' + location.host;
 	l.env = _check_environment();
 
@@ -48,12 +48,12 @@ function _init( wait ) {
 	var modules = [
 		{
 			name: "TWEEN.js",
-			files: [ { path: './vendor/tween-21.0.0.umd.min.js' } ]
+			files: [ { path: '/vendor/tween-21.0.0.umd.min.js' } ]
 		},
 		{
 			name: "Game Client",
 			requires: [ 'TWEEN.js' ],
-			files: [ { path: "./main.js", callback: "l.init" } ]
+			files: [ { path: "/main.js", callback: "l.init" } ]
 		}
 	];
 

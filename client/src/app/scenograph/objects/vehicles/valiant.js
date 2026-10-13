@@ -60,7 +60,7 @@ export default class Valiant {
     async load() {
 
 
-        this.model = await l.current_scene.loaders.gtlf.loadAsync( './assets/models/mercenary4.glb' );
+        this.model = await l.current_scene.loaders.gtlf.loadAsync( '/assets/models/mercenary4.glb' );
 
         let amount = l.config.settings.fast ? 5 : 2.5;
 
@@ -347,7 +347,7 @@ export default class Valiant {
     animate( delta ) {
 
         const departing = l.mode === 'hangar' && l.scenograph.hangar && l.scenograph.hangar.departing;
-        if ( departing || ( l.current_scene.objects.demoShip.ready && l.mode != 'hangar' ) ) {
+        if ( departing || ( l.current_scene.objects.demoTour.ready && l.mode != 'hangar' ) ) {
             this.updateAnimation( delta );
             if ( ! this.demo && l.mode != 'hangar' ) {
                 this.animateTrail();

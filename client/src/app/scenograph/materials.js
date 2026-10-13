@@ -89,7 +89,7 @@ export function brightenMaterial( material, amount ) {
 export function proceduralBuilding( settings ) {
 
   // @todo: Move into a common helper / in memory store.
-  let noiseTexture2 = l.scenograph.materials.get_texture( './assets/textures/noise2.jpg' );
+  let noiseTexture2 = l.scenograph.materials.get_texture( '/assets/textures/noise2.jpg' );
   noiseTexture2.wrapS = noiseTexture2.wrapT = THREE.RepeatWrapping;
 
   settings.uniforms.noiseTexture = { type: "t", value: noiseTexture2 };
@@ -125,7 +125,7 @@ export function proceduralBuilding( settings ) {
 export function proceduralMetalMaterial( settings ) {
 
   // @todo: Move into a common helper / in memory store.
-  let noiseTexture2 = l.scenograph.materials.get_texture( './assets/textures/noise2.jpg' );
+  let noiseTexture2 = l.scenograph.materials.get_texture( '/assets/textures/noise2.jpg' );
   noiseTexture2.wrapS = noiseTexture2.wrapT = THREE.RepeatWrapping;
 
   settings.uniforms.noiseTexture = { type: "t", value: noiseTexture2 };
@@ -165,7 +165,7 @@ export function proceduralMetalMaterial( settings ) {
 export function proceduralMetalMaterial2( settings ) {
 
   // @todo: Move into a common helper / in memory store.
-  let noiseTexture2 = l.scenograph.materials.get_texture( './assets/textures/noise2.jpg' );
+  let noiseTexture2 = l.scenograph.materials.get_texture( '/assets/textures/noise2.jpg' );
   noiseTexture2.wrapS = noiseTexture2.wrapT = THREE.RepeatWrapping;
 
   settings.uniforms.noiseTexture = { type: "t", value: noiseTexture2 };
@@ -199,7 +199,7 @@ export function proceduralMetalMaterial2( settings ) {
 export function proceduralSolarPanel( settings ) {
 
   // @todo: Move into a common helper / in memory store.
-  let noiseTexture2 = l.scenograph.materials.get_texture( './assets/textures/noise2.jpg' );
+  let noiseTexture2 = l.scenograph.materials.get_texture( '/assets/textures/noise2.jpg' );
   noiseTexture2.wrapS = noiseTexture2.wrapT = THREE.RepeatWrapping;
 
   settings.uniforms.noiseTexture = { type: "t", value: noiseTexture2 };

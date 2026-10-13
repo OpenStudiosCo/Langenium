@@ -27,6 +27,10 @@ script(type='x-shader/x-vertex' id='proceduralSolarPanelVertShader')
     include ../../../shaders/proceduralSolarPanel.vert
 script(type='x-shader/x-fragment' id='proceduralSolarPanelFragShader')
     include ../../../shaders/proceduralSolarPanel.frag
+script(type='x-shader/x-vertex' id='logoWaterVertShader')
+    include ../../../shaders/water.vertexShader
+script(type='x-shader/x-fragment' id='logoWaterFragShader')
+    include ../../../shaders/water.fragmentShader
 script#vertexshader(type='x-shader/x-vertex').
     varying vec2 vUv;
     void main() {

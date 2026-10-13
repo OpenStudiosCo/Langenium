@@ -11,7 +11,7 @@ varying vec2 vUv;
 #include <normal>       // Include the normal functions
 #include <voronoi>      // Include the voronoi functions
 
-const float bumpScale = 250.;
+const float panelBevel = 4.5;
 
 void main() {
     vec3 baseColor = brick_color(vTexCoord3D * 100., 0.85, 0.0, false);
@@ -27,8 +27,10 @@ void main() {
     }
     
 
-    // // Using the bump mapping function
-    vec3 perturbedNormal = bumpMapping(vViewPosition, normalize(vNormal), bumpScale, 1.0, 0.0, baseColor.r, baseColor.r, false);
+    // Chamfer the cell borders. Same bevel as procedural metal 2.
+    float plates = brick_height(vTexCoord3D * 100., 0.85, 0.0);
+    float pixel = max(length(dFdx(vViewPosition)), length(dFdy(vViewPosition)));
+    vec3 perturbedNormal = bumpMapping(vViewPosition, normalize(vNormal), 0.5, pixel * panelBevel, 0.0, dFdx(plates), dFdy(plates), false);
 
     vec3 lightWeighting = calculateMergedLighting(baseColor, perturbedNormal, baseColor.r, lightRatio);
 

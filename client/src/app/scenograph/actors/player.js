@@ -248,7 +248,7 @@ export default class Player {
             return;
         }
 
-        if ( ! l.current_scene.objects.demoShip || ! l.current_scene.objects.demoShip.ready ) {
+        if ( ! l.current_scene.objects.demoTour || ! l.current_scene.objects.demoTour.ready ) {
             return;
         }
 
@@ -257,6 +257,10 @@ export default class Player {
         }
 
         if ( l.scenograph.actors.player !== this || this.mode != 'vehicle' ) {
+            return;
+        }
+
+        if ( this.vehicle.mesh.userData.object.respawning ) {
             return;
         }
 

@@ -3,10 +3,22 @@
     pointer-events: all;
 }
 
+#ui_overlay #main_menu {
+    display: none;
+}
+
+#ui_overlay.debug #main_menu {
+    display: block;
+}
+
 #ui_overlay #main_menu .tp-rotv {
     position: absolute;
     top: 8px;
     right: 8px;
+}
+
+#ui_overlay.debug #main_menu .tp-rotv {
+    top: 3.4rem;
 }
 
 #ui_overlay #main_menu .tp-rotv-expanded {
@@ -20,7 +32,8 @@
 
 @import "ui/common.styl";
 @import "ui/debugging_tools.styl";
-@import "ui/help.styl";
+@import "ui/title_screen.styl";
+@import "ui/dialog.styl";
 @import "ui/object_editor.styl";
 @import "ui/scene_overview.styl";
 @import "ui/score_table.styl";

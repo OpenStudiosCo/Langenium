@@ -59,4 +59,26 @@ export default class Config {
     get_settings() {
         return JSON.parse(localStorage.getItem( 'config' ) );
     }
+
+    /**
+     * Scroll positions for the prologue stories, keyed by their menu address.
+     */
+    get_story_scroll() {
+        try {
+            const saved = JSON.parse( localStorage.getItem( 'storyScroll' ) || '{}' );
+            return saved && typeof saved === 'object' ? saved : {};
+        }
+        catch ( error ) {
+            return {};
+        }
+    }
+
+    save_story_scroll( scroll ) {
+        try {
+            localStorage.setItem( 'storyScroll', JSON.stringify( scroll ) );
+        }
+        catch ( error ) {
+            // Private browsing can refuse storage. The open panel still keeps its place.
+        }
+    }
 }

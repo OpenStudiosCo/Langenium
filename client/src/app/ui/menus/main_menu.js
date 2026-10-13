@@ -131,16 +131,7 @@ export default class Main_Menu {
         } );
 
         this.settings.debug.on( 'change', () => {
-            if ( l.ui.game_menu && l.ui.game_menu.title_screen && l.ui.game_menu.title_screen.applying ) {
-                return;
-            }
-
-            l.scenograph.modes.debugging.toggle();
-            l.config.save_settings();
-
-            if ( l.ui.game_menu && l.ui.game_menu.title_screen ) {
-                l.ui.game_menu.title_screen.syncSettings();
-            }
+            this.onSettingChanged( 'debug' );
         } );
 
         this.settings.fast = this.pane.addBinding( l.config.settings, 'fast', {
@@ -150,16 +141,7 @@ export default class Main_Menu {
         } );
 
         this.settings.fast.on( 'change', () => {
-            if ( l.ui.game_menu && l.ui.game_menu.title_screen && l.ui.game_menu.title_screen.applying ) {
-                return;
-            }
-
-            l.scenograph.modes.fast.toggle();
-            l.config.save_settings();
-
-            if ( l.ui.game_menu && l.ui.game_menu.title_screen ) {
-                l.ui.game_menu.title_screen.syncSettings();
-            }
+            this.onSettingChanged( 'fast' );
         } );
 
         this.settings.skipintro = this.pane.addBinding( l.config.settings, 'skipintro', {
@@ -168,15 +150,7 @@ export default class Main_Menu {
         } );
 
         this.settings.skipintro.on( 'change', () => {
-            if ( l.ui.game_menu && l.ui.game_menu.title_screen && l.ui.game_menu.title_screen.applying ) {
-                return;
-            }
-
-            l.config.save_settings();
-
-            if ( l.ui.game_menu && l.ui.game_menu.title_screen ) {
-                l.ui.game_menu.title_screen.syncSettings();
-            }
+            this.onSettingChanged( 'skipintro' );
         } );
 
         this.buttons.help = this.pane.addButton( {
@@ -187,6 +161,28 @@ export default class Main_Menu {
         } );
 
         return this;
+    }
+
+    /**
+     * The title screen owns the same settings. Its handler updates the mode and both controls.
+     */
+    onSettingChanged( name ) {
+        const screen = l.ui.game_menu && l.ui.game_menu.title_screen;
+
+        if ( screen ) {
+            screen.applySetting( name, !!l.config.settings[ name ] );
+            return;
+        }
+
+        if ( name === 'debug' ) {
+            l.scenograph.modes.debugging.toggle();
+        }
+
+        if ( name === 'fast' ) {
+            l.scenograph.modes.fast.toggle();
+        }
+
+        l.config.save_settings();
     }
 
     /**

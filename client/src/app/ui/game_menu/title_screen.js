@@ -366,7 +366,7 @@ export default class Title_Screen {
     applySetting( name, checked ) {
         const input = this.container.querySelector( '[data-setting="' + name + '"]' );
 
-        if ( !input || input.disabled || !l.config.settings || !Object.prototype.hasOwnProperty.call( l.config.settings, name ) ) {
+        if ( this.applying || ( input && input.disabled ) || !l.config.settings || !Object.prototype.hasOwnProperty.call( l.config.settings, name ) ) {
             return;
         }
 
@@ -390,6 +390,7 @@ export default class Title_Screen {
             binding.refresh();
         }
 
+        this.syncSettings();
         this.applying = false;
     }
 
@@ -410,16 +411,6 @@ export default class Title_Screen {
         } );
     }
 
-    readStoryScroll() {
-        try {
-            const saved = JSON.parse( localStorage.getItem( 'storyScroll' ) || '{}' );
-            return saved && typeof saved === 'object' ? saved : {};
-        }
-        catch ( error ) {
-            return {};
-        }
-    }
-
     rememberOpenStory() {
         this.rememberStoryScroll( this.container.querySelector( '.story_reader:not([hidden])' ) );
     }
@@ -434,20 +425,14 @@ export default class Title_Screen {
             return;
         }
 
-        const saved = this.readStoryScroll();
+        const saved = l.config.get_story_scroll();
         saved[ panel.dataset.path ] = body.scrollTop;
-
-        try {
-            localStorage.setItem( 'storyScroll', JSON.stringify( saved ) );
-        }
-        catch ( error ) {
-            // Private browsing can refuse storage. The open panel still keeps its place.
-        }
+        l.config.save_story_scroll( saved );
     }
 
     restoreStoryScroll( panel ) {
         const body = panel.querySelector( '.panel_body' );
-        const top = Number( this.readStoryScroll()[ panel.dataset.path ] );
+        const top = Number( l.config.get_story_scroll()[ panel.dataset.path ] );
 
         if ( !body || !Number.isFinite( top ) || top <= 0 ) {
             if ( body ) {

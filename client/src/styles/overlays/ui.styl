@@ -3,10 +3,22 @@
     pointer-events: all;
 }
 
+#ui_overlay #main_menu {
+    display: none;
+}
+
+#ui_overlay.debug #main_menu {
+    display: block;
+}
+
 #ui_overlay #main_menu .tp-rotv {
     position: absolute;
     top: 8px;
     right: 8px;
+}
+
+#ui_overlay.debug #main_menu .tp-rotv {
+    top: 3.4rem;
 }
 
 #ui_overlay #main_menu .tp-rotv-expanded {

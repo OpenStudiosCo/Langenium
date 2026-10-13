@@ -20,6 +20,7 @@ export default class Help {
             screen.container.classList.add( 'active', 'help-session' );
         }
 
+        screen.setExitVisible( false );
         screen.openPanel( 'help', button );
     }
 
@@ -36,6 +37,10 @@ export default class Help {
 
         if ( session ) {
             screen.container.classList.remove( 'active', 'help-session' );
+        }
+
+        if ( session && l.mode !== 'home' ) {
+            screen.setExitVisible( true );
         }
 
         if ( restore ) {

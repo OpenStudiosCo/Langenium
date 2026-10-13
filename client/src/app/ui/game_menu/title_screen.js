@@ -15,10 +15,19 @@ export default class Title_Screen {
         this.panels = this.container.querySelectorAll( '[data-panel]' );
         this.actions = this.container.querySelectorAll( 'nav [data-action]' );
 
-        const version = this.container.querySelector( '[data-version]' );
-        if ( version ) {
+        this.container.querySelectorAll( '[data-version]' ).forEach( ( version ) => {
             version.textContent = l.version;
+        } );
+
+        this.exit = document.getElementById( 'exit_game' );
+        if ( this.exit ) {
+            this.exit.addEventListener( 'click', () => {
+                l.routes.exitGame();
+                l.ui.menus.main_menu.returnHome();
+            } );
         }
+
+        this.bindSettings();
 
         this.depth = 0;
         this.launchTimer = 0;
@@ -73,6 +82,7 @@ export default class Title_Screen {
         this.closePanel();
         this.container.classList.remove( 'help-session' );
         this.container.classList.add( 'active' );
+        this.setExitVisible( false );
 
         if ( l.current_scene && l.current_scene.objects && l.current_scene.objects.logo ) {
             l.current_scene.objects.logo.show();
@@ -82,6 +92,7 @@ export default class Title_Screen {
     hide() {
         this.closePanel();
         this.container.classList.remove( 'active', 'help-session' );
+        this.setExitVisible( true );
 
         if ( l.current_scene && l.current_scene.objects && l.current_scene.objects.logo ) {
             l.current_scene.objects.logo.hide();
@@ -295,6 +306,10 @@ export default class Title_Screen {
         }
         this.container.classList.add( 'panel-open' );
 
+        if ( name === 'settings' ) {
+            this.syncSettings();
+        }
+
         this.container.scrollTop = 0;
         const detail = this.container.querySelector( '.title_screen_detail' );
         if ( detail ) {
@@ -310,6 +325,65 @@ export default class Title_Screen {
         if ( back ) {
             back.focus();
         }
+    }
+
+    setExitVisible( visible ) {
+        if ( this.exit ) {
+            this.exit.hidden = !visible;
+        }
+    }
+
+    bindSettings() {
+        this.syncSettings();
+
+        this.container.querySelectorAll( '[data-setting]' ).forEach( ( input ) => {
+            input.addEventListener( 'change', () => {
+                this.applySetting( input.dataset.setting, input.checked );
+            } );
+        } );
+    }
+
+    syncSettings() {
+        const gpu = l.config.client_info.gpu;
+        const tier = gpu && typeof gpu.tier === 'number' ? gpu.tier : 0;
+
+        this.container.querySelectorAll( '[data-setting]' ).forEach( ( input ) => {
+            input.checked = !!l.config.settings[ input.dataset.setting ];
+
+            if ( input.dataset.setting === 'fast' ) {
+                input.disabled = tier < 3;
+            }
+        } );
+    }
+
+    applySetting( name, checked ) {
+        const input = this.container.querySelector( '[data-setting="' + name + '"]' );
+
+        if ( !input || input.disabled || !l.config.settings || !Object.prototype.hasOwnProperty.call( l.config.settings, name ) ) {
+            return;
+        }
+
+        l.config.settings[ name ] = checked;
+        this.applying = true;
+
+        if ( name === 'debug' ) {
+            l.scenograph.modes.debugging.toggle();
+        }
+
+        if ( name === 'fast' ) {
+            l.scenograph.modes.fast.toggle();
+        }
+
+        l.config.save_settings();
+
+        const menu = l.ui.menus && l.ui.menus.main_menu;
+        const binding = menu && menu.settings && menu.settings[ name ];
+
+        if ( binding && typeof binding.refresh === 'function' ) {
+            binding.refresh();
+        }
+
+        this.applying = false;
     }
 
     closePanel() {

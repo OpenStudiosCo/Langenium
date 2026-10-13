@@ -230,10 +230,15 @@
             margin: 0.45rem 0
             cursor: pointer
 
-        [data-panel="settings"] label,
         [data-panel="settings"] input
+            width: 1rem
+            height: 1rem
+            margin: 0
+            accent-color: #fff
+
+        [data-panel="settings"] label:has(input:disabled)
+            opacity: 0.4
             cursor: default
-            pointer-events: none
 
         [data-panel="stories"]
             h2
@@ -295,11 +300,24 @@
                 opacity: 0.72
 
             .story_name
+                display: flex
+                flex-direction: column
+                align-items: flex-start
+                gap: 0.18rem
                 font-family: "Arial Narrow", "Nimbus Sans Narrow", "Helvetica Condensed", sans-serif
                 font-weight: 700
                 font-size: clamp(1.2rem, 1.8vw, 1.5rem)
                 letter-spacing: 0.03em
                 line-height: 1.15
+
+            .story_by
+                font-family: system-ui, sans-serif
+                font-size: 0.72rem
+                font-weight: 500
+                letter-spacing: 0.04em
+                line-height: 1.2
+                text-transform: none
+                opacity: 0.75
 
             .story_time
                 font-size: 0.78rem
@@ -315,13 +333,17 @@
 
         .story_reader
             h2
-                margin-bottom: 1.15rem
+                margin-bottom: 0.35rem
                 font-family: "Liberation Sans Narrow", "Nimbus Sans Narrow", "Arial Narrow", "Helvetica Condensed", sans-serif
                 font-style: italic
                 font-weight: 700
                 font-stretch: condensed
                 line-height: 1
                 letter-spacing: 0.02em
+
+            .story_by
+                margin: 0 0 1.15rem
+                font-size: 0.95rem
 
         .story_text
             max-width: 68ch
@@ -575,6 +597,85 @@
                     border-width: 44px
                     border-image-width: 44px
                     padding: 0.75rem 0.85rem
+
+    .title_engine,
+    .title_studio
+        pointer-events: auto
+        color: inherit
+        text-decoration: none
+
+    .title_engine
+        position: fixed
+        top: 1.15rem
+        right: 1.4rem
+        z-index: 2
+        font-family: "Arial Narrow", "Nimbus Sans Narrow", "Helvetica Condensed", sans-serif
+        font-weight: 700
+        font-size: clamp(1.05rem, 1.7vw, 1.4rem)
+        letter-spacing: 0.14em
+        text-transform: none
+        text-shadow: 0 2px 16px rgba(0, 10, 40, 0.45)
+
+        &:hover,
+        &:focus-visible
+            text-decoration: underline
+
+        &:focus-visible
+            outline: 1px solid rgba(255, 255, 255, 0.65)
+            outline-offset: 6px
+
+    .title_studio
+        position: fixed
+        right: 1.35rem
+        bottom: 1.15rem
+        z-index: 2
+        width: unquote("min(10.5rem, 32vw)")
+        line-height: 0
+
+        img
+            display: block
+            width: 100%
+            height: auto
+
+    &.panel-open .title_studio
+        visibility: hidden
+        pointer-events: none
+
+#ui_overlay #exit_game
+    position: fixed
+    top: 1.15rem
+    right: 1.4rem
+    z-index: 6
+    display: block
+    padding: 0 0.15em 0.14em 0
+    border: 0
+    background-color: transparent
+    background-image: linear-gradient(rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.72))
+    background-repeat: no-repeat
+    background-position: left bottom
+    background-size: 0 1px
+    color: #fff
+    font-family: "Arial Narrow", "Nimbus Sans Narrow", "Helvetica Condensed", sans-serif
+    font-weight: 700
+    font-size: clamp(1.05rem, 1.7vw, 1.4rem)
+    letter-spacing: 0.14em
+    line-height: 1.15
+    text-transform: uppercase
+    text-shadow: 0 2px 16px rgba(0, 10, 40, 0.45)
+    cursor: pointer
+    pointer-events: auto
+    transition: background-size 520ms cubic-bezier(0.16, 1, 0.3, 1)
+
+    &:hover,
+    &:focus-visible
+        background-size: 100% 1px
+
+    &:focus-visible
+        outline: 1px solid rgba(255, 255, 255, 0.65)
+        outline-offset: 6px
+
+    &[hidden]
+        display: none !important
 
 @keyframes title_bloom
     0%

@@ -35,7 +35,7 @@ function _init( wait ) {
 	l.scenograph = false;
 
 	// Engine settings
-	l.version = '0.6.0-Alpha';
+	l.version = '0.7.0-alpha';
 	l.url = '//' + location.host;
 	l.env = _check_environment();
 

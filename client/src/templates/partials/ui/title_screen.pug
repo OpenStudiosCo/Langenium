@@ -37,6 +37,7 @@
                     | The Langenium
                     br
                     | Prologue Trilogy
+                h3.story_by By Paul Brzeski
                 .story_synopsis
                     p This is a series of short stories that sets up the setting of the Langenium game world. I recommend reading them in order, however, they are told as standalone short stories that can be read on their own.
                     p In the near future, human civilisation is in decline.
@@ -65,18 +66,21 @@
             button.panel_back(type="button" data-action="close-panel") Back
             .panel_body
                 h2 The End of All Limits
+                p.story_by By Paul Brzeski
                 .story_text
                     include ./stories/end_of_all_limits.html
         section.story_reader(data-panel="story-hell-on-earth" data-path="/stories/langenium-prologue-part-2" data-return="stories" hidden)
             button.panel_back(type="button" data-action="close-panel") Back
             .panel_body
                 h2 Hell on Earth
+                p.story_by By Paul Brzeski
                 .story_text
                     include ./stories/hell_on_earth.html
         section.story_reader(data-panel="story-extinction-level-event" data-path="/stories/langenium-prologue-part-3" data-return="stories" hidden)
             button.panel_back(type="button" data-action="close-panel") Back
             .panel_body
                 h2 Extinction Level Event
+                p.story_by By Paul Brzeski
                 .story_text
                     include ./stories/extinction_level_event.html
         section(data-panel="lore" data-path="/lore" hidden)
@@ -84,19 +88,18 @@
             .panel_body
                 h2 Lore
                 p Coming soon
-        //- Visual only. These boxes are not bound to l.config.settings.
         section(data-panel="settings" data-path="/settings" hidden)
             button.panel_back(type="button" data-action="close-panel") Back
             .panel_body
                 h2 Settings
                 label
-                    input(type="checkbox" tabindex="-1")
+                    input(type="checkbox" data-setting="debug")
                     span Debugging mode
                 label
-                    input(type="checkbox" tabindex="-1")
+                    input(type="checkbox" data-setting="fast")
                     span Performance mode
                 label
-                    input(type="checkbox" tabindex="-1")
+                    input(type="checkbox" data-setting="skipintro")
                     span Skip title sequence
         section(data-panel="about" data-path="/about" hidden)
             button.panel_back(type="button" data-action="close-panel") Back
@@ -126,3 +129,7 @@
                 p The slider on the right controls elevation and the camera button can be used to peak around the scene.
                 p The weapons console can be used to toggle auto attack and manually fire weapons if auto attack is off.
                 p When weapons fire, the attack button shows the time remaining till the next attack is ready.
+    a.title_engine(href="https://github.com/OpenStudiosCo/Langenium" target="_blank" rel="noopener noreferrer")
+        span(data-version)
+    a.title_studio(href="https://github.com/OpenStudiosCo" target="_blank" rel="noopener noreferrer")
+        img(src="/assets/logo.svg" alt="Open Studios")

@@ -26,6 +26,8 @@
         height: 14vh
         margin-bottom: 6vh
         flex: 0 0 auto
+        transform-origin: top left
+        transition: transform 720ms cubic-bezier(0.16, 1, 0.3, 1)
 
     nav
         pointer-events: auto
@@ -188,6 +190,7 @@
         top: 30vh
         width: unquote("min(24rem, 40vw)")
         max-height: 62vh
+        transition: top 720ms cubic-bezier(0.16, 1, 0.3, 1)
         overflow-y: auto
         scrollbar-width: thin
         scrollbar-color: rgba(255, 255, 255, 0.45) transparent
@@ -520,14 +523,17 @@
         nav
             display: none
 
-        // Logo top inset is 4vh. The panel starts one logo-height below that, plus twice the inset.
-        // 5.486 is the wordmark's width/height. The mount itself is left alone.
+        .title_screen_logo
+            transform: scale(0.5)
+
+        // Logo top inset is 4vh. Open panels use a half-size wordmark, so the panel
+        // starts just below that. 5.486 is the wordmark's width/height.
         .title_screen_detail
             position: absolute
             left: 6vw
             right: 6vw
             bottom: 6vw
-            top: unquote("calc(12vh + 1.5 * min(min(42vw, 28rem) / 5.486, 14vh))")
+            top: unquote("calc(7vh + 0.75 * min(min(42vw, 28rem) / 5.486, 14vh))")
             display: flex
             flex-direction: column
             width: auto
@@ -575,7 +581,7 @@
                 left: 1.25rem
                 right: 1.25rem
                 bottom: 1.25rem
-                top: unquote("calc(13.5vh + min(min(78vw, 16rem) / 5.486, 9vh, 20vh))")
+                top: unquote("calc(8vh + 0.5 * min(min(78vw, 16rem) / 5.486, 9vh, 20vh))")
 
                 [data-panel]:not([hidden])
                     h2
@@ -591,7 +597,7 @@
                 left: 1.5rem
                 right: 1.5rem
                 bottom: 0.65rem
-                top: unquote("calc(2.1rem + min(min(42vw, 22rem) / 5.486, 18vh, 20vh))")
+                top: unquote("calc(1.4rem + 0.5 * min(min(42vw, 22rem) / 5.486, 18vh, 20vh))")
 
                 .panel_body
                     border-width: 44px
@@ -725,3 +731,7 @@
     #ui_overlay #title_screen button::after,
     #ui_overlay #title_screen button > span
         animation: none
+
+    #ui_overlay #title_screen .title_screen_logo,
+    #ui_overlay #title_screen .title_screen_detail
+        transition: none

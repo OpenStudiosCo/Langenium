@@ -210,7 +210,7 @@ export default class Main_Menu {
     /**
      * Home again: title screen in front, this pane stays minimised.
      */
-    returnHome() {
+    returnHome( options ) {
         this.buttons.player_one.hidden = false;
         this.buttons.player_two.hidden = false;
         this.buttons.multi_player.hidden = false;
@@ -227,6 +227,9 @@ export default class Main_Menu {
 
         if ( l.ui.game_menu && l.ui.game_menu.title_screen ) {
             l.ui.game_menu.title_screen.show();
+            if ( !options || !options.keepUrl ) {
+                l.ui.game_menu.title_screen.replaceHome();
+            }
         }
     }
 

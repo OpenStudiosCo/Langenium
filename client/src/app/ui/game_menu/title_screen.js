@@ -20,6 +20,10 @@ export default class Title_Screen {
             version.textContent = l.version;
         }
 
+        this.depth = 0;
+        this.launchTimer = 0;
+        this.returnFocus = '';
+
         this.container.addEventListener( 'click', ( event ) => {
             if ( event.target.closest( '[data-action="close-panel"]' ) ) {
                 if ( this.container.classList.contains( 'help-session' ) ) {
@@ -28,29 +32,14 @@ export default class Title_Screen {
                 }
 
                 const panel = event.target.closest( '[data-panel]' );
-
-                if ( panel && panel.dataset.return ) {
-                    const returnTo = this.container.querySelector( 'nav [data-action="' + panel.dataset.return + '"]' );
-                    this.openPanel( panel.dataset.return, returnTo );
-                    const storyButton = this.container.querySelector( '[data-read="' + panel.dataset.panel + '"]' );
-                    if ( storyButton ) {
-                        storyButton.focus();
-                    }
-                    return;
-                }
-
-                const returnTo = panel && this.container.querySelector( 'nav [data-action="' + panel.dataset.panel + '"]' );
-                this.closePanel();
-                if ( returnTo ) {
-                    returnTo.focus();
-                }
+                this.returnFocus = panel ? panel.dataset.path || '' : '';
+                this.back();
                 return;
             }
 
             const read = event.target.closest( '[data-read]' );
-            if ( read ) {
-                const stories = this.container.querySelector( 'nav [data-action="stories"]' );
-                this.openPanel( read.dataset.read, stories );
+            if ( read && read.dataset.path ) {
+                this.navigate( read.dataset.path );
                 return;
             }
 
@@ -66,7 +55,18 @@ export default class Title_Screen {
             }
         } );
 
+        window.addEventListener( 'popstate', ( event ) => {
+            this.depth = event.state && Number.isFinite( event.state.depth ) ? event.state.depth : 0;
+            this.onLocation( this.currentPath() );
+        } );
+
         this.show();
+
+        const path = this.currentPath();
+        history.replaceState( { menu: path, depth: 0 }, '', path );
+        if ( path !== '/' ) {
+            this.apply( path );
+        }
     }
 
     show() {
@@ -89,17 +89,148 @@ export default class Title_Screen {
     }
 
     onAction( action, button ) {
-        if ( action === 'play' ) {
-            this.startStory( 'hangar', button );
+        const path = button.dataset.path || ( action === 'play' ? '/play' : '/' + action );
+
+        if ( action !== 'play' && button.classList.contains( 'selected' ) && this.currentPath() === path ) {
+            this.returnFocus = path;
+            this.back();
             return;
         }
 
-        if ( button.classList.contains( 'selected' ) ) {
+        this.navigate( path );
+    }
+
+    /**
+     * Address for the screen that is open, ignoring a trailing slash.
+     */
+    currentPath() {
+        let path = location.pathname || '/';
+
+        if ( path.length > 1 && path.endsWith( '/' ) ) {
+            path = path.slice( 0, -1 );
+        }
+
+        if ( path === '/index.html' ) {
+            return '/';
+        }
+
+        if ( path.endsWith( '.html' ) ) {
+            path = path.slice( 0, -5 );
+        }
+
+        if ( path.endsWith( '/index' ) ) {
+            path = path.slice( 0, -6 );
+        }
+
+        return path || '/';
+    }
+
+    /**
+     * Record a menu screen and show it.
+     */
+    navigate( path ) {
+        path = path || '/';
+
+        if ( path !== this.currentPath() ) {
+            this.depth += 1;
+            history.pushState( { menu: path, depth: this.depth }, '', path );
+        }
+
+        this.apply( path );
+    }
+
+    /**
+     * Step back to the parent screen, or follow the browser history.
+     */
+    back() {
+        if ( this.depth > 0 ) {
+            history.back();
+            return;
+        }
+
+        this.navigate( this.parentPath( this.currentPath() ) );
+    }
+
+    parentPath( path ) {
+        const panel = this.container.querySelector( '[data-panel][data-path="' + path + '"]' );
+
+        if ( panel && panel.dataset.return ) {
+            const parent = this.container.querySelector( 'nav [data-action="' + panel.dataset.return + '"]' );
+            if ( parent && parent.dataset.path ) {
+                return parent.dataset.path;
+            }
+        }
+
+        return '/';
+    }
+
+    /**
+     * Browser back or forward landed on a menu address.
+     */
+    onLocation( path ) {
+        if ( l.mode !== 'home' && path !== '/play' ) {
+            l.routes.exitGame();
+            l.ui.menus.main_menu.returnHome( { keepUrl: true } );
+        }
+
+        this.apply( path );
+    }
+
+    /**
+     * Open the screen for an address without changing history.
+     */
+    apply( path ) {
+        if ( path === '/play' ) {
+            if ( l.mode === 'home' && !this.launching ) {
+                const button = this.container.querySelector( 'nav [data-action="play"]' );
+                this.startStory( 'hangar', button );
+            }
+            return;
+        }
+
+        window.clearTimeout( this.launchTimer );
+        this.launching = false;
+
+        if ( path === '/' ) {
+            this.closePanel();
+            this.focusReturn();
+            return;
+        }
+
+        const panel = this.container.querySelector( '[data-panel][data-path="' + path + '"]' );
+        if ( !panel ) {
             this.closePanel();
             return;
         }
 
-        this.openPanel( action, button );
+        const action = panel.dataset.return || panel.dataset.panel;
+        const button = this.container.querySelector( 'nav [data-action="' + action + '"]' );
+        this.openPanel( panel.dataset.panel, button );
+        this.focusReturn();
+    }
+
+    focusReturn() {
+        if ( !this.returnFocus ) {
+            return;
+        }
+
+        const button = this.container.querySelector( '[data-path="' + this.returnFocus + '"]' );
+        this.returnFocus = '';
+        if ( button ) {
+            button.focus();
+        }
+    }
+
+    /**
+     * Leave /play in the address bar when the session is over.
+     */
+    replaceHome() {
+        if ( this.currentPath() === '/' ) {
+            return;
+        }
+
+        this.depth = 0;
+        history.replaceState( { menu: '/', depth: 0 }, '', '/' );
     }
 
     /**
@@ -115,9 +246,17 @@ export default class Title_Screen {
             button.classList.add( 'selected' );
         }
 
-        window.setTimeout( () => {
+        window.clearTimeout( this.launchTimer );
+        this.launchTimer = window.setTimeout( () => {
             const launch = () => {
                 this.launching = false;
+
+                if ( this.currentPath() !== '/play' ) {
+                    if ( button ) {
+                        button.classList.remove( 'selected' );
+                    }
+                    return;
+                }
 
                 if ( story === 'hangar' ) {
                     new l.routes.hangar();

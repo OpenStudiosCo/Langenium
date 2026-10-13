@@ -28,7 +28,7 @@ export default class Ocean {
             {
                 textureWidth :  512,
                 textureHeight:  512,
-                waterNormals :  new THREE.TextureLoader().load( './assets/textures/waternormals.jpg', function ( texture ) {
+                waterNormals :  new THREE.TextureLoader().load( '/assets/textures/waternormals.jpg', function ( texture ) {
 
                     texture.wrapS    =    texture.wrapT    =    THREE.RepeatWrapping;
 
@@ -49,7 +49,7 @@ export default class Ocean {
         this.water.material.transparent = true;
 
         // this.water.material = new THREE.MeshBasicMaterial( {
-        //     alphaMap: new THREE.TextureLoader().load( './assets/textures/test.png'),
+        //     alphaMap: new THREE.TextureLoader().load( '/assets/textures/test.png'),
         //     color: 0x0000ff,
         //     side: THREE.DoubleSide,
         //     transparent: true,

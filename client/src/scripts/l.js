@@ -48,12 +48,12 @@ function _init( wait ) {
 	var modules = [
 		{
 			name: "TWEEN.js",
-			files: [ { path: './vendor/tween-21.0.0.umd.min.js' } ]
+			files: [ { path: '/vendor/tween-21.0.0.umd.min.js' } ]
 		},
 		{
 			name: "Game Client",
 			requires: [ 'TWEEN.js' ],
-			files: [ { path: "./main.js", callback: "l.init" } ]
+			files: [ { path: "/main.js", callback: "l.init" } ]
 		}
 	];
 

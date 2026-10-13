@@ -24,7 +24,7 @@ export async function createDoor() {
     var doorParent = new THREE.Object3D();
     doorParent.name = 'Door';
 
-    await l.current_scene.loaders.texture.load( './assets/models/desk-diffuse.jpg', async ( doorTexture ) => {
+    await l.current_scene.loaders.texture.load( '/assets/models/desk-diffuse.jpg', async ( doorTexture ) => {
         doorTexture.wrapS = THREE.RepeatWrapping;
         doorTexture.wrapT = THREE.RepeatWrapping;
         doorTexture.repeat.set( doorWidth / 8, doorHeight / 8 );
@@ -91,7 +91,7 @@ export async function createDoor() {
     // instantiate a loader
     const loader = new SVGLoader();
 
-    await loader.load( "./assets/logo.svg", async function ( data ) {
+    await loader.load( "/assets/logo.svg", async function ( data ) {
 
         const group = new THREE.Group();
         group.scale.multiplyScalar( 0.0025 );
@@ -200,7 +200,7 @@ export async function createOfficeRoom() {
     } );
     floorMaterial.name = 'floor';
 
-    await l.current_scene.loaders.texture.load( './assets/textures/EAK309.png', async ( floorTexture ) => {
+    await l.current_scene.loaders.texture.load( '/assets/textures/EAK309.png', async ( floorTexture ) => {
         floorTexture.wrapS = THREE.RepeatWrapping;
         floorTexture.wrapT = THREE.RepeatWrapping;
         floorTexture.repeat.set( 8, 8 );
@@ -227,7 +227,7 @@ export async function createOfficeRoom() {
     } );
     ceilMaterial.name = 'ceiling';
 
-    await l.current_scene.loaders.texture.load( './assets/textures/Ceiling_Drop_Tiles_001_height.png', async ( ceilHeight ) => {
+    await l.current_scene.loaders.texture.load( '/assets/textures/Ceiling_Drop_Tiles_001_height.png', async ( ceilHeight ) => {
         ceilHeight.wrapS = THREE.RepeatWrapping;
         ceilHeight.wrapT = THREE.RepeatWrapping;
         ceilHeight.repeat.set( 4, 4 );
@@ -236,7 +236,7 @@ export async function createOfficeRoom() {
         l.current_scene.loaders.stats.textures.loaded++;
     } );
 
-    await l.current_scene.loaders.texture.load( './assets/textures/Ceiling_Drop_Tiles_001_ambientOcclusion.jpg', async ( ceilAO ) => {
+    await l.current_scene.loaders.texture.load( '/assets/textures/Ceiling_Drop_Tiles_001_ambientOcclusion.jpg', async ( ceilAO ) => {
         ceilAO.wrapS = THREE.RepeatWrapping;
         ceilAO.wrapT = THREE.RepeatWrapping;
         ceilAO.repeat.set( 4, 4 );
@@ -245,7 +245,7 @@ export async function createOfficeRoom() {
         l.current_scene.loaders.stats.textures.loaded++;
     } );
 
-    await l.current_scene.loaders.texture.load( './assets/textures/Ceiling_Drop_Tiles_001_basecolor.jpg', async ( ceilTexture ) => {
+    await l.current_scene.loaders.texture.load( '/assets/textures/Ceiling_Drop_Tiles_001_basecolor.jpg', async ( ceilTexture ) => {
         ceilTexture.wrapS = THREE.RepeatWrapping;
         ceilTexture.wrapT = THREE.RepeatWrapping;
         ceilTexture.repeat.set( 4, 4 );
@@ -255,7 +255,7 @@ export async function createOfficeRoom() {
     } );
 
 
-    await l.current_scene.loaders.texture.load( './assets/textures/Ceiling_Drop_Tiles_001_normal.jpg', async ( ceilNormal ) => {
+    await l.current_scene.loaders.texture.load( '/assets/textures/Ceiling_Drop_Tiles_001_normal.jpg', async ( ceilNormal ) => {
         ceilNormal.wrapS = THREE.RepeatWrapping;
         ceilNormal.wrapT = THREE.RepeatWrapping;
         ceilNormal.repeat.set( 4, 4 );
@@ -278,7 +278,7 @@ export async function createOfficeRoom() {
     const sidewallMaterial = backwallMaterial.clone();
     sidewallMaterial.name = 'sidewall';
 
-    await l.current_scene.loaders.texture.load( './assets/textures/brick_wall_001_displacement_4k.jpg', async ( backwallHeight ) => {
+    await l.current_scene.loaders.texture.load( '/assets/textures/brick_wall_001_displacement_4k.jpg', async ( backwallHeight ) => {
         backwallHeight.wrapS = THREE.RepeatWrapping;
         backwallHeight.wrapT = THREE.RepeatWrapping;
         backwallHeight.repeat.set( roomWidth / 10, roomHeight / 10 );
@@ -296,7 +296,7 @@ export async function createOfficeRoom() {
         l.current_scene.loaders.stats.textures.loaded++;
     } );
 
-    await l.current_scene.loaders.texture.load( './assets/textures/brick_wall_001_nor_gl_4k.jpg', async ( backwallNormal ) => {
+    await l.current_scene.loaders.texture.load( '/assets/textures/brick_wall_001_nor_gl_4k.jpg', async ( backwallNormal ) => {
         backwallNormal.wrapS = THREE.RepeatWrapping;
         backwallNormal.wrapT = THREE.RepeatWrapping;
         backwallNormal.repeat.set( roomWidth / 10, roomHeight / 10 );
@@ -311,7 +311,7 @@ export async function createOfficeRoom() {
         l.current_scene.loaders.stats.textures.loaded++;
     } );
 
-    await l.current_scene.loaders.texture.load( './assets/textures/brick_wall_001_rough_4k.jpg', async ( backwallRough ) => {
+    await l.current_scene.loaders.texture.load( '/assets/textures/brick_wall_001_rough_4k.jpg', async ( backwallRough ) => {
         backwallRough.wrapS = THREE.RepeatWrapping;
         backwallRough.wrapT = THREE.RepeatWrapping;
         backwallRough.repeat.set( roomWidth / 10, roomHeight / 10 );

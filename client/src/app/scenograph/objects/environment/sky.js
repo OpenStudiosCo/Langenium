@@ -21,7 +21,7 @@ export default class Sky {
     constructor() {
 
         // todo: Make this reusable.
-        this.noiseTexture2 = l.current_scene.loaders.texture.load( './assets/textures/noise2.jpg' );
+        this.noiseTexture2 = l.current_scene.loaders.texture.load( '/assets/textures/noise2.jpg' );
         this.noiseTexture2.wrapS = this.noiseTexture2.wrapT = THREE.RepeatWrapping;
 
         // Setup uniforms for the sky.

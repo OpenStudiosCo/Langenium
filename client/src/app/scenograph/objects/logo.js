@@ -11,7 +11,7 @@ import * as THREE from 'three';
 import l from '@/helpers/l.js';
 import { proceduralMetalMaterial2 } from '@/scenograph/materials.js';
 
-const LOGO_URL = './assets/models/langenium%20logo.json';
+const LOGO_URL = '/assets/models/langenium%20logo.json';
 const CAMERA_DISTANCE = 6;
 const ORBIT_STEP = 0.012;
 

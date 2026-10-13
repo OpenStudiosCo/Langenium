@@ -50,7 +50,7 @@ export default class Raven {
     async load() {
 
 
-        this.model = await l.current_scene.loaders.gtlf.loadAsync( './assets/models/pirate2.1.glb' );
+        this.model = await l.current_scene.loaders.gtlf.loadAsync( '/assets/models/pirate2.1.glb' );
 
         let amount = l.config.settings.fast ? 5 : 2.5;
 

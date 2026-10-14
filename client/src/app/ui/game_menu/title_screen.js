@@ -101,7 +101,7 @@ export default class Title_Screen {
     }
 
     onAction( action, button ) {
-        const path = button.dataset.path || ( action === 'play' ? '/play' : '/' + action );
+        const path = button.dataset.path || ( action === 'play' ? '/play/' : '/' + action + '/' );
 
         if ( action !== 'play' && button.classList.contains( 'selected' ) && this.currentPath() === path ) {
             this.returnFocus = path;
@@ -113,25 +113,28 @@ export default class Title_Screen {
     }
 
     /**
-     * Address for the screen that is open, ignoring a trailing slash.
+     * Address for the screen that is open.
+     * Menu pages are directories, so the working URL keeps its trailing slash.
      */
     currentPath() {
         let path = location.pathname || '/';
 
-        if ( path.length > 1 && path.endsWith( '/' ) ) {
-            path = path.slice( 0, -1 );
-        }
-
-        if ( path === '/index.html' ) {
+        if ( path === '/index.html' || path === '/index' ) {
             return '/';
         }
 
-        if ( path.endsWith( '.html' ) ) {
-            path = path.slice( 0, -5 );
+        if ( path.endsWith( '/index.html' ) ) {
+            path = path.slice( 0, -'/index.html'.length );
+        }
+        else if ( path.endsWith( '.html' ) ) {
+            path = path.slice( 0, -'.html'.length );
+        }
+        else if ( path.endsWith( '/index' ) ) {
+            path = path.slice( 0, -'/index'.length );
         }
 
-        if ( path.endsWith( '/index' ) ) {
-            path = path.slice( 0, -6 );
+        if ( path.length > 1 && !path.endsWith( '/' ) ) {
+            path += '/';
         }
 
         return path || '/';
@@ -180,7 +183,7 @@ export default class Title_Screen {
      * Browser back or forward landed on a menu address.
      */
     onLocation( path ) {
-        if ( l.mode !== 'home' && path !== '/play' ) {
+        if ( l.mode !== 'home' && path !== '/play/' ) {
             l.routes.exitGame();
             l.ui.menus.main_menu.returnHome( { keepUrl: true } );
         }
@@ -192,7 +195,7 @@ export default class Title_Screen {
      * Open the screen for an address without changing history.
      */
     apply( path ) {
-        if ( path === '/play' ) {
+        if ( path === '/play/' ) {
             if ( l.mode === 'home' && !this.launching ) {
                 const button = this.container.querySelector( 'nav [data-action="play"]' );
                 this.startStory( 'hangar', button );
@@ -263,7 +266,7 @@ export default class Title_Screen {
             const launch = () => {
                 this.launching = false;
 
-                if ( this.currentPath() !== '/play' ) {
+                if ( this.currentPath() !== '/play/' ) {
                     if ( button ) {
                         button.classList.remove( 'selected' );
                     }
@@ -432,7 +435,9 @@ export default class Title_Screen {
 
     restoreStoryScroll( panel ) {
         const body = panel.querySelector( '.panel_body' );
-        const top = Number( l.config.get_story_scroll()[ panel.dataset.path ] );
+        const saved = l.config.get_story_scroll();
+        const path = panel.dataset.path;
+        const top = Number( saved[ path ] !== undefined ? saved[ path ] : saved[ path.replace( /\/$/, '' ) ] );
 
         if ( !body || !Number.isFinite( top ) || top <= 0 ) {
             if ( body ) {

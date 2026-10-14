@@ -9,8 +9,8 @@ eleventyExcludeFromCollections: true
 urlset(xmlns="http://www.sitemaps.org/schemas/sitemap/0.9")
     each page in collections.all
         - var canonicalPath = (page.url || '/').replace(/index\.html$/, '').replace(/\.html$/, '')
-        - if (canonicalPath.length > 1 && canonicalPath.endsWith('/')) canonicalPath = canonicalPath.slice(0, -1)
         - if (!canonicalPath) canonicalPath = '/'
+        - if (canonicalPath !== '/' && !canonicalPath.endsWith('/')) canonicalPath += '/'
         url
             loc= 'https://langenium.com' + canonicalPath
             if page.date

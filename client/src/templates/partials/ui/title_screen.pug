@@ -5,32 +5,32 @@
     nav(aria-label="Main menu")
         ul.primary
             li
-                button(type="button" data-action="play" data-label="Play" data-path="/play")
+                button(type="button" data-action="play" data-label="Play" data-path="/play/")
                     span(aria-hidden="true") Play
                     | Play
             li
-                button(type="button" data-action="stories" data-label="Stories" data-path="/stories")
+                button(type="button" data-action="stories" data-label="Stories" data-path="/stories/")
                     span(aria-hidden="true") Stories
                     | Stories
             li
-                button(type="button" data-action="lore" data-label="Lore" data-path="/lore")
+                button(type="button" data-action="lore" data-label="Lore" data-path="/lore/")
                     span(aria-hidden="true") Lore
                     | Lore
         ul.secondary
             li
-                button(type="button" data-action="settings" data-path="/settings")
+                button(type="button" data-action="settings" data-path="/settings/")
                     span(aria-hidden="true") Settings
                     | Settings
             li
-                button(type="button" data-action="help" data-path="/help")
+                button(type="button" data-action="help" data-path="/help/")
                     span(aria-hidden="true") Help
                     | Help
             li
-                button(type="button" data-action="about" data-path="/about")
+                button(type="button" data-action="about" data-path="/about/")
                     span(aria-hidden="true") About
                     | About
     .title_screen_detail
-        section(data-panel="stories" data-path="/stories" hidden)
+        section(data-panel="stories" data-path="/stories/" hidden)
             button.panel_back(type="button" data-action="close-panel") Back
             .panel_body
                 h2
@@ -47,48 +47,48 @@
                     p In New York City, Kate O’Connor is addressing the UN about a new medical breakthrough. FBI Agent Tim Goth is investigating an international crime ring conducting experiments that may hold the secret to immortality. And Robert Francisco, one of the world’s most famous actors, finds himself in a relationship unlike any he has known before.
                 ol.story_parts
                     li
-                        button(type="button" data-read="story-end-of-all-limits" data-path="/stories/langenium-prologue-part-1")
+                        button(type="button" data-read="story-end-of-all-limits" data-path="/stories/langenium-prologue-part-1/")
                             span.story_index(aria-hidden="true") 01
                             span.story_name The End of All Limits
                             span.story_time 25 min
                     li
-                        button(type="button" data-read="story-hell-on-earth" data-path="/stories/langenium-prologue-part-2")
+                        button(type="button" data-read="story-hell-on-earth" data-path="/stories/langenium-prologue-part-2/")
                             span.story_index(aria-hidden="true") 02
                             span.story_name Hell on Earth
                             span.story_time 90 min
                     li
-                        button(type="button" data-read="story-extinction-level-event" data-path="/stories/langenium-prologue-part-3")
+                        button(type="button" data-read="story-extinction-level-event" data-path="/stories/langenium-prologue-part-3/")
                             span.story_index(aria-hidden="true") 03
                             span.story_name Extinction Level Event
                             span.story_time 95 min
                 p.story_note About three and a half hours.
-        section.story_reader(data-panel="story-end-of-all-limits" data-path="/stories/langenium-prologue-part-1" data-return="stories" hidden)
+        section.story_reader(data-panel="story-end-of-all-limits" data-path="/stories/langenium-prologue-part-1/" data-return="stories" hidden)
             button.panel_back(type="button" data-action="close-panel") Back
             .panel_body
                 h2 The End of All Limits
                 p.story_by By Paul Brzeski
                 .story_text
                     include ./stories/end_of_all_limits.html
-        section.story_reader(data-panel="story-hell-on-earth" data-path="/stories/langenium-prologue-part-2" data-return="stories" hidden)
+        section.story_reader(data-panel="story-hell-on-earth" data-path="/stories/langenium-prologue-part-2/" data-return="stories" hidden)
             button.panel_back(type="button" data-action="close-panel") Back
             .panel_body
                 h2 Hell on Earth
                 p.story_by By Paul Brzeski
                 .story_text
                     include ./stories/hell_on_earth.html
-        section.story_reader(data-panel="story-extinction-level-event" data-path="/stories/langenium-prologue-part-3" data-return="stories" hidden)
+        section.story_reader(data-panel="story-extinction-level-event" data-path="/stories/langenium-prologue-part-3/" data-return="stories" hidden)
             button.panel_back(type="button" data-action="close-panel") Back
             .panel_body
                 h2 Extinction Level Event
                 p.story_by By Paul Brzeski
                 .story_text
                     include ./stories/extinction_level_event.html
-        section(data-panel="lore" data-path="/lore" hidden)
+        section(data-panel="lore" data-path="/lore/" hidden)
             button.panel_back(type="button" data-action="close-panel") Back
             .panel_body
                 h2 Lore
                 p Coming soon
-        section(data-panel="settings" data-path="/settings" hidden)
+        section(data-panel="settings" data-path="/settings/" hidden)
             button.panel_back(type="button" data-action="close-panel") Back
             .panel_body
                 h2 Settings
@@ -101,7 +101,7 @@
                 label
                     input(type="checkbox" data-setting="skipintro")
                     span Skip title sequence
-        section(data-panel="about" data-path="/about" hidden)
+        section(data-panel="about" data-path="/about/" hidden)
             button.panel_back(type="button" data-action="close-panel") Back
             .panel_body
                 h2 About
@@ -114,7 +114,7 @@
                 p
                     | p.s. If you are a developer or interested in games development, visit Langenium on 
                     a(href="https://github.com/OpenStudiosCo/Langenium" target="_blank" rel="noopener") Github
-        section(data-panel="help" data-path="/help" hidden)
+        section(data-panel="help" data-path="/help/" hidden)
             button.panel_back(type="button" data-action="close-panel") Back
             .panel_body
                 h2 Help

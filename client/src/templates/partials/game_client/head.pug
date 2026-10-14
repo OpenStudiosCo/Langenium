@@ -14,8 +14,8 @@ script(src="https://www.google.com/recaptcha/api.js")
 - var canonicalPath = (page.url || '/').replace('/iframes', '')
 - canonicalPath = canonicalPath.replace(/index\.html$/, '')
 - canonicalPath = canonicalPath.replace(/\.html$/, '')
-- if (canonicalPath.length > 1 && canonicalPath.endsWith('/')) canonicalPath = canonicalPath.slice(0, -1)
 - if (!canonicalPath) canonicalPath = '/'
+- if (canonicalPath !== '/' && !canonicalPath.endsWith('/')) canonicalPath += '/'
 - var canonical = 'https://langenium.com' + canonicalPath
 link(rel="canonical" href=canonical)
 meta(property='og:url' content=canonical)

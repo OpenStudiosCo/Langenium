@@ -107,6 +107,23 @@ export default class hangarRoute {
 
       place( l.scenograph.actors.player.actorInstance.object, 0, -2.5, 10 );
 
+      // Terminal: design coords are pre-scale (same space as hangar components).
+      const terminalConfig = l.scenograph.objects.structures.hangar.objectClass.design.components
+          .find( ( component ) => component.name === 'Terminal' );
+      const terminalMesh = l.scenograph.objects.structures.terminal.mesh;
+      const scale = hangarMesh.scale.x;
+      place(
+          terminalMesh,
+          terminalConfig.position.x * scale,
+          terminalConfig.position.y * scale,
+          terminalConfig.position.z * scale
+      );
+      terminalMesh.rotation.x += terminalConfig.rotation.x;
+      terminalMesh.rotation.y += terminalConfig.rotation.y;
+      terminalMesh.rotation.z += terminalConfig.rotation.z;
+      terminalMesh.visible = true;
+      l.current_scene.scene.add( terminalMesh );
+
       l.scenograph.actors.player.vehicle.updateMesh();
       l.scenograph.actors.player.setVehicleVisible( true, false );
 
@@ -496,6 +513,12 @@ export default class hangarRoute {
         }
         hangar.visible = false;
         l.current_scene.scene.remove( hangar );
+
+        const terminal = l.scenograph.objects.structures.terminal?.mesh;
+        if ( terminal ) {
+            terminal.visible = false;
+            l.current_scene.scene.remove( terminal );
+        }
     }
 
     /**

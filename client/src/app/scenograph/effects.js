@@ -19,6 +19,7 @@ export default class Effects {
     init() {
         l.current_scene.effects.particles = setupParticles();
         l.current_scene.effects.particles.createAtmosphere();
+        l.current_scene.effects.particles.createWind();
 
         l.current_scene.effects.trail = new Trail();
 
@@ -27,6 +28,9 @@ export default class Effects {
         );
         l.current_scene.animation_queue.push(
             l.current_scene.effects.particles.animateAtmosphere
+        );
+        l.current_scene.animation_queue.push(
+            l.current_scene.effects.particles.animateWind
         );
 
         if ( !l.config.settings.fast ) {

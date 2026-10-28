@@ -10,6 +10,7 @@ import * as THREE from 'three';
  */
 import l from '@/helpers/l.js';
 import { createAtmosphere, animateAtmosphere } from '@/scenograph/effects/particles/atmosphere.js';
+import { createWind, animateWind } from '@/scenograph/effects/particles/wind.js';
 
 export default function setupParticles( ) {
     return {
@@ -19,7 +20,10 @@ export default function setupParticles( ) {
         atmosphere: null,
         atmosphereMap: null,
         createAtmosphere: createAtmosphere,
-        animateAtmosphere: animateAtmosphere
+        animateAtmosphere: animateAtmosphere,
+        wind: null,
+        createWind: createWind,
+        animateWind: animateWind
     };
 }
 

@@ -18,11 +18,15 @@ export default class Effects {
 
     init() {
         l.current_scene.effects.particles = setupParticles();
+        l.current_scene.effects.particles.createAtmosphere();
 
         l.current_scene.effects.trail = new Trail();
 
         l.current_scene.animation_queue.push(
             l.current_scene.effects.particles.animateShipThrusters
+        );
+        l.current_scene.animation_queue.push(
+            l.current_scene.effects.particles.animateAtmosphere
         );
 
         if ( !l.config.settings.fast ) {

@@ -133,7 +133,7 @@ export default class Valiant {
         // Short flame for cruise speeds.
         this.cruiseTrail = l.current_scene.effects.trail.createTrail(
             this.mesh, 0, this.trail_position_y, this.trail_position_z,
-            { trailLength: 2, advanceFrequency: 30, headScale: 0.25, nameSuffix: ' Cruise Trail' }
+            { trailLength: 4, advanceFrequency: 69, headScale: 0.25, nameSuffix: ' Cruise Trail' }
         );
         this.cruiseTrail.mesh.visible = false;
         this.cruiseTrail.mesh.material.uniforms.headColor.value.w = 0;
@@ -541,6 +541,7 @@ export default class Valiant {
             afterburnerWeight = 0,
             turbulence = 0,
             jitter = 0,
+            cruiseJitter = 0.012,
             traveled = 0,
             steps = 0,
             i = 0;
@@ -589,9 +590,13 @@ export default class Valiant {
                     this.cruiseTrail.lastAdvanceTime = 0;
                     this.cruiseTrail.mesh.visible = true;
                 }
-                this.cruiseTrail.targetObject.position.set( 0, this.trail_position_y, this.trail_position_z );
+                this.cruiseTrail.targetObject.position.set(
+                    ( Math.random() * 2 - 1 ) * cruiseJitter,
+                    this.trail_position_y + ( Math.random() * 2 - 1 ) * cruiseJitter * 0.5,
+                    this.trail_position_z
+                );
                 this.cruiseTrail.mesh.material.uniforms.headColor.value.set( 1.0, 0.83, 0.58, 0.8 * cruiseWeight );
-                this.cruiseTrail.mesh.material.uniforms.tailColor.value.set( 0.52, 0.16, 0.14, 1.0 * cruiseWeight );
+                this.cruiseTrail.mesh.material.uniforms.tailColor.value.set( 0.52, 0.16, 0.14, 0.25 * cruiseWeight );
                 this.cruiseTrail.update();
             }
             else {

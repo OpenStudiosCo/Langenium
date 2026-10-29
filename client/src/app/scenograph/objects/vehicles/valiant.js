@@ -45,6 +45,9 @@ export default class Valiant {
     // Short flame trail used at cruise speeds.
     cruiseTrail;
 
+    // Twin tilt-rotors (Cylinder / Cylinder001) and their articulation state.
+    rotors;
+
     constructor( isDemo = false ) {
         this.default_camera_distance = -35;
         this.trail_position_y = 1.2;
@@ -115,10 +118,15 @@ export default class Valiant {
         this.mesh.userData.targetable = true;
 
         this.createThruster();
+        this.setupRotors();
 
         this.mixer = new THREE.AnimationMixer( this.mesh );
-        this.mixer.clipAction( this.model.animations[ 0 ] ).play();
-        this.mixer.clipAction( this.model.animations[ 1 ] ).play();
+        this.rotors.actions = [
+            this.mixer.clipAction( this.model.animations[ 0 ] ),
+            this.mixer.clipAction( this.model.animations[ 1 ] )
+        ];
+        this.rotors.actions[ 0 ].play();
+        this.rotors.actions[ 1 ].play();
 
         //l.current_scene.effects.particles.createShipThruster(this, 1.5, { x: 0, y: 1.2, z: 1.5 });
 
@@ -279,10 +287,108 @@ export default class Valiant {
         this.mesh.add( this.thruster.container );
     }
 
+    // Parent each rotor mesh under a pivot so we can tilt without fighting the spin clips.
+    setupRotors() {
+        let leftMesh = this.mesh.getObjectByName( 'Cylinder' ),
+            rightMesh = this.mesh.getObjectByName( 'Cylinder001' ),
+            leftPivot = new THREE.Object3D(),
+            rightPivot = new THREE.Object3D();
+
+        if ( ! leftMesh || ! rightMesh ) {
+            this.rotors = false;
+            return;
+        }
+
+        leftPivot.name = 'LeftRotorPivot';
+        rightPivot.name = 'RightRotorPivot';
+        leftPivot.position.copy( leftMesh.position );
+        rightPivot.position.copy( rightMesh.position );
+        this.mesh.add( leftPivot );
+        this.mesh.add( rightPivot );
+
+        leftMesh.position.set( 0, 0, 0 );
+        rightMesh.position.set( 0, 0, 0 );
+        leftPivot.add( leftMesh );
+        rightPivot.add( rightMesh );
+
+        this.rotors = {
+            left: leftPivot,
+            right: rightPivot,
+            actions: [],
+            // 0 = face down (hover), maxTilt = lean forward in flight (~30 deg).
+            tilt: 0,
+            maxTilt: Math.PI / 6,
+            // Turn lean shared by both nacelles, then applied differentially.
+            bank: 0
+        };
+    }
+
+    // Tilt nacelles with airspeed / turn input; spin rate follows throttle effort.
+    animateRotors( delta ) {
+        if ( ! this.rotors ) {
+            return;
+        }
+
+        let object = this.mesh.userData.object,
+            // airSpeed < 0 is forward in this sim; > 0 is reverse.
+            airSpeed = object.airSpeed,
+            speed = Math.abs( airSpeed ),
+            hoverSpeed = 100 / 60,
+            tiltTarget = 0,
+            turnTarget = 0,
+            forwardFactor = 0,
+            ease = Math.min( 1, delta * 3 ),
+            spinRate = 1,
+            turbulence = 0,
+            turbX = 0,
+            turbZ = 0;
+
+        if ( airSpeed < -hoverSpeed ) {
+            tiltTarget = -this.rotors.maxTilt;
+        }
+        else if ( airSpeed > hoverSpeed ) {
+            tiltTarget = this.rotors.maxTilt;
+        }
+
+        this.rotors.tilt += ( tiltTarget - this.rotors.tilt ) * ease;
+        forwardFactor = Math.abs( this.rotors.tilt ) / this.rotors.maxTilt;
+
+        if ( object.controls.moveLeft ) {
+            turnTarget = 1;
+        }
+        else if ( object.controls.moveRight ) {
+            turnTarget = -1;
+        }
+        this.rotors.bank += ( turnTarget * 0.35 - this.rotors.bank ) * Math.min( 1, delta * 5 );
+
+        // Spin faster under thrust and as airspeed climbs.
+        spinRate = 0.85
+            + speed * 0.12
+            + ( object.controls.throttleDown || object.controls.throttleUp ? 0.55 : 0 );
+        if ( this.rotors.actions[ 0 ] ) {
+            this.rotors.actions[ 0 ].setEffectiveTimeScale( spinRate );
+            this.rotors.actions[ 1 ].setEffectiveTimeScale( spinRate );
+        }
+
+        // Light mechanical shake that grows with speed and hard turns.
+        turbulence = Math.min( 1, speed / ( 400 / 60 ) ) * 0.02 + Math.abs( this.rotors.bank ) * 0.015;
+        turbX = ( Math.random() * 2 - 1 ) * turbulence;
+        turbZ = ( Math.random() * 2 - 1 ) * turbulence;
+
+        // Pitch both nacelles forward together; differential roll/yaw when turning.
+        // Hover: bank → lateral tip (yaw authority). Flight: bank → differential pitch (roll).
+        this.rotors.left.rotation.x = this.rotors.tilt + this.rotors.bank * 0.22 * forwardFactor + turbX;
+        this.rotors.left.rotation.z = this.rotors.bank * 0.4 * ( 1 - forwardFactor ) + turbZ;
+        this.rotors.right.rotation.x = this.rotors.tilt - this.rotors.bank * 0.22 * forwardFactor + turbX;
+        this.rotors.right.rotation.z = -this.rotors.bank * 0.4 * ( 1 - forwardFactor ) - turbZ;
+    }
+
     updateAnimation( delta ) {
         if ( this.mixer ) {
             this.mixer.update( delta );
         }
+
+        this.animateRotors( delta );
 
         // Rock the ship forward and back when moving horizontally
         if ( this.mesh.userData.object.controls.throttleDown || this.mesh.userData.object.controls.throttleUp ) {

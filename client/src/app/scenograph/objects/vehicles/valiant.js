@@ -55,7 +55,7 @@ export default class Valiant {
         this.camera_distance = 0;
         this.chaseLookAhead = 12;
         this._chaseLookAt = new THREE.Vector3();
-        this.overdriveBlend = 0;
+        this.afterburnerBlend = 0;
         this.trailAnchor = new THREE.Vector3();
 
         this.ready = false;
@@ -139,10 +139,10 @@ export default class Valiant {
         this.cruiseTrail.mesh.material.uniforms.headColor.value.w = 0;
         this.cruiseTrail.mesh.material.uniforms.tailColor.value.w = 0;
 
-        // Longer soft cylinder plume for overdrive.
+        // Longer soft cylinder plume for afterburner.
         this.trail = l.current_scene.effects.trail.createTrail(
             this.mesh, 0, this.trail_position_y, this.trail_position_z,
-            { trailLength: 16, advanceFrequency: 48, headScale: 0.2, nameSuffix: ' Overdrive Trail' }
+            { trailLength: 16, advanceFrequency: 48, headScale: 0.2, nameSuffix: ' Afterburner Trail' }
         );
         this.trail.mesh.visible = false;
         this.trail.mesh.material.uniforms.headColor.value.w = 0;
@@ -491,11 +491,11 @@ export default class Valiant {
             fadeIn = 380 / 60,
             fadeOut = 420 / 60,
             cruiseCap = object.cruiseForward || ( 400 / 60 ),
-            // Keeps overdrive plume length near the earlier soft-cylinder look.
+            // Keeps afterburner plume length near the earlier soft-cylinder look.
             nodeSpacing = ( 35 / 60 ) * ( 60 / 48 ),
             blendTarget = 0,
             cruiseWeight = 0,
-            overdriveWeight = 0,
+            afterburnerWeight = 0,
             turbulence = 0,
             jitter = 0,
             traveled = 0,
@@ -509,13 +509,13 @@ export default class Valiant {
             blendTarget = ( speed - fadeIn ) / ( fadeOut - fadeIn );
         }
 
-        this.overdriveBlend += ( blendTarget - this.overdriveBlend ) * 0.15;
-        if ( Math.abs( this.overdriveBlend - blendTarget ) < 0.002 ) {
-            this.overdriveBlend = blendTarget;
+        this.afterburnerBlend += ( blendTarget - this.afterburnerBlend ) * 0.15;
+        if ( Math.abs( this.afterburnerBlend - blendTarget ) < 0.002 ) {
+            this.afterburnerBlend = blendTarget;
         }
 
-        cruiseWeight = 1 - this.overdriveBlend;
-        overdriveWeight = this.overdriveBlend;
+        cruiseWeight = 1 - this.afterburnerBlend;
+        afterburnerWeight = this.afterburnerBlend;
 
         // Turbulence only after cruise; gentle at first, then ramps toward maxForward.
         if ( speed > cruiseCap ) {
@@ -524,18 +524,18 @@ export default class Valiant {
         jitter = turbulence * turbulence * 0.045;
 
         if ( thrusting ) {
-            // Cones keep cruise scale; cylinders open with overdrive.
+            // Cones keep cruise scale; cylinders open with afterburner.
             this.animateThruster( object.airSpeed, this.thruster.centralConeBurner, .5, 0 );
-            this.animateThruster( object.airSpeed, this.thruster.outerCylBurner, .5, this.overdriveBlend );
-            this.thruster.innerCylBurner.scale.y = 1 + this.overdriveBlend * 1.4;
-            this.thruster.innerCylBurner.position.y = this.overdriveBlend * 0.55;
+            this.animateThruster( object.airSpeed, this.thruster.outerCylBurner, .5, this.afterburnerBlend );
+            this.thruster.innerCylBurner.scale.y = 1 + this.afterburnerBlend * 1.4;
+            this.thruster.innerCylBurner.position.y = this.afterburnerBlend * 0.55;
 
             this.spinThruster( object.airSpeed, this.thruster.rearConeBurner, -1 );
             this.spinThruster( object.airSpeed, this.thruster.centralConeBurner, 1 );
             this.spinThruster( object.airSpeed, this.thruster.outerCylBurner, -1 );
             this.spinThruster( object.airSpeed, this.thruster.innerCylBurner, 1 );
 
-            this.thruster.videoElement.playbackRate = Math.min( 5, 0.25 + speed + this.overdriveBlend * 2.0 );
+            this.thruster.videoElement.playbackRate = Math.min( 5, 0.25 + speed + this.afterburnerBlend * 2.0 );
 
             this.mesh.updateMatrixWorld( true );
 
@@ -557,8 +557,8 @@ export default class Valiant {
                 this.cruiseTrail.mesh.visible = false;
             }
 
-            // Soft overdrive cylinder.
-            if ( overdriveWeight > 0.01 ) {
+            // Soft afterburner cylinder.
+            if ( afterburnerWeight > 0.01 ) {
                 if ( ! this.trail.mesh.visible ) {
                     this.trail.reset();
                     this.trail.lastAdvanceTime = 0;
@@ -571,7 +571,7 @@ export default class Valiant {
                     this.trail_position_y + ( Math.random() * 2 - 1 ) * jitter * 0.5,
                     this.trail_position_z
                 );
-                this.trail.mesh.material.uniforms.headColor.value.set( 1.0, 0.83, 0.58, 0.9 * overdriveWeight );
+                this.trail.mesh.material.uniforms.headColor.value.set( 1.0, 0.83, 0.58, 0.9 * afterburnerWeight );
                 this.trail.mesh.material.uniforms.tailColor.value.set( 0.52, 0.16, 0.14, 0.0 );
 
                 traveled = this.mesh.position.distanceTo( this.trailAnchor );
@@ -598,15 +598,15 @@ export default class Valiant {
             this.trail.mesh.material.uniforms.headColor.value.set( 1.0, 0.83, 0.58, 0 );
             this.trail.mesh.material.uniforms.tailColor.value.set( 0.52, 0.16, 0.14, 0 );
             this.trail.mesh.visible = false;
-            this.overdriveBlend = 0;
+            this.afterburnerBlend = 0;
         }
     }
 
-    // Scale thruster meshes with airspeed. overdriveBoost lengthens cylinders past cruise.
-    animateThruster( airSpeed, burnerMesh, ratio, overdriveBoost = 0 ) {
+    // Scale thruster meshes with airspeed. afterburnerBoost lengthens cylinders past cruise.
+    animateThruster( airSpeed, burnerMesh, ratio, afterburnerBoost = 0 ) {
         let cruiseSpeed = Math.min( Math.abs( airSpeed ), 4.5 );
-        burnerMesh.scale.y = 1 + cruiseSpeed * ratio + overdriveBoost * ratio * 2.8;
-        burnerMesh.position.y = cruiseSpeed * ratio * 0.5 + overdriveBoost * ratio * 1.25;
+        burnerMesh.scale.y = 1 + cruiseSpeed * ratio + afterburnerBoost * ratio * 2.8;
+        burnerMesh.position.y = cruiseSpeed * ratio * 0.5 + afterburnerBoost * ratio * 1.25;
     }
 
     spinThruster( airSpeed, burnerMesh, rotation_factor ) {

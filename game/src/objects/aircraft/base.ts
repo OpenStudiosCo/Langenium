@@ -19,10 +19,12 @@ export default class BaseAircraft {
     public maxBackward:     number                              = 2.0;
     public maxUp:           number                              = 3.7 * 2.5;
     public maxDown:         number                              = 3.7 * 5;  // gravity?
-    public cruiseForward:   number                              = 400 / 60;   // Cap before overdrive (~400 km/h HUD @ 60 FPS).
-    public capacitor:       number                              = 1;          // 0..1 charge; overdrive while > 0.
-    public capacitorDrainPerSecond:     number                  = 1 / 30;     // Full tank lasts 30s in overdrive.
+    public cruiseForward:   number                              = 400 / 60;   // Cap before afterburner (~400 km/h HUD @ 60 FPS).
+    public capacitor:       number                              = 1;          // 0..1 charge; afterburner while > 0.
+    public capacitorDrainPerSecond:     number                  = 1 / 30;     // Full tank lasts 30s under afterburner.
     public capacitorRechargePerSecond:  number                  = 1 / 180;    // Full recharge takes 3 minutes under cruise.
+    public autoAfterburner: boolean                             = true;       // When false, airspeed is capped at cruise.
+    public afterburnerThreshold: number                         = 0.25;       // Min charge to initiate afterburner (auto on).
     // @todo: Introduce max turn speed for the vehicle
     public heading:         number                              = 0;
     public altitude:        number                              = 0;
@@ -288,9 +290,21 @@ export default class BaseAircraft {
             radian:             number = (Math.PI / 180),
             dtSeconds:          number = this._deltaSeconds( time_delta ),
             cruiseCap:          number = Math.min( this.maxForward, this.cruiseForward ),
-            effectiveMaxForward: number = this.capacitor > 0 ? this.maxForward : cruiseCap,
+            canAfterburn:       boolean = false,
+            effectiveMaxForward: number = cruiseCap,
             sign:               number = 0,
             excess:             number = 0;
+
+        // Auto afterburner: initiate only at/above threshold; sustain until empty once above cruise.
+        if ( this.autoAfterburner && this.capacitor > 0 ) {
+            if ( Math.abs( this.airSpeed ) > this.cruiseForward ) {
+                canAfterburn = true;
+            }
+            else if ( this.capacitor >= this.afterburnerThreshold ) {
+                canAfterburn = true;
+            }
+        }
+        effectiveMaxForward = canAfterburn ? this.maxForward : cruiseCap;
 
         // Update Airspeed (horizontal velocity)
         this.airSpeed = this._changeVelocity(

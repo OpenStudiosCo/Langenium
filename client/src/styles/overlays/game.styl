@@ -126,56 +126,334 @@
             right: 31.25dvw;
         }
 
-        &-capacitor {
+        &-capacitor-panel {
             position: absolute;
             left: 50%;
             bottom: @css{ min(3.5dvw, 3.5dvh) };
             transform: translateX(-50%);
-            width: 216px;
-            height: 96px;
+            display: flex;
+            align-items: stretch;
+            gap: 0.55rem;
             z-index: 2;
+            pointer-events: none;
+        }
+
+        &-capacitor {
+            position: relative;
+            width: 260px;
+            min-height: 148px;
             pointer-events: none;
             background: url("/assets/borders/border-09.png") center / 100% 100% no-repeat;
 
-            .track {
+            .status {
                 position: absolute;
-                left: 18%;
-                right: 18%;
-                top: 38%;
-                bottom: 34%;
-                overflow: hidden;
-                border-radius: 999px;
-                background: rgba(0, 0, 40, 0.55);
+                left: 16%;
+                right: 16%;
+                top: 18%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.35rem;
+                pointer-events: none;
             }
 
-            .fill {
-                height: 100%;
-                width: 100%;
+            .pct {
+                color: rgb(0, 255, 0);
+                font-family: monospace;
+                font-size: 0.85rem;
+                letter-spacing: 0.06em;
+                text-shadow: 0 0 4px rgba(0, 0, 0, 0.85);
+                line-height: 1;
+            }
+
+            .trend {
+                width: 0;
+                height: 0;
+                border-left: 5px solid transparent;
+                border-right: 5px solid transparent;
+
+                &.up {
+                    border-bottom: 7px solid rgb(80, 180, 255);
+                    border-top: 0;
+                }
+
+                &.down {
+                    border-top: 7px solid rgb(255, 170, 60);
+                    border-bottom: 0;
+                }
+
+                &.steady {
+                    width: 6px;
+                    height: 2px;
+                    border: 0;
+                    background: rgba(0, 255, 0, 0.55);
+                }
+            }
+
+            .track {
+                position: absolute;
+                left: 16%;
+                right: 16%;
+                top: 42%;
+                bottom: 28%;
+                border-radius: 999px;
+                background: rgba(0, 0, 40, 0.55);
+                overflow: visible;
+            }
+
+            .segments {
+                position: absolute;
+                inset: 0;
+                display: flex;
+                gap: 2px;
+                padding: 2px;
                 border-radius: inherit;
-                background: linear-gradient(90deg, rgb(20, 90, 180), rgb(80, 180, 255));
-                box-shadow: inset 0 0 8px rgba(180, 230, 255, 0.45);
-                transition: width 0.12s linear;
+                overflow: hidden;
+            }
+
+            .seg {
+                flex: 1 1 0;
+                min-width: 0;
+                border-radius: 1px;
+                background: rgba(30, 40, 70, 0.85);
+            }
+
+            .seg.on {
+                background: linear-gradient(180deg, rgb(80, 180, 255), rgb(20, 90, 180));
+                box-shadow: inset 0 0 4px rgba(180, 230, 255, 0.35);
+            }
+
+            .caret {
+                position: absolute;
+                top: -7px;
+                width: 0;
+                height: 0;
+                margin-left: -5px;
+                border-left: 5px solid transparent;
+                border-right: 5px solid transparent;
+                border-top: 6px solid rgb(0, 255, 0);
+                transform: translateX(-50%);
+                pointer-events: none;
             }
 
             .label {
                 position: absolute;
                 left: 0;
                 right: 0;
-                bottom: 10%;
+                bottom: 12%;
                 text-align: center;
                 color: rgb(0, 255, 0);
                 font-family: monospace;
-                font-size: 0.7rem;
-                letter-spacing: 0.18em;
+                font-size: 0.68rem;
+                letter-spacing: 0.14em;
             }
 
-            &.draining .fill {
-                background: linear-gradient(90deg, rgb(160, 70, 20), rgb(255, 170, 60));
+            &.charging .pct {
+                color: rgb(80, 180, 255);
             }
 
-            &.empty .fill {
-                width: 0 !important;
+            &.draining .pct {
+                color: rgb(255, 170, 60);
+            }
+
+            &.draining .seg.on {
+                background: linear-gradient(180deg, rgb(255, 170, 60), rgb(160, 70, 20));
+            }
+
+            &.empty .seg.on {
                 background: rgb(60, 60, 80);
+            }
+
+            &.auto-off .caret {
+                display: none;
+            }
+        }
+
+        .afterburner-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            justify-content: space-between;
+            box-sizing: border-box;
+            min-width: 5.5rem;
+            padding: 0.2rem 0.2rem 0.1rem;
+            border-style: solid;
+            border-color: transparent;
+            border-width: 16px;
+            border-image-source: url("/assets/borders/border-05.png");
+            border-image-slice: unquote("80 fill");
+            border-image-width: 28px;
+            border-image-repeat: round;
+            background-color: transparent;
+            background-clip: padding-box;
+            pointer-events: auto;
+
+            &.auto-on {
+                border-image-source: url("/assets/borders/border-07.png");
+            }
+        }
+
+        .afterburner-footer {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+            margin: 0.25rem 0 0;
+            pointer-events: none;
+        }
+
+        .afterburner-lamp {
+            flex: 0 0 auto;
+            width: 8px;
+            height: 8px;
+            margin-top: -2px;
+            border-radius: 100%;
+            border: 1px solid rgba(40, 50, 60, 0.7);
+            background: @css{
+                radial-gradient(circle at 35% 30%, rgba(70, 80, 90, 0.55) 0%, rgba(10, 12, 16, 0.95) 70%)
+            };
+            box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.8);
+
+            &.on {
+                border-color: rgba(0, 220, 120, 0.65);
+                background: @css{
+                    radial-gradient(circle at 35% 30%, rgba(180, 255, 200, 0.95) 0%, rgba(0, 220, 90, 0.85) 45%, rgba(0, 80, 40, 0.9) 100%)
+                };
+                box-shadow: 0 0 6px rgba(0, 255, 120, 0.55), inset 0 0 2px rgba(255, 255, 255, 0.35);
+            }
+        }
+
+        .afterburner-label {
+            margin: 0;
+            text-align: center;
+            color: rgb(0, 255, 0);
+            font-family: "Liberation Sans Narrow", "Nimbus Sans Narrow", "Arial Narrow", "Helvetica Condensed", sans-serif;
+            font-style: italic;
+            font-weight: 700;
+            font-size: 0.68rem;
+            letter-spacing: 0.12em;
+            line-height: 1.1;
+            text-transform: uppercase;
+            text-shadow: 0 1px 6px rgba(0, 10, 40, 0.55);
+            pointer-events: none;
+        }
+
+        .afterburner-body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.2rem;
+        }
+
+        .auto-switch {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0.15rem 0.45rem;
+            border: 1px solid rgba(0, 160, 220, 0.35);
+            border-radius: 2px;
+            background: rgba(0, 8, 24, 0.55);
+            color: rgb(0, 255, 0);
+            font-family: "Liberation Sans Narrow", "Nimbus Sans Narrow", "Arial Narrow", "Helvetica Condensed", sans-serif;
+            font-style: italic;
+            font-weight: 700;
+            font-size: 0.68rem;
+            letter-spacing: 0.1em;
+            line-height: 1.1;
+            text-transform: uppercase;
+            text-shadow: 0 1px 6px rgba(0, 10, 40, 0.55);
+            cursor: pointer;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+
+            &:hover,
+            &:focus-visible,
+            &.on {
+                border-color: rgba(0, 220, 255, 0.75);
+                background: rgba(0, 40, 70, 0.65);
+            }
+
+            &:focus-visible {
+                outline: none;
+            }
+
+            &:not(.on) {
+                color: rgb(140, 160, 140);
+                border-color: rgba(80, 90, 100, 0.45);
+            }
+        }
+
+        .threshold-dial {
+            position: relative;
+            box-sizing: border-box;
+            width: 58px;
+            height: 58px;
+            border: 1px solid rgba(0, 160, 220, 0.35);
+            border-radius: 100%;
+            background: @css{
+                radial-gradient(circle at 50% 40%, rgba(50, 60, 70, 0.55) 0%, rgba(0, 0, 0, 0.85) 70%)
+            };
+            box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.65);
+            cursor: grab;
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
+
+            .face {
+                position: absolute;
+                inset: 14%;
+                border-radius: 100%;
+                border: 1px solid rgba(0, 160, 220, 0.25);
+                background: rgba(0, 8, 24, 0.5);
+                pointer-events: none;
+            }
+
+            .needle {
+                position: absolute;
+                left: 50%;
+                bottom: 50%;
+                width: 2px;
+                height: 30%;
+                margin: 0;
+                background: rgb(0, 255, 0);
+                transform-origin: 50% 100%;
+                transform: translateX(-50%) rotate(-67.5deg);
+                border-radius: 1px;
+                pointer-events: none;
+                box-shadow: 0 0 4px rgba(0, 255, 0, 0.45);
+            }
+
+            .dial-value {
+                position: absolute;
+                left: 0;
+                right: 0;
+                bottom: 18%;
+                text-align: center;
+                color: rgb(0, 255, 0);
+                font-family: monospace;
+                font-size: 0.58rem;
+                letter-spacing: 0.04em;
+                text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+                pointer-events: none;
+            }
+
+            &.active,
+            &:hover,
+            &:focus-visible {
+                border-color: rgba(0, 220, 255, 0.75);
+            }
+
+            &.active {
+                cursor: grabbing;
+            }
+
+            &.disabled {
+                opacity: 0.4;
+                pointer-events: none;
+                filter: grayscale(0.35);
             }
         }
         
@@ -198,10 +476,33 @@
             right: 15.625dvw;
         }
 
-        ^[1].portrait ^[1..1]-capacitor {
-            width: 180px;
-            height: 80px;
+        ^[1].portrait ^[1..1]-capacitor-panel {
             bottom: @css{ min(2.5dvw, 2.5dvh) };
+            gap: 0.4rem;
+        }
+
+        ^[1].portrait ^[1..1]-capacitor {
+            width: 220px;
+            min-height: 132px;
+        }
+
+        ^[1].portrait .afterburner-controls {
+            min-width: 5rem;
+            border-width: 14px;
+            border-image-width: 24px;
+        }
+
+        ^[1].portrait .afterburner-label {
+            font-size: 0.6rem;
+        }
+
+        ^[1].portrait .threshold-dial {
+            width: 52px;
+            height: 52px;
+        }
+
+        ^[1].portrait .auto-switch {
+            font-size: 0.6rem;
         }
         
     }

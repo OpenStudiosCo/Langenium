@@ -42,6 +42,12 @@ export default class Valiant {
     // TrailRenderer effect showing a trailing effect on the thruster.
     trail;
 
+    // Short flame trail used at cruise speeds.
+    cruiseTrail;
+
+    // Twin tilt-rotors (Cylinder / Cylinder001) and their articulation state.
+    rotors;
+
     constructor( isDemo = false ) {
         this.default_camera_distance = -35;
         this.trail_position_y = 1.2;
@@ -49,6 +55,8 @@ export default class Valiant {
         this.camera_distance = 0;
         this.chaseLookAhead = 12;
         this._chaseLookAt = new THREE.Vector3();
+        this.afterburnerBlend = 0;
+        this.trailAnchor = new THREE.Vector3();
 
         this.ready = false;
 
@@ -110,14 +118,32 @@ export default class Valiant {
         this.mesh.userData.targetable = true;
 
         this.createThruster();
+        this.setupRotors();
 
         this.mixer = new THREE.AnimationMixer( this.mesh );
-        this.mixer.clipAction( this.model.animations[ 0 ] ).play();
-        this.mixer.clipAction( this.model.animations[ 1 ] ).play();
+        this.rotors.actions = [
+            this.mixer.clipAction( this.model.animations[ 0 ] ),
+            this.mixer.clipAction( this.model.animations[ 1 ] )
+        ];
+        this.rotors.actions[ 0 ].play();
+        this.rotors.actions[ 1 ].play();
 
         //l.current_scene.effects.particles.createShipThruster(this, 1.5, { x: 0, y: 1.2, z: 1.5 });
 
-        this.trail = l.current_scene.effects.trail.createTrail( this.mesh, 0, this.trail_position_y, this.trail_position_z );
+        // Short flame for cruise speeds.
+        this.cruiseTrail = l.current_scene.effects.trail.createTrail(
+            this.mesh, 0, this.trail_position_y, this.trail_position_z,
+            { trailLength: 2, advanceFrequency: 30, headScale: 0.25, nameSuffix: ' Cruise Trail' }
+        );
+        this.cruiseTrail.mesh.visible = false;
+        this.cruiseTrail.mesh.material.uniforms.headColor.value.w = 0;
+        this.cruiseTrail.mesh.material.uniforms.tailColor.value.w = 0;
+
+        // Longer soft cylinder plume for afterburner.
+        this.trail = l.current_scene.effects.trail.createTrail(
+            this.mesh, 0, this.trail_position_y, this.trail_position_z,
+            { trailLength: 16, advanceFrequency: 48, headScale: 0.2, nameSuffix: ' Afterburner Trail' }
+        );
         this.trail.mesh.visible = false;
         this.trail.mesh.material.uniforms.headColor.value.w = 0;
         this.trail.mesh.material.uniforms.tailColor.value.w = 0;
@@ -261,10 +287,151 @@ export default class Valiant {
         this.mesh.add( this.thruster.container );
     }
 
+    // Parent each rotor mesh under a pivot so we can tilt without fighting the spin clips.
+    setupRotors() {
+        let leftMesh = this.mesh.getObjectByName( 'Cylinder' ),
+            rightMesh = this.mesh.getObjectByName( 'Cylinder001' ),
+            leftPivot = new THREE.Object3D(),
+            rightPivot = new THREE.Object3D();
+
+        if ( ! leftMesh || ! rightMesh ) {
+            this.rotors = false;
+            return;
+        }
+
+        leftPivot.name = 'LeftRotorPivot';
+        rightPivot.name = 'RightRotorPivot';
+        leftPivot.position.copy( leftMesh.position );
+        rightPivot.position.copy( rightMesh.position );
+        this.mesh.add( leftPivot );
+        this.mesh.add( rightPivot );
+
+        leftMesh.position.set( 0, 0, 0 );
+        rightMesh.position.set( 0, 0, 0 );
+        leftPivot.add( leftMesh );
+        rightPivot.add( rightMesh );
+
+        this.rotors = {
+            left: leftPivot,
+            right: rightPivot,
+            actions: [],
+            // 0 = face down (hover), maxTilt = lean forward in flight (~30 deg).
+            tilt: 0,
+            maxTilt: Math.PI / 6,
+            // Turn lean shared by both nacelles, then applied differentially.
+            bank: 0,
+            // Elevation tip used in afterburner / jet mode.
+            elev: 0,
+            // True once blades have been parked for jet mode this run.
+            jetParked: false
+        };
+    }
+
+    // Tilt nacelles with airspeed / turn input; spin rate follows throttle effort.
+    // Above cruise (afterburner): park spin, reset airspeed tilt, angle only for turn/elev.
+    animateRotors( delta ) {
+        if ( ! this.rotors ) {
+            return;
+        }
+
+        let object = this.mesh.userData.object,
+            // airSpeed < 0 is forward in this sim; > 0 is reverse.
+            airSpeed = object.airSpeed,
+            speed = Math.abs( airSpeed ),
+            cruiseCap = object.cruiseForward || ( 400 / 60 ),
+            hoverSpeed = 100 / 60,
+            // Afterburner regime: faster than cruise.
+            jetMode = speed > cruiseCap,
+            tiltTarget = 0,
+            turnTarget = 0,
+            elevTarget = 0,
+            forwardFactor = 0,
+            ease = Math.min( 1, delta * 3 ),
+            spinRate = 1,
+            turbulence = 0,
+            turbX = 0,
+            turbZ = 0;
+
+        if ( jetMode ) {
+            // Lock out airspeed tilt; nacelles only tip for turn / elevation.
+            tiltTarget = 0;
+            spinRate = 0;
+            if ( ! this.rotors.jetParked && this.rotors.actions[ 0 ] ) {
+                this.rotors.actions[ 0 ].time = 0;
+                this.rotors.actions[ 1 ].time = 0;
+                this.rotors.jetParked = true;
+            }
+            if ( object.controls.moveUp ) {
+                elevTarget = -this.rotors.maxTilt * 0.55;
+            }
+            else if ( object.controls.moveDown ) {
+                elevTarget = this.rotors.maxTilt * 0.55;
+            }
+        }
+        else {
+            this.rotors.jetParked = false;
+            if ( airSpeed < -hoverSpeed ) {
+                tiltTarget = -this.rotors.maxTilt;
+            }
+            else if ( airSpeed > hoverSpeed ) {
+                tiltTarget = this.rotors.maxTilt;
+            }
+            // Spin faster under thrust and as airspeed climbs.
+            spinRate = 0.85
+                + speed * 0.12
+                + ( object.controls.throttleDown || object.controls.throttleUp ? 0.55 : 0 );
+        }
+
+        this.rotors.tilt += ( tiltTarget - this.rotors.tilt ) * ease;
+        this.rotors.elev += ( elevTarget - this.rotors.elev ) * Math.min( 1, delta * 5 );
+        forwardFactor = Math.abs( this.rotors.tilt ) / this.rotors.maxTilt;
+
+        if ( object.controls.moveLeft ) {
+            turnTarget = 1;
+        }
+        else if ( object.controls.moveRight ) {
+            turnTarget = -1;
+        }
+        this.rotors.bank += ( turnTarget * 0.35 - this.rotors.bank ) * Math.min( 1, delta * 5 );
+
+        if ( this.rotors.actions[ 0 ] ) {
+            this.rotors.actions[ 0 ].setEffectiveTimeScale( spinRate );
+            this.rotors.actions[ 1 ].setEffectiveTimeScale( spinRate );
+        }
+
+        // Light mechanical shake; quiet in jet mode so parked blades read as locked.
+        if ( jetMode ) {
+            turbulence = Math.abs( this.rotors.bank ) * 0.01 + Math.abs( this.rotors.elev ) * 0.01;
+        }
+        else {
+            turbulence = Math.min( 1, speed / cruiseCap ) * 0.02 + Math.abs( this.rotors.bank ) * 0.015;
+        }
+        turbX = ( Math.random() * 2 - 1 ) * turbulence;
+        turbZ = ( Math.random() * 2 - 1 ) * turbulence;
+
+        // Pitch both nacelles forward together; differential roll/yaw when turning.
+        // Hover: bank → lateral tip (yaw authority). Flight: bank → differential pitch (roll).
+        // Jet mode: parked blades; elev for climb/dive, bank as differential pitch for turns.
+        if ( jetMode ) {
+            this.rotors.left.rotation.x = this.rotors.elev + this.rotors.bank * 0.55 + turbX;
+            this.rotors.left.rotation.z = turbZ;
+            this.rotors.right.rotation.x = this.rotors.elev - this.rotors.bank * 0.55 + turbX;
+            this.rotors.right.rotation.z = -turbZ;
+        }
+        else {
+            this.rotors.left.rotation.x = this.rotors.tilt + this.rotors.bank * 0.22 * forwardFactor + turbX;
+            this.rotors.left.rotation.z = this.rotors.bank * 0.4 * ( 1 - forwardFactor ) + turbZ;
+            this.rotors.right.rotation.x = this.rotors.tilt - this.rotors.bank * 0.22 * forwardFactor + turbX;
+            this.rotors.right.rotation.z = -this.rotors.bank * 0.4 * ( 1 - forwardFactor ) - turbZ;
+        }
+    }
+
     updateAnimation( delta ) {
         if ( this.mixer ) {
             this.mixer.update( delta );
         }
+
+        this.animateRotors( delta );
 
         // Rock the ship forward and back when moving horizontally
         if ( this.mesh.userData.object.controls.throttleDown || this.mesh.userData.object.controls.throttleUp ) {
@@ -356,53 +523,133 @@ export default class Valiant {
     }
 
     animateTrail() {
-        if ( ! this.trail ) {
+        if ( ! this.trail || ! this.cruiseTrail ) {
             return;
         }
 
-        const object = this.mesh.userData.object;
-        const thrusting = object.airSpeed < 0;
+        let object = this.mesh.userData.object,
+            thrusting = object.airSpeed < 0,
+            speed = Math.abs( object.airSpeed ),
+            // Crossfade short flame → cylinder between 380–420 km/h (HUD @ 60 FPS).
+            fadeIn = 380 / 60,
+            fadeOut = 420 / 60,
+            cruiseCap = object.cruiseForward || ( 400 / 60 ),
+            // Keeps afterburner plume length near the earlier soft-cylinder look.
+            nodeSpacing = ( 35 / 60 ) * ( 60 / 48 ),
+            blendTarget = 0,
+            cruiseWeight = 0,
+            afterburnerWeight = 0,
+            turbulence = 0,
+            jitter = 0,
+            traveled = 0,
+            steps = 0,
+            i = 0;
+
+        if ( speed >= fadeOut ) {
+            blendTarget = 1;
+        }
+        else if ( speed > fadeIn ) {
+            blendTarget = ( speed - fadeIn ) / ( fadeOut - fadeIn );
+        }
+
+        this.afterburnerBlend += ( blendTarget - this.afterburnerBlend ) * 0.15;
+        if ( Math.abs( this.afterburnerBlend - blendTarget ) < 0.002 ) {
+            this.afterburnerBlend = blendTarget;
+        }
+
+        cruiseWeight = 1 - this.afterburnerBlend;
+        afterburnerWeight = this.afterburnerBlend;
+
+        // Turbulence only after cruise; gentle at first, then ramps toward maxForward.
+        if ( speed > cruiseCap ) {
+            turbulence = Math.min( 1, ( speed - cruiseCap ) / Math.max( 0.001, object.maxForward - cruiseCap ) );
+        }
+        jitter = turbulence * turbulence * 0.045;
 
         if ( thrusting ) {
-            this.animateThruster( object.airSpeed, this.thruster.centralConeBurner, .5 );
-            this.animateThruster( object.airSpeed, this.thruster.outerCylBurner, .5 );
+            // Cones keep cruise scale; cylinders open with afterburner.
+            this.animateThruster( object.airSpeed, this.thruster.centralConeBurner, .5, 0 );
+            this.animateThruster( object.airSpeed, this.thruster.outerCylBurner, .5, this.afterburnerBlend );
+            this.thruster.innerCylBurner.scale.y = 1 + this.afterburnerBlend * 1.4;
+            this.thruster.innerCylBurner.position.y = this.afterburnerBlend * 0.55;
 
             this.spinThruster( object.airSpeed, this.thruster.rearConeBurner, -1 );
             this.spinThruster( object.airSpeed, this.thruster.centralConeBurner, 1 );
             this.spinThruster( object.airSpeed, this.thruster.outerCylBurner, -1 );
             this.spinThruster( object.airSpeed, this.thruster.innerCylBurner, 1 );
 
-            this.thruster.videoElement.playbackRate = Math.min( 5, 0.25 + Math.abs( object.airSpeed ) );
+            this.thruster.videoElement.playbackRate = Math.min( 5, 0.25 + speed + this.afterburnerBlend * 2.0 );
 
-            if ( ! this.trail.mesh.visible ) {
-                this.mesh.updateMatrixWorld( true );
-                this.trail.reset();
-                this.trail.lastAdvanceTime = 0;
-                this.trail.mesh.visible = true;
+            this.mesh.updateMatrixWorld( true );
+
+            // Short cruise flame.
+            if ( cruiseWeight > 0.01 ) {
+                if ( ! this.cruiseTrail.mesh.visible ) {
+                    this.cruiseTrail.reset();
+                    this.cruiseTrail.lastAdvanceTime = 0;
+                    this.cruiseTrail.mesh.visible = true;
+                }
+                this.cruiseTrail.targetObject.position.set( 0, this.trail_position_y, this.trail_position_z );
+                this.cruiseTrail.mesh.material.uniforms.headColor.value.set( 1.0, 0.83, 0.58, 0.8 * cruiseWeight );
+                this.cruiseTrail.mesh.material.uniforms.tailColor.value.set( 0.52, 0.16, 0.14, 1.0 * cruiseWeight );
+                this.cruiseTrail.update();
+            }
+            else {
+                this.cruiseTrail.mesh.material.uniforms.headColor.value.w = 0;
+                this.cruiseTrail.mesh.material.uniforms.tailColor.value.w = 0;
+                this.cruiseTrail.mesh.visible = false;
             }
 
-            this.trail.mesh.material.uniforms.headColor.value.set( 255 / 255, 212 / 255, 148 / 255, .8 );
-            this.trail.mesh.material.uniforms.tailColor.value.set( 132 / 255, 42 / 255, 36 / 255, 1 );
+            // Soft afterburner cylinder.
+            if ( afterburnerWeight > 0.01 ) {
+                if ( ! this.trail.mesh.visible ) {
+                    this.trail.reset();
+                    this.trail.lastAdvanceTime = 0;
+                    this.trail.mesh.visible = true;
+                    this.trailAnchor.copy( this.mesh.position );
+                }
+
+                this.trail.targetObject.position.set(
+                    ( Math.random() * 2 - 1 ) * jitter,
+                    this.trail_position_y + ( Math.random() * 2 - 1 ) * jitter * 0.5,
+                    this.trail_position_z
+                );
+                this.trail.mesh.material.uniforms.headColor.value.set( 1.0, 0.83, 0.58, 0.9 * afterburnerWeight );
+                this.trail.mesh.material.uniforms.tailColor.value.set( 0.52, 0.16, 0.14, 0.0 );
+
+                traveled = this.mesh.position.distanceTo( this.trailAnchor );
+                steps = Math.min( 5, Math.floor( traveled / Math.max( 0.05, nodeSpacing ) ) );
+                for ( i = 0; i < steps; i++ ) {
+                    this.trail.advance();
+                }
+                if ( steps > 0 && traveled > 0 ) {
+                    this.trailAnchor.lerp( this.mesh.position, ( steps * nodeSpacing ) / traveled );
+                }
+                this.trail.updateHead();
+                this.trail.geometry.computeBoundingSphere();
+            }
+            else {
+                this.trail.mesh.material.uniforms.headColor.value.w = 0;
+                this.trail.mesh.material.uniforms.tailColor.value.w = 0;
+                this.trail.mesh.visible = false;
+            }
         }
         else {
-            this.trail.mesh.material.uniforms.headColor.value.set( 255 / 255, 212 / 255, 148 / 255, 0 );
-            this.trail.mesh.material.uniforms.tailColor.value.set( 132 / 255, 42 / 255, 36 / 255, 0 );
+            this.cruiseTrail.mesh.material.uniforms.headColor.value.set( 1.0, 0.83, 0.58, 0 );
+            this.cruiseTrail.mesh.material.uniforms.tailColor.value.set( 0.52, 0.16, 0.14, 0 );
+            this.cruiseTrail.mesh.visible = false;
+            this.trail.mesh.material.uniforms.headColor.value.set( 1.0, 0.83, 0.58, 0 );
+            this.trail.mesh.material.uniforms.tailColor.value.set( 0.52, 0.16, 0.14, 0 );
             this.trail.mesh.visible = false;
-            return;
+            this.afterburnerBlend = 0;
         }
-
-        // Head is a child of the ship; keep it on the nozzle. Do not add
-        // airSpeed / verticalSpeed here — that double-counted parent motion.
-        this.trail.targetObject.position.set( 0, this.trail_position_y, this.trail_position_z );
-        this.mesh.updateMatrixWorld( true );
-        this.trail.update();
     }
 
-    animateThruster( airSpeed, burnerMesh, ratio ) {
-        if ( Math.abs( airSpeed ) < 4.5 ) {
-            burnerMesh.scale.y = 1 + Math.abs( airSpeed ) * ratio;
-            burnerMesh.position.y = Math.abs( airSpeed ) * ratio * 0.5;
-        }
+    // Scale thruster meshes with airspeed. afterburnerBoost lengthens cylinders past cruise.
+    animateThruster( airSpeed, burnerMesh, ratio, afterburnerBoost = 0 ) {
+        let cruiseSpeed = Math.min( Math.abs( airSpeed ), 4.5 );
+        burnerMesh.scale.y = 1 + cruiseSpeed * ratio + afterburnerBoost * ratio * 2.8;
+        burnerMesh.position.y = cruiseSpeed * ratio * 0.5 + afterburnerBoost * ratio * 1.25;
     }
 
     spinThruster( airSpeed, burnerMesh, rotation_factor ) {

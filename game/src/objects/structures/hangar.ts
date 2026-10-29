@@ -93,6 +93,22 @@ class Hangar extends ObjectBase {
                     z: 0
                 }
               },
+              {
+                  name: 'Terminal',
+                  width: 1,
+                  height: 1,
+                  depth: 1,
+                  position: {
+                      x: -4.5,
+                      y: -1.85,
+                      z: 2.5
+                  },
+                  rotation: {
+                      x: 0,
+                      y: Math.PI / 2,
+                      z: 0
+                  }
+              }
             ]
           }
         ];

@@ -1,12 +1,29 @@
 // Sets up the particle effects
 
+/**
+ * Vendor libs
+ */
 import * as THREE from 'three';
+
+/**
+ * Internal libs and helpers.
+ */
+import l from '@/helpers/l.js';
+import { createAtmosphere, animateAtmosphere } from '@/scenograph/effects/particles/atmosphere.js';
+import { createWind, animateWind } from '@/scenograph/effects/particles/wind.js';
 
 export default function setupParticles( ) {
     return {
         shipThrusters: [],
         createShipThruster: createShipThruster,
-        animateShipThrusters: animateShipThrusters
+        animateShipThrusters: animateShipThrusters,
+        atmosphere: null,
+        atmosphereMap: null,
+        createAtmosphere: createAtmosphere,
+        animateAtmosphere: animateAtmosphere,
+        wind: null,
+        createWind: createWind,
+        animateWind: animateWind
     };
 }
 

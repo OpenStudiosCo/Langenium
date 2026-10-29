@@ -291,6 +291,50 @@
             &.auto-on {
                 border-image-source: url("/assets/borders/border-07.png");
             }
+
+            // Compact slideout: body collapses; lamp + label stay as the handle.
+            &.tray .afterburner-body {
+                overflow: hidden;
+                max-height: 7.5rem;
+                opacity: 1;
+                transition: max-height 0.22s ease, opacity 0.18s ease, margin 0.18s ease;
+            }
+
+            &.tray.collapsed {
+                min-width: 0;
+                padding: 0.12rem 0.45rem 0.1rem;
+                border-width: 8px;
+                border-image-width: 14px;
+
+                .afterburner-body {
+                    max-height: 0;
+                    opacity: 0;
+                    margin: 0;
+                    pointer-events: none;
+                }
+
+                .afterburner-footer {
+                    margin: 0;
+                }
+            }
+
+            &.tray.expanded {
+                border-width: 10px;
+                border-image-width: 18px;
+            }
+
+            &.tray .afterburner-footer {
+                pointer-events: auto;
+                cursor: pointer;
+                touch-action: none;
+                -webkit-tap-highlight-color: transparent;
+                user-select: none;
+                -webkit-user-select: none;
+            }
+
+            &.tray .afterburner-chevron {
+                display: block;
+            }
         }
 
         .afterburner-footer {
@@ -301,6 +345,31 @@
             gap: 0.35rem;
             margin: 0.25rem 0 0;
             pointer-events: none;
+        }
+
+        // Hidden on desktop full panel; tray mode shows open/collapse affordance.
+        .afterburner-chevron {
+            display: none;
+            flex: 0 0 auto;
+            width: 0;
+            height: 0;
+            margin-top: -1px;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-bottom: 5px solid rgb(0, 255, 0);
+            opacity: 0.85;
+            filter: drop-shadow(0 0 3px rgba(0, 255, 120, 0.35));
+            transition: transform 0.18s ease;
+        }
+
+        .afterburner-controls.tray.collapsed .afterburner-chevron {
+            // Points open-ward (up locally → into screen on bottom tray / right on side tray).
+            transform: none;
+        }
+
+        .afterburner-controls.tray.expanded .afterburner-chevron {
+            // Points close-ward after opening.
+            transform: rotate(180deg);
         }
 
         .afterburner-lamp {
@@ -476,33 +545,224 @@
             right: 15.625dvw;
         }
 
-        ^[1].portrait ^[1..1]-capacitor-panel {
+        // Compact (phones): capacitor up top; afterburner is a bottom slideout tray.
+        ^[1].compact ^[1..1]-capacitor-panel {
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            transform: none;
+            display: block;
+            gap: 0;
+            max-width: none;
+            pointer-events: none;
+        }
+
+        ^[1].compact ^[1..1]-capacitor {
+            position: absolute;
+            // Sit to the right of #map with a small gap (map: left + size).
+            left: calc(@css{ min(2.5dvw, 2.5dvh) } + @css{ max(12.5dvw, 12.5dvh) } + 0.75rem);
+            top: @css{ min(2.5dvw, 2.5dvh) };
+            transform: none;
+            width: 168px;
+            min-height: 88px;
+
+            .status {
+                top: 14%;
+                left: 14%;
+                right: 14%;
+                gap: 0.22rem;
+            }
+
+            .pct {
+                font-size: 0.7rem;
+            }
+
+            .track {
+                top: 40%;
+                bottom: 28%;
+                left: 14%;
+                right: 14%;
+            }
+
+            .label {
+                bottom: 10%;
+                font-size: 0.55rem;
+                letter-spacing: 0.1em;
+            }
+        }
+
+        // Wide/landscape compact: tray flush to the bottom edge.
+        // Handle (label tab) stays compact; dial/AUTO are larger for touch.
+        ^[1].compact .afterburner-controls {
+            position: absolute;
+            left: 50%;
             bottom: @css{ min(2.5dvw, 2.5dvh) };
-            gap: 0.4rem;
+            transform: translateX(-50%);
+            min-width: 0;
+            padding: 0.2rem 0.28rem 0.12rem;
+            border-width: 12px;
+            border-image-width: 22px;
+            z-index: 3;
         }
 
-        ^[1].portrait ^[1..1]-capacitor {
-            width: 220px;
-            min-height: 132px;
+        ^[1].compact .afterburner-controls.tray.collapsed {
+            padding: 0.12rem 0.45rem 0.1rem;
+            border-width: 8px;
+            border-image-width: 14px;
         }
 
-        ^[1].portrait .afterburner-controls {
-            min-width: 5rem;
-            border-width: 14px;
-            border-image-width: 24px;
+        ^[1].compact .afterburner-controls.tray.expanded {
+            border-width: 12px;
+            border-image-width: 22px;
         }
 
-        ^[1].portrait .afterburner-label {
-            font-size: 0.6rem;
+        ^[1].compact .afterburner-body {
+            gap: 0.28rem;
         }
 
-        ^[1].portrait .threshold-dial {
-            width: 52px;
-            height: 52px;
+        ^[1].compact .afterburner-footer {
+            gap: 0.25rem;
+            margin: 0.15rem 0 0;
         }
 
-        ^[1].portrait .auto-switch {
-            font-size: 0.6rem;
+        ^[1].compact .afterburner-lamp {
+            width: 7px;
+            height: 7px;
+        }
+
+        ^[1].compact .afterburner-label {
+            font-size: 0.55rem;
+            letter-spacing: 0.08em;
+        }
+
+        ^[1].compact .threshold-dial {
+            width: 88px;
+            height: 88px;
+
+            .dial-value {
+                font-size: 0.95rem;
+            }
+        }
+
+        ^[1].compact .auto-switch {
+            padding: 0.22rem 0.65rem;
+            font-size: 1.05rem;
+            letter-spacing: 0.08em;
+        }
+
+        ^[1].compact.portrait ^[1..1]-capacitor {
+            // Portrait keeps the gauge centered under the top chrome.
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            min-height: 80px;
+        }
+
+        // Portrait: off-canvas drawer. Body sits off-screen; footer tab is glued to
+        // the trailing edge so AFTERBURNER + lamp peek, then the whole tray slides in.
+        ^[1].compact.portrait .afterburner-controls {
+            left: 0;
+            right: auto;
+            top: auto;
+            bottom: 36%;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.28rem;
+            padding: 0.22rem 0.28rem;
+            border-width: 12px;
+            border-image-width: 22px;
+            max-width: none;
+            overflow: visible;
+            transition: transform 0.24s ease;
+        }
+
+        ^[1].compact.portrait .afterburner-controls.tray .afterburner-body {
+            flex: 0 0 auto;
+            max-height: none;
+            max-width: none;
+            margin: 0;
+            opacity: 1;
+            overflow: visible;
+            transition: none;
+        }
+
+        ^[1].compact.portrait .afterburner-controls.tray.collapsed {
+            // Park the panel off the left edge; leave a few px so the tab text isn't flush.
+            transform: translateX(calc(-100% + 10px));
+            padding: 0.22rem 0.28rem;
+            border-width: 12px;
+            border-image-width: 22px;
+            max-width: none;
+
+            .afterburner-body {
+                max-width: none;
+                max-height: none;
+                opacity: 1;
+                margin: 0;
+                pointer-events: none;
+            }
+        }
+
+        ^[1].compact.portrait .afterburner-controls.tray.expanded {
+            transform: translateX(0);
+            border-width: 12px;
+            border-image-width: 22px;
+            max-width: none;
+        }
+
+        // Compact label tab on the trailing edge (not scaled with the dial).
+        ^[1].compact.portrait .afterburner-footer {
+            position: absolute;
+            left: 100%;
+            top: 50%;
+            writing-mode: vertical-rl;
+            text-orientation: sideways;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+            margin: 0;
+            padding: 0.55rem 0.35rem;
+            border-style: solid;
+            border-color: transparent;
+            border-width: 7px;
+            border-image-source: url("/assets/borders/border-05.png");
+            border-image-slice: unquote("80 fill");
+            border-image-width: 12px;
+            border-image-repeat: round;
+            transform: translateY(-50%) rotate(180deg);
+            transform-origin: center center;
+            white-space: nowrap;
+        }
+
+        ^[1].compact.portrait .afterburner-controls.auto-on .afterburner-footer {
+            border-image-source: url("/assets/borders/border-07.png");
+        }
+
+        ^[1].compact.portrait .afterburner-lamp {
+            margin-top: 0;
+            margin-right: 0;
+        }
+
+        ^[1].compact.portrait .afterburner-label {
+            font-size: 0.5rem;
+            letter-spacing: 0.12em;
+            transform: none;
+        }
+
+        // Chevron points into the screen to open, back to the edge to close.
+        ^[1].compact.portrait .afterburner-controls.tray.collapsed .afterburner-chevron {
+            transform: rotate(-90deg);
+        }
+
+        ^[1].compact.portrait .afterburner-controls.tray.expanded .afterburner-chevron {
+            transform: rotate(90deg);
+        }
+
+        ^[1].compact.portrait .threshold-dial {
+            width: 88px;
+            height: 88px;
         }
         
     }

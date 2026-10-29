@@ -25,6 +25,8 @@ export default class HeadsUpDisplay {
         this.container = document.querySelector('#game_overlay #hud');
 
         this.portraitMode = l.scenograph.cameras.player.aspect < 0.88;
+        this.compactMode = false;
+        this.afterburnerTrayOpen = false;
 
         // Create the vertical lines
         this.lineElement = document.createElement('div');
@@ -56,6 +58,7 @@ export default class HeadsUpDisplay {
         this.capacitorTrend = this.capacitorElement.querySelector('.trend');
         this.capacitorCaret = this.capacitorElement.querySelector('.caret');
         this.afterburnerControls = this.capacitorPanel.querySelector('.afterburner-controls');
+        this.afterburnerFooter = this.afterburnerControls.querySelector('.afterburner-footer');
         this.afterburnerLamp = this.afterburnerControls.querySelector('.afterburner-lamp');
         this.autoAfterburnerSwitch = this.afterburnerControls.querySelector('.auto-switch');
         this.thresholdDial = this.afterburnerControls.querySelector('.threshold-dial');
@@ -63,6 +66,7 @@ export default class HeadsUpDisplay {
         this.thresholdDialValue = this.thresholdDial.querySelector('.dial-value');
 
         this.bindAfterburnerControls();
+        this.bindAfterburnerTray();
 
     }
 
@@ -169,14 +173,138 @@ export default class HeadsUpDisplay {
         title.className = 'afterburner-label';
         title.textContent = 'AFTERBURNER';
 
+        // Affordance: points open-ward when collapsed, close-ward when expanded.
+        let chevron = document.createElement('div');
+        chevron.className = 'afterburner-chevron';
+        chevron.setAttribute( 'aria-hidden', 'true' );
+
         footer.appendChild(lamp);
         footer.appendChild(title);
+        footer.appendChild(chevron);
+        footer.setAttribute( 'role', 'button' );
+        footer.setAttribute( 'aria-label', 'Afterburner controls' );
+        footer.tabIndex = 0;
+
         controls.appendChild(body);
         controls.appendChild(footer);
+        controls.setAttribute( 'aria-expanded', 'true' );
 
         panel.appendChild(gauge);
         panel.appendChild(controls);
         return panel;
+    }
+
+    // Mobile/compact: tray collapses to lamp + label; slide/tap opens controls.
+    bindAfterburnerTray() {
+        let hud = this;
+        let startX = 0;
+        let startY = 0;
+        let tracking = false;
+
+        function toggleTray() {
+            if ( ! hud.compactMode ) {
+                return;
+            }
+            hud.setAfterburnerTrayOpen( ! hud.afterburnerTrayOpen );
+        }
+
+        function onFooterPointerDown( event ) {
+            if ( ! hud.compactMode ) {
+                return;
+            }
+            tracking = true;
+            startX = event.clientX;
+            startY = event.clientY;
+            if ( hud.afterburnerFooter.setPointerCapture && event.pointerId !== undefined ) {
+                hud.afterburnerFooter.setPointerCapture( event.pointerId );
+            }
+            event.preventDefault();
+        }
+
+        function onFooterPointerUp( event ) {
+            if ( ! tracking ) {
+                return;
+            }
+            tracking = false;
+            let dx = event.clientX - startX;
+            let dy = event.clientY - startY;
+            // Portrait: tray slides in from the left. Wide: tray slides up from bottom.
+            if ( hud.portraitMode ) {
+                if ( dx > 24 ) {
+                    hud.setAfterburnerTrayOpen( true );
+                }
+                else if ( dx < -24 ) {
+                    hud.setAfterburnerTrayOpen( false );
+                }
+                else {
+                    toggleTray();
+                }
+            }
+            else if ( dy < -24 ) {
+                hud.setAfterburnerTrayOpen( true );
+            }
+            else if ( dy > 24 ) {
+                hud.setAfterburnerTrayOpen( false );
+            }
+            else {
+                toggleTray();
+            }
+            event.preventDefault();
+        }
+
+        this.afterburnerFooter.addEventListener( 'pointerdown', onFooterPointerDown );
+        this.afterburnerFooter.addEventListener( 'pointerup', onFooterPointerUp );
+        this.afterburnerFooter.addEventListener( 'pointercancel', function () {
+            tracking = false;
+        } );
+        this.afterburnerFooter.addEventListener( 'keydown', function ( event ) {
+            if ( event.key === 'Enter' || event.key === ' ' ) {
+                toggleTray();
+                event.preventDefault();
+            }
+        } );
+
+        // Tap outside an open tray to collapse it.
+        document.addEventListener( 'pointerdown', function ( event ) {
+            if ( ! hud.compactMode || ! hud.afterburnerTrayOpen ) {
+                return;
+            }
+            if ( hud.afterburnerControls.contains( event.target ) ) {
+                return;
+            }
+            hud.setAfterburnerTrayOpen( false );
+        }, true );
+    }
+
+    setAfterburnerTrayOpen( open ) {
+        this.afterburnerTrayOpen = !! open;
+        this.afterburnerControls.classList.toggle( 'expanded', this.afterburnerTrayOpen );
+        this.afterburnerControls.classList.toggle( 'collapsed', ! this.afterburnerTrayOpen );
+        this.afterburnerControls.setAttribute( 'aria-expanded', this.afterburnerTrayOpen ? 'true' : 'false' );
+    }
+
+    syncCompactLayout() {
+        let aspect = l.scenograph.cameras.player.aspect;
+        let portrait = aspect < 0.88;
+        let compact = portrait
+            || window.innerHeight <= 520
+            || ( aspect >= 1 && window.innerWidth <= 920 );
+        let wasCompact = this.compactMode;
+
+        this.portraitMode = portrait;
+        this.compactMode = compact;
+        this.container.classList.toggle( 'portrait', portrait );
+        this.container.classList.toggle( 'compact', compact );
+
+        if ( compact && ! wasCompact ) {
+            this.afterburnerControls.classList.add( 'tray' );
+            this.setAfterburnerTrayOpen( false );
+        }
+        else if ( ! compact && wasCompact ) {
+            this.afterburnerControls.classList.remove( 'tray', 'collapsed', 'expanded' );
+            this.afterburnerTrayOpen = false;
+            this.afterburnerControls.setAttribute( 'aria-expanded', 'true' );
+        }
     }
 
     bindAfterburnerControls() {
@@ -330,14 +458,7 @@ export default class HeadsUpDisplay {
     **/
     animate() {
 
-        l.scenograph.overlays.hud.portraitMode = l.scenograph.cameras.player.aspect < 0.88;
-
-        if ( l.scenograph.overlays.hud.portraitMode ) {
-            l.scenograph.overlays.hud.container.classList.add('portrait');
-        }
-        else {
-            l.scenograph.overlays.hud.container.classList.remove('portrait');
-        }
+        l.scenograph.overlays.hud.syncCompactLayout();
 
         let ship = l.scenograph.overlays.hud.getPlayerShip();
         if ( ! ship ) {

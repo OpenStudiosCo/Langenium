@@ -381,12 +381,13 @@ export default class Valiant {
                 this.trail.mesh.visible = true;
             }
 
-            this.trail.mesh.material.uniforms.headColor.value.set( 255 / 255, 212 / 255, 148 / 255, .8 );
-            this.trail.mesh.material.uniforms.tailColor.value.set( 132 / 255, 42 / 255, 36 / 255, 1 );
+            // Flame: bright opaque head at the nozzle, transparent cool tip.
+            this.trail.mesh.material.uniforms.headColor.value.set( 1.0, 0.83, 0.58, 0.9 );
+            this.trail.mesh.material.uniforms.tailColor.value.set( 0.52, 0.16, 0.14, 0.0 );
         }
         else {
-            this.trail.mesh.material.uniforms.headColor.value.set( 255 / 255, 212 / 255, 148 / 255, 0 );
-            this.trail.mesh.material.uniforms.tailColor.value.set( 132 / 255, 42 / 255, 36 / 255, 0 );
+            this.trail.mesh.material.uniforms.headColor.value.set( 1.0, 0.83, 0.58, 0 );
+            this.trail.mesh.material.uniforms.tailColor.value.set( 0.52, 0.16, 0.14, 0 );
             this.trail.mesh.visible = false;
             return;
         }

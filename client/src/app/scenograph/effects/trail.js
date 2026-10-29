@@ -88,11 +88,16 @@ export default class Trail {
         const trailMaterial = TrailRenderer.createBaseMaterial();
 
         trailMaterial.side = THREE.DoubleSide;
-
         trailMaterial.transparent = true;
+        trailMaterial.depthWrite = false;
+        // Base material uses alphaTest 0.5, which hard-cuts any soft fade.
+        trailMaterial.alphaTest = 0.01;
+        // Additive reads as heat/glow instead of a solid ribbon.
+        trailMaterial.blending = THREE.AdditiveBlending;
 
-        trailMaterial.uniforms.headColor.value.set( 255 / 255, 212 / 255, 148 / 255, 1. ); // RGBA.
-        trailMaterial.uniforms.tailColor.value.set( 132 / 255, 42 / 255, 36 / 255, 1. ); // RGBA.
+        // Hot core at the nozzle → cool, transparent tip.
+        trailMaterial.uniforms.headColor.value.set( 1.0, 0.83, 0.58, 0.95 );
+        trailMaterial.uniforms.tailColor.value.set( 0.52, 0.16, 0.14, 0.0 );
         return trailMaterial;
     }
 

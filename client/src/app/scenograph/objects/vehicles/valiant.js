@@ -319,11 +319,16 @@ export default class Valiant {
             tilt: 0,
             maxTilt: Math.PI / 6,
             // Turn lean shared by both nacelles, then applied differentially.
-            bank: 0
+            bank: 0,
+            // Elevation tip used in afterburner / jet mode.
+            elev: 0,
+            // True once blades have been parked for jet mode this run.
+            jetParked: false
         };
     }
 
     // Tilt nacelles with airspeed / turn input; spin rate follows throttle effort.
+    // Above cruise (afterburner): park spin, reset airspeed tilt, angle only for turn/elev.
     animateRotors( delta ) {
         if ( ! this.rotors ) {
             return;
@@ -333,9 +338,13 @@ export default class Valiant {
             // airSpeed < 0 is forward in this sim; > 0 is reverse.
             airSpeed = object.airSpeed,
             speed = Math.abs( airSpeed ),
+            cruiseCap = object.cruiseForward || ( 400 / 60 ),
             hoverSpeed = 100 / 60,
+            // Afterburner regime: faster than cruise.
+            jetMode = speed > cruiseCap,
             tiltTarget = 0,
             turnTarget = 0,
+            elevTarget = 0,
             forwardFactor = 0,
             ease = Math.min( 1, delta * 3 ),
             spinRate = 1,
@@ -343,14 +352,38 @@ export default class Valiant {
             turbX = 0,
             turbZ = 0;
 
-        if ( airSpeed < -hoverSpeed ) {
-            tiltTarget = -this.rotors.maxTilt;
+        if ( jetMode ) {
+            // Lock out airspeed tilt; nacelles only tip for turn / elevation.
+            tiltTarget = 0;
+            spinRate = 0;
+            if ( ! this.rotors.jetParked && this.rotors.actions[ 0 ] ) {
+                this.rotors.actions[ 0 ].time = 0;
+                this.rotors.actions[ 1 ].time = 0;
+                this.rotors.jetParked = true;
+            }
+            if ( object.controls.moveUp ) {
+                elevTarget = -this.rotors.maxTilt * 0.55;
+            }
+            else if ( object.controls.moveDown ) {
+                elevTarget = this.rotors.maxTilt * 0.55;
+            }
         }
-        else if ( airSpeed > hoverSpeed ) {
-            tiltTarget = this.rotors.maxTilt;
+        else {
+            this.rotors.jetParked = false;
+            if ( airSpeed < -hoverSpeed ) {
+                tiltTarget = -this.rotors.maxTilt;
+            }
+            else if ( airSpeed > hoverSpeed ) {
+                tiltTarget = this.rotors.maxTilt;
+            }
+            // Spin faster under thrust and as airspeed climbs.
+            spinRate = 0.85
+                + speed * 0.12
+                + ( object.controls.throttleDown || object.controls.throttleUp ? 0.55 : 0 );
         }
 
         this.rotors.tilt += ( tiltTarget - this.rotors.tilt ) * ease;
+        this.rotors.elev += ( elevTarget - this.rotors.elev ) * Math.min( 1, delta * 5 );
         forwardFactor = Math.abs( this.rotors.tilt ) / this.rotors.maxTilt;
 
         if ( object.controls.moveLeft ) {
@@ -361,26 +394,36 @@ export default class Valiant {
         }
         this.rotors.bank += ( turnTarget * 0.35 - this.rotors.bank ) * Math.min( 1, delta * 5 );
 
-        // Spin faster under thrust and as airspeed climbs.
-        spinRate = 0.85
-            + speed * 0.12
-            + ( object.controls.throttleDown || object.controls.throttleUp ? 0.55 : 0 );
         if ( this.rotors.actions[ 0 ] ) {
             this.rotors.actions[ 0 ].setEffectiveTimeScale( spinRate );
             this.rotors.actions[ 1 ].setEffectiveTimeScale( spinRate );
         }
 
-        // Light mechanical shake that grows with speed and hard turns.
-        turbulence = Math.min( 1, speed / ( 400 / 60 ) ) * 0.02 + Math.abs( this.rotors.bank ) * 0.015;
+        // Light mechanical shake; quiet in jet mode so parked blades read as locked.
+        if ( jetMode ) {
+            turbulence = Math.abs( this.rotors.bank ) * 0.01 + Math.abs( this.rotors.elev ) * 0.01;
+        }
+        else {
+            turbulence = Math.min( 1, speed / cruiseCap ) * 0.02 + Math.abs( this.rotors.bank ) * 0.015;
+        }
         turbX = ( Math.random() * 2 - 1 ) * turbulence;
         turbZ = ( Math.random() * 2 - 1 ) * turbulence;
 
         // Pitch both nacelles forward together; differential roll/yaw when turning.
         // Hover: bank → lateral tip (yaw authority). Flight: bank → differential pitch (roll).
-        this.rotors.left.rotation.x = this.rotors.tilt + this.rotors.bank * 0.22 * forwardFactor + turbX;
-        this.rotors.left.rotation.z = this.rotors.bank * 0.4 * ( 1 - forwardFactor ) + turbZ;
-        this.rotors.right.rotation.x = this.rotors.tilt - this.rotors.bank * 0.22 * forwardFactor + turbX;
-        this.rotors.right.rotation.z = -this.rotors.bank * 0.4 * ( 1 - forwardFactor ) - turbZ;
+        // Jet mode: parked blades; elev for climb/dive, bank as differential pitch for turns.
+        if ( jetMode ) {
+            this.rotors.left.rotation.x = this.rotors.elev + this.rotors.bank * 0.55 + turbX;
+            this.rotors.left.rotation.z = turbZ;
+            this.rotors.right.rotation.x = this.rotors.elev - this.rotors.bank * 0.55 + turbX;
+            this.rotors.right.rotation.z = -turbZ;
+        }
+        else {
+            this.rotors.left.rotation.x = this.rotors.tilt + this.rotors.bank * 0.22 * forwardFactor + turbX;
+            this.rotors.left.rotation.z = this.rotors.bank * 0.4 * ( 1 - forwardFactor ) + turbZ;
+            this.rotors.right.rotation.x = this.rotors.tilt - this.rotors.bank * 0.22 * forwardFactor + turbX;
+            this.rotors.right.rotation.z = -this.rotors.bank * 0.4 * ( 1 - forwardFactor ) - turbZ;
+        }
     }
 
     updateAnimation( delta ) {

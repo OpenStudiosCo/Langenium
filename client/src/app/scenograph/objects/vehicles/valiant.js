@@ -42,6 +42,9 @@ export default class Valiant {
     // TrailRenderer effect showing a trailing effect on the thruster.
     trail;
 
+    // Short flame trail used at cruise speeds.
+    cruiseTrail;
+
     constructor( isDemo = false ) {
         this.default_camera_distance = -35;
         this.trail_position_y = 1.2;
@@ -49,6 +52,8 @@ export default class Valiant {
         this.camera_distance = 0;
         this.chaseLookAhead = 12;
         this._chaseLookAt = new THREE.Vector3();
+        this.overdriveBlend = 0;
+        this.trailAnchor = new THREE.Vector3();
 
         this.ready = false;
 
@@ -117,7 +122,20 @@ export default class Valiant {
 
         //l.current_scene.effects.particles.createShipThruster(this, 1.5, { x: 0, y: 1.2, z: 1.5 });
 
-        this.trail = l.current_scene.effects.trail.createTrail( this.mesh, 0, this.trail_position_y, this.trail_position_z );
+        // Short flame for cruise speeds.
+        this.cruiseTrail = l.current_scene.effects.trail.createTrail(
+            this.mesh, 0, this.trail_position_y, this.trail_position_z,
+            { trailLength: 2, advanceFrequency: 30, headScale: 0.25, nameSuffix: ' Cruise Trail' }
+        );
+        this.cruiseTrail.mesh.visible = false;
+        this.cruiseTrail.mesh.material.uniforms.headColor.value.w = 0;
+        this.cruiseTrail.mesh.material.uniforms.tailColor.value.w = 0;
+
+        // Longer soft cylinder plume for overdrive.
+        this.trail = l.current_scene.effects.trail.createTrail(
+            this.mesh, 0, this.trail_position_y, this.trail_position_z,
+            { trailLength: 16, advanceFrequency: 48, headScale: 0.2, nameSuffix: ' Overdrive Trail' }
+        );
         this.trail.mesh.visible = false;
         this.trail.mesh.material.uniforms.headColor.value.w = 0;
         this.trail.mesh.material.uniforms.tailColor.value.w = 0;
@@ -356,54 +374,133 @@ export default class Valiant {
     }
 
     animateTrail() {
-        if ( ! this.trail ) {
+        if ( ! this.trail || ! this.cruiseTrail ) {
             return;
         }
 
-        const object = this.mesh.userData.object;
-        const thrusting = object.airSpeed < 0;
+        let object = this.mesh.userData.object,
+            thrusting = object.airSpeed < 0,
+            speed = Math.abs( object.airSpeed ),
+            // Crossfade short flame → cylinder between 380–420 km/h (HUD @ 60 FPS).
+            fadeIn = 380 / 60,
+            fadeOut = 420 / 60,
+            cruiseCap = object.cruiseForward || ( 400 / 60 ),
+            // Keeps overdrive plume length near the earlier soft-cylinder look.
+            nodeSpacing = ( 35 / 60 ) * ( 60 / 48 ),
+            blendTarget = 0,
+            cruiseWeight = 0,
+            overdriveWeight = 0,
+            turbulence = 0,
+            jitter = 0,
+            traveled = 0,
+            steps = 0,
+            i = 0;
+
+        if ( speed >= fadeOut ) {
+            blendTarget = 1;
+        }
+        else if ( speed > fadeIn ) {
+            blendTarget = ( speed - fadeIn ) / ( fadeOut - fadeIn );
+        }
+
+        this.overdriveBlend += ( blendTarget - this.overdriveBlend ) * 0.15;
+        if ( Math.abs( this.overdriveBlend - blendTarget ) < 0.002 ) {
+            this.overdriveBlend = blendTarget;
+        }
+
+        cruiseWeight = 1 - this.overdriveBlend;
+        overdriveWeight = this.overdriveBlend;
+
+        // Turbulence only after cruise; gentle at first, then ramps toward maxForward.
+        if ( speed > cruiseCap ) {
+            turbulence = Math.min( 1, ( speed - cruiseCap ) / Math.max( 0.001, object.maxForward - cruiseCap ) );
+        }
+        jitter = turbulence * turbulence * 0.045;
 
         if ( thrusting ) {
-            this.animateThruster( object.airSpeed, this.thruster.centralConeBurner, .5 );
-            this.animateThruster( object.airSpeed, this.thruster.outerCylBurner, .5 );
+            // Cones keep cruise scale; cylinders open with overdrive.
+            this.animateThruster( object.airSpeed, this.thruster.centralConeBurner, .5, 0 );
+            this.animateThruster( object.airSpeed, this.thruster.outerCylBurner, .5, this.overdriveBlend );
+            this.thruster.innerCylBurner.scale.y = 1 + this.overdriveBlend * 1.4;
+            this.thruster.innerCylBurner.position.y = this.overdriveBlend * 0.55;
 
             this.spinThruster( object.airSpeed, this.thruster.rearConeBurner, -1 );
             this.spinThruster( object.airSpeed, this.thruster.centralConeBurner, 1 );
             this.spinThruster( object.airSpeed, this.thruster.outerCylBurner, -1 );
             this.spinThruster( object.airSpeed, this.thruster.innerCylBurner, 1 );
 
-            this.thruster.videoElement.playbackRate = Math.min( 5, 0.25 + Math.abs( object.airSpeed ) );
+            this.thruster.videoElement.playbackRate = Math.min( 5, 0.25 + speed + this.overdriveBlend * 2.0 );
 
-            if ( ! this.trail.mesh.visible ) {
-                this.mesh.updateMatrixWorld( true );
-                this.trail.reset();
-                this.trail.lastAdvanceTime = 0;
-                this.trail.mesh.visible = true;
+            this.mesh.updateMatrixWorld( true );
+
+            // Short cruise flame.
+            if ( cruiseWeight > 0.01 ) {
+                if ( ! this.cruiseTrail.mesh.visible ) {
+                    this.cruiseTrail.reset();
+                    this.cruiseTrail.lastAdvanceTime = 0;
+                    this.cruiseTrail.mesh.visible = true;
+                }
+                this.cruiseTrail.targetObject.position.set( 0, this.trail_position_y, this.trail_position_z );
+                this.cruiseTrail.mesh.material.uniforms.headColor.value.set( 1.0, 0.83, 0.58, 0.8 * cruiseWeight );
+                this.cruiseTrail.mesh.material.uniforms.tailColor.value.set( 0.52, 0.16, 0.14, 1.0 * cruiseWeight );
+                this.cruiseTrail.update();
+            }
+            else {
+                this.cruiseTrail.mesh.material.uniforms.headColor.value.w = 0;
+                this.cruiseTrail.mesh.material.uniforms.tailColor.value.w = 0;
+                this.cruiseTrail.mesh.visible = false;
             }
 
-            // Flame: bright opaque head at the nozzle, transparent cool tip.
-            this.trail.mesh.material.uniforms.headColor.value.set( 1.0, 0.83, 0.58, 0.9 );
-            this.trail.mesh.material.uniforms.tailColor.value.set( 0.52, 0.16, 0.14, 0.0 );
+            // Soft overdrive cylinder.
+            if ( overdriveWeight > 0.01 ) {
+                if ( ! this.trail.mesh.visible ) {
+                    this.trail.reset();
+                    this.trail.lastAdvanceTime = 0;
+                    this.trail.mesh.visible = true;
+                    this.trailAnchor.copy( this.mesh.position );
+                }
+
+                this.trail.targetObject.position.set(
+                    ( Math.random() * 2 - 1 ) * jitter,
+                    this.trail_position_y + ( Math.random() * 2 - 1 ) * jitter * 0.5,
+                    this.trail_position_z
+                );
+                this.trail.mesh.material.uniforms.headColor.value.set( 1.0, 0.83, 0.58, 0.9 * overdriveWeight );
+                this.trail.mesh.material.uniforms.tailColor.value.set( 0.52, 0.16, 0.14, 0.0 );
+
+                traveled = this.mesh.position.distanceTo( this.trailAnchor );
+                steps = Math.min( 5, Math.floor( traveled / Math.max( 0.05, nodeSpacing ) ) );
+                for ( i = 0; i < steps; i++ ) {
+                    this.trail.advance();
+                }
+                if ( steps > 0 && traveled > 0 ) {
+                    this.trailAnchor.lerp( this.mesh.position, ( steps * nodeSpacing ) / traveled );
+                }
+                this.trail.updateHead();
+                this.trail.geometry.computeBoundingSphere();
+            }
+            else {
+                this.trail.mesh.material.uniforms.headColor.value.w = 0;
+                this.trail.mesh.material.uniforms.tailColor.value.w = 0;
+                this.trail.mesh.visible = false;
+            }
         }
         else {
+            this.cruiseTrail.mesh.material.uniforms.headColor.value.set( 1.0, 0.83, 0.58, 0 );
+            this.cruiseTrail.mesh.material.uniforms.tailColor.value.set( 0.52, 0.16, 0.14, 0 );
+            this.cruiseTrail.mesh.visible = false;
             this.trail.mesh.material.uniforms.headColor.value.set( 1.0, 0.83, 0.58, 0 );
             this.trail.mesh.material.uniforms.tailColor.value.set( 0.52, 0.16, 0.14, 0 );
             this.trail.mesh.visible = false;
-            return;
+            this.overdriveBlend = 0;
         }
-
-        // Head is a child of the ship; keep it on the nozzle. Do not add
-        // airSpeed / verticalSpeed here — that double-counted parent motion.
-        this.trail.targetObject.position.set( 0, this.trail_position_y, this.trail_position_z );
-        this.mesh.updateMatrixWorld( true );
-        this.trail.update();
     }
 
-    animateThruster( airSpeed, burnerMesh, ratio ) {
-        if ( Math.abs( airSpeed ) < 4.5 ) {
-            burnerMesh.scale.y = 1 + Math.abs( airSpeed ) * ratio;
-            burnerMesh.position.y = Math.abs( airSpeed ) * ratio * 0.5;
-        }
+    // Scale thruster meshes with airspeed. overdriveBoost lengthens cylinders past cruise.
+    animateThruster( airSpeed, burnerMesh, ratio, overdriveBoost = 0 ) {
+        let cruiseSpeed = Math.min( Math.abs( airSpeed ), 4.5 );
+        burnerMesh.scale.y = 1 + cruiseSpeed * ratio + overdriveBoost * ratio * 2.8;
+        burnerMesh.position.y = cruiseSpeed * ratio * 0.5 + overdriveBoost * ratio * 1.25;
     }
 
     spinThruster( airSpeed, burnerMesh, rotation_factor ) {

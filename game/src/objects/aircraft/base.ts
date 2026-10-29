@@ -19,6 +19,10 @@ export default class BaseAircraft {
     public maxBackward:     number                              = 2.0;
     public maxUp:           number                              = 3.7 * 2.5;
     public maxDown:         number                              = 3.7 * 5;  // gravity?
+    public cruiseForward:   number                              = 400 / 60;   // Cap before overdrive (~400 km/h HUD @ 60 FPS).
+    public capacitor:       number                              = 1;          // 0..1 charge; overdrive while > 0.
+    public capacitorDrainPerSecond:     number                  = 1 / 30;     // Full tank lasts 30s in overdrive.
+    public capacitorRechargePerSecond:  number                  = 1 / 180;    // Full recharge takes 3 minutes under cruise.
     // @todo: Introduce max turn speed for the vehicle
     public heading:         number                              = 0;
     public altitude:        number                              = 0;
@@ -128,6 +132,7 @@ export default class BaseAircraft {
 
             this.airSpeed = 0;
             this.verticalSpeed = 0;
+            this.capacitor = 1;
             this.controls.changing = false;
             this.controls.throttleUp = false;
             this.controls.throttleDown = false;
@@ -184,6 +189,7 @@ export default class BaseAircraft {
         this.rotation.z = 0;
         this.airSpeed = 0;
         this.verticalSpeed = 0;
+        this.capacitor = 1;
 
         const demo = l.current_scene.objects.demoTour;
         let sessionShip = demo && this.mesh === demo.mesh;
@@ -251,6 +257,25 @@ export default class BaseAircraft {
     }
 
     /**
+     * Convert move() time_delta to seconds.
+     * Client clock uses seconds; server instance uses milliseconds.
+     *
+     * @param time_delta
+     */
+    private _deltaSeconds( time_delta: number ): number {
+        let seconds: number = 1 / 60;
+
+        if ( time_delta && time_delta > 0 ) {
+            seconds = time_delta > 1 ? time_delta / 1000 : time_delta;
+            if ( seconds > 0.05 ) {
+                seconds = 0.05;
+            }
+        }
+
+        return seconds;
+    }
+
+    /**
      * Move the aircraft based on velocity, direction and time delta between frames.
      *
      * @param time_delta
@@ -260,19 +285,41 @@ export default class BaseAircraft {
             rY:                 number = 0,
             tZ:                 number = 0,
             tY:                 number = 0,
-            radian:             number = (Math.PI / 180);
+            radian:             number = (Math.PI / 180),
+            dtSeconds:          number = this._deltaSeconds( time_delta ),
+            cruiseCap:          number = Math.min( this.maxForward, this.cruiseForward ),
+            effectiveMaxForward: number = this.capacitor > 0 ? this.maxForward : cruiseCap,
+            sign:               number = 0,
+            excess:             number = 0;
 
         // Update Airspeed (horizontal velocity)
         this.airSpeed = this._changeVelocity(
-            stepSize * easeInOutExpo( 1 - ( Math.abs ( this.airSpeed ) / this.maxForward ) ),
+            stepSize * easeInOutExpo( 1 - ( Math.abs ( this.airSpeed ) / effectiveMaxForward ) ),
             stepSize,
             this.airSpeed,
             this.controls.throttleUp,
             this.controls.throttleDown,
-            this.maxForward,
+            effectiveMaxForward,
             this.maxBackward,
             easeOutExpo( 0.987 )
         );
+
+        // Drain capacitor above cruise; recharge while at or under cruise.
+        if ( Math.abs( this.airSpeed ) > this.cruiseForward ) {
+            this.capacitor = Math.max( 0, this.capacitor - this.capacitorDrainPerSecond * dtSeconds );
+            if ( this.capacitor <= 0 && Math.abs( this.airSpeed ) > cruiseCap ) {
+                // Ease back to cruise instead of snapping.
+                sign = this.airSpeed < 0 ? -1 : 1;
+                excess = Math.abs( this.airSpeed ) - cruiseCap;
+                this.airSpeed = sign * ( cruiseCap + excess * Math.pow( 0.92, dtSeconds * 60 ) );
+                if ( Math.abs( this.airSpeed ) - cruiseCap < 0.01 ) {
+                    this.airSpeed = sign * cruiseCap;
+                }
+            }
+        }
+        else {
+            this.capacitor = Math.min( 1, this.capacitor + this.capacitorRechargePerSecond * dtSeconds );
+        }
 
         // Update Vertical Speed (velocity)
         this.verticalSpeed = this._changeVelocity(

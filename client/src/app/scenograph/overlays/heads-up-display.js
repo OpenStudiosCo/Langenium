@@ -41,9 +41,14 @@ export default class HeadsUpDisplay {
         this.headingElement = this.createLabel( 'head', 'HEADING: 0°');
         this.container.appendChild(this.headingElement);
 
-        // Create the label to track vertical speed.
+        // Create the label to track elevation.
         this.elevationElement = this.createLabel( 'elev', 'ELEVATION: 0m');
         this.container.appendChild(this.elevationElement);
+
+        // Create the power capacitor fuel gauge.
+        this.capacitorElement = this.createCapacitorGauge();
+        this.container.appendChild(this.capacitorElement);
+        this.capacitorFillElement = this.capacitorElement.querySelector('.fill');
 
     }
 
@@ -53,6 +58,27 @@ export default class HeadsUpDisplay {
         labelElement.id = 'hud-' + keyName;
         labelElement.dataset.id = keyName;
         return labelElement;
+    }
+
+    createCapacitorGauge() {
+        let gauge = document.createElement('div');
+        gauge.id = 'hud-capacitor';
+        gauge.dataset.id = 'capacitor';
+
+        let track = document.createElement('div');
+        track.className = 'track';
+
+        let fill = document.createElement('div');
+        fill.className = 'fill';
+        track.appendChild(fill);
+
+        let label = document.createElement('div');
+        label.className = 'label';
+        label.textContent = 'CAP';
+
+        gauge.appendChild(track);
+        gauge.appendChild(label);
+        return gauge;
     }
 
     /**
@@ -77,10 +103,12 @@ export default class HeadsUpDisplay {
             l.scenograph.overlays.hud.container.classList.remove('portrait');
         }
 
-        let aspd = -l.scenograph.overlays.hud.frameToSecond(l.scenograph.actors.player.vehicle.mesh.userData.object.airSpeed);
+        let ship = l.scenograph.actors.player.vehicle.mesh.userData.object;
+
+        let aspd = -l.scenograph.overlays.hud.frameToSecond(ship.airSpeed);
         l.scenograph.overlays.hud.aspdElement.innerHTML = `AIRSPEED: ${aspd}km/h`;
 
-        let vspd = l.scenograph.overlays.hud.frameToSecond(l.scenograph.actors.player.vehicle.mesh.userData.object.verticalSpeed);
+        let vspd = l.scenograph.overlays.hud.frameToSecond(ship.verticalSpeed);
         l.scenograph.overlays.hud.vspdElement.innerHTML = `VERT. SPD: ${vspd}km/h`;
 
         let heading = THREE.MathUtils.radToDeg( l.scenograph.actors.player.vehicle.mesh.rotation.y );
@@ -93,6 +121,12 @@ export default class HeadsUpDisplay {
 
         let elevation = Math.round( l.scenograph.actors.player.vehicle.mesh.position.y * 100 ) / 100;
         l.scenograph.overlays.hud.elevationElement.innerHTML = `ELEVATION: ${elevation}m`;
+
+        let charge = Math.max( 0, Math.min( 1, ship.capacitor ) );
+        let overdrive = Math.abs( ship.airSpeed ) > ship.cruiseForward;
+        l.scenograph.overlays.hud.capacitorFillElement.style.width = ( Math.round( charge * 100 ) ) + '%';
+        l.scenograph.overlays.hud.capacitorElement.classList.toggle( 'draining', overdrive && charge > 0 );
+        l.scenograph.overlays.hud.capacitorElement.classList.toggle( 'empty', charge <= 0 );
     }
 
     /**

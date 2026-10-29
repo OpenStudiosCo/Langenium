@@ -125,6 +125,59 @@
             top: 31.25dvh;
             right: 31.25dvw;
         }
+
+        &-capacitor {
+            position: absolute;
+            left: 50%;
+            bottom: @css{ min(3.5dvw, 3.5dvh) };
+            transform: translateX(-50%);
+            width: 216px;
+            height: 96px;
+            z-index: 2;
+            pointer-events: none;
+            background: url("/assets/borders/border-09.png") center / 100% 100% no-repeat;
+
+            .track {
+                position: absolute;
+                left: 18%;
+                right: 18%;
+                top: 38%;
+                bottom: 34%;
+                overflow: hidden;
+                border-radius: 999px;
+                background: rgba(0, 0, 40, 0.55);
+            }
+
+            .fill {
+                height: 100%;
+                width: 100%;
+                border-radius: inherit;
+                background: linear-gradient(90deg, rgb(20, 90, 180), rgb(80, 180, 255));
+                box-shadow: inset 0 0 8px rgba(180, 230, 255, 0.45);
+                transition: width 0.12s linear;
+            }
+
+            .label {
+                position: absolute;
+                left: 0;
+                right: 0;
+                bottom: 10%;
+                text-align: center;
+                color: rgb(0, 255, 0);
+                font-family: monospace;
+                font-size: 0.7rem;
+                letter-spacing: 0.18em;
+            }
+
+            &.draining .fill {
+                background: linear-gradient(90deg, rgb(160, 70, 20), rgb(255, 170, 60));
+            }
+
+            &.empty .fill {
+                width: 0 !important;
+                background: rgb(60, 60, 80);
+            }
+        }
         
         // Portrait mode styles
         ^[1].portrait ^[1..1]-lines {
@@ -143,6 +196,12 @@
         }
         ^[1].portrait ^[1..1]-elev {
             right: 15.625dvw;
+        }
+
+        ^[1].portrait ^[1..1]-capacitor {
+            width: 180px;
+            height: 80px;
+            bottom: @css{ min(2.5dvw, 2.5dvh) };
         }
         
     }

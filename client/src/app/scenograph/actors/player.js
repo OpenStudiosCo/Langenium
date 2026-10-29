@@ -276,7 +276,7 @@ export default class Player {
 
         }
 
-        let [ rY, tY, tZ ] = this.vehicle.mesh.userData.object.move( l.current_scene.stats.currentTime - l.current_scene.stats.lastTime );
+        let [ rY, tY, tZ ] = this.vehicle.mesh.userData.object.move( delta );
 
         this.vehicle.updateMesh();
 

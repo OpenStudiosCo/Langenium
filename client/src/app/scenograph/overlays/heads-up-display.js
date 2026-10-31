@@ -10,6 +10,7 @@
  * Internal libs and helpers.
  */
 import l from '@/helpers/l.js';
+import InventoryUI from '@/ui/inventory.js';
 
 /**
  * Vendor libs and base class.
@@ -67,6 +68,7 @@ export default class HeadsUpDisplay {
 
         this.bindAfterburnerControls();
         this.bindAfterburnerTray();
+        this.bindInventoryButton();
 
     }
 
@@ -189,9 +191,32 @@ export default class HeadsUpDisplay {
         controls.appendChild(footer);
         controls.setAttribute( 'aria-expanded', 'true' );
 
+        let inventoryBtn = document.createElement( 'button' );
+        inventoryBtn.type = 'button';
+        inventoryBtn.className = 'inventory-button';
+        inventoryBtn.id = 'hud-inventory';
+        inventoryBtn.setAttribute( 'aria-label', 'Inventory' );
+        inventoryBtn.innerHTML = InventoryUI.buttonMarkup();
+
         panel.appendChild(gauge);
         panel.appendChild(controls);
+        panel.appendChild(inventoryBtn);
         return panel;
+    }
+
+    bindInventoryButton() {
+        this.inventoryButton = this.capacitorPanel.querySelector( '#hud-inventory' );
+        if ( ! this.inventoryButton ) {
+            return;
+        }
+
+        this.inventoryButton.addEventListener( 'click', function ( event ) {
+            event.preventDefault();
+            if ( ! l.ui || ! l.ui.inventory ) {
+                return;
+            }
+            l.ui.inventory.toggleAircraftInventory();
+        } );
     }
 
     // Mobile/compact: tray collapses to lamp + label; slide/tap opens controls.

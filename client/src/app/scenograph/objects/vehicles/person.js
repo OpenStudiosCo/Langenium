@@ -27,6 +27,18 @@ export default class Person {
 
     // Internal helper to manage state changes to the person's character model.
     updateControls() {
+        if ( l.ui && l.ui.inventory && l.ui.inventory.blocksInput() ) {
+            const controls = this.game.actor.controls;
+            controls.changing = false;
+            controls.forward = false;
+            controls.back = false;
+            controls.jump = false;
+            controls.crouch = false;
+            controls.turnLeft = false;
+            controls.turnRight = false;
+            return;
+        }
+
         let mappings = {
             forward     :  'W',
             back        :  'S',

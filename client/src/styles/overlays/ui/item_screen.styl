@@ -1,0 +1,465 @@
+#item_screen
+    // Modal shell: hosts one or more .window panels (aircraft, or hangar + aircraft).
+    // `safe` keeps the top (Close) on-screen when the panel is taller than the viewport.
+    position: fixed
+    inset: 0
+    z-index: 8
+    display: flex
+    align-items: safe center
+    justify-content: safe center
+    overflow: auto
+    overscroll-behavior: contain
+    padding-top: @css{ max(4vw, env(safe-area-inset-top, 0px)) }
+    padding-right: @css{ max(4vw, env(safe-area-inset-right, 0px)) }
+    padding-bottom: @css{ max(4vw, env(safe-area-inset-bottom, 0px)) }
+    padding-left: @css{ max(4vw, env(safe-area-inset-left, 0px)) }
+    box-sizing: border-box
+    pointer-events: auto
+    color: #fff
+    user-select: none
+    -webkit-user-select: none
+
+    &[hidden]
+        display: none
+
+    &.dragging
+        cursor: grabbing
+
+        .item_slot
+            cursor: grabbing
+
+    .item_screen_shell
+        display: flex
+        flex-direction: column
+        align-items: stretch
+        gap: 0.65rem
+        width: min(36rem, 100%)
+        max-width: 100%
+        margin: auto
+        min-height: 0
+
+    &.transfer .item_screen_shell
+        width: min(74rem, 100%)
+
+    .item_screen_toolbar
+        display: flex
+        justify-content: flex-end
+        flex: 0 0 auto
+        width: 100%
+
+    &.transfer .item_screen_toolbar
+        justify-content: center
+
+    .item_screen_windows
+        display: flex
+        align-items: stretch
+        justify-content: center
+        gap: 1.25rem
+        width: 100%
+        max-width: 100%
+        min-height: 0
+
+    // Frame chrome from .window; storage windows sit side by side in transfer mode.
+    .item_screen_frame
+        flex: 1 1 0
+        width: min(36rem, 100%)
+        min-width: 0
+        min-height: 0
+
+        &[hidden]
+            display: none
+
+    .item_screen_header
+        display: flex
+        align-items: center
+        justify-content: flex-start
+        gap: 1rem
+        margin-bottom: 1rem
+
+    .item_screen_body
+        display: grid
+        gap: 1rem
+        min-height: 0
+
+    .item_screen_grid
+        display: grid
+        grid-template-columns: repeat(4, minmax(0, 1fr))
+        gap: 0.55rem
+
+    .item_slot
+        position: relative
+        aspect-ratio: 1
+        min-height: 0
+        box-sizing: border-box
+        padding: 0.35rem
+        border-style: solid
+        border-color: transparent
+        border-width: 12px
+        border-image-source: url("/assets/borders/border-05.png")
+        border-image-slice: unquote("80 fill")
+        border-image-width: 18px
+        border-image-repeat: round
+        background-color: transparent
+        background-clip: padding-box
+        color: #c8c8c8
+        font-family: "Liberation Sans Narrow", "Nimbus Sans Narrow", "Arial Narrow", "Helvetica Condensed", sans-serif
+        font-style: italic
+        font-weight: 700
+        font-size: 0.72rem
+        letter-spacing: 0.06em
+        line-height: 1.15
+        text-transform: uppercase
+        text-align: left
+        cursor: pointer
+        touch-action: none
+        user-select: none
+        text-shadow: none
+
+        &:hover,
+        &:focus-visible
+            border-image-source: url("/assets/borders/border-07.png")
+            outline: none
+
+        &.selected
+            border-image-source: url("/assets/borders/border-07.png")
+            color: #fff
+
+        &.empty .item_slot_label
+            color: rgba(200, 200, 200, 0.35)
+
+        &:not(.empty)
+            cursor: grab
+
+    .item_slot_index
+        position: absolute
+        top: 0.15rem
+        right: 0.2rem
+        font-family: ui-monospace, Menlo, Consolas, monospace
+        font-style: normal
+        font-size: 0.65rem
+        letter-spacing: 0
+        opacity: 0.45
+
+    .item_slot_label
+        display: block
+        max-width: 100%
+        overflow: hidden
+        word-break: break-word
+
+    .item_slot_ghost
+        position: fixed
+        z-index: 9
+        min-width: 4.5rem
+        min-height: 4.5rem
+        padding: 0.55rem
+        box-sizing: border-box
+        border-style: solid
+        border-color: transparent
+        border-width: 12px
+        border-image-source: url("/assets/borders/border-07.png")
+        border-image-slice: unquote("80 fill")
+        border-image-width: 18px
+        border-image-repeat: round
+        background-color: transparent
+        background-clip: padding-box
+        color: #fff
+        font-family: "Liberation Sans Narrow", "Nimbus Sans Narrow", "Arial Narrow", "Helvetica Condensed", sans-serif
+        font-style: italic
+        font-weight: 700
+        font-size: 0.72rem
+        letter-spacing: 0.06em
+        text-transform: uppercase
+        pointer-events: none
+        transform: translate(-50%, -50%)
+        opacity: 0.92
+
+    .item_screen_detail
+        padding: 0.65rem 0.75rem
+        border-style: solid
+        border-color: transparent
+        border-width: 14px
+        border-image-source: url("/assets/borders/border-05.png")
+        border-image-slice: unquote("80 fill")
+        border-image-width: 22px
+        border-image-repeat: round
+        background-color: transparent
+        background-clip: padding-box
+
+    .item_screen_detail_label
+        margin: 0 0 0.35rem
+        font-family: "Liberation Sans Narrow", "Nimbus Sans Narrow", "Arial Narrow", "Helvetica Condensed", sans-serif
+        font-style: italic
+        font-weight: 700
+        font-size: 0.75rem
+        letter-spacing: 0.14em
+        text-transform: uppercase
+        color: rgba(255, 255, 255, 0.55)
+
+    .item_screen_detail_name
+        margin: 0
+        font-family: "Liberation Sans Narrow", "Nimbus Sans Narrow", "Arial Narrow", "Helvetica Condensed", sans-serif
+        font-style: italic
+        font-weight: 700
+        font-size: 1.05rem
+        letter-spacing: 0.08em
+        text-transform: uppercase
+        color: #fff
+
+    // Compact .window chrome. Mask to border-02's alpha so the rounded
+    // outer corners stay see-through instead of a hard black rectangle.
+    .item_screen_menu
+        position: fixed
+        z-index: 10
+        display: flex
+        flex-direction: column
+        align-items: stretch
+        gap: 0.35rem
+        box-sizing: border-box
+        min-width: 12rem
+        padding: 0.55rem 0.65rem
+        border-width: 22px
+        border-image-width: 22px
+        background-color: transparent
+        -webkit-mask-box-image-source: url("/assets/borders/border-02.png")
+        -webkit-mask-box-image-slice: 40 fill
+        -webkit-mask-box-image-width: 22px
+        -webkit-mask-box-image-repeat: round
+        mask-border-source: url("/assets/borders/border-02.png")
+        mask-border-slice: unquote("40 fill")
+        mask-border-width: 22px
+        mask-border-repeat: round
+
+        &[hidden]
+            display: none
+
+        .window_action
+            width: 100%
+            justify-content: flex-start
+
+    // Phone / narrow: 4-wide grid (not a tall 2-col tower), Close floats
+    // over the frame so it does not burn a full row of vertical space.
+    @media (max-width: 900px)
+        padding: 0.55rem
+
+        .item_screen_shell
+            position: relative
+            width: min(24rem, 100%)
+            gap: 0
+
+        &.transfer .item_screen_shell
+            width: min(24rem, 100%)
+
+        &.transfer .item_screen_windows
+            flex-direction: column
+            align-items: stretch
+            gap: 0.55rem
+
+        .item_screen_toolbar
+            position: absolute
+            top: 0.15rem
+            right: 0.15rem
+            z-index: 2
+            width: auto
+            justify-content: flex-end
+            pointer-events: none
+
+        .item_screen_close
+            pointer-events: auto
+            border-width: 10px
+            border-image-width: 18px
+            padding: 0.05rem 0.15rem 0
+            font-size: 0.72rem
+
+        .item_screen_close kbd
+            min-width: 1.05rem
+            height: 1.05rem
+            margin-right: 0.28rem
+            font-size: 0.58rem
+
+        .item_screen_frame
+            width: 100%
+            border-width: 18px
+            border-image-width: 18px
+            padding: 0.55rem 0.6rem 0.5rem
+
+        .item_screen_header
+            margin-bottom: 0.35rem
+            padding-right: 5.5rem
+
+        .window_title
+            font-size: clamp(0.85rem, 3.2vw, 1.05rem)
+
+        .item_screen_body
+            gap: 0.4rem
+
+        .item_screen_grid
+            grid-template-columns: repeat(4, minmax(0, 1fr))
+            gap: 0.28rem
+
+        .item_slot
+            border-width: 7px
+            border-image-width: 11px
+            padding: 0.18rem
+            font-size: 0.58rem
+
+        .item_slot_index
+            font-size: 0.5rem
+
+        .item_screen_detail
+            padding: 0.28rem 0.4rem
+            border-width: 9px
+            border-image-width: 13px
+
+        .item_screen_detail_label
+            margin-bottom: 0.08rem
+            font-size: 0.58rem
+
+        .item_screen_detail_name
+            font-size: 0.78rem
+
+    // Portrait phones: keep the panel short enough that Close + grid +
+    // selected all stay in the first viewport without scrolling.
+    @media (orientation: portrait) and (max-width: 700px)
+        padding: 0.4rem
+
+        .item_screen_shell
+            width: min(20rem, 100%)
+
+        &.transfer .item_screen_shell
+            width: min(20rem, 100%)
+
+        .item_screen_frame
+            border-width: 14px
+            border-image-width: 14px
+            padding: 0.4rem 0.45rem 0.35rem
+
+        .item_screen_header
+            margin-bottom: 0.25rem
+            padding-right: 5rem
+
+        .window_title
+            font-size: 0.82rem
+            letter-spacing: 0.08em
+
+        .item_screen_body
+            gap: 0.3rem
+
+        .item_screen_grid
+            gap: 0.2rem
+
+        .item_slot
+            border-width: 6px
+            border-image-width: 10px
+            padding: 0.12rem
+            font-size: 0.52rem
+            letter-spacing: 0.04em
+
+        .item_screen_detail
+            padding: 0.2rem 0.3rem
+            border-width: 8px
+            border-image-width: 11px
+
+        .item_screen_detail_label
+            font-size: 0.52rem
+
+        .item_screen_detail_name
+            font-size: 0.7rem
+
+    // Short landscape / widescreen phones: shrink chrome so the panel
+    // fits between the top and bottom of the viewport.
+    @media (max-height: 520px)
+        padding: 0.3rem 0.45rem
+
+        .item_screen_shell
+            position: relative
+            gap: 0
+            width: min(34rem, 100%)
+
+        &.transfer .item_screen_shell
+            width: min(58rem, 100%)
+
+        &.transfer .item_screen_windows
+            flex-direction: row
+            align-items: stretch
+            gap: 0.55rem
+
+        .item_screen_toolbar
+            position: absolute
+            top: 0.05rem
+            right: 0.05rem
+            z-index: 2
+            width: auto
+            pointer-events: none
+
+        .item_screen_close
+            pointer-events: auto
+            border-width: 8px
+            border-image-width: 14px
+            font-size: 0.68rem
+
+        .item_screen_close kbd
+            min-width: 1rem
+            height: 1rem
+            margin-right: 0.25rem
+            font-size: 0.55rem
+
+        .item_screen_frame
+            border-width: 12px
+            border-image-width: 12px
+            padding: 0.35rem 0.4rem 0.3rem
+
+        .item_screen_header
+            margin-bottom: 0.2rem
+            padding-right: 5rem
+
+        .window_title
+            font-size: 0.8rem
+            letter-spacing: 0.08em
+
+        .item_screen_body
+            gap: 0.25rem
+
+        .item_screen_grid
+            grid-template-columns: repeat(4, minmax(0, 1fr))
+            gap: 0.18rem
+
+        .item_slot
+            border-width: 5px
+            border-image-width: 9px
+            padding: 0.1rem
+            font-size: 0.5rem
+            letter-spacing: 0.03em
+
+        .item_slot_index
+            top: 0.05rem
+            right: 0.08rem
+            font-size: 0.45rem
+
+        .item_screen_detail
+            padding: 0.15rem 0.28rem
+            border-width: 7px
+            border-image-width: 10px
+
+        .item_screen_detail_label
+            margin-bottom: 0
+            font-size: 0.5rem
+            letter-spacing: 0.1em
+
+        .item_screen_detail_name
+            font-size: 0.68rem
+
+    // Ultra-short landscape: drop the selected footer so the grid fits.
+    @media (max-height: 380px)
+        .item_screen_detail
+            display: none
+
+        .item_screen_frame
+            border-width: 10px
+            border-image-width: 10px
+            padding: 0.25rem 0.3rem
+
+        .item_screen_header
+            margin-bottom: 0.12rem
+
+        .window_title
+            font-size: 0.72rem

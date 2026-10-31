@@ -15,11 +15,25 @@ import * as THREE from 'three';
  * Internal libs and helpers.
  */
 import l from '@/helpers/l.js';
+import Inventory from '#/game/src/items/inventory';
 
 export default class hangarRoute {
 
     // Scenograph instance of a structure that contains a hangar.
     targetStructure = false;
+
+    // Shared hangar floor bag — survives leave / re-enter of this session.
+    inventory = null;
+
+    static ensureInventory( hangar ) {
+        if ( ! hangarRoute.sharedInventory ) {
+            hangarRoute.sharedInventory = new Inventory( 8 );
+            // Sample stacks so transfer / split / drag can be tried in Stage 1.
+            hangarRoute.sharedInventory.set( 0, { id: 'scrap', name: 'Scrap', qty: 4 } );
+            hangarRoute.sharedInventory.set( 1, { id: 'wire', name: 'Wire Spool' } );
+        }
+        hangar.inventory = hangarRoute.sharedInventory;
+    }
 
     constructor() {
         console.log( 'Hangar launched' );
@@ -40,9 +54,12 @@ export default class hangarRoute {
         l.scenograph.actors.player = l.scenograph.actors.get('Player Two');
         l.scenograph.actors.player.setMode('person');
 
+        hangarRoute.ensureInventory( this );
+
         this.loadHangar();
         this.setupPrompt();
         hangarRoute.bindUpdates();
+        this.showHangarInventoryButton();
 
     }
 
@@ -184,6 +201,28 @@ export default class hangarRoute {
             };
         }
 
+        if ( mode === 'terminal' ) {
+            return {
+                owner: 'hangar',
+                modal: false,
+                close: false,
+                speaker: 'Hangar computer',
+                text: 'Access hangar storage?',
+                onDismiss: stay,
+                actions: [
+                    {
+                        key: 'E',
+                        label: 'Open',
+                        run: () => {
+                            hangar.promptOpen = false;
+                            hangar.openHangarInventory();
+                        }
+                    },
+                    { key: 'Esc', label: 'Cancel', run: stay }
+                ]
+            };
+        }
+
         return {
             owner: 'hangar',
             modal: false,
@@ -203,6 +242,30 @@ export default class hangarRoute {
                 { key: 'Esc', label: 'Cancel', run: stay }
             ]
         };
+    }
+
+    showHangarInventoryButton() {
+        if ( l.ui && l.ui.inventory ) {
+            l.ui.inventory.showHangarButton();
+        }
+    }
+
+    hideHangarInventoryButton() {
+        if ( l.ui && l.ui.inventory ) {
+            l.ui.inventory.hideHangarButton();
+        }
+    }
+
+    openHangarInventory() {
+        if ( l.ui && l.ui.inventory ) {
+            l.ui.inventory.openHangarInventory();
+        }
+    }
+
+    openAircraftInventory() {
+        if ( l.ui && l.ui.inventory ) {
+            l.ui.inventory.openAircraftInventory();
+        }
     }
 
     syncPrompt( show, mode ) {
@@ -242,7 +305,7 @@ export default class hangarRoute {
 
     tick() {
         if ( l.mode === 'hangar' ) {
-            this.updateDepartPrompt();
+            this.updateHangarPrompts();
             return;
         }
         if ( l.mode === 'single_player' ) {
@@ -251,34 +314,58 @@ export default class hangarRoute {
         }
     }
 
-    updateDepartPrompt() {
-        if ( this.departing ) {
+    personNear( target, radius ) {
+        if ( ! target || target.x === undefined ) {
+            return false;
+        }
+
+        const person = l.scenograph.actors.player.actorInstance.object.position;
+        return Math.hypot( person.x - target.x, person.z - target.z ) < radius;
+    }
+
+    updateHangarPrompts() {
+        if ( this.departing || ( l.ui && l.ui.inventory && l.ui.inventory.isOpen() ) ) {
             this.hidePrompt();
             return;
         }
 
-        const person = l.scenograph.actors.player.actorInstance.object.position;
         const ship = l.scenograph.actors.player.vehicle.mesh.userData.object.position;
-        const near = Math.hypot( person.x - ship.x, person.z - ship.z ) < 6;
+        const terminal = l.scenograph.objects.structures.terminal
+            && l.scenograph.objects.structures.terminal.mesh
+            && l.scenograph.objects.structures.terminal.mesh.position;
+        const nearTerminal = this.personNear( terminal, 3.5 );
+        const nearShip = this.personNear( ship, 6 );
 
-        if ( !near ) {
+        if ( ! nearTerminal && ! nearShip ) {
             this.promptDismissed = false;
-        }
-
-        const show = near && !this.promptDismissed;
-        this.syncPrompt( show, 'depart' );
-
-        if ( !show || !this.promptOpen ) {
+            this.hidePrompt();
             this.promptKeyHeld = false;
             return;
         }
 
-        const ePressed = l.scenograph.controls.keyboard.pressed('E');
-        const escPressed = l.scenograph.controls.keyboard.pressed('escape');
-        if ( ePressed && !this.promptKeyHeld ) {
-            this.depart();
+        // Prefer the terminal when both are in range.
+        const mode = nearTerminal ? 'terminal' : 'depart';
+        const show = ! this.promptDismissed;
+        this.syncPrompt( show, mode );
+
+        if ( ! show || ! this.promptOpen ) {
+            this.promptKeyHeld = false;
+            return;
         }
-        if ( escPressed && !this.promptKeyHeld ) {
+
+        const ePressed = l.scenograph.controls.keyboard.pressed( 'E' );
+        const escPressed = l.scenograph.controls.keyboard.pressed( 'escape' );
+
+        if ( ePressed && ! this.promptKeyHeld ) {
+            if ( mode === 'terminal' ) {
+                this.openHangarInventory();
+            }
+            else {
+                this.depart();
+            }
+            this.hidePrompt();
+        }
+        if ( escPressed && ! this.promptKeyHeld ) {
             this.promptDismissed = true;
             this.hidePrompt();
         }
@@ -448,6 +535,10 @@ export default class hangarRoute {
         }
         this.departing = true;
         this.hidePrompt();
+        this.hideHangarInventoryButton();
+        if ( l.ui && l.ui.inventory && l.ui.inventory.isOpen() ) {
+            l.ui.inventory.hide();
+        }
 
         const player = l.scenograph.actors.player;
         const ship = player.vehicle.mesh.userData.object;
@@ -537,6 +628,10 @@ export default class hangarRoute {
         this.lastShipPos = null;
 
         this.hidePrompt();
+        this.hideHangarInventoryButton();
+        if ( l.ui && l.ui.inventory && l.ui.inventory.isOpen() ) {
+            l.ui.inventory.hide();
+        }
 
         this.unloadHangar();
     }
@@ -586,6 +681,7 @@ export default class hangarRoute {
         }
 
         l.mode = 'hangar';
+        hangarRoute.ensureInventory( this );
         for ( const actor of l.scenograph.actors.getAll() ) {
             if ( typeof actor.setVehicleVisible === 'function' ) {
                 actor.setVehicleVisible( false );
@@ -600,6 +696,7 @@ export default class hangarRoute {
         this.loadHangar();
         this.promptMode = 'depart';
         l.scenograph.controls.setAircraftChrome( false );
+        this.showHangarInventoryButton();
     }
 
 }

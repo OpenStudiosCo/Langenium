@@ -1,6 +1,85 @@
 
 #game_overlay {
     z-index: 4;
+
+    // Hangar-mode inventory control (HUD is inactive indoors).
+    > .hangar-inventory-button {
+        position: absolute;
+        right: @css{ min(3.5dvw, 3.5dvh) };
+        bottom: @css{ min(3.5dvw, 3.5dvh) };
+        z-index: 5;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.45rem;
+        box-sizing: border-box;
+        min-width: 5.5rem;
+        margin: 0;
+        padding: 0.45rem 0.45rem 0.2rem;
+        border-style: solid;
+        border-color: transparent;
+        border-width: 16px;
+        border-image-source: url("/assets/borders/border-05.png");
+        border-image-slice: unquote("80 fill");
+        border-image-width: 28px;
+        border-image-repeat: round;
+        background-color: transparent;
+        background-clip: padding-box;
+        color: rgb(0, 255, 0);
+        pointer-events: auto;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+        user-select: none;
+        -webkit-user-select: none;
+
+        &[hidden] {
+            display: none;
+        }
+
+        &:hover,
+        &:focus-visible,
+        &:active {
+            border-image-source: url("/assets/borders/border-07.png");
+            outline: none;
+        }
+
+        .inventory-icon {
+            display: block;
+            width: 58px;
+            height: 58px;
+            flex: 0 0 auto;
+            margin: auto 0;
+            filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.85));
+        }
+
+        .inventory-meta {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+        }
+
+        // Shared .window_hotkey, tinted to match HUD green.
+        .window_hotkey {
+            margin-right: 0;
+            background: rgba(0, 0, 0, 0.45);
+            border-color: rgba(0, 255, 0, 0.55);
+            text-shadow: none;
+        }
+
+        .inventory-label {
+            color: rgb(0, 255, 0);
+            font-family: monospace;
+            font-size: 0.62rem;
+            letter-spacing: 0.12em;
+            line-height: 1;
+            text-shadow: 0 0 4px rgba(0, 0, 0, 0.85);
+            white-space: nowrap;
+        }
+    }
+
     .scanner-target {
         position: absolute;
         z-index: 0;
@@ -267,6 +346,75 @@
             &.auto-off .caret {
                 display: none;
             }
+        }
+
+        .inventory-button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.45rem;
+            box-sizing: border-box;
+            align-self: stretch;
+            min-width: 5.5rem;
+            margin: 0;
+            padding: 0.45rem 0.45rem 0.2rem;
+            border-style: solid;
+            border-color: transparent;
+            border-width: 16px;
+            border-image-source: url("/assets/borders/border-05.png");
+            border-image-slice: unquote("80 fill");
+            border-image-width: 28px;
+            border-image-repeat: round;
+            background-color: transparent;
+            background-clip: padding-box;
+            color: rgb(0, 255, 0);
+            pointer-events: auto;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+
+            &:hover,
+            &:focus-visible,
+            &:active {
+                border-image-source: url("/assets/borders/border-07.png");
+                outline: none;
+            }
+        }
+
+        .inventory-icon {
+            display: block;
+            width: 58px;
+            height: 58px;
+            flex: 0 0 auto;
+            margin: auto 0;
+            filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.85));
+        }
+
+        .inventory-meta {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+        }
+
+        .window_hotkey {
+            margin-right: 0;
+            background: rgba(0, 0, 0, 0.45);
+            border-color: rgba(0, 255, 0, 0.55);
+            text-shadow: none;
+        }
+
+        .inventory-label {
+            color: rgb(0, 255, 0);
+            font-family: monospace;
+            font-size: 0.62rem;
+            letter-spacing: 0.12em;
+            line-height: 1;
+            text-shadow: 0 0 4px rgba(0, 0, 0, 0.85);
+            white-space: nowrap;
         }
 
         .afterburner-controls {
@@ -606,6 +754,39 @@
             z-index: 3;
         }
 
+        // Compact inventory: slim chrome tab to the right of afterburner.
+        ^[1].compact .inventory-button {
+            position: absolute;
+            left: calc(50% + 4.75rem);
+            bottom: @css{ min(2.5dvw, 2.5dvh) };
+            min-width: 0;
+            padding: 0.12rem 0.55rem 0.1rem;
+            border-width: 8px;
+            border-image-width: 14px;
+            gap: 0;
+            justify-content: center;
+            z-index: 3;
+        }
+
+        ^[1].compact .inventory-icon {
+            display: none;
+        }
+
+        ^[1].compact .inventory-meta {
+            gap: 0.25rem;
+        }
+
+        ^[1].compact .window_hotkey {
+            min-width: 0.95rem;
+            height: 0.95rem;
+            font-size: 0.58rem;
+        }
+
+        ^[1].compact .inventory-label {
+            font-size: 0.5rem;
+            letter-spacing: 0.1em;
+        }
+
         ^[1].compact .afterburner-controls.tray.collapsed {
             padding: 0.12rem 0.45rem 0.1rem;
             border-width: 8px;
@@ -749,6 +930,25 @@
             font-size: 0.5rem;
             letter-spacing: 0.12em;
             transform: none;
+        }
+
+        // Portrait: slim inventory tab on the right edge, opposite the afterburner drawer.
+        ^[1].compact.portrait .inventory-button {
+            left: auto;
+            right: @css{ min(2.5dvw, 2.5dvh) };
+            bottom: 36%;
+            writing-mode: vertical-rl;
+            text-orientation: sideways;
+            padding: 0.55rem 0.28rem;
+            border-width: 7px;
+            border-image-width: 12px;
+            transform: none;
+        }
+
+        ^[1].compact.portrait .inventory-label {
+            font-size: 0.5rem;
+            letter-spacing: 0.12em;
+            transform: rotate(180deg);
         }
 
         // Chevron points into the screen to open, back to the edge to close.

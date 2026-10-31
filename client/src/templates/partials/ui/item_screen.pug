@@ -1,0 +1,30 @@
+//- Hangar / aircraft storage modal (one or two .window panels).
+#item_screen(hidden)
+    .item_screen_shell
+        .item_screen_toolbar
+            button.window_action.item_screen_close(type="button" data-action="close-item-screen")
+                kbd Esc
+                span Close
+        .item_screen_windows
+            article.window.item_screen_frame(data-window="hangar" hidden role="dialog" aria-modal="true" aria-labelledby="item_screen_title_hangar")
+                header.item_screen_header
+                    h2#item_screen_title_hangar.window_title Hangar Storage
+                .item_screen_body
+                    .item_screen_grid(data-grid="hangar" aria-label="Hangar storage slots")
+                    .item_screen_detail
+                        p.item_screen_detail_label SELECTED
+                        p.item_screen_detail_name(data-detail="hangar") Empty slot
+
+            article.window.item_screen_frame(data-window="aircraft" role="dialog" aria-modal="true" aria-labelledby="item_screen_title_aircraft")
+                header.item_screen_header
+                    h2#item_screen_title_aircraft.window_title Aircraft Storage
+                .item_screen_body
+                    .item_screen_grid(data-grid="aircraft" aria-label="Aircraft storage slots")
+                    .item_screen_detail
+                        p.item_screen_detail_label SELECTED
+                        p.item_screen_detail_name(data-detail="aircraft") Empty slot
+
+    .item_screen_menu.window(hidden role="menu")
+        button.window_action(type="button" role="menuitem" data-menu="transfer") Transfer
+        button.window_action(type="button" role="menuitem" data-menu="split") Split stack
+        button.window_action(type="button" role="menuitem" data-menu="delete") Delete

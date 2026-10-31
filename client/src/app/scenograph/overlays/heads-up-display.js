@@ -88,43 +88,56 @@ export default class HeadsUpDisplay {
         gauge.id = 'hud-capacitor';
         gauge.dataset.id = 'capacitor';
 
-        let status = document.createElement('div');
-        status.className = 'status';
+        // Wide: readout on top, name below. Compact: "CAPACITOR: 100%" on one line.
+        let caption = document.createElement( 'div' );
+        caption.className = 'caption';
 
-        let pct = document.createElement('div');
+        let readout = document.createElement( 'div' );
+        readout.className = 'readout';
+
+        let pct = document.createElement( 'div' );
         pct.className = 'pct';
         pct.textContent = '100%';
 
-        let trend = document.createElement('div');
+        let trend = document.createElement( 'div' );
         trend.className = 'trend steady';
         trend.setAttribute( 'aria-hidden', 'true' );
 
-        status.appendChild(pct);
-        status.appendChild(trend);
+        readout.appendChild( pct );
+        readout.appendChild( trend );
 
-        let track = document.createElement('div');
+        let capName = document.createElement( 'span' );
+        capName.className = 'label-name';
+        capName.textContent = 'CAPACITOR';
+
+        let pctSep = document.createElement( 'span' );
+        pctSep.className = 'pct-sep';
+        pctSep.setAttribute( 'aria-hidden', 'true' );
+        pctSep.textContent = ':';
+
+        // DOM order matches compact inline reading: CAPACITOR : 100% ▲
+        caption.appendChild( capName );
+        caption.appendChild( pctSep );
+        caption.appendChild( readout );
+
+        let track = document.createElement( 'div' );
         track.className = 'track';
 
-        let segments = document.createElement('div');
+        let segments = document.createElement( 'div' );
         segments.className = 'segments';
         for ( let i = 0; i < CAPACITOR_SEGMENTS; i++ ) {
-            let seg = document.createElement('div');
+            let seg = document.createElement( 'div' );
             seg.className = 'seg';
-            segments.appendChild(seg);
+            segments.appendChild( seg );
         }
-        track.appendChild(segments);
+        track.appendChild( segments );
 
-        let caret = document.createElement('div');
+        let caret = document.createElement( 'div' );
         caret.className = 'caret';
-        track.appendChild(caret);
+        track.appendChild( caret );
 
-        let capLabel = document.createElement('div');
-        capLabel.className = 'label';
-        capLabel.textContent = 'CAPACITOR';
-
-        gauge.appendChild(status);
-        gauge.appendChild(track);
-        gauge.appendChild(capLabel);
+        gauge.appendChild( caption );
+        gauge.appendChild( track );
 
         // Single framed afterburner control: label + auto + threshold dial.
         let controls = document.createElement('div');
@@ -198,9 +211,14 @@ export default class HeadsUpDisplay {
         inventoryBtn.setAttribute( 'aria-label', 'Inventory' );
         inventoryBtn.innerHTML = InventoryUI.buttonMarkup();
 
+        // Expandable systems strip (afterburner, inventory, future actions).
+        let systems = document.createElement( 'div' );
+        systems.className = 'hud-systems';
+        systems.appendChild( controls );
+        systems.appendChild( inventoryBtn );
+
         panel.appendChild(gauge);
-        panel.appendChild(controls);
-        panel.appendChild(inventoryBtn);
+        panel.appendChild(systems);
         return panel;
     }
 

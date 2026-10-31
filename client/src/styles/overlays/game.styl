@@ -220,6 +220,18 @@
             pointer-events: none;
         }
 
+        // Afterburner + inventory (+ future actions). Desktop rides in the capacitor row.
+        .hud-systems {
+            display: flex;
+            align-items: stretch;
+            gap: 0.55rem;
+            pointer-events: none;
+
+            > * {
+                pointer-events: auto;
+            }
+        }
+
         &-capacitor {
             position: relative;
             width: 260px;
@@ -227,7 +239,12 @@
             pointer-events: none;
             background: url("/assets/borders/border-09.png") center / 100% 100% no-repeat;
 
-            .status {
+            .caption {
+                pointer-events: none;
+            }
+
+            // Wide: charge + trend sit above the bar.
+            .readout {
                 position: absolute;
                 left: 16%;
                 right: 16%;
@@ -236,7 +253,6 @@
                 align-items: center;
                 justify-content: center;
                 gap: 0.35rem;
-                pointer-events: none;
             }
 
             .pct {
@@ -248,11 +264,20 @@
                 line-height: 1;
             }
 
+            .pct-sep {
+                display: none;
+                color: rgb(0, 255, 0);
+                font-family: monospace;
+                line-height: 1;
+                text-shadow: 0 0 4px rgba(0, 0, 0, 0.85);
+            }
+
             .trend {
                 width: 0;
                 height: 0;
                 border-left: 5px solid transparent;
                 border-right: 5px solid transparent;
+                flex-shrink: 0;
 
                 &.up {
                     border-bottom: 7px solid rgb(80, 180, 255);
@@ -318,7 +343,7 @@
                 pointer-events: none;
             }
 
-            .label {
+            .label-name {
                 position: absolute;
                 left: 0;
                 right: 0;
@@ -328,6 +353,8 @@
                 font-family: monospace;
                 font-size: 0.68rem;
                 letter-spacing: 0.14em;
+                line-height: 1;
+                text-shadow: 0 0 4px rgba(0, 0, 0, 0.85);
             }
 
             &.charging .pct {
@@ -715,41 +742,116 @@
             left: calc(@css{ min(2.5dvw, 2.5dvh) } + @css{ max(12.5dvw, 12.5dvh) } + 0.75rem);
             top: @css{ min(2.5dvw, 2.5dvh) };
             transform: none;
-            width: 168px;
-            min-height: 88px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            justify-content: center;
+            gap: 0.28rem;
+            width: 176px;
+            // Match session chrome window_action height (~border + type).
+            min-height: 60px;
+            // Inset from border-09 art so the bar+caption sit in the frame centre.
+            padding: 0.55rem 0.95rem 0.55rem;
 
-            .status {
-                top: 14%;
-                left: 14%;
-                right: 14%;
-                gap: 0.22rem;
+            // Single caption line: CAPACITOR: 100% ▲
+            .caption {
+                position: static;
+                left: auto;
+                right: auto;
+                top: auto;
+                bottom: auto;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.18rem;
+            }
+
+            .readout {
+                display: contents;
+            }
+
+            .label-name {
+                position: static;
+                bottom: auto;
+                font-size: 0.48rem;
+                letter-spacing: 0.08em;
+            }
+
+            .pct-sep {
+                display: inline;
+                font-size: 0.48rem;
+                letter-spacing: 0;
             }
 
             .pct {
-                font-size: 0.7rem;
+                font-size: 0.48rem;
+                letter-spacing: 0.04em;
+            }
+
+            .trend {
+                border-left-width: 3px;
+                border-right-width: 3px;
+
+                &.up {
+                    border-bottom-width: 4px;
+                }
+
+                &.down {
+                    border-top-width: 4px;
+                }
+
+                &.steady {
+                    width: 4px;
+                    height: 1px;
+                }
             }
 
             .track {
-                top: 40%;
-                bottom: 28%;
-                left: 14%;
-                right: 14%;
+                position: relative;
+                top: auto;
+                left: auto;
+                right: auto;
+                bottom: auto;
+                width: 100%;
+                height: 8px;
+                flex-shrink: 0;
             }
 
-            .label {
-                bottom: 10%;
-                font-size: 0.55rem;
-                letter-spacing: 0.1em;
+            .segments {
+                gap: 1px;
+                padding: 1px;
+            }
+
+            .caret {
+                top: -5px;
+                border-left-width: 4px;
+                border-right-width: 4px;
+                border-top-width: 4px;
+                margin-left: -4px;
             }
         }
 
-        // Wide/landscape compact: tray flush to the bottom edge.
+        // Landscape compact: systems strip between D-pad and attack controls.
+        // Flex row so more action tabs can join without re-centering math.
+        ^[1].compact .hud-systems {
+            position: absolute;
+            left: calc(@css{ min(2.5dvw, 2.5dvh) } + @css{ max(8vw, 8vh, 160px) } + 0.75rem);
+            right: auto;
+            bottom: @css{ min(2.5dvw, 2.5dvh) };
+            transform: none;
+            align-items: flex-end;
+            gap: 0.45rem;
+            z-index: 3;
+        }
+
+        // Wide/landscape compact: tray flush in the systems strip.
         // Handle (label tab) stays compact; dial/AUTO are larger for touch.
         ^[1].compact .afterburner-controls {
-            position: absolute;
-            left: 50%;
-            bottom: @css{ min(2.5dvw, 2.5dvh) };
-            transform: translateX(-50%);
+            position: relative;
+            left: auto;
+            bottom: auto;
+            transform: none;
             min-width: 0;
             padding: 0.2rem 0.28rem 0.12rem;
             border-width: 12px;
@@ -757,11 +859,11 @@
             z-index: 3;
         }
 
-        // Compact inventory: slim chrome tab to the right of afterburner.
+        // Compact inventory: slim chrome tab beside afterburner in the systems strip.
         ^[1].compact .inventory-button {
-            position: absolute;
-            left: calc(50% + 4.75rem);
-            bottom: @css{ min(2.5dvw, 2.5dvh) };
+            position: relative;
+            left: auto;
+            bottom: auto;
             min-width: 0;
             padding: 0.12rem 0.55rem 0.1rem;
             border-width: 8px;
@@ -836,16 +938,29 @@
         }
 
         ^[1].compact.portrait ^[1..1]-capacitor {
-            // Portrait keeps the gauge centered under the top chrome.
-            left: 50%;
-            transform: translateX(-50%);
-            width: 150px;
-            min-height: 80px;
+            // Align with session chrome (top/right 1.15rem / 1.4rem, gap 0.55rem).
+            // Reserve Exit + Save border-boxes, then the same gap before the gauge.
+            left: auto;
+            right: calc(1.4rem + 5.5rem + 0.55rem + 4rem + 0.55rem);
+            top: 1.15rem;
+            transform: none;
+            width: 156px;
+            min-height: 60px;
+        }
+
+        // Portrait: systems strip fills the HUD so children can dock to screen edges.
+        ^[1].compact.portrait .hud-systems {
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            display: block;
         }
 
         // Portrait: off-canvas drawer. Body sits off-screen; footer tab is glued to
         // the trailing edge so AFTERBURNER + lamp peek, then the whole tray slides in.
         ^[1].compact.portrait .afterburner-controls {
+            position: absolute;
             left: 0;
             right: auto;
             top: auto;
@@ -935,11 +1050,12 @@
             transform: none;
         }
 
-        // Portrait: slim inventory tab on the right edge, opposite the afterburner drawer.
+        // Portrait: slim inventory tab flush on the left, below afterburner — elevator stays clear on the right.
         ^[1].compact.portrait .inventory-button {
-            left: auto;
-            right: @css{ min(2.5dvw, 2.5dvh) };
-            bottom: 36%;
+            position: absolute;
+            left: 0;
+            right: auto;
+            bottom: 18%;
             writing-mode: vertical-rl;
             text-orientation: sideways;
             padding: 0.55rem 0.28rem;

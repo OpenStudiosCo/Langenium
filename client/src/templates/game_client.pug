@@ -25,6 +25,11 @@ html(lang='en')
             .session_chrome(hidden)
                 button#save_game.window_action.dialog_action(type='button' aria-label='Save game')
                     span.save_icon(aria-hidden='true')
+                        svg(viewBox='0 0 24 24' focusable='false')
+                            path(d='M5 3h11l3 3v15H5V3z' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linejoin='round')
+                            path(d='M8 3v6h8V3' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linejoin='round')
+                            path(d='M8 16h8v5H8z' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linejoin='round')
+                            path(d='M10 5.5h4' fill='none' stroke='currentColor' stroke-width='1.5' stroke-linecap='round')
                     span.save_label Save
                 button#exit_game.window_action.dialog_action(type='button') Exit
             include ./partials/ui/dialog.pug

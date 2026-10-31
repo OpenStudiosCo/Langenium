@@ -1,5 +1,5 @@
 /**
- * @name            Inventory
+ * @name            InventoryUI
  * @description     Hangar and aircraft storage windows
  * @namespace       l.ui.inventory
  * @memberof        l.ui
@@ -121,7 +121,7 @@ export default class InventoryUI {
             const button = document.createElement( 'button' );
             button.type = 'button';
             button.className = 'inventory-button hangar-inventory-button';
-            button.id = 'hangar-inventory';
+            button.dataset.action = 'toggle-inventory';
             button.setAttribute( 'aria-label', 'Inventory' );
             button.innerHTML = InventoryUI.buttonMarkup();
             button.addEventListener( 'click', ( event ) => {
@@ -213,17 +213,49 @@ export default class InventoryUI {
      * Hangar computer: both bags so the player can load the ship.
      */
     openHangarInventory() {
-        const hangar = l.scenograph && l.scenograph.hangar;
+        const hangarInventory = this.getHangarInventory();
         const aircraft = this.getAircraftInventory();
-        if ( ! hangar || ! hangar.inventory || ! aircraft ) {
+        if ( ! hangarInventory || ! aircraft ) {
             return;
         }
 
         this.show( {
             mode: 'transfer',
-            hangarInventory: hangar.inventory,
+            hangarInventory: hangarInventory,
             aircraftInventory: aircraft,
         } );
+    }
+
+    /**
+     * Floor bag for the player's assigned hangar in the World scene.
+     * Contents come from overworld.yml via Hangar.applyInventory.
+     */
+    getHangarInventory() {
+        const hangarRef = l.scenograph
+            && l.scenograph.actors
+            && l.scenograph.actors.player
+            && l.scenograph.actors.player.actorInstance
+            && l.scenograph.actors.player.actorInstance.config
+            && l.scenograph.actors.player.actorInstance.config.hangar;
+        if ( ! hangarRef ) {
+            return null;
+        }
+
+        const world = l.current_scene && l.current_scene.world;
+        if ( ! world || ! world.instance || ! world.instance.objects ) {
+            return null;
+        }
+
+        const structure = world.instance.objects.get( hangarRef.structure );
+        if ( ! structure || ! structure.hangars ) {
+            return null;
+        }
+
+        const hangarInstance = structure.hangars.find(
+            ( entry ) => entry.config && entry.config.name === hangarRef.hangarName
+        );
+        const hangarObject = hangarInstance && hangarInstance.object;
+        return hangarObject && hangarObject.inventory ? hangarObject.inventory : null;
     }
 
     /**
@@ -500,7 +532,7 @@ export default class InventoryUI {
 
         const ghost = document.createElement( 'div' );
         ghost.className = 'item_slot_ghost';
-        ghost.textContent = this.itemLabel( item );
+        ghost.textContent = this.itemLabel( bag, item );
         ghost.style.left = x + 'px';
         ghost.style.top = y + 'px';
         this.container.appendChild( ghost );
@@ -594,11 +626,11 @@ export default class InventoryUI {
         this.render();
     }
 
-    itemLabel( item ) {
+    itemLabel( inventory, item ) {
         if ( ! item ) {
             return 'Empty';
         }
-        const qty = item.qty === undefined ? 1 : item.qty;
+        const qty = inventory ? inventory.qtyOf( item ) : 1;
         return qty > 1 ? ( item.name + ' ×' + qty ) : item.name;
     }
 
@@ -628,7 +660,7 @@ export default class InventoryUI {
 
             const label = document.createElement( 'span' );
             label.className = 'item_slot_label';
-            label.textContent = this.itemLabel( item );
+            label.textContent = this.itemLabel( inventory, item );
 
             button.appendChild( indexMark );
             button.appendChild( label );
@@ -640,7 +672,7 @@ export default class InventoryUI {
         if ( this.selected && this.selected.bag === bag ) {
             const inventory = this.getBag( bag );
             const item = inventory ? inventory.get( this.selected.index ) : null;
-            el.textContent = item ? this.itemLabel( item ) : 'Empty slot';
+            el.textContent = item ? this.itemLabel( inventory, item ) : 'Empty slot';
             return;
         }
         el.textContent = 'Empty slot';

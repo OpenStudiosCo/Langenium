@@ -15,25 +15,11 @@ import * as THREE from 'three';
  * Internal libs and helpers.
  */
 import l from '@/helpers/l.js';
-import Inventory from '#/game/src/items/inventory';
 
 export default class hangarRoute {
 
     // Scenograph instance of a structure that contains a hangar.
     targetStructure = false;
-
-    // Shared hangar floor bag — survives leave / re-enter of this session.
-    inventory = null;
-
-    static ensureInventory( hangar ) {
-        if ( ! hangarRoute.sharedInventory ) {
-            hangarRoute.sharedInventory = new Inventory( 8 );
-            // Sample stacks so transfer / split / drag can be tried in Stage 1.
-            hangarRoute.sharedInventory.set( 0, { id: 'scrap', name: 'Scrap', qty: 4 } );
-            hangarRoute.sharedInventory.set( 1, { id: 'wire', name: 'Wire Spool' } );
-        }
-        hangar.inventory = hangarRoute.sharedInventory;
-    }
 
     constructor() {
         console.log( 'Hangar launched' );
@@ -53,8 +39,6 @@ export default class hangarRoute {
 
         l.scenograph.actors.player = l.scenograph.actors.get('Player Two');
         l.scenograph.actors.player.setMode('person');
-
-        hangarRoute.ensureInventory( this );
 
         this.loadHangar();
         this.setupPrompt();
@@ -681,7 +665,6 @@ export default class hangarRoute {
         }
 
         l.mode = 'hangar';
-        hangarRoute.ensureInventory( this );
         for ( const actor of l.scenograph.actors.getAll() ) {
             if ( typeof actor.setVehicleVisible === 'function' ) {
                 actor.setVehicleVisible( false );

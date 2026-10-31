@@ -1,8 +1,9 @@
 /**
- * Hangar computer terminal.
+ * Indoor computer terminal.
  *
  * Freestanding pedestal + slanted screen. Placed by the hangar route
- * against a hangar wall; local +Z faces the player.
+ * against a hangar wall; local +Z faces the player. Storage access
+ * intents live on the game Terminal objectClass.
  */
 
 /**
@@ -15,13 +16,14 @@ import * as THREE from 'three';
  */
 import l from '@/helpers/l.js';
 import { proceduralBuilding } from '@/scenograph/materials.js';
+import TerminalObject from '#/game/src/objects/structures/terminal';
 
 export default class Terminal {
 
     // Materials for body (procedural) and screen (emissive).
     materials;
 
-    // Layout / collision stub; hangar design owns placement.
+    // Game object: storage access between location and aircraft bags.
     objectClass;
 
     // THREE.Object3D
@@ -33,10 +35,18 @@ export default class Terminal {
 
         this.ready = false;
 
-        this.objectClass = {
-            name: 'Terminal'
-        };
+        this.objectClass = new TerminalObject();
 
+    }
+
+    /**
+     * Open transfer UI for the player's location bag and aircraft cargo.
+     */
+    openStorage() {
+        if ( ! l.ui || ! l.ui.inventory ) {
+            return;
+        }
+        l.ui.inventory.openLocationTransfer();
     }
 
     /**

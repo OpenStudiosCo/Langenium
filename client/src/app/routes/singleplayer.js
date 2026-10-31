@@ -27,13 +27,17 @@ export default class singlePlayerRoute {
 
         l.routes.setDemoVisible( false );
 
-        l.scenograph.actors.player = l.scenograph.actors.get('Player One');
-        l.scenograph.actors.player.resetFlight();
-        l.scenograph.actors.player.setVehicleVisible( true );
-        l.scenograph.actors.player.setMode('vehicle');
-        l.scenograph.actors.player.vehicle.updateMesh();
-        l.scenograph.actors.player.chaseYaw = l.scenograph.actors.player.vehicle.mesh.rotation.y;
-        l.scenograph.actors.player.vehicle.applyChaseCamera( l.scenograph.actors.player.chaseYaw );
+        const player = l.scenograph.actors.player || l.scenograph.actors.get( 'Player' );
+        l.scenograph.actors.player = player;
+        player.setVehicleVisible( true );
+        player.setMode( 'vehicle' );
+        player.vehicle.updateMesh();
+        player.chaseYaw = player.vehicle.mesh.rotation.y;
+        player.vehicle.applyChaseCamera( player.chaseYaw );
+
+        if ( player.person && player.person.mesh ) {
+            player.person.mesh.visible = false;
+        }
 
         l.routes.hangar.watchOverworld();
 

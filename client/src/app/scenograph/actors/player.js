@@ -48,9 +48,15 @@ export default class Player {
     setMode( mode = 'vehicle' ) {
         if ( mode === 'vehicle' ) {
             this.mode = 'vehicle';
+            if ( l.ui && l.ui.inventory ) {
+                l.ui.inventory.hidePersonButton();
+            }
         }
         else {
             this.mode = 'person';
+            if ( l.ui && l.ui.inventory ) {
+                l.ui.inventory.showPersonButton();
+            }
         }
     }
 
@@ -138,6 +144,18 @@ export default class Player {
 
     // Internal helper to manage state changes of aircraft controls.
     updateControls() {
+        if ( l.ui && l.ui.inventory && l.ui.inventory.blocksInput() ) {
+            const object = this.vehicle.mesh.userData.object;
+            object.controls.changing = false;
+            object.controls.throttleUp = false;
+            object.controls.throttleDown = false;
+            object.controls.moveUp = false;
+            object.controls.moveDown = false;
+            object.controls.moveLeft = false;
+            object.controls.moveRight = false;
+            return;
+        }
+
         let mappings = {
             throttleUp  :  'W',
             throttleDown:  'S',

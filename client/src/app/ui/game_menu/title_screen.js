@@ -19,14 +19,6 @@ export default class Title_Screen {
             version.textContent = l.version;
         } );
 
-        this.exit = document.getElementById( 'exit_game' );
-        if ( this.exit ) {
-            this.exit.addEventListener( 'click', () => {
-                l.routes.exitGame();
-                l.ui.menus.main_menu.returnHome();
-            } );
-        }
-
         this.bindSettings();
         this.bindStoryScroll();
 
@@ -44,6 +36,23 @@ export default class Title_Screen {
                 const panel = event.target.closest( '[data-panel]' );
                 this.returnFocus = panel ? panel.dataset.path || '' : '';
                 this.back();
+                return;
+            }
+
+            const slotContinue = event.target.closest( '[data-slot-continue]' );
+            if ( slotContinue ) {
+                this.launchSlot( Number( slotContinue.dataset.slotContinue ), 'continue' );
+                return;
+            }
+
+            const slotNew = event.target.closest( '[data-slot-new]' );
+            if ( slotNew ) {
+                const slot = Number( slotNew.dataset.slotNew );
+                const occupied = !!l.saves.read( slot );
+                if ( occupied && ! window.confirm( 'Overwrite save slot ' + ( slot + 1 ) + '?' ) ) {
+                    return;
+                }
+                this.launchSlot( slot, 'new' );
                 return;
             }
 
@@ -83,7 +92,7 @@ export default class Title_Screen {
         this.closePanel();
         this.container.classList.remove( 'help-session' );
         this.container.classList.add( 'active' );
-        this.setExitVisible( false );
+        this.setSessionChromeVisible( false );
 
         if ( l.current_scene && l.current_scene.objects && l.current_scene.objects.logo ) {
             l.current_scene.objects.logo.show();
@@ -93,17 +102,27 @@ export default class Title_Screen {
     hide() {
         this.closePanel();
         this.container.classList.remove( 'active', 'help-session' );
-        this.setExitVisible( true );
+        this.setSessionChromeVisible( true );
 
         if ( l.current_scene && l.current_scene.objects && l.current_scene.objects.logo ) {
             l.current_scene.objects.logo.hide();
         }
     }
 
+    /**
+     * Session Save/Exit chrome lives on InGame; title only toggles visibility.
+     */
+    setSessionChromeVisible( visible ) {
+        const inGame = l.ui.game_menu && l.ui.game_menu.in_game;
+        if ( inGame ) {
+            inGame.setExitVisible( visible );
+        }
+    }
+
     onAction( action, button ) {
         const path = button.dataset.path || ( action === 'play' ? '/play/' : '/' + action + '/' );
 
-        if ( action !== 'play' && button.classList.contains( 'selected' ) && this.currentPath() === path ) {
+        if ( button.classList.contains( 'selected' ) && this.currentPath() === path ) {
             this.returnFocus = path;
             this.back();
             return;
@@ -195,14 +214,6 @@ export default class Title_Screen {
      * Open the screen for an address without changing history.
      */
     apply( path ) {
-        if ( path === '/play/' ) {
-            if ( l.mode === 'home' && !this.launching ) {
-                const button = this.container.querySelector( 'nav [data-action="play"]' );
-                this.startStory( 'hangar', button );
-            }
-            return;
-        }
-
         window.clearTimeout( this.launchTimer );
         this.launching = false;
 
@@ -212,16 +223,120 @@ export default class Title_Screen {
             return;
         }
 
+        // In-session /play/ address stays put; do not reopen the slot picker.
+        if ( path === '/play/' && l.mode !== 'home' ) {
+            return;
+        }
+
         const panel = this.container.querySelector( '[data-panel][data-path="' + path + '"]' );
         if ( !panel ) {
             this.closePanel();
             return;
         }
 
+        if ( panel.dataset.panel === 'play' ) {
+            this.refreshSaveSlots();
+        }
+
         const action = panel.dataset.return || panel.dataset.panel;
         const button = this.container.querySelector( 'nav [data-action="' + action + '"]' );
         this.openPanel( panel.dataset.panel, button );
         this.focusReturn();
+    }
+
+    refreshSaveSlots() {
+        const list = this.container.querySelector( '[data-save-slots]' );
+        const template = document.querySelector( '#templates #save_slot' );
+        if ( ! list || ! l.saves || ! template ) {
+            return;
+        }
+
+        list.innerHTML = '';
+        l.saves.list().forEach( ( entry ) => {
+            const summary = l.saves.slotSummary( entry.payload );
+            const item = template.content.firstElementChild.cloneNode( true );
+
+            item.className = summary.empty ? 'save_slot empty' : 'save_slot occupied';
+            item.querySelector( '.save_slot_index' ).textContent = String( entry.slot + 1 ).padStart( 2, '0' );
+            item.querySelector( '.save_slot_title' ).textContent = summary.title;
+            item.querySelector( '.save_slot_detail' ).textContent = summary.detail;
+
+            const continueButton = item.querySelector( '[data-slot-continue]' );
+            const newButton = item.querySelector( '[data-slot-new]' );
+            const slot = String( entry.slot );
+
+            if ( summary.empty ) {
+                continueButton.hidden = true;
+                continueButton.removeAttribute( 'data-slot-continue' );
+                newButton.classList.remove( 'save_slot_new' );
+                newButton.dataset.slotNew = slot;
+            }
+            else {
+                continueButton.hidden = false;
+                continueButton.dataset.slotContinue = slot;
+                newButton.classList.add( 'save_slot_new' );
+                newButton.dataset.slotNew = slot;
+            }
+
+            list.appendChild( item );
+        } );
+    }
+
+    /**
+     * Spawn from defaults or a save, then enter hangar or overworld.
+     */
+    launchSlot( slot, mode ) {
+        if ( this.launching || l.mode !== 'home' ) {
+            return;
+        }
+
+        this.launching = true;
+        const playButton = this.container.querySelector( 'nav [data-action="play"]' );
+        if ( playButton ) {
+            playButton.classList.add( 'selected' );
+        }
+
+        window.clearTimeout( this.launchTimer );
+        this.launchTimer = window.setTimeout( () => {
+            const launch = async () => {
+                this.launching = false;
+
+                if ( this.currentPath() !== '/play/' ) {
+                    if ( playButton ) {
+                        playButton.classList.remove( 'selected' );
+                    }
+                    return;
+                }
+
+                const existing = mode === 'continue' ? l.saves.read( slot ) : null;
+                const session = await l.saves.startSession( slot, mode );
+                if ( session.appMode === 'single_player' ) {
+                    new l.routes.singlePlayer();
+                }
+                else {
+                    new l.routes.hangar();
+                }
+                // Hangar placement overwrites poses; re-apply Continue state afterwards.
+                if ( existing ) {
+                    l.saves.apply( existing );
+                }
+                l.saves.saveNow( 'launch' );
+
+                l.ui.menus.main_menu.enterSession( {
+                    welcome: mode !== 'continue',
+                } );
+            };
+
+            const tour = l.current_scene && l.current_scene.objects && l.current_scene.objects.demoTour;
+            if ( tour ) {
+                tour.throughBlack( () => {
+                    launch();
+                } );
+            }
+            else {
+                launch();
+            }
+        }, 500 );
     }
 
     focusReturn() {
@@ -250,6 +365,7 @@ export default class Title_Screen {
 
     /**
      * @param {string} story overworld | hangar | multiplayer
+     * Debug / legacy path: ensure a player exists, then enter the mode.
      */
     startStory( story, button ) {
         if ( story === 'multiplayer' || this.launching ) {
@@ -263,15 +379,10 @@ export default class Title_Screen {
 
         window.clearTimeout( this.launchTimer );
         this.launchTimer = window.setTimeout( () => {
-            const launch = () => {
+            const launch = async () => {
                 this.launching = false;
 
-                if ( this.currentPath() !== '/play/' ) {
-                    if ( button ) {
-                        button.classList.remove( 'selected' );
-                    }
-                    return;
-                }
+                await l.saves.ensurePlayerReady();
 
                 if ( story === 'hangar' ) {
                     new l.routes.hangar();
@@ -312,6 +423,11 @@ export default class Title_Screen {
         }
         this.container.classList.add( 'panel-open' );
 
+        // Wordmark stays on the main menu only.
+        if ( l.current_scene && l.current_scene.objects && l.current_scene.objects.logo ) {
+            l.current_scene.objects.logo.hide();
+        }
+
         if ( name === 'settings' ) {
             this.syncSettings();
         }
@@ -334,12 +450,6 @@ export default class Title_Screen {
         const back = this.container.querySelector( '[data-panel="' + name + '"] .panel_back' );
         if ( back ) {
             back.focus();
-        }
-    }
-
-    setExitVisible( visible ) {
-        if ( this.exit ) {
-            this.exit.hidden = !visible;
         }
     }
 
@@ -464,6 +574,15 @@ export default class Title_Screen {
         } );
         this.actions.forEach( ( item ) => item.classList.remove( 'selected' ) );
         this.container.classList.remove( 'panel-open' );
+
+        if (
+            this.container.classList.contains( 'active' )
+            && l.current_scene
+            && l.current_scene.objects
+            && l.current_scene.objects.logo
+        ) {
+            l.current_scene.objects.logo.show();
+        }
     }
 
 }

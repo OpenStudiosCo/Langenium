@@ -21,7 +21,7 @@ export default class TouchControls {
         let options = {
             delta        :  0.75,       // coefficient of movement
             moveSpeed    :  0.0025,     // speed of movement
-            rotationSpeed:  0.0025,     // coefficient of rotation
+            rotationSpeed:  0.00125,    // look pad yaw/pitch (half the old rate)
             maxPitch     :  55,         // max camera pitch angle
         }
         this.controls = new TouchControlUI(

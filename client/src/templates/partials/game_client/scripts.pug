@@ -49,6 +49,9 @@ script#fragmentshader(type='x-shader/x-fragment').
         gl_FragColor = vec4(base_color.rgb + bloom_color.rgb, max(base_color.a, lum));
     }
 
+//- Build-time cache buster for dynamically loaded /main.js (see l.js).
+script.
+    window.__ASSET_VERSION__ = "!{assetVersion}";
 script
     include ../../../scripts/l.js
 script

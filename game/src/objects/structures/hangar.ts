@@ -2,8 +2,6 @@
  * Aircraft hangar.
  *
  * Layout, AABB containment and design components only.
- * Player storage at this bay lives on the person object, seeded from
- * hangar YAML inventory on New Game — not owned by the hangar itself.
  */
 
 import ObjectBase from '../base';

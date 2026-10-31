@@ -1,8 +1,5 @@
 /**
  * Shared item instance shape.
- *
- * Crystals carry optional charge / capacity (kW). Other payloads
- * can reuse the same fields later.
  */
 
 export type ItemId = string;
@@ -12,7 +9,7 @@ export interface ItemInstance {
     name: string;
     // Stack size. Missing / undefined means 1.
     qty?: number;
-    // Stored energy in kW (Langenium crystals).
+    // Stored energy in kW.
     charge?: number;
     // Maximum energy in kW.
     capacity?: number;

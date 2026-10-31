@@ -5,6 +5,17 @@ class: player
 hangar:
   structure: Lambda City
   hangarName: Hangar 2
+  # Facility storage for this structure — shared across Hangar 1 / 2.
+  inventory:
+    - id: langenium_crystal
+      name: Langenium Crystal
+      charge: 0
+      capacity: 10000
+      qty: 10
+    - id: langenium_crystal
+      name: Langenium Crystal
+      charge: 5000
+      capacity: 10000
 # Pose is applied by the hangar route on first entry; these are fallbacks.
 position:
   x: 0
@@ -16,3 +27,9 @@ rotation:
   z: 0
 aircraft:
   model: valiant
+  inventory:
+    - id: langenium_crystal
+      name: Langenium Crystal
+      charge: 10000
+      capacity: 10000
+      qty: 5

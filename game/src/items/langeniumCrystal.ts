@@ -1,8 +1,5 @@
 /**
- * Langenium crystal item helpers.
- *
- * Young crystals are the default starter grade: 10,000 kW capacity,
- * matching the fuel-system numbers discussed for aircraft power.
+ * Langenium crystal items — charge, capacity, and display helpers.
  */
 
 import { ItemInstance } from './types';
@@ -80,29 +77,4 @@ export function formatPower( item: ItemInstance | null | undefined ): string | n
 
 function formatKw( value: number ): string {
     return value.toLocaleString( 'en-GB' );
-}
-
-/**
- * Hangar floor starter: one charged (not full) Young crystal.
- */
-export function starterLocationInventory(): ItemInstance[] {
-    return [
-        createLangeniumCrystal( {
-            charge: Math.floor( YOUNG_CAPACITY_KW / 2 ),
-            capacity: YOUNG_CAPACITY_KW,
-        } ),
-    ];
-}
-
-/**
- * Aircraft cargo starter: five full Young crystals as one stack.
- */
-export function starterAircraftInventory(): ItemInstance[] {
-    return [
-        createLangeniumCrystal( {
-            charge: YOUNG_CAPACITY_KW,
-            capacity: YOUNG_CAPACITY_KW,
-            qty: 5,
-        } ),
-    ];
 }

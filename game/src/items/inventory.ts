@@ -1,9 +1,5 @@
 /**
- * Fixed-slot inventory bag.
- *
- * Used for the player's inventory at their assigned location and for
- * aircraft cargo. Slots hold an ItemInstance or null. Compatible
- * stacks merge on transfer; fuel-cell install comes later.
+ * Fixed-slot inventory bag for cargo holds and facility storage.
  */
 
 import { ItemInstance } from './types';

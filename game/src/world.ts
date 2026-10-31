@@ -196,7 +196,7 @@ export default class World {
 
     /**
      * Hangar config for a player's assignment (structure + hangarName).
-     * Used to read YAML inventory seeds — the bag itself lives on the person.
+     * Layout / pose data for the assigned bay — not inventory ownership.
      */
     getHangarConfig( hangarRef: { structure?: string; hangarName?: string } | null ) {
         if ( ! hangarRef || ! hangarRef.structure || ! hangarRef.hangarName ) {

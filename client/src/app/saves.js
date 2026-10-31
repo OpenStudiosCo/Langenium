@@ -10,7 +10,6 @@
  */
 import l from '@/helpers/l.js';
 import PlayerDefaults from '#/game/src/scenes/playerDefaults';
-import { starterAircraftInventory } from '#/game/src/items/langeniumCrystal';
 
 const SLOT_COUNT = 3;
 const META_KEY = 'langenium.saves';
@@ -236,34 +235,29 @@ export default class Saves {
     }
 
     /**
-     * YAML inventory seed for the player's assigned hangar (not a hangar-owned bag).
+     * New Game: seed facility storage + aircraft cargo from the player
+     * blueprint. Location inventory is hangar.inventory (structure-level,
+     * e.g. Lambda City) — the same bag regardless of bay.
      */
-    getLocationInventorySeed( hangarRef ) {
-        const world = l.current_scene && l.current_scene.world;
-        if ( ! world || typeof world.getHangarConfig !== 'function' ) {
-            return null;
-        }
-        const config = world.getHangarConfig( hangarRef );
-        return config && Array.isArray( config.inventory ) ? config.inventory : null;
-    }
+    resetForNewGame() {
+        const defaults = this.cloneDefaults();
 
-    /**
-     * New Game: seed location bag from hangar YAML, aircraft cargo with starter crystals.
-     */
-    resetForNewGame( hangarRef ) {
         const person = this.getPersonObject();
         if ( person && person.inventory ) {
             person.inventory.clear();
-            const seed = this.getLocationInventorySeed( hangarRef );
-            if ( seed ) {
-                person.applyInventory( seed );
+            const locationSeed = defaults.hangar && defaults.hangar.inventory;
+            if ( Array.isArray( locationSeed ) ) {
+                person.applyInventory( locationSeed );
             }
         }
 
         const aircraft = this.getAircraftObject();
         if ( aircraft ) {
+            const aircraftSeed = defaults.aircraft && defaults.aircraft.inventory;
             if ( aircraft.inventory && typeof aircraft.inventory.applySlots === 'function' ) {
-                aircraft.inventory.applySlots( starterAircraftInventory() );
+                aircraft.inventory.applySlots(
+                    Array.isArray( aircraftSeed ) ? aircraftSeed : []
+                );
             }
             else if ( aircraft.inventory && typeof aircraft.inventory.clear === 'function' ) {
                 aircraft.inventory.clear();
@@ -355,10 +349,8 @@ export default class Saves {
         await l.current_scene.spawnPlayer( defaults );
         this.activeSlot = slot;
 
-        const hangarRef = defaults.hangar;
-
         if ( isNew ) {
-            this.resetForNewGame( hangarRef );
+            this.resetForNewGame();
             // Seed an immediate slot so Continue appears if they exit quickly.
             this.write( slot, this.capture() );
         }

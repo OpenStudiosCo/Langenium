@@ -87,12 +87,6 @@ objects:
           x: 0
           y: 3.14159
           z: 0
-        # Floor bag contents (slot index = list order). Charged Young crystal.
-        inventory:
-          - id: langenium_crystal
-            name: Langenium Crystal
-            charge: 5000
-            capacity: 10000
   - name: Refinery 91
     model: refinery
     position:

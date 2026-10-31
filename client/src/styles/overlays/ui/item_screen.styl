@@ -246,14 +246,6 @@
             width: min(24rem, 100%)
             gap: 0
 
-        &.transfer .item_screen_shell
-            width: min(24rem, 100%)
-
-        &.transfer .item_screen_windows
-            flex-direction: column
-            align-items: stretch
-            gap: 0.55rem
-
         .item_screen_toolbar
             position: absolute
             top: 0.15rem
@@ -317,53 +309,150 @@
         .item_screen_detail_name
             font-size: 0.78rem
 
-    // Portrait phones: keep the panel short enough that Close + grid +
-    // selected all stay in the first viewport without scrolling.
+    // Portrait: hangar above aircraft. Panels keep natural size (square
+    // slots + selected footer); leftover viewport stays clear.
+    @media (orientation: portrait)
+        &.transfer
+            align-items: safe center
+            justify-content: center
+            padding: 0.4rem
+
+            .item_screen_shell
+                width: min(22rem, 100%)
+                height: auto
+                max-height: none
+                gap: 0
+
+            .item_screen_windows
+                flex: 0 0 auto
+                flex-direction: column
+                align-items: stretch
+                gap: 0.55rem
+                height: auto
+                min-height: 0
+
+            .item_screen_frame
+                display: block
+                flex: 0 0 auto
+                width: 100%
+                min-height: 0
+                overflow: visible
+                border-width: 14px
+                border-image-width: 14px
+                padding: 0.4rem 0.45rem 0.35rem
+
+            .item_screen_header
+                margin-bottom: 0.25rem
+                padding-right: 5rem
+
+            .window_title
+                font-size: 0.8rem
+                letter-spacing: 0.08em
+
+            .item_screen_body
+                display: grid
+                gap: 0.3rem
+
+            .item_screen_grid
+                grid-template-columns: repeat(4, minmax(0, 1fr))
+                gap: 0.22rem
+
+            .item_slot
+                aspect-ratio: 1
+                height: auto
+                border-width: 6px
+                border-image-width: 10px
+                padding: 0.12rem
+                font-size: 0.52rem
+                letter-spacing: 0.04em
+
+            .item_slot_index
+                font-size: 0.48rem
+
+            .item_screen_detail
+                display: block
+                padding: 0.22rem 0.35rem
+                border-width: 8px
+                border-image-width: 12px
+
+            .item_screen_detail_label
+                margin-bottom: 0.08rem
+                font-size: 0.52rem
+
+            .item_screen_detail_name
+                font-size: 0.72rem
+
+            .item_screen_toolbar
+                top: 0.1rem
+                right: 0.1rem
+
+            .item_screen_close
+                border-width: 8px
+                border-image-width: 14px
+                font-size: 0.68rem
+
+    // Single-bag portrait phones: keep the panel compact.
     @media (orientation: portrait) and (max-width: 700px)
         padding: 0.4rem
 
         .item_screen_shell
             width: min(20rem, 100%)
 
-        &.transfer .item_screen_shell
-            width: min(20rem, 100%)
-
-        .item_screen_frame
+        &:not(.transfer) .item_screen_frame
             border-width: 14px
             border-image-width: 14px
             padding: 0.4rem 0.45rem 0.35rem
 
-        .item_screen_header
+        &:not(.transfer) .item_screen_header
             margin-bottom: 0.25rem
             padding-right: 5rem
 
-        .window_title
+        &:not(.transfer) .window_title
             font-size: 0.82rem
             letter-spacing: 0.08em
 
-        .item_screen_body
+        &:not(.transfer) .item_screen_body
             gap: 0.3rem
 
-        .item_screen_grid
+        &:not(.transfer) .item_screen_grid
             gap: 0.2rem
 
-        .item_slot
+        &:not(.transfer) .item_slot
             border-width: 6px
             border-image-width: 10px
             padding: 0.12rem
             font-size: 0.52rem
             letter-spacing: 0.04em
 
-        .item_screen_detail
+        &:not(.transfer) .item_screen_detail
             padding: 0.2rem 0.3rem
             border-width: 8px
             border-image-width: 11px
 
-        .item_screen_detail_label
+        &:not(.transfer) .item_screen_detail_label
             font-size: 0.52rem
 
-        .item_screen_detail_name
+        &:not(.transfer) .item_screen_detail_name
             font-size: 0.7rem
+
+        &.transfer .item_screen_shell
+            width: min(22rem, 100%)
+
+    // Landscape: hangar | aircraft side by side.
+    @media (orientation: landscape)
+        &.transfer
+            .item_screen_shell
+                width: min(74rem, 100%)
+
+            .item_screen_windows
+                flex-direction: row
+                align-items: stretch
+                gap: 0.75rem
+
+            .item_screen_frame
+                flex: 1 1 0
+                width: auto
+                min-width: 0
 
     // Short landscape / widescreen phones: shrink chrome so the panel
     // fits between the top and bottom of the viewport.
@@ -447,6 +536,10 @@
 
         .item_screen_detail_name
             font-size: 0.68rem
+
+        // Transfer on a short landscape: hide footers so both side panels fit.
+        &.transfer .item_screen_detail
+            display: none
 
     // Ultra-short landscape: drop the selected footer so the grid fits.
     @media (max-height: 380px)

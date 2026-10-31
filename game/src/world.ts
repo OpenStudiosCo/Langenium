@@ -264,8 +264,9 @@ export default class World {
         // Get object's proposed AABB at next position
         const actorAABB = actorInstance.object.getAABBNext();
 
-        // Ensure the user is still inside the hangar area.
+        // Ensure the user is still inside the hangar area and clear of obstacles.
         let inside = false;
+        let blocked = false;
         if (actorInstance.config.hangar) {
             this.instance.objects.forEach((objectInstance, objectName) => {
                 if (objectName == actorInstance.config.hangar.structure) {
@@ -280,6 +281,15 @@ export default class World {
                                     }
                                 }
 
+                                const obstacles = hangarInstance.object.obstacles || [];
+                                for (const obstacleAABB of obstacles) {
+                                    // Walking is horizontal; XZ overlap is enough to block.
+                                    if (this.aabbOverlapsXZ(actorAABB, obstacleAABB)) {
+                                        blocked = true;
+                                        break;
+                                    }
+                                }
+
                             }
                         });
                     }
@@ -288,15 +298,19 @@ export default class World {
             });
 
         }
-        if (inside) {
+        if (inside && ! blocked) {
             actorInstance.object.commitNextPosition();
         }
 
     }
 
-    // Checks if actor Bounding Box is within the component Bounding Box
+    // Checks if actor Bounding Box is within the component Bounding Box.
+    // Small slack only: the player spawns on the bay Z edge (halfSize sticks
+    // out past the authored AABB), so zero offset freezes movement. Keep this
+    // well under the old 1.25 so the hangar camera near plane (0.2) does not
+    // slice wall meshes.
     aabbContained(actorBounds, componentBounds) {
-        let offset = 1.25;
+        const offset = 0.4;
         return (
             actorBounds.min.x >= componentBounds.min.x - offset &&
             actorBounds.max.x <= componentBounds.max.x + offset &&
@@ -304,6 +318,17 @@ export default class World {
             actorBounds.max.y <= componentBounds.max.y + offset &&
             actorBounds.min.z >= componentBounds.min.z - offset &&
             actorBounds.max.z <= componentBounds.max.z + offset
+        );
+    }
+
+    // Horizontal overlap for solid hangar obstacles (ignore Y so pedestal
+    // origins that sit below eye height still block walking).
+    aabbOverlapsXZ(a, b) {
+        return (
+            a.min.x <= b.max.x &&
+            a.max.x >= b.min.x &&
+            a.min.z <= b.max.z &&
+            a.max.z >= b.min.z
         );
     }
 

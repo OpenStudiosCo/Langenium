@@ -144,6 +144,23 @@ export default class hangarRoute {
           l.scenograph.controls.orbitTarget.y = l.scenograph.objects.structures.hangar.mesh.position.y;
           l.scenograph.controls.orbitTarget.z = l.scenograph.objects.structures.hangar.mesh.position.z;
       }
+
+      // Outdoor flight uses a large near plane (2.5); indoors that slices
+      // wall meshes as soon as the player gets within a couple of units.
+      this.setPlayerCameraNear( 0.2 );
+    }
+
+    setPlayerCameraNear( near ) {
+        const camera = l.scenograph.cameras.player;
+        if ( ! camera ) {
+            return;
+        }
+        camera.near = near;
+        camera.updateProjectionMatrix();
+        if ( l.scenograph.cameras.active && l.scenograph.cameras.active !== camera ) {
+            l.scenograph.cameras.active.near = near;
+            l.scenograph.cameras.active.updateProjectionMatrix();
+        }
     }
 
     setupPrompt() {
@@ -627,6 +644,7 @@ export default class hangarRoute {
         this.promptKeyHeld = false;
         this.lastShipPos = null;
         this.promptMode = 'enter';
+        this.setPlayerCameraNear( 2.5 );
         l.scenograph.overlays.activate();
         l.scenograph.controls.setAircraftChrome( true );
         hangarRoute.watchOverworld();

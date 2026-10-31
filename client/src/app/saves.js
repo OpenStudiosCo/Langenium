@@ -10,6 +10,7 @@
  */
 import l from '@/helpers/l.js';
 import PlayerDefaults from '#/game/src/scenes/playerDefaults';
+import { starterAircraftInventory } from '#/game/src/items/langeniumCrystal';
 
 const SLOT_COUNT = 3;
 const META_KEY = 'langenium.saves';
@@ -196,6 +197,12 @@ export default class Saves {
             if ( item.qty !== undefined ) {
                 entry.qty = item.qty;
             }
+            if ( item.charge !== undefined ) {
+                entry.charge = item.charge;
+            }
+            if ( item.capacity !== undefined ) {
+                entry.capacity = item.capacity;
+            }
             return entry;
         } );
     }
@@ -218,6 +225,12 @@ export default class Saves {
             if ( entry.qty !== undefined ) {
                 item.qty = entry.qty;
             }
+            if ( entry.charge !== undefined ) {
+                item.charge = entry.charge;
+            }
+            if ( entry.capacity !== undefined ) {
+                item.capacity = entry.capacity;
+            }
             inventory.set( i, item );
         }
     }
@@ -235,7 +248,7 @@ export default class Saves {
     }
 
     /**
-     * New Game: empty aircraft cargo/charge, seed player location bag from hangar YAML.
+     * New Game: seed location bag from hangar YAML, aircraft cargo with starter crystals.
      */
     resetForNewGame( hangarRef ) {
         const person = this.getPersonObject();
@@ -249,7 +262,10 @@ export default class Saves {
 
         const aircraft = this.getAircraftObject();
         if ( aircraft ) {
-            if ( aircraft.inventory && typeof aircraft.inventory.clear === 'function' ) {
+            if ( aircraft.inventory && typeof aircraft.inventory.applySlots === 'function' ) {
+                aircraft.inventory.applySlots( starterAircraftInventory() );
+            }
+            else if ( aircraft.inventory && typeof aircraft.inventory.clear === 'function' ) {
                 aircraft.inventory.clear();
             }
             aircraft.capacitor = 1;

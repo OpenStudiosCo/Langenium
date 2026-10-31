@@ -87,13 +87,12 @@ objects:
           x: 0
           y: 3.14159
           z: 0
-        # Floor bag contents (slot index = list order). Stage 1 sample stacks.
+        # Floor bag contents (slot index = list order). Charged Young crystal.
         inventory:
-          - id: scrap
-            name: Scrap
-            qty: 4
-          - id: wire
-            name: Wire Spool
+          - id: langenium_crystal
+            name: Langenium Crystal
+            charge: 5000
+            capacity: 10000
   - name: Refinery 91
     model: refinery
     position:

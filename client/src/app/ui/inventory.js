@@ -10,6 +10,8 @@
  * Internal libs and helpers.
  */
 import l from '@/helpers/l.js';
+import { itemIconUrl } from '@/ui/item_icon.js';
+import { formatPower } from '#/game/src/items/langeniumCrystal';
 
 const LONG_PRESS_MS = 450;
 const DRAG_THRESHOLD = 8;
@@ -64,6 +66,8 @@ export default class InventoryUI {
         this.aircraftGrid = this.container.querySelector( '[data-grid="aircraft"]' );
         this.locationDetail = this.container.querySelector( '[data-detail="location"]' );
         this.aircraftDetail = this.container.querySelector( '[data-detail="aircraft"]' );
+        this.locationDetailAttr = this.container.querySelector( '[data-detail-attr="location"]' );
+        this.aircraftDetailAttr = this.container.querySelector( '[data-detail-attr="aircraft"]' );
         this.menu = this.container.querySelector( '.item_screen_menu' );
         this.personButton = null;
 
@@ -581,7 +585,7 @@ export default class InventoryUI {
 
         const ghost = document.createElement( 'div' );
         ghost.className = 'item_slot_ghost';
-        ghost.textContent = this.itemLabel( bag, item );
+        this.fillSlotContents( ghost, bag, item );
         ghost.style.left = x + 'px';
         ghost.style.top = y + 'px';
         this.container.appendChild( ghost );
@@ -683,6 +687,33 @@ export default class InventoryUI {
         return qty > 1 ? ( item.name + ' ×' + qty ) : item.name;
     }
 
+    /**
+     * Icon and optional qty badge for a slot or drag ghost.
+     */
+    fillSlotContents( el, inventory, item ) {
+        if ( ! item ) {
+            return;
+        }
+
+        const iconUrl = itemIconUrl( item );
+        if ( iconUrl ) {
+            const icon = document.createElement( 'img' );
+            icon.className = 'item_slot_icon';
+            icon.src = iconUrl;
+            icon.alt = '';
+            icon.draggable = false;
+            el.appendChild( icon );
+        }
+
+        const qty = inventory ? inventory.qtyOf( item ) : 0;
+        if ( qty > 1 ) {
+            const qtyMark = document.createElement( 'span' );
+            qtyMark.className = 'item_slot_qty';
+            qtyMark.textContent = '×' + qty;
+            el.appendChild( qtyMark );
+        }
+    }
+
     renderGrid( grid, bag, inventory ) {
         grid.innerHTML = '';
         if ( ! inventory ) {
@@ -702,43 +733,62 @@ export default class InventoryUI {
                 + ( isSelected ? ' selected' : '' );
             button.dataset.bag = bag;
             button.dataset.slot = String( i );
+            button.setAttribute(
+                'aria-label',
+                item ? this.itemLabel( inventory, item ) : 'Empty slot'
+            );
 
-            const indexMark = document.createElement( 'span' );
-            indexMark.className = 'item_slot_index';
-            indexMark.textContent = String( i + 1 );
+            if ( item ) {
+                this.fillSlotContents( button, inventory, item );
+            }
 
-            const label = document.createElement( 'span' );
-            label.className = 'item_slot_label';
-            label.textContent = this.itemLabel( inventory, item );
-
-            button.appendChild( indexMark );
-            button.appendChild( label );
             grid.appendChild( button );
         }
     }
 
-    renderDetail( el, bag ) {
+    renderDetail( el, attrEl, bag ) {
         if ( this.selected && this.selected.bag === bag ) {
             const inventory = this.getBag( bag );
             const item = inventory ? inventory.get( this.selected.index ) : null;
             el.textContent = item ? this.itemLabel( inventory, item ) : 'Empty slot';
+
+            const power = item ? formatPower( item ) : null;
+            if ( attrEl ) {
+                if ( power ) {
+                    attrEl.hidden = false;
+                    attrEl.textContent = power;
+                }
+                else {
+                    attrEl.hidden = true;
+                    attrEl.textContent = '';
+                }
+            }
             return;
         }
+
         el.textContent = 'Empty slot';
+        if ( attrEl ) {
+            attrEl.hidden = true;
+            attrEl.textContent = '';
+        }
     }
 
     render() {
         if ( this.mode === 'transfer' ) {
             this.renderGrid( this.locationGrid, 'location', this.locationInventory );
-            this.renderDetail( this.locationDetail, 'location' );
+            this.renderDetail( this.locationDetail, this.locationDetailAttr, 'location' );
         }
         else {
             this.locationGrid.innerHTML = '';
             this.locationDetail.textContent = 'Empty slot';
+            if ( this.locationDetailAttr ) {
+                this.locationDetailAttr.hidden = true;
+                this.locationDetailAttr.textContent = '';
+            }
         }
 
         this.renderGrid( this.aircraftGrid, 'aircraft', this.aircraftInventory );
-        this.renderDetail( this.aircraftDetail, 'aircraft' );
+        this.renderDetail( this.aircraftDetail, this.aircraftDetailAttr, 'aircraft' );
     }
 
 }

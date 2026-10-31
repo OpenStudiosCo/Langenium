@@ -2,8 +2,8 @@
  * Fixed-slot inventory bag.
  *
  * Used for the player's inventory at their assigned location and for
- * aircraft cargo. Slots hold an ItemInstance or null. Stage 1 moves
- * stacks around; fuel cells and typed payloads come later.
+ * aircraft cargo. Slots hold an ItemInstance or null. Compatible
+ * stacks merge on transfer; fuel-cell install comes later.
  */
 
 import { ItemInstance } from './types';
@@ -68,14 +68,7 @@ export default class Inventory {
                 return;
             }
 
-            const item: ItemInstance = {
-                id: entry.id,
-                name: entry.name || entry.id,
-            };
-            if ( entry.qty !== undefined ) {
-                item.qty = entry.qty;
-            }
-            this.set( index, item );
+            this.set( index, this.cloneItem( entry ) );
         } );
     }
 
@@ -88,6 +81,26 @@ export default class Inventory {
         }
         const qty = item.qty === undefined ? 1 : item.qty;
         return Math.max( 0, Math.floor( qty ) );
+    }
+
+    /**
+     * Whether two stacks may combine. Same id is required; charge and
+     * capacity must also match when either side carries them.
+     */
+    stacksWith( a: ItemInstance | null, b: ItemInstance | null ): boolean {
+        if ( ! a || ! b ) {
+            return false;
+        }
+        if ( a.id !== b.id ) {
+            return false;
+        }
+        if ( a.charge !== b.charge ) {
+            return false;
+        }
+        if ( a.capacity !== b.capacity ) {
+            return false;
+        }
+        return true;
     }
 
     isEmpty( index: number ): boolean {
@@ -108,7 +121,8 @@ export default class Inventory {
     }
 
     /**
-     * Swap this bag's slot with another bag's slot.
+     * Move or merge this bag's slot into another bag's slot.
+     * Compatible stacks combine; otherwise the slots swap.
      * Either side may be empty — that is how drag-to-empty works.
      */
     transferTo( fromIndex: number, toInventory: Inventory, toIndex: number ): boolean {
@@ -119,8 +133,20 @@ export default class Inventory {
             return false;
         }
 
+        // Same slot is a no-op.
+        if ( this === toInventory && fromIndex === toIndex ) {
+            return false;
+        }
+
         const fromItem = this.slots[ fromIndex ];
         const toItem = toInventory.slots[ toIndex ];
+
+        if ( fromItem && toItem && this.stacksWith( fromItem, toItem ) ) {
+            toItem.qty = this.qtyOf( toItem ) + this.qtyOf( fromItem );
+            this.slots[ fromIndex ] = null;
+            return true;
+        }
+
         this.slots[ fromIndex ] = toItem;
         toInventory.slots[ toIndex ] = fromItem;
         return true;
@@ -165,12 +191,33 @@ export default class Inventory {
         const move = Math.floor( qty / 2 );
         const keep = qty - move;
         item.qty = keep;
-        this.slots[ dest ] = {
-            id: item.id,
-            name: item.name,
-            qty: move,
-        };
+        this.slots[ dest ] = this.cloneItem( item, move );
         return true;
+    }
+
+    /**
+     * Copy an item, optionally overriding qty. Preserves charge / capacity.
+     */
+    cloneItem( entry: any, qty?: number ): ItemInstance {
+        const item: ItemInstance = {
+            id: entry.id,
+            name: entry.name || entry.id,
+        };
+
+        const nextQty = qty !== undefined
+            ? qty
+            : ( entry.qty !== undefined ? entry.qty : undefined );
+        if ( nextQty !== undefined ) {
+            item.qty = nextQty;
+        }
+        if ( entry.charge !== undefined ) {
+            item.charge = entry.charge;
+        }
+        if ( entry.capacity !== undefined ) {
+            item.capacity = entry.capacity;
+        }
+
+        return item;
     }
 
 }

@@ -88,6 +88,9 @@
 
     .item_slot
         position: relative
+        display: flex
+        align-items: center
+        justify-content: center
         aspect-ratio: 1
         min-height: 0
         box-sizing: border-box
@@ -102,18 +105,9 @@
         background-color: transparent
         background-clip: padding-box
         color: #c8c8c8
-        font-family: "Liberation Sans Narrow", "Nimbus Sans Narrow", "Arial Narrow", "Helvetica Condensed", sans-serif
-        font-style: italic
-        font-weight: 700
-        font-size: 0.72rem
-        letter-spacing: 0.06em
-        line-height: 1.15
-        text-transform: uppercase
-        text-align: left
         cursor: pointer
         touch-action: none
         user-select: none
-        text-shadow: none
 
         &:hover,
         &:focus-visible
@@ -124,31 +118,37 @@
             border-image-source: url("/assets/borders/border-07.png")
             color: #fff
 
-        &.empty .item_slot_label
-            color: rgba(200, 200, 200, 0.35)
-
         &:not(.empty)
             cursor: grab
 
-    .item_slot_index
+    .item_slot_icon
+        display: block
+        width: 68%
+        max-width: 3rem
+        height: auto
+        object-fit: contain
+        pointer-events: none
+        image-rendering: auto
+
+    .item_slot_qty
         position: absolute
-        top: 0.15rem
-        right: 0.2rem
+        right: 0.3rem
+        bottom: 0.2rem
         font-family: ui-monospace, Menlo, Consolas, monospace
         font-style: normal
-        font-size: 0.65rem
+        font-weight: 700
+        font-size: 0.7rem
         letter-spacing: 0
-        opacity: 0.45
-
-    .item_slot_label
-        display: block
-        max-width: 100%
-        overflow: hidden
-        word-break: break-word
+        color: #fff
+        opacity: 0.9
+        pointer-events: none
 
     .item_slot_ghost
         position: fixed
         z-index: 9
+        display: flex
+        align-items: center
+        justify-content: center
         min-width: 4.5rem
         min-height: 4.5rem
         padding: 0.55rem
@@ -163,12 +163,6 @@
         background-color: transparent
         background-clip: padding-box
         color: #fff
-        font-family: "Liberation Sans Narrow", "Nimbus Sans Narrow", "Arial Narrow", "Helvetica Condensed", sans-serif
-        font-style: italic
-        font-weight: 700
-        font-size: 0.72rem
-        letter-spacing: 0.06em
-        text-transform: uppercase
         pointer-events: none
         transform: translate(-50%, -50%)
         opacity: 0.92
@@ -204,6 +198,15 @@
         letter-spacing: 0.08em
         text-transform: uppercase
         color: #fff
+
+    .item_screen_detail_attr
+        margin: 0.3rem 0 0
+        font-family: ui-monospace, Menlo, Consolas, monospace
+        font-style: normal
+        font-weight: 600
+        font-size: 0.85rem
+        letter-spacing: 0.04em
+        color: rgba(200, 220, 255, 0.85)
 
     // Compact .window chrome. Mask to border-02's alpha so the rounded
     // outer corners stay see-through instead of a hard black rectangle.
@@ -292,10 +295,6 @@
             border-width: 7px
             border-image-width: 11px
             padding: 0.18rem
-            font-size: 0.58rem
-
-        .item_slot_index
-            font-size: 0.5rem
 
         .item_screen_detail
             padding: 0.28rem 0.4rem
@@ -363,11 +362,6 @@
                 border-width: 6px
                 border-image-width: 10px
                 padding: 0.12rem
-                font-size: 0.52rem
-                letter-spacing: 0.04em
-
-            .item_slot_index
-                font-size: 0.48rem
 
             .item_screen_detail
                 display: block
@@ -516,13 +510,6 @@
             border-width: 5px
             border-image-width: 9px
             padding: 0.1rem
-            font-size: 0.5rem
-            letter-spacing: 0.03em
-
-        .item_slot_index
-            top: 0.05rem
-            right: 0.08rem
-            font-size: 0.45rem
 
         .item_screen_detail
             padding: 0.15rem 0.28rem

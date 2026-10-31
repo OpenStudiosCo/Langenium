@@ -1,8 +1,8 @@
 /**
  * Shared item instance shape.
  *
- * Stage 1: slots may be empty (null). Fuel cells and other
- * typed payloads land in a later stage.
+ * Crystals carry optional charge / capacity (kW). Other payloads
+ * can reuse the same fields later.
  */
 
 export type ItemId = string;
@@ -12,4 +12,8 @@ export interface ItemInstance {
     name: string;
     // Stack size. Missing / undefined means 1.
     qty?: number;
+    // Stored energy in kW (Langenium crystals).
+    charge?: number;
+    // Maximum energy in kW.
+    capacity?: number;
 }

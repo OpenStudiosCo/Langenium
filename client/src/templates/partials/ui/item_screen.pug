@@ -14,6 +14,7 @@
                     .item_screen_detail
                         p.item_screen_detail_label SELECTED
                         p.item_screen_detail_name(data-detail="location") Empty slot
+                        p.item_screen_detail_attr(data-detail-attr="location" hidden)
 
             article.window.item_screen_frame(data-window="aircraft" role="dialog" aria-modal="true" aria-labelledby="item_screen_title_aircraft")
                 header.item_screen_header
@@ -23,6 +24,7 @@
                     .item_screen_detail
                         p.item_screen_detail_label SELECTED
                         p.item_screen_detail_name(data-detail="aircraft") Empty slot
+                        p.item_screen_detail_attr(data-detail-attr="aircraft" hidden)
 
     .item_screen_menu.window(hidden role="menu")
         button.window_action(type="button" role="menuitem" data-menu="transfer") Transfer

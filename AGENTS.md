@@ -210,7 +210,8 @@ New client subsystems should normally be integrated into the existing compositio
 - `l.ui.*`
 - `l.scenograph.*`
 - `l.routes.*`
-- `l.mode`
+
+The current application mode is a string on `l.mode`, not a composed subsystem.
 
 Do not introduce a parallel global application singleton or dependency injection container simply to avoid working with the established architecture.
 
@@ -299,7 +300,7 @@ Existing route classes include:
 - `singlePlayerRoute`
 - `multiPlayerRoute`
 
-Their instances are registered through `l.routes`, including `l.routes.hangar`, `l.routes.singlePlayer` and `l.routes.multiPlayer`.
+Their constructors are registered through `l.routes`, including `l.routes.hangar`, `l.routes.singlePlayer` and `l.routes.multiPlayer`. Routes are entered with `new l.routes.hangar()` (and similarly for the others). Some route classes also expose static helpers invoked directly on the constructor.
 
 There is no corresponding `home` route class. Returning home can involve setting `l.mode = 'home'`.
 

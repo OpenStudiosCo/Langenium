@@ -1,9 +1,9 @@
 /**
  * Fixed-slot inventory bag.
  *
- * One bag per aircraft, one shared bag for the hangar floor.
- * Slots hold an ItemInstance or null. Stage 1 only moves stacks
- * around; fuel cells and typed payloads come later.
+ * Used for the player's inventory at their assigned location and for
+ * aircraft cargo. Slots hold an ItemInstance or null. Stage 1 moves
+ * stacks around; fuel cells and typed payloads come later.
  */
 
 import { ItemInstance } from './types';
@@ -34,6 +34,49 @@ export default class Inventory {
         }
         this.slots[ index ] = item;
         return true;
+    }
+
+    /**
+     * Empty every slot.
+     */
+    clear(): void {
+        for ( let i = 0; i < this.slots.length; i++ ) {
+            this.slots[ i ] = null;
+        }
+    }
+
+    /**
+     * Replace bag contents from a serialised / YAML slot list.
+     * Array order is the slot index; null / missing entries stay empty.
+     * Grows the bag when the list is longer than the current size.
+     */
+    applySlots( items: any ): void {
+        if ( ! Array.isArray( items ) ) {
+            return;
+        }
+
+        const needed = Math.max( this.size, items.length );
+        if ( needed !== this.size ) {
+            this.slots = new Array( needed ).fill( null );
+        }
+        else {
+            this.clear();
+        }
+
+        items.forEach( ( entry, index ) => {
+            if ( ! entry || ! entry.id ) {
+                return;
+            }
+
+            const item: ItemInstance = {
+                id: entry.id,
+                name: entry.name || entry.id,
+            };
+            if ( entry.qty !== undefined ) {
+                item.qty = entry.qty;
+            }
+            this.set( index, item );
+        } );
     }
 
     /**

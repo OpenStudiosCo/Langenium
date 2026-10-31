@@ -4,6 +4,7 @@
 
 import ObjectBase from './base';
 import BaseActor from '../actors/base2';
+import Inventory from '../items/inventory';
 import { changeVelocity, normaliseSpeedDelta, easeOutExpo, easeInQuad, easeInOutExpo } from '../helpers';
 import { Vec3 } from '../types';
 
@@ -12,6 +13,9 @@ export default class Person extends ObjectBase {
 
     // Actor that controls this object.
     public actor?:          BaseActor;
+
+    // Inventory at the player's assigned location (e.g. their hangar bay).
+    public inventory:       Inventory                           = new Inventory( 8 );
 
     // Object world parameters
     public hitPoints:       number                              = 100;
@@ -27,6 +31,13 @@ export default class Person extends ObjectBase {
         this.aabb = {
             halfSize: { x: 0.5, y: 0.75, z: 0.3 }
         };
+    }
+
+    /**
+     * Fill location storage from a YAML / save slot list.
+     */
+    applyInventory( items: any ): void {
+        this.inventory.applySlots( items );
     }
 
     update( time_delta: number  ) {

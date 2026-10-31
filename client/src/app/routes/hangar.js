@@ -44,7 +44,6 @@ export default class hangarRoute {
         this.loadHangar();
         this.setupPrompt();
         hangarRoute.bindUpdates();
-        this.showHangarInventoryButton();
 
     }
 
@@ -200,7 +199,7 @@ export default class hangarRoute {
                         label: 'Open',
                         run: () => {
                             hangar.promptOpen = false;
-                            hangar.openHangarInventory();
+                            hangar.openTerminalStorage();
                         }
                     },
                     { key: 'Esc', label: 'Cancel', run: stay }
@@ -229,27 +228,13 @@ export default class hangarRoute {
         };
     }
 
-    showHangarInventoryButton() {
-        if ( l.ui && l.ui.inventory ) {
-            l.ui.inventory.showHangarButton();
-        }
-    }
-
-    hideHangarInventoryButton() {
-        if ( l.ui && l.ui.inventory ) {
-            l.ui.inventory.hideHangarButton();
-        }
-    }
-
-    openHangarInventory() {
-        if ( l.ui && l.ui.inventory ) {
-            l.ui.inventory.openHangarInventory();
-        }
-    }
-
-    openAircraftInventory() {
-        if ( l.ui && l.ui.inventory ) {
-            l.ui.inventory.openAircraftInventory();
+    /**
+     * Storage access belongs to the terminal object, not the hangar route.
+     */
+    openTerminalStorage() {
+        const terminal = l.scenograph.objects.structures.terminal;
+        if ( terminal && typeof terminal.openStorage === 'function' ) {
+            terminal.openStorage();
         }
     }
 
@@ -343,7 +328,7 @@ export default class hangarRoute {
 
         if ( ePressed && ! this.promptKeyHeld ) {
             if ( mode === 'terminal' ) {
-                this.openHangarInventory();
+                this.openTerminalStorage();
             }
             else {
                 this.depart();
@@ -520,9 +505,11 @@ export default class hangarRoute {
         }
         this.departing = true;
         this.hidePrompt();
-        this.hideHangarInventoryButton();
-        if ( l.ui && l.ui.inventory && l.ui.inventory.isOpen() ) {
-            l.ui.inventory.hide();
+        if ( l.ui && l.ui.inventory ) {
+            l.ui.inventory.hidePersonButton();
+            if ( l.ui.inventory.isOpen() ) {
+                l.ui.inventory.hide();
+            }
         }
 
         const player = l.scenograph.actors.player;
@@ -613,9 +600,11 @@ export default class hangarRoute {
         this.lastShipPos = null;
 
         this.hidePrompt();
-        this.hideHangarInventoryButton();
-        if ( l.ui && l.ui.inventory && l.ui.inventory.isOpen() ) {
-            l.ui.inventory.hide();
+        if ( l.ui && l.ui.inventory ) {
+            l.ui.inventory.hidePersonButton();
+            if ( l.ui.inventory.isOpen() ) {
+                l.ui.inventory.hide();
+            }
         }
 
         this.unloadHangar();
@@ -684,7 +673,6 @@ export default class hangarRoute {
         this.loadHangar();
         this.promptMode = 'depart';
         l.scenograph.controls.setAircraftChrome( false );
-        this.showHangarInventoryButton();
         if ( l.saves ) {
             l.saves.saveNow( 'transition' );
         }

@@ -1,6 +1,6 @@
 /**
  * @name            InventoryUI
- * @description     Hangar and aircraft storage windows
+ * @description     Location and aircraft storage windows
  * @namespace       l.ui.inventory
  * @memberof        l.ui
  * @global
@@ -17,19 +17,19 @@ const DRAG_THRESHOLD = 8;
 export default class InventoryUI {
 
     container;
-    hangarWindow;
+    locationWindow;
     aircraftWindow;
-    hangarGrid;
+    locationGrid;
     aircraftGrid;
-    hangarDetail;
+    locationDetail;
     aircraftDetail;
     menu;
-    hangarButton;
+    personButton;
 
     // Modal open state and which bags are on screen.
     open;
     mode;
-    hangarInventory;
+    locationInventory;
     aircraftInventory;
 
     // Pointer story: select → long-press menu, or drag to another slot.
@@ -40,7 +40,7 @@ export default class InventoryUI {
     suppressClick;
 
     /**
-     * Markup shared by the flight HUD button and the hangar-floor button.
+     * Markup shared by the flight HUD button and the person-mode button.
      */
     static buttonMarkup() {
         return [
@@ -58,18 +58,18 @@ export default class InventoryUI {
     constructor() {
 
         this.container = document.querySelector( '#item_screen' );
-        this.hangarWindow = this.container.querySelector( '[data-window="hangar"]' );
+        this.locationWindow = this.container.querySelector( '[data-window="location"]' );
         this.aircraftWindow = this.container.querySelector( '[data-window="aircraft"]' );
-        this.hangarGrid = this.container.querySelector( '[data-grid="hangar"]' );
+        this.locationGrid = this.container.querySelector( '[data-grid="location"]' );
         this.aircraftGrid = this.container.querySelector( '[data-grid="aircraft"]' );
-        this.hangarDetail = this.container.querySelector( '[data-detail="hangar"]' );
+        this.locationDetail = this.container.querySelector( '[data-detail="location"]' );
         this.aircraftDetail = this.container.querySelector( '[data-detail="aircraft"]' );
         this.menu = this.container.querySelector( '.item_screen_menu' );
-        this.hangarButton = null;
+        this.personButton = null;
 
         this.open = false;
         this.mode = 'aircraft';
-        this.hangarInventory = null;
+        this.locationInventory = null;
         this.aircraftInventory = null;
         this.selected = null;
         this.menuTarget = null;
@@ -99,6 +99,19 @@ export default class InventoryUI {
         return this.open;
     }
 
+    /**
+     * Game Terminal that owns storage mutation intents.
+     */
+    getTerminal() {
+        return l.scenograph
+            && l.scenograph.objects
+            && l.scenograph.objects.structures
+            && l.scenograph.objects.structures.terminal
+            && l.scenograph.objects.structures.terminal.objectClass
+            ? l.scenograph.objects.structures.terminal.objectClass
+            : null;
+    }
+
     toggleAircraftInventory() {
         if ( this.isOpen() ) {
             this.hide();
@@ -108,19 +121,20 @@ export default class InventoryUI {
     }
 
     /**
-     * Hangar mode has no flight HUD, so we park a matching inventory button
-     * on the game overlay for the whole time the player is on foot indoors.
+     * Person mode has no flight HUD, so park a matching inventory button
+     * on the game overlay while the player is on foot indoors.
+     * Owned by person lifecycle (Player.setMode), not the hangar route.
      */
-    showHangarButton() {
+    showPersonButton() {
         const overlay = document.querySelector( '#game_overlay' );
         if ( ! overlay ) {
             return;
         }
 
-        if ( ! this.hangarButton ) {
+        if ( ! this.personButton ) {
             const button = document.createElement( 'button' );
             button.type = 'button';
-            button.className = 'inventory-button hangar-inventory-button';
+            button.className = 'inventory-button person-inventory-button';
             button.dataset.action = 'toggle-inventory';
             button.setAttribute( 'aria-label', 'Inventory' );
             button.innerHTML = InventoryUI.buttonMarkup();
@@ -128,16 +142,16 @@ export default class InventoryUI {
                 event.preventDefault();
                 this.toggleAircraftInventory();
             } );
-            this.hangarButton = button;
+            this.personButton = button;
             overlay.appendChild( button );
         }
 
-        this.hangarButton.hidden = false;
+        this.personButton.hidden = false;
     }
 
-    hideHangarButton() {
-        if ( this.hangarButton ) {
-            this.hangarButton.hidden = true;
+    hidePersonButton() {
+        if ( this.personButton ) {
+            this.personButton.hidden = true;
         }
     }
 
@@ -145,7 +159,7 @@ export default class InventoryUI {
      * Open the modal over one or two bags.
      *
      * mode 'aircraft'  — single aircraft storage window
-     * mode 'transfer'  — hangar + aircraft side by side
+     * mode 'transfer'  — location + aircraft side by side
      */
     show( options ) {
         if ( ! options ) {
@@ -153,7 +167,7 @@ export default class InventoryUI {
         }
 
         const mode = options.mode || 'aircraft';
-        const transferReady = options.hangarInventory && options.aircraftInventory;
+        const transferReady = options.locationInventory && options.aircraftInventory;
         const aircraftReady = !! options.aircraftInventory;
 
         if ( mode === 'transfer' && ! transferReady ) {
@@ -173,13 +187,13 @@ export default class InventoryUI {
         this.clearLongPress();
 
         this.mode = mode;
-        this.hangarInventory = options.hangarInventory || null;
+        this.locationInventory = options.locationInventory || null;
         this.aircraftInventory = options.aircraftInventory || null;
         this.selected = null;
         this.open = true;
 
         this.container.classList.toggle( 'transfer', mode === 'transfer' );
-        this.hangarWindow.hidden = mode !== 'transfer';
+        this.locationWindow.hidden = mode !== 'transfer';
         this.aircraftWindow.hidden = false;
         this.container.hidden = false;
         this.render();
@@ -201,65 +215,53 @@ export default class InventoryUI {
 
         this.open = false;
         this.mode = 'aircraft';
-        this.hangarInventory = null;
+        this.locationInventory = null;
         this.aircraftInventory = null;
         this.selected = null;
         this.container.classList.remove( 'transfer' );
-        this.hangarWindow.hidden = true;
+        this.locationWindow.hidden = true;
         this.container.hidden = true;
     }
 
     /**
-     * Hangar computer: both bags so the player can load the ship.
+     * Terminal computer: both bags so the player can load the ship.
      */
-    openHangarInventory() {
-        const hangarInventory = this.getHangarInventory();
-        const aircraft = this.getAircraftInventory();
-        if ( ! hangarInventory || ! aircraft ) {
+    openLocationTransfer() {
+        const terminal = this.getTerminal();
+        const person = this.getPersonObject();
+        const aircraft = this.getAircraftObject();
+        const bags = terminal && terminal.bagsFor
+            ? terminal.bagsFor( person, aircraft )
+            : null;
+
+        if ( ! bags ) {
             return;
         }
 
         this.show( {
             mode: 'transfer',
-            hangarInventory: hangarInventory,
-            aircraftInventory: aircraft,
+            locationInventory: bags.location,
+            aircraftInventory: bags.aircraft,
         } );
     }
 
     /**
-     * Floor bag for the player's assigned hangar in the World scene.
-     * Contents come from overworld.yml via Hangar.applyInventory.
+     * Player's inventory at their assigned location.
      */
-    getHangarInventory() {
-        const hangarRef = l.scenograph
-            && l.scenograph.actors
-            && l.scenograph.actors.player
-            && l.scenograph.actors.player.actorInstance
-            && l.scenograph.actors.player.actorInstance.config
-            && l.scenograph.actors.player.actorInstance.config.hangar;
-        if ( ! hangarRef ) {
-            return null;
-        }
+    getPersonObject() {
+        const player = l.scenograph && l.scenograph.actors && l.scenograph.actors.player;
+        return player && player.actorInstance && player.actorInstance.object
+            ? player.actorInstance.object
+            : null;
+    }
 
-        const world = l.current_scene && l.current_scene.world;
-        if ( ! world || ! world.instance || ! world.instance.objects ) {
-            return null;
-        }
-
-        const structure = world.instance.objects.get( hangarRef.structure );
-        if ( ! structure || ! structure.hangars ) {
-            return null;
-        }
-
-        const hangarInstance = structure.hangars.find(
-            ( entry ) => entry.config && entry.config.name === hangarRef.hangarName
-        );
-        const hangarObject = hangarInstance && hangarInstance.object;
-        return hangarObject && hangarObject.inventory ? hangarObject.inventory : null;
+    getLocationInventory() {
+        const person = this.getPersonObject();
+        return person && person.inventory ? person.inventory : null;
     }
 
     /**
-     * Flight / hangar floor button: aircraft cargo only.
+     * Flight / person-mode button: aircraft cargo only.
      */
     openAircraftInventory() {
         const inventory = this.getAircraftInventory();
@@ -273,19 +275,25 @@ export default class InventoryUI {
         } );
     }
 
-    getAircraftInventory() {
+    getAircraftObject() {
         const player = l.scenograph && l.scenograph.actors && l.scenograph.actors.player;
-        const ship = player
+        return player
             && player.vehicle
             && player.vehicle.mesh
             && player.vehicle.mesh.userData
-            && player.vehicle.mesh.userData.object;
+            && player.vehicle.mesh.userData.object
+            ? player.vehicle.mesh.userData.object
+            : null;
+    }
+
+    getAircraftInventory() {
+        const ship = this.getAircraftObject();
         return ship && ship.inventory ? ship.inventory : null;
     }
 
     getBag( bag ) {
-        if ( bag === 'hangar' ) {
-            return this.hangarInventory;
+        if ( bag === 'location' ) {
+            return this.locationInventory;
         }
         if ( bag === 'aircraft' ) {
             return this.aircraftInventory;
@@ -294,12 +302,47 @@ export default class InventoryUI {
     }
 
     otherBag( bag ) {
-        return bag === 'hangar' ? 'aircraft' : 'hangar';
+        return bag === 'location' ? 'aircraft' : 'location';
     }
 
     /**
-     * [I] is live in the hangar anywhere, and in flight once the player is
-     * actually piloting with game controls on.
+     * Issue a simulation intent through the game Terminal when available.
+     */
+    intentTransferSlot( fromBag, fromIndex, toBag, toIndex ) {
+        const terminal = this.getTerminal();
+        if ( terminal && typeof terminal.transferSlot === 'function' ) {
+            return terminal.transferSlot( fromBag, fromIndex, toBag, toIndex );
+        }
+        return fromBag.transferTo( fromIndex, toBag, toIndex );
+    }
+
+    intentTransferToFirstEmpty( fromBag, fromIndex, toBag ) {
+        const terminal = this.getTerminal();
+        if ( terminal && typeof terminal.transferToFirstEmpty === 'function' ) {
+            return terminal.transferToFirstEmpty( fromBag, fromIndex, toBag );
+        }
+        return fromBag.transferToFirstEmpty( fromIndex, toBag );
+    }
+
+    intentSplit( inventory, index ) {
+        const terminal = this.getTerminal();
+        if ( terminal && typeof terminal.splitStack === 'function' ) {
+            return terminal.splitStack( inventory, index );
+        }
+        return inventory.split( index );
+    }
+
+    intentRemove( inventory, index ) {
+        const terminal = this.getTerminal();
+        if ( terminal && typeof terminal.removeItem === 'function' ) {
+            return terminal.removeItem( inventory, index );
+        }
+        return inventory.remove( index ) !== null;
+    }
+
+    /**
+     * [I] is live in person mode (hangar / indoors), and in flight once
+     * the player is piloting with game controls on.
      */
     canToggleInventory() {
         const titleOpen = l.ui
@@ -316,7 +359,9 @@ export default class InventoryUI {
             return false;
         }
 
-        if ( l.mode === 'hangar' ) {
+        const player = l.scenograph && l.scenograph.actors && l.scenograph.actors.player;
+
+        if ( player && player.mode === 'person' ) {
             return true;
         }
 
@@ -324,7 +369,6 @@ export default class InventoryUI {
             return false;
         }
 
-        const player = l.scenograph && l.scenograph.actors && l.scenograph.actors.player;
         if ( ! player || player.mode !== 'vehicle' ) {
             return false;
         }
@@ -501,7 +545,12 @@ export default class InventoryUI {
                 const fromBag = this.getBag( drag.bag );
                 const toBag = this.getBag( dropSlot.dataset.bag );
                 if ( fromBag && toBag ) {
-                    fromBag.transferTo( drag.index, toBag, Number( dropSlot.dataset.slot ) );
+                    this.intentTransferSlot(
+                        fromBag,
+                        drag.index,
+                        toBag,
+                        Number( dropSlot.dataset.slot )
+                    );
                     this.selected = {
                         bag: dropSlot.dataset.bag,
                         index: Number( dropSlot.dataset.slot ),
@@ -572,7 +621,7 @@ export default class InventoryUI {
 
         // Transfer only makes sense when both windows are on screen.
         transferButton.hidden = this.mode !== 'transfer' || ! neighbourBag;
-        transferButton.textContent = neighbour === 'hangar'
+        transferButton.textContent = neighbour === 'location'
             ? 'Transfer to hangar'
             : 'Transfer to aircraft';
         splitButton.disabled = inventory.qtyOf( item ) < 2;
@@ -611,14 +660,14 @@ export default class InventoryUI {
         if ( action === 'transfer' ) {
             const neighbour = this.getBag( this.otherBag( bag ) );
             if ( neighbour ) {
-                inventory.transferToFirstEmpty( index, neighbour );
+                this.intentTransferToFirstEmpty( inventory, index, neighbour );
             }
         }
         else if ( action === 'split' ) {
-            inventory.split( index );
+            this.intentSplit( inventory, index );
         }
         else if ( action === 'delete' ) {
-            inventory.remove( index );
+            this.intentRemove( inventory, index );
             this.selected = null;
         }
 
@@ -680,12 +729,12 @@ export default class InventoryUI {
 
     render() {
         if ( this.mode === 'transfer' ) {
-            this.renderGrid( this.hangarGrid, 'hangar', this.hangarInventory );
-            this.renderDetail( this.hangarDetail, 'hangar' );
+            this.renderGrid( this.locationGrid, 'location', this.locationInventory );
+            this.renderDetail( this.locationDetail, 'location' );
         }
         else {
-            this.hangarGrid.innerHTML = '';
-            this.hangarDetail.textContent = 'Empty slot';
+            this.locationGrid.innerHTML = '';
+            this.locationDetail.textContent = 'Empty slot';
         }
 
         this.renderGrid( this.aircraftGrid, 'aircraft', this.aircraftInventory );

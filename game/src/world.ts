@@ -194,6 +194,29 @@ export default class World {
         return this.instance.actors.get( PLAYER_NAME ) || null;
     }
 
+    /**
+     * Hangar config for a player's assignment (structure + hangarName).
+     * Used to read YAML inventory seeds — the bag itself lives on the person.
+     */
+    getHangarConfig( hangarRef: { structure?: string; hangarName?: string } | null ) {
+        if ( ! hangarRef || ! hangarRef.structure || ! hangarRef.hangarName ) {
+            return null;
+        }
+        if ( ! this.instance || ! this.instance.objects ) {
+            return null;
+        }
+
+        const structure = this.instance.objects.get( hangarRef.structure );
+        if ( ! structure || ! structure.hangars ) {
+            return null;
+        }
+
+        const hangarInstance = structure.hangars.find(
+            ( entry: any ) => entry.config && entry.config.name === hangarRef.hangarName
+        );
+        return hangarInstance && hangarInstance.config ? hangarInstance.config : null;
+    }
+
     start() {
         this.running = true;
         this.lastUpdateTime = performance.now();

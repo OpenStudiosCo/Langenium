@@ -1,11 +1,14 @@
 /**
  * Aircraft hangar.
+ *
+ * Layout, AABB containment and design components only.
+ * Player storage at this bay lives on the person object, seeded from
+ * hangar YAML inventory on New Game — not owned by the hangar itself.
  */
 
 import ObjectBase from '../base';
 
 import { AABB } from '../types';
-import Inventory from '../../items/inventory';
 
 class Hangar extends ObjectBase {
 
@@ -14,9 +17,6 @@ class Hangar extends ObjectBase {
 
     // Hangar component configuration.
     public design: any;
-
-    // Shared floor bag — cargo waiting to be loaded onto aircraft.
-    public inventory: Inventory = new Inventory( 8 );
 
     constructor(config = {}) {
         super(); // Call the constructor of the base class
@@ -36,41 +36,8 @@ class Hangar extends ObjectBase {
             this.rotation.y = config.rotation.y;
             this.rotation.z = config.rotation.z;
         }
-        if ( config.inventory ) {
-            this.applyInventory( config.inventory );
-        }
 
         this.aabb = this.getComponentAABBs();
-    }
-
-    /**
-     * Fill the floor bag from a scene YAML inventory list.
-     * Array order is the slot index; null / missing entries stay empty.
-     */
-    applyInventory( items: any ): void {
-        if ( ! Array.isArray( items ) ) {
-            return;
-        }
-
-        const needed = Math.max( this.inventory.size, items.length );
-        if ( needed !== this.inventory.size ) {
-            this.inventory = new Inventory( needed );
-        }
-
-        items.forEach( ( entry, index ) => {
-            if ( ! entry || ! entry.id ) {
-                return;
-            }
-
-            const item: { id: string; name: string; qty?: number } = {
-                id: entry.id,
-                name: entry.name || entry.id,
-            };
-            if ( entry.qty !== undefined ) {
-                item.qty = entry.qty;
-            }
-            this.inventory.set( index, item );
-        } );
     }
 
     detectCollision ()  {

@@ -48,9 +48,15 @@ export default class Player {
     setMode( mode = 'vehicle' ) {
         if ( mode === 'vehicle' ) {
             this.mode = 'vehicle';
+            if ( l.ui && l.ui.inventory ) {
+                l.ui.inventory.hidePersonButton();
+            }
         }
         else {
             this.mode = 'person';
+            if ( l.ui && l.ui.inventory ) {
+                l.ui.inventory.showPersonButton();
+            }
         }
     }
 

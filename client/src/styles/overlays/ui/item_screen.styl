@@ -1,5 +1,5 @@
 #item_screen
-    // Modal shell: hosts one or more .window panels (aircraft, or hangar + aircraft).
+    // Modal shell: hosts one or more .window panels (aircraft, or location + aircraft).
     // `safe` keeps the top (Close) on-screen when the panel is taller than the viewport.
     position: fixed
     inset: 0
@@ -309,7 +309,7 @@
         .item_screen_detail_name
             font-size: 0.78rem
 
-    // Portrait: hangar above aircraft. Panels keep natural size (square
+    // Portrait: location above aircraft. Panels keep natural size (square
     // slots + selected footer); leftover viewport stays clear.
     @media (orientation: portrait)
         &.transfer
@@ -438,7 +438,7 @@
         &.transfer .item_screen_shell
             width: min(22rem, 100%)
 
-    // Landscape: hangar | aircraft side by side.
+    // Landscape: location | aircraft side by side.
     @media (orientation: landscape)
         &.transfer
             .item_screen_shell

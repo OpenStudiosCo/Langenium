@@ -1,4 +1,4 @@
-//- Hangar / aircraft storage modal (one or two .window panels).
+//- Location / aircraft storage modal (one or two .window panels).
 #item_screen(hidden)
     .item_screen_shell
         .item_screen_toolbar
@@ -6,14 +6,14 @@
                 kbd Esc
                 span Close
         .item_screen_windows
-            article.window.item_screen_frame(data-window="hangar" hidden role="dialog" aria-modal="true" aria-labelledby="item_screen_title_hangar")
+            article.window.item_screen_frame(data-window="location" hidden role="dialog" aria-modal="true" aria-labelledby="item_screen_title_location")
                 header.item_screen_header
-                    h2#item_screen_title_hangar.window_title Hangar Storage
+                    h2#item_screen_title_location.window_title Hangar Storage
                 .item_screen_body
-                    .item_screen_grid(data-grid="hangar" aria-label="Hangar storage slots")
+                    .item_screen_grid(data-grid="location" aria-label="Location storage slots")
                     .item_screen_detail
                         p.item_screen_detail_label SELECTED
-                        p.item_screen_detail_name(data-detail="hangar") Empty slot
+                        p.item_screen_detail_name(data-detail="location") Empty slot
 
             article.window.item_screen_frame(data-window="aircraft" role="dialog" aria-modal="true" aria-labelledby="item_screen_title_aircraft")
                 header.item_screen_header

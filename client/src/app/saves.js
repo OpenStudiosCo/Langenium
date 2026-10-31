@@ -107,6 +107,24 @@ export default class Saves {
         return JSON.parse( JSON.stringify( PlayerDefaults ) );
     }
 
+    getPersonObject() {
+        const player = l.scenograph && l.scenograph.actors && l.scenograph.actors.player;
+        return player && player.actorInstance && player.actorInstance.object
+            ? player.actorInstance.object
+            : null;
+    }
+
+    getAircraftObject() {
+        const player = l.scenograph && l.scenograph.actors && l.scenograph.actors.player;
+        return player
+            && player.vehicle
+            && player.vehicle.mesh
+            && player.vehicle.mesh.userData
+            && player.vehicle.mesh.userData.object
+            ? player.vehicle.mesh.userData.object
+            : null;
+    }
+
     /**
      * Snapshot the live session into a save payload.
      */
@@ -121,11 +139,7 @@ export default class Saves {
             : null;
 
         const personObject = actorInstance && actorInstance.object;
-        const aircraft = player
-            && player.vehicle
-            && player.vehicle.mesh
-            && player.vehicle.mesh.userData
-            && player.vehicle.mesh.userData.object;
+        const aircraft = this.getAircraftObject();
 
         return {
             slot: this.activeSlot,
@@ -163,7 +177,10 @@ export default class Saves {
                     inventory: this.serialiseInventory( aircraft.inventory ),
                 }
                 : null,
-            hangarInventory: this.serialiseInventory( this.getHangarInventoryObject( hangarRef ) ),
+            // Prefer locationInventory; hangarInventory kept for reading older saves.
+            locationInventory: this.serialiseInventory(
+                personObject && personObject.inventory ? personObject.inventory : null
+            ),
         };
     }
 
@@ -187,6 +204,10 @@ export default class Saves {
         if ( ! inventory || ! Array.isArray( slots ) ) {
             return;
         }
+        if ( typeof inventory.applySlots === 'function' ) {
+            inventory.applySlots( slots );
+            return;
+        }
         for ( let i = 0; i < inventory.size; i++ ) {
             const entry = slots[ i ];
             if ( ! entry ) {
@@ -201,51 +222,45 @@ export default class Saves {
         }
     }
 
-    getHangarInventoryObject( hangarRef ) {
-        if ( ! hangarRef || ! l.current_scene || ! l.current_scene.world ) {
-            return null;
-        }
-        const structure = l.current_scene.world.instance.objects.get( hangarRef.structure );
-        if ( ! structure || ! structure.hangars ) {
-            return null;
-        }
-        const hangarInstance = structure.hangars.find(
-            ( entry ) => entry.config && entry.config.name === hangarRef.hangarName
-        );
-        return hangarInstance && hangarInstance.object ? hangarInstance.object.inventory : null;
-    }
-
     /**
-     * Reset hangar floor bag to the scene YAML seed for a New Game.
+     * YAML inventory seed for the player's assigned hangar (not a hangar-owned bag).
      */
-    resetHangarInventoryFromScene( hangarRef ) {
-        if ( ! hangarRef || ! l.current_scene || ! l.current_scene.world ) {
-            return;
+    getLocationInventorySeed( hangarRef ) {
+        const world = l.current_scene && l.current_scene.world;
+        if ( ! world || typeof world.getHangarConfig !== 'function' ) {
+            return null;
         }
-        const structure = l.current_scene.world.instance.objects.get( hangarRef.structure );
-        if ( ! structure || ! structure.hangars ) {
-            return;
-        }
-        const hangarInstance = structure.hangars.find(
-            ( entry ) => entry.config && entry.config.name === hangarRef.hangarName
-        );
-        if ( ! hangarInstance || ! hangarInstance.object ) {
-            return;
+        const config = world.getHangarConfig( hangarRef );
+        return config && Array.isArray( config.inventory ) ? config.inventory : null;
+    }
+
+    /**
+     * New Game: empty aircraft cargo/charge, seed player location bag from hangar YAML.
+     */
+    resetForNewGame( hangarRef ) {
+        const person = this.getPersonObject();
+        if ( person && person.inventory ) {
+            person.inventory.clear();
+            const seed = this.getLocationInventorySeed( hangarRef );
+            if ( seed ) {
+                person.applyInventory( seed );
+            }
         }
 
-        const inventory = hangarInstance.object.inventory;
-        for ( let i = 0; i < inventory.size; i++ ) {
-            inventory.set( i, null );
-        }
-
-        const seed = hangarInstance.config && hangarInstance.config.inventory;
-        if ( typeof hangarInstance.object.applyInventory === 'function' && seed ) {
-            hangarInstance.object.applyInventory( seed );
+        const aircraft = this.getAircraftObject();
+        if ( aircraft ) {
+            if ( aircraft.inventory && typeof aircraft.inventory.clear === 'function' ) {
+                aircraft.inventory.clear();
+            }
+            aircraft.capacitor = 1;
+            aircraft.hitPoints = 100;
+            aircraft.airSpeed = 0;
+            aircraft.verticalSpeed = 0;
         }
     }
 
     /**
-     * Apply a save payload onto the live player and hangar bag.
+     * Apply a save payload onto the live player bags and pose.
      */
     apply( payload ) {
         if ( ! payload ) {
@@ -274,10 +289,12 @@ export default class Saves {
             personObject.rotation.z = payload.person.rotation.z;
         }
 
-        const aircraft = player.vehicle
-            && player.vehicle.mesh
-            && player.vehicle.mesh.userData
-            && player.vehicle.mesh.userData.object;
+        const locationSlots = payload.locationInventory || payload.hangarInventory;
+        if ( personObject && personObject.inventory && locationSlots ) {
+            this.applyInventory( personObject.inventory, locationSlots );
+        }
+
+        const aircraft = this.getAircraftObject();
         if ( aircraft && payload.aircraft ) {
             aircraft.position.x = payload.aircraft.position.x;
             aircraft.position.y = payload.aircraft.position.y;
@@ -295,12 +312,6 @@ export default class Saves {
                 this.applyInventory( aircraft.inventory, payload.aircraft.inventory );
             }
             player.vehicle.updateMesh();
-        }
-
-        const hangarRef = payload.hangar
-            || ( player.actorInstance && player.actorInstance.config && player.actorInstance.config.hangar );
-        if ( hangarRef && payload.hangarInventory ) {
-            this.applyInventory( this.getHangarInventoryObject( hangarRef ), payload.hangarInventory );
         }
     }
 
@@ -331,7 +342,7 @@ export default class Saves {
         const hangarRef = defaults.hangar;
 
         if ( isNew ) {
-            this.resetHangarInventoryFromScene( hangarRef );
+            this.resetForNewGame( hangarRef );
             // Seed an immediate slot so Continue appears if they exit quickly.
             this.write( slot, this.capture() );
         }

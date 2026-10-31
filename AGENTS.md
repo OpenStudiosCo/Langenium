@@ -153,11 +153,11 @@ Prefer concise, meaningful explanations over lengthy reports of routine actions.
 
 For new work, prefer the conventions demonstrated by:
 
-- `game/src/items/`
-- `client/src/app/ui/inventory.js`
-- `client/src/app/ui/dialog.js`
-- `client/src/styles/overlays/ui/window.styl`
-- `client/src/styles/overlays/ui/item_screen.styl`
+- `game/src/`
+- `client/src/app/main.js`
+- `client/src/app/scenograph.js`
+- `client/src/styles/overlays/game.styl`
+- `client/src/styles/overlays/ui/common.styl`
 
 These represent preferred approaches to domain modelling, client composition, UI organisation and visual presentation.
 

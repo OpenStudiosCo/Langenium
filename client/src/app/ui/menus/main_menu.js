@@ -48,19 +48,19 @@ export default class Main_Menu {
             l.ui.score_table.show();
         });
 
-        this.buttons.player_one = this.pane.addButton( {
+        this.buttons.overworld = this.pane.addButton( {
             title: 'Overworld',
         } );
-        this.buttons.player_one.on( 'click', async () => {
+        this.buttons.overworld.on( 'click', async () => {
             await l.saves.ensurePlayerReady();
             this.enterSession();
             new l.routes.singlePlayer();
         } );
 
-        this.buttons.player_two = this.pane.addButton( {
+        this.buttons.hangar = this.pane.addButton( {
             title: 'Hangar',
         } );
-        this.buttons.player_two.on( 'click', async () => {
+        this.buttons.hangar.on( 'click', async () => {
             await l.saves.ensurePlayerReady();
             this.enterSession();
             new l.routes.hangar();
@@ -84,8 +84,8 @@ export default class Main_Menu {
             // Hide all the other buttons.
             this.buttons.scores.hidden = true;
             this.buttons.exit_game.hidden = true;
-            this.buttons.player_one.hidden = true;
-            this.buttons.player_two.hidden = true;
+            this.buttons.overworld.hidden = true;
+            this.buttons.hangar.hidden = true;
             this.buttons.multi_player.hidden = true;
             this.buttons.settings.hidden = true;
             this.buttons.help.hidden = true;
@@ -111,8 +111,8 @@ export default class Main_Menu {
             // Show all the other buttons.
             this.buttons.scores.hidden = l.mode !== 'home' ? false : true;
             this.buttons.exit_game.hidden = l.mode !== 'home' ? false : true;
-            this.buttons.player_one.hidden = l.mode !== 'home' ? true : false;
-            this.buttons.player_two.hidden = l.mode !== 'home' ? true : false;
+            this.buttons.overworld.hidden = l.mode !== 'home' ? true : false;
+            this.buttons.hangar.hidden = l.mode !== 'home' ? true : false;
             this.buttons.multi_player.hidden = l.mode !== 'home' ? true : false;
             this.buttons.settings.hidden = false;
             this.buttons.help.hidden = l.mode !== 'home' ? true : false;
@@ -192,8 +192,8 @@ export default class Main_Menu {
      * Pass { welcome: false } when continuing a save so the intro line is skipped.
      */
     enterSession( options ) {
-        this.buttons.player_one.hidden = true;
-        this.buttons.player_two.hidden = true;
+        this.buttons.overworld.hidden = true;
+        this.buttons.hangar.hidden = true;
         this.buttons.multi_player.hidden = true;
 
         this.pane.expanded = false;
@@ -235,8 +235,8 @@ export default class Main_Menu {
      * Home again: title screen in front, this pane stays minimised.
      */
     returnHome( options ) {
-        this.buttons.player_one.hidden = false;
-        this.buttons.player_two.hidden = false;
+        this.buttons.overworld.hidden = false;
+        this.buttons.hangar.hidden = false;
         this.buttons.multi_player.hidden = false;
 
         this.buttons.exit_game.hidden = true;

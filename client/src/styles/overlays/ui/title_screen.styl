@@ -766,65 +766,6 @@
         visibility: hidden
         pointer-events: none
 
-#ui_overlay .session_chrome
-    position: fixed
-    top: 1.15rem
-    right: 1.4rem
-    z-index: 6
-    display: flex
-    align-items: center
-    gap: 0.55rem
-    pointer-events: auto
-
-    &[hidden]
-        display: none !important
-
-    // Match hangar dialog Enter / Cancel chrome.
-    .window_action
-        gap: 0.45rem
-        color: #fff
-        text-shadow: 0 2px 12px rgba(0, 10, 40, 0.55)
-        transition: opacity 240ms ease
-
-        &:focus-visible
-            outline: none
-
-#ui_overlay #save_game
-    .save_icon
-        display: inline-flex
-        align-items: center
-        justify-content: center
-        // Match EXIT cap-height; stroked SVG reads smaller than bold italic type.
-        width: 1.15em
-        height: 1.15em
-        opacity: 0.95
-
-        svg
-            display: block
-            width: 100%
-            height: 100%
-
-    .save_label
-        display: inline
-
-    // Portrait phones: icon only so Save does not cover the capacitor gauge.
-    @media (orientation: portrait)
-        .save_label
-            display: none
-
-        .save_icon
-            width: 1.35em
-            height: 1.35em
-
-    &.is-saving
-        opacity: 0.55
-
-    &.is-saved .save_icon
-        color: #9dffb0
-
-    &.is-error
-        color: #ffb4b4
-
 #ui_overlay #title_screen .save_slots
     display: grid
     // Portrait: one card per row. Landscape: three columns.

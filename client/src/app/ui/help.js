@@ -20,7 +20,9 @@ export default class Help {
             screen.container.classList.add( 'active', 'help-session' );
         }
 
-        screen.setExitVisible( false );
+        if ( l.ui.game_menu.in_game ) {
+            l.ui.game_menu.in_game.setExitVisible( false );
+        }
         screen.openPanel( 'help', button );
     }
 
@@ -39,8 +41,8 @@ export default class Help {
             screen.container.classList.remove( 'active', 'help-session' );
         }
 
-        if ( session && l.mode !== 'home' ) {
-            screen.setExitVisible( true );
+        if ( session && l.mode !== 'home' && l.ui.game_menu.in_game ) {
+            l.ui.game_menu.in_game.setExitVisible( true );
         }
 
         if ( restore ) {

@@ -19,33 +19,12 @@ export default class Title_Screen {
             version.textContent = l.version;
         } );
 
-        this.sessionChrome = document.querySelector( '.session_chrome' );
-        this.exit = document.getElementById( 'exit_game' );
-        this.saveButton = document.getElementById( 'save_game' );
-        if ( this.exit ) {
-            this.exit.addEventListener( 'click', () => {
-                l.routes.exitGame();
-                l.ui.menus.main_menu.returnHome();
-            } );
-        }
-        if ( this.saveButton ) {
-            this.saveButton.addEventListener( 'click', () => {
-                if ( l.saves ) {
-                    l.saves.saveManual();
-                }
-            } );
-        }
-        if ( l.saves ) {
-            l.saves.onStatus( ( status ) => this.onSaveStatus( status ) );
-        }
-
         this.bindSettings();
         this.bindStoryScroll();
 
         this.depth = 0;
         this.launchTimer = 0;
         this.returnFocus = '';
-        this.saveStatusTimer = 0;
 
         this.container.addEventListener( 'click', ( event ) => {
             if ( event.target.closest( '[data-action="close-panel"]' ) ) {
@@ -113,7 +92,7 @@ export default class Title_Screen {
         this.closePanel();
         this.container.classList.remove( 'help-session' );
         this.container.classList.add( 'active' );
-        this.setExitVisible( false );
+        this.setSessionChromeVisible( false );
 
         if ( l.current_scene && l.current_scene.objects && l.current_scene.objects.logo ) {
             l.current_scene.objects.logo.show();
@@ -123,10 +102,20 @@ export default class Title_Screen {
     hide() {
         this.closePanel();
         this.container.classList.remove( 'active', 'help-session' );
-        this.setExitVisible( true );
+        this.setSessionChromeVisible( true );
 
         if ( l.current_scene && l.current_scene.objects && l.current_scene.objects.logo ) {
             l.current_scene.objects.logo.hide();
+        }
+    }
+
+    /**
+     * Session Save/Exit chrome lives on InGame; title only toggles visibility.
+     */
+    setSessionChromeVisible( visible ) {
+        const inGame = l.ui.game_menu && l.ui.game_menu.in_game;
+        if ( inGame ) {
+            inGame.setExitVisible( visible );
         }
     }
 
@@ -461,44 +450,6 @@ export default class Title_Screen {
         const back = this.container.querySelector( '[data-panel="' + name + '"] .panel_back' );
         if ( back ) {
             back.focus();
-        }
-    }
-
-    setExitVisible( visible ) {
-        if ( this.sessionChrome ) {
-            this.sessionChrome.hidden = !visible;
-        }
-        else if ( this.exit ) {
-            this.exit.hidden = !visible;
-        }
-    }
-
-    onSaveStatus( status ) {
-        if ( ! this.saveButton ) {
-            return;
-        }
-
-        window.clearTimeout( this.saveStatusTimer );
-        this.saveButton.classList.remove( 'is-saving', 'is-saved', 'is-error' );
-
-        if ( status === 'saving' || status === 'loading' ) {
-            this.saveButton.classList.add( 'is-saving' );
-            return;
-        }
-
-        if ( status === 'error' ) {
-            this.saveButton.classList.add( 'is-error' );
-            this.saveStatusTimer = window.setTimeout( () => {
-                this.saveButton.classList.remove( 'is-error' );
-            }, 1600 );
-            return;
-        }
-
-        if ( status === 'saved' ) {
-            this.saveButton.classList.add( 'is-saved' );
-            this.saveStatusTimer = window.setTimeout( () => {
-                this.saveButton.classList.remove( 'is-saved' );
-            }, 1200 );
         }
     }
 

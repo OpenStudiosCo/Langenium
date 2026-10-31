@@ -49,17 +49,19 @@ export default class Main_Menu {
         });
 
         this.buttons.player_one = this.pane.addButton( {
-            title: 'P1: Overworld',
+            title: 'Overworld',
         } );
-        this.buttons.player_one.on( 'click', () => {
+        this.buttons.player_one.on( 'click', async () => {
+            await l.saves.ensurePlayerReady();
             this.enterSession();
             new l.routes.singlePlayer();
         } );
 
         this.buttons.player_two = this.pane.addButton( {
-            title: 'P2: Hangar',
+            title: 'Hangar',
         } );
-        this.buttons.player_two.on( 'click', () => {
+        this.buttons.player_two.on( 'click', async () => {
+            await l.saves.ensurePlayerReady();
             this.enterSession();
             new l.routes.hangar();
         } );
@@ -187,8 +189,9 @@ export default class Main_Menu {
 
     /**
      * Leave the title screen and keep this pane collapsed as the in-session menu.
+     * Pass { welcome: false } when continuing a save so the intro line is skipped.
      */
-    enterSession() {
+    enterSession( options ) {
         this.buttons.player_one.hidden = true;
         this.buttons.player_two.hidden = true;
         this.buttons.multi_player.hidden = true;
@@ -203,7 +206,8 @@ export default class Main_Menu {
             l.ui.game_menu.title_screen.hide();
         }
 
-        if ( l.ui.dialog ) {
+        const showWelcome = ! options || options.welcome !== false;
+        if ( showWelcome && l.ui.dialog ) {
             const line = {
                 text: "Welcome to Langenium! This is a early preview release. If you're not sure how to play, click the help button below",
                 closeKey: "Esc",

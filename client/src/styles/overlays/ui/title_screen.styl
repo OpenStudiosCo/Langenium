@@ -413,6 +413,7 @@
                 margin-top: 0.2rem
 
         .panel_body
+            position: relative
             box-sizing: border-box
             padding: 1.15rem 1.25rem 1.2rem
             border-style: solid
@@ -425,13 +426,85 @@
             background-color: transparent
             background-clip: padding-box
 
-        .panel_back
-            margin: 0 0 1.15rem
-            font-family: "Arial Narrow", "Nimbus Sans Narrow", "Helvetica Condensed", sans-serif
-            font-size: clamp(1.15rem, 2vw, 1.65rem)
-            font-weight: 600
-            letter-spacing: 0.12em
-            line-height: 1.15
+        // Restore dialog chrome — `#title_screen button { border: 0 }` otherwise kills border-image.
+        button.window_action
+            display: inline-flex
+            align-items: center
+            justify-content: center
+            box-sizing: border-box
+            width: max-content
+            max-width: max-content
+            margin: 0
+            padding: 0.25rem 0.35rem 0.15rem
+            border-style: solid
+            border-color: transparent
+            border-width: 20px
+            border-image-source: url("/assets/borders/border-05.png")
+            border-image-slice: unquote("80 fill")
+            border-image-width: 40px
+            border-image-repeat: round
+            background-color: transparent
+            background-image: none
+            background-clip: padding-box
+            background-size: auto
+            color: inherit
+            font-family: "Liberation Sans Narrow", "Nimbus Sans Narrow", "Arial Narrow", "Helvetica Condensed", sans-serif
+            font-style: italic
+            font-weight: 700
+            font-size: clamp(0.9rem, 1.3vw, 1.05rem)
+            letter-spacing: 0.08em
+            line-height: 1.1
+            text-transform: uppercase
+            text-shadow: 0 2px 12px rgba(0, 10, 40, 0.55)
+
+            &:hover,
+            &:focus-visible,
+            &:active,
+            &.selected
+                border-image-source: url("/assets/borders/border-07.png")
+                background-size: auto
+
+            &:focus-visible
+                outline: none
+
+        button.window_action.dialog_action
+            font-size: clamp(0.95rem, 1.4vw, 1.15rem)
+
+        .panel_header
+            display: flex
+            // Portrait default: Back on its own line above the title, right-aligned.
+            flex-direction: column
+            align-items: stretch
+            gap: 0.45rem
+            margin: 0 0 0.75rem
+
+            h2
+                flex: 1 1 auto
+                min-width: 0
+                margin: 0
+                order: 2
+
+            .panel_back
+                order: 1
+                align-self: flex-end
+
+        button.panel_back
+            flex: 0 0 auto
+            margin: 0
+
+        @media (orientation: landscape)
+            .panel_header
+                flex-direction: row
+                align-items: flex-start
+                justify-content: space-between
+                gap: 0.75rem 1rem
+
+                h2
+                    order: 0
+
+                .panel_back
+                    order: 0
+                    align-self: flex-start
 
         a
             color: inherit
@@ -523,17 +596,14 @@
         nav
             display: none
 
-        .title_screen_logo
-            transform: scale(0.5)
+        // Sub-screens keep only Back — logo / version stay on the main menu.
+        .title_screen_logo,
+        .title_engine
+            display: none
 
-        // Logo top inset is 4vh. Open panels use a half-size wordmark, so the panel
-        // starts just below that. 5.486 is the wordmark's width/height.
         .title_screen_detail
             position: absolute
-            left: 6vw
-            right: 6vw
-            bottom: 6vw
-            top: unquote("calc(7vh + 0.75 * min(min(42vw, 28rem) / 5.486, 14vh))")
+            inset: 1.15rem 6vw 6vw
             display: flex
             flex-direction: column
             width: auto
@@ -559,9 +629,6 @@
                 p
                     max-width: 68ch
 
-                .panel_back
-                    flex: 0 0 auto
-
                 .panel_body
                     flex: 1 1 auto
                     min-height: 0
@@ -573,15 +640,31 @@
                     scrollbar-color: rgba(255, 255, 255, 0.45) transparent
                     padding: clamp(1.6rem, 3vh, 2.6rem) clamp(1.6rem, 3vw, 3.2rem)
 
+                    .panel_header
+                        flex: 0 0 auto
+                        margin-bottom: 0.55rem
+
+                    button.panel_back
+                        background-color: transparent
+
+            [data-panel="play"]
+                h2
+                    margin-bottom: 0.35rem
+
+                > .panel_body > p
+                    margin-bottom: 0
+
+                .save_slots
+                    flex: 1 1 auto
+                    min-height: 0
+                    margin-top: 0.85rem
+
             [data-panel="stories"] .story_name
                 font-size: clamp(1.35rem, 2.2vw, 2.05rem)
 
         @media (max-width: 720px)
             .title_screen_detail
-                left: 1.25rem
-                right: 1.25rem
-                bottom: 1.25rem
-                top: unquote("calc(8vh + 0.5 * min(min(78vw, 16rem) / 5.486, 9vh, 20vh))")
+                inset: 1rem 1.25rem 1.25rem
 
                 [data-panel]:not([hidden])
                     h2
@@ -592,17 +675,53 @@
                         border-width: 56px
                         border-image-width: 56px
 
+        // Portrait: widen the reading area — less outer gutter, thinner frame chrome.
+        @media (orientation: portrait)
+            .title_screen_detail
+                inset: 0.45rem 0.4rem 0.55rem
+
+                [data-panel]:not([hidden])
+                    p
+                        max-width: none
+
+                    .panel_body
+                        padding: 0.95rem 0.85rem 1rem
+                        border-width: 36px
+                        border-image-width: 36px
+
+                    .panel_header
+                        margin-bottom: 0.45rem
+
         @media (max-height: 520px)
             .title_screen_detail
-                left: 1.5rem
-                right: 1.5rem
-                bottom: 0.65rem
-                top: unquote("calc(1.4rem + 0.5 * min(min(42vw, 22rem) / 5.486, 18vh, 20vh))")
+                inset: 0.45rem 0.85rem 0.45rem
 
-                .panel_body
-                    border-width: 44px
-                    border-image-width: 44px
-                    padding: 0.75rem 0.85rem
+                [data-panel]:not([hidden])
+                    h2
+                        font-size: clamp(1.55rem, 6.5vh, 2.35rem)
+                        margin-bottom: 0.25rem
+
+                    .panel_body
+                        border-width: 36px
+                        border-image-width: 36px
+                        padding: 0.55rem 0.7rem 0.6rem
+
+                        button.window_action
+                            border-width: 16px
+                            border-image-width: 28px
+                            padding: 0.1rem 0.35rem 0.1rem
+
+                        .panel_header
+                            margin-bottom: 0.35rem
+
+                [data-panel="play"]
+                    > .panel_body > p
+                        font-size: 0.9rem
+                        line-height: 1.3
+
+                    .save_slots
+                        margin-top: 0.55rem
+                        gap: 0.45rem
 
     .title_engine,
     .title_studio
@@ -647,41 +766,152 @@
         visibility: hidden
         pointer-events: none
 
-#ui_overlay #exit_game
+#ui_overlay .session_chrome
     position: fixed
     top: 1.15rem
     right: 1.4rem
     z-index: 6
-    display: block
-    padding: 0 0.15em 0.14em 0
-    border: 0
-    background-color: transparent
-    background-image: linear-gradient(rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.72))
-    background-repeat: no-repeat
-    background-position: left bottom
-    background-size: 0 1px
-    color: #fff
-    font-family: "Arial Narrow", "Nimbus Sans Narrow", "Helvetica Condensed", sans-serif
-    font-weight: 700
-    font-size: clamp(1.05rem, 1.7vw, 1.4rem)
-    letter-spacing: 0.14em
-    line-height: 1.15
-    text-transform: uppercase
-    text-shadow: 0 2px 16px rgba(0, 10, 40, 0.45)
-    cursor: pointer
+    display: flex
+    align-items: center
+    gap: 0.55rem
     pointer-events: auto
-    transition: background-size 520ms cubic-bezier(0.16, 1, 0.3, 1)
-
-    &:hover,
-    &:focus-visible
-        background-size: 100% 1px
-
-    &:focus-visible
-        outline: 1px solid rgba(255, 255, 255, 0.65)
-        outline-offset: 6px
 
     &[hidden]
         display: none !important
+
+    // Match hangar dialog Enter / Cancel chrome.
+    .window_action
+        gap: 0.45rem
+        color: #fff
+        text-shadow: 0 2px 12px rgba(0, 10, 40, 0.55)
+        transition: opacity 240ms ease
+
+        &:focus-visible
+            outline: none
+
+#ui_overlay #save_game
+    .save_icon
+        display: inline-block
+        width: 0.85em
+        height: 0.85em
+        border: 1.5px solid currentColor
+        border-radius: 0.12em
+        box-shadow: inset 0 -0.28em 0 currentColor
+        opacity: 0.9
+
+    .save_label
+        display: inline
+
+    &.is-saving
+        opacity: 0.55
+
+    &.is-saved .save_icon
+        box-shadow: inset 0 -0.28em 0 #9dffb0
+        border-color: #9dffb0
+
+    &.is-error
+        color: #ffb4b4
+
+#ui_overlay #title_screen .save_slots
+    display: grid
+    // Portrait: one card per row. Landscape: three columns.
+    grid-template-columns: 1fr
+    gap: 0.75rem
+    margin: 1.25rem 0 0
+    padding: 0
+    list-style: none
+
+    // Slot contents always stack — never squeeze into inner columns.
+    .save_slot
+        display: flex
+        flex-direction: column
+        align-items: stretch
+        gap: 0.45rem
+        min-width: 0
+        margin: 0
+        padding: 0.75rem 0.8rem
+        border: 1px solid rgba(255, 255, 255, 0.55)
+        box-shadow: inset 0 1px 0 rgba(0, 8, 30, 0.28)
+
+    .save_slot_index
+        font-family: "Arial Narrow", "Nimbus Sans Narrow", "Helvetica Condensed", sans-serif
+        font-weight: 700
+        letter-spacing: 0.08em
+        opacity: 0.72
+
+    .save_slot_body
+        display: flex
+        flex-direction: column
+        gap: 0.2rem
+        min-width: 0
+
+    .save_slot_title
+        font-weight: 700
+        line-height: 1.15
+
+    .save_slot_detail
+        opacity: 0.72
+        font-size: 0.82em
+        line-height: 1.25
+
+    .save_slot_actions
+        display: flex
+        flex-direction: row
+        flex-wrap: wrap
+        align-items: center
+        gap: 0.65rem 0.85rem
+        margin-top: 0.35rem
+
+        .window_action
+            white-space: nowrap
+
+        .save_slot_new
+            opacity: 0.85
+
+    @media (orientation: landscape)
+        grid-template-columns: repeat(3, minmax(0, 1fr))
+        gap: 0.65rem
+
+        .save_slot
+            gap: 0.35rem
+            padding: 0.55rem 0.6rem
+
+        .save_slot_actions
+            flex-direction: column
+            align-items: stretch
+            // Touch-friendly gap between Continue / New Game.
+            gap: 0.7rem
+            margin-top: auto
+
+            .window_action
+                width: 100%
+                max-width: none
+                justify-content: center
+
+    @media (orientation: landscape) and (max-height: 520px)
+        gap: 0.4rem
+        margin-top: 0.55rem
+
+        .save_slot
+            padding: 0.4rem 0.5rem
+            gap: 0.2rem
+
+        .save_slot_index
+            font-size: 0.9em
+
+        .save_slot_title
+            font-size: 0.95em
+
+        .save_slot_detail
+            font-size: 0.75em
+
+        .save_slot_actions
+            gap: 0.55rem
+
+            .window_action
+                border-width: 16px
+                border-image-width: 28px
+                font-size: 0.85rem
 
 @keyframes title_bloom
     0%

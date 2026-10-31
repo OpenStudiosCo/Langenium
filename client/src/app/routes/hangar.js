@@ -37,8 +37,9 @@ export default class hangarRoute {
 
         this.targetStructure = l.scenograph.objects.structures.platform.instances[0];
 
-        l.scenograph.actors.player = l.scenograph.actors.get('Player Two');
-        l.scenograph.actors.player.setMode('person');
+        const player = l.scenograph.actors.player || l.scenograph.actors.get( 'Player' );
+        l.scenograph.actors.player = player;
+        player.setMode( 'person' );
 
         this.loadHangar();
         this.setupPrompt();
@@ -621,7 +622,7 @@ export default class hangarRoute {
     }
 
     /**
-     * Same overworld handoff as P1: vehicle mode, HUD overlays, flight controls.
+     * Vehicle mode, HUD overlays, flight controls.
      */
     enterOverworld() {
         if ( l.current_scene.objects.demoTour ) {
@@ -640,10 +641,13 @@ export default class hangarRoute {
         l.scenograph.overlays.activate();
         l.scenograph.controls.setAircraftChrome( true );
         hangarRoute.watchOverworld();
+        if ( l.saves ) {
+            l.saves.saveNow( 'transition' );
+        }
     }
 
     /**
-     * Dock at Lambda City and walk the hangar as Player Two.
+     * Dock at Lambda City and walk the hangar.
      */
     enterHangar() {
         if ( l.mode === 'hangar' ) {
@@ -670,16 +674,20 @@ export default class hangarRoute {
                 actor.setVehicleVisible( false );
             }
         }
-        l.scenograph.actors.player = l.scenograph.actors.get('Player Two');
-        l.scenograph.actors.player.setMode('person');
-        if ( l.scenograph.actors.player.person && l.scenograph.actors.player.person.mesh ) {
-            l.scenograph.actors.player.person.mesh.visible = true;
+        const player = l.scenograph.actors.player || l.scenograph.actors.get( 'Player' );
+        l.scenograph.actors.player = player;
+        player.setMode( 'person' );
+        if ( player.person && player.person.mesh ) {
+            player.person.mesh.visible = true;
         }
         this.targetStructure = l.scenograph.objects.structures.platform.instances[0];
         this.loadHangar();
         this.promptMode = 'depart';
         l.scenograph.controls.setAircraftChrome( false );
         this.showHangarInventoryButton();
+        if ( l.saves ) {
+            l.saves.saveNow( 'transition' );
+        }
     }
 
 }

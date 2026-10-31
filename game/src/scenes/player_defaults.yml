@@ -1,0 +1,18 @@
+# Single-player blueprint. Spawned on New Game; Continue overlays a save slot.
+name: Player
+model: person
+class: player
+hangar:
+  structure: Lambda City
+  hangarName: Hangar 2
+# Pose is applied by the hangar route on first entry; these are fallbacks.
+position:
+  x: 0
+  y: 0
+  z: 0
+rotation:
+  x: 0
+  y: 0
+  z: 0
+aircraft:
+  model: valiant

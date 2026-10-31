@@ -22,7 +22,11 @@ html(lang='en')
             #debugging_tools
             #main_menu
             include ./partials/ui/title_screen.pug
-            button#exit_game(type='button' hidden) Exit
+            .session_chrome(hidden)
+                button#save_game.window_action.dialog_action(type='button' aria-label='Save game')
+                    span.save_icon(aria-hidden='true')
+                    span.save_label Save
+                button#exit_game.window_action.dialog_action(type='button') Exit
             include ./partials/ui/dialog.pug
             include ./partials/ui/item_screen.pug
             #object_editor

@@ -27,10 +27,31 @@ export default class Actors {
 
     async registerActor(actorInstance) {
         if ( actorInstance.config.class == 'player' ) {
-            let player = new Player( actorInstance );
-            await player.load();
-            this.map.set(actorInstance.config.name, player);
+            return this.ensurePlayer( actorInstance );
         }
+    }
+
+    /**
+     * Bind the World player into the scenograph once; later sessions reuse the same client Player.
+     */
+    async ensurePlayer( actorInstance ) {
+        const name = ( actorInstance.config && actorInstance.config.name ) || 'Player';
+        let player = this.map.get( name );
+
+        if ( player ) {
+            player.actorInstance = actorInstance;
+            if ( player.person ) {
+                player.person.game = actorInstance;
+            }
+            this.player = player;
+            return player;
+        }
+
+        player = new Player( actorInstance );
+        await player.load();
+        this.map.set( name, player );
+        this.player = player;
+        return player;
     }
 
     get(name) {

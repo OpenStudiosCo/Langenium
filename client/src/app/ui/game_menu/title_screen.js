@@ -19,12 +19,24 @@ export default class Title_Screen {
             version.textContent = l.version;
         } );
 
+        this.sessionChrome = document.querySelector( '.session_chrome' );
         this.exit = document.getElementById( 'exit_game' );
+        this.saveButton = document.getElementById( 'save_game' );
         if ( this.exit ) {
             this.exit.addEventListener( 'click', () => {
                 l.routes.exitGame();
                 l.ui.menus.main_menu.returnHome();
             } );
+        }
+        if ( this.saveButton ) {
+            this.saveButton.addEventListener( 'click', () => {
+                if ( l.saves ) {
+                    l.saves.saveManual();
+                }
+            } );
+        }
+        if ( l.saves ) {
+            l.saves.onStatus( ( status ) => this.onSaveStatus( status ) );
         }
 
         this.bindSettings();
@@ -33,6 +45,7 @@ export default class Title_Screen {
         this.depth = 0;
         this.launchTimer = 0;
         this.returnFocus = '';
+        this.saveStatusTimer = 0;
 
         this.container.addEventListener( 'click', ( event ) => {
             if ( event.target.closest( '[data-action="close-panel"]' ) ) {
@@ -44,6 +57,23 @@ export default class Title_Screen {
                 const panel = event.target.closest( '[data-panel]' );
                 this.returnFocus = panel ? panel.dataset.path || '' : '';
                 this.back();
+                return;
+            }
+
+            const slotContinue = event.target.closest( '[data-slot-continue]' );
+            if ( slotContinue ) {
+                this.launchSlot( Number( slotContinue.dataset.slotContinue ), 'continue' );
+                return;
+            }
+
+            const slotNew = event.target.closest( '[data-slot-new]' );
+            if ( slotNew ) {
+                const slot = Number( slotNew.dataset.slotNew );
+                const occupied = !!l.saves.read( slot );
+                if ( occupied && ! window.confirm( 'Overwrite save slot ' + ( slot + 1 ) + '?' ) ) {
+                    return;
+                }
+                this.launchSlot( slot, 'new' );
                 return;
             }
 
@@ -103,7 +133,7 @@ export default class Title_Screen {
     onAction( action, button ) {
         const path = button.dataset.path || ( action === 'play' ? '/play/' : '/' + action + '/' );
 
-        if ( action !== 'play' && button.classList.contains( 'selected' ) && this.currentPath() === path ) {
+        if ( button.classList.contains( 'selected' ) && this.currentPath() === path ) {
             this.returnFocus = path;
             this.back();
             return;
@@ -195,14 +225,6 @@ export default class Title_Screen {
      * Open the screen for an address without changing history.
      */
     apply( path ) {
-        if ( path === '/play/' ) {
-            if ( l.mode === 'home' && !this.launching ) {
-                const button = this.container.querySelector( 'nav [data-action="play"]' );
-                this.startStory( 'hangar', button );
-            }
-            return;
-        }
-
         window.clearTimeout( this.launchTimer );
         this.launching = false;
 
@@ -212,16 +234,146 @@ export default class Title_Screen {
             return;
         }
 
+        // In-session /play/ address stays put; do not reopen the slot picker.
+        if ( path === '/play/' && l.mode !== 'home' ) {
+            return;
+        }
+
         const panel = this.container.querySelector( '[data-panel][data-path="' + path + '"]' );
         if ( !panel ) {
             this.closePanel();
             return;
         }
 
+        if ( panel.dataset.panel === 'play' ) {
+            this.refreshSaveSlots();
+        }
+
         const action = panel.dataset.return || panel.dataset.panel;
         const button = this.container.querySelector( 'nav [data-action="' + action + '"]' );
         this.openPanel( panel.dataset.panel, button );
         this.focusReturn();
+    }
+
+    refreshSaveSlots() {
+        const list = this.container.querySelector( '[data-save-slots]' );
+        if ( ! list || ! l.saves ) {
+            return;
+        }
+
+        list.innerHTML = '';
+        l.saves.list().forEach( ( entry ) => {
+            const summary = l.saves.slotSummary( entry.payload );
+            const item = document.createElement( 'li' );
+            item.className = summary.empty ? 'save_slot empty' : 'save_slot occupied';
+
+            const index = document.createElement( 'span' );
+            index.className = 'save_slot_index';
+            index.textContent = String( entry.slot + 1 ).padStart( 2, '0' );
+
+            const body = document.createElement( 'div' );
+            body.className = 'save_slot_body';
+
+            const title = document.createElement( 'span' );
+            title.className = 'save_slot_title';
+            title.textContent = summary.title;
+
+            const detail = document.createElement( 'span' );
+            detail.className = 'save_slot_detail';
+            detail.textContent = summary.detail;
+
+            body.appendChild( title );
+            body.appendChild( detail );
+
+            const actions = document.createElement( 'div' );
+            actions.className = 'save_slot_actions';
+
+            if ( summary.empty ) {
+                const start = document.createElement( 'button' );
+                start.type = 'button';
+                start.className = 'window_action dialog_action';
+                start.dataset.slotNew = String( entry.slot );
+                start.textContent = 'New Game';
+                actions.appendChild( start );
+            }
+            else {
+                const cont = document.createElement( 'button' );
+                cont.type = 'button';
+                cont.className = 'window_action dialog_action';
+                cont.dataset.slotContinue = String( entry.slot );
+                cont.textContent = 'Continue';
+                actions.appendChild( cont );
+
+                const fresh = document.createElement( 'button' );
+                fresh.type = 'button';
+                fresh.className = 'window_action dialog_action save_slot_new';
+                fresh.dataset.slotNew = String( entry.slot );
+                fresh.textContent = 'New Game';
+                actions.appendChild( fresh );
+            }
+
+            item.appendChild( index );
+            item.appendChild( body );
+            item.appendChild( actions );
+            list.appendChild( item );
+        } );
+    }
+
+    /**
+     * Spawn from defaults or a save, then enter hangar or overworld.
+     */
+    launchSlot( slot, mode ) {
+        if ( this.launching || l.mode !== 'home' ) {
+            return;
+        }
+
+        this.launching = true;
+        const playButton = this.container.querySelector( 'nav [data-action="play"]' );
+        if ( playButton ) {
+            playButton.classList.add( 'selected' );
+        }
+
+        window.clearTimeout( this.launchTimer );
+        this.launchTimer = window.setTimeout( () => {
+            const launch = async () => {
+                this.launching = false;
+
+                if ( this.currentPath() !== '/play/' ) {
+                    if ( playButton ) {
+                        playButton.classList.remove( 'selected' );
+                    }
+                    return;
+                }
+
+                const existing = mode === 'continue' ? l.saves.read( slot ) : null;
+                const session = await l.saves.startSession( slot, mode );
+                if ( session.appMode === 'single_player' ) {
+                    new l.routes.singlePlayer();
+                }
+                else {
+                    new l.routes.hangar();
+                }
+                // Hangar placement overwrites poses; re-apply Continue state afterwards.
+                if ( existing ) {
+                    l.saves.apply( existing );
+                }
+                l.saves.saveNow( 'launch' );
+
+                l.ui.menus.main_menu.enterSession( {
+                    welcome: mode !== 'continue',
+                } );
+            };
+
+            const tour = l.current_scene && l.current_scene.objects && l.current_scene.objects.demoTour;
+            if ( tour ) {
+                tour.throughBlack( () => {
+                    launch();
+                } );
+            }
+            else {
+                launch();
+            }
+        }, 500 );
     }
 
     focusReturn() {
@@ -250,6 +402,7 @@ export default class Title_Screen {
 
     /**
      * @param {string} story overworld | hangar | multiplayer
+     * Debug / legacy path: ensure a player exists, then enter the mode.
      */
     startStory( story, button ) {
         if ( story === 'multiplayer' || this.launching ) {
@@ -263,15 +416,10 @@ export default class Title_Screen {
 
         window.clearTimeout( this.launchTimer );
         this.launchTimer = window.setTimeout( () => {
-            const launch = () => {
+            const launch = async () => {
                 this.launching = false;
 
-                if ( this.currentPath() !== '/play/' ) {
-                    if ( button ) {
-                        button.classList.remove( 'selected' );
-                    }
-                    return;
-                }
+                await l.saves.ensurePlayerReady();
 
                 if ( story === 'hangar' ) {
                     new l.routes.hangar();
@@ -312,6 +460,11 @@ export default class Title_Screen {
         }
         this.container.classList.add( 'panel-open' );
 
+        // Wordmark stays on the main menu only.
+        if ( l.current_scene && l.current_scene.objects && l.current_scene.objects.logo ) {
+            l.current_scene.objects.logo.hide();
+        }
+
         if ( name === 'settings' ) {
             this.syncSettings();
         }
@@ -338,8 +491,40 @@ export default class Title_Screen {
     }
 
     setExitVisible( visible ) {
-        if ( this.exit ) {
+        if ( this.sessionChrome ) {
+            this.sessionChrome.hidden = !visible;
+        }
+        else if ( this.exit ) {
             this.exit.hidden = !visible;
+        }
+    }
+
+    onSaveStatus( status ) {
+        if ( ! this.saveButton ) {
+            return;
+        }
+
+        window.clearTimeout( this.saveStatusTimer );
+        this.saveButton.classList.remove( 'is-saving', 'is-saved', 'is-error' );
+
+        if ( status === 'saving' || status === 'loading' ) {
+            this.saveButton.classList.add( 'is-saving' );
+            return;
+        }
+
+        if ( status === 'error' ) {
+            this.saveButton.classList.add( 'is-error' );
+            this.saveStatusTimer = window.setTimeout( () => {
+                this.saveButton.classList.remove( 'is-error' );
+            }, 1600 );
+            return;
+        }
+
+        if ( status === 'saved' ) {
+            this.saveButton.classList.add( 'is-saved' );
+            this.saveStatusTimer = window.setTimeout( () => {
+                this.saveButton.classList.remove( 'is-saved' );
+            }, 1200 );
         }
     }
 
@@ -464,6 +649,15 @@ export default class Title_Screen {
         } );
         this.actions.forEach( ( item ) => item.classList.remove( 'selected' ) );
         this.container.classList.remove( 'panel-open' );
+
+        if (
+            this.container.classList.contains( 'active' )
+            && l.current_scene
+            && l.current_scene.objects
+            && l.current_scene.objects.logo
+        ) {
+            l.current_scene.objects.logo.show();
+        }
     }
 
 }

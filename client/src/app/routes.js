@@ -31,6 +31,10 @@ export default class routes {
     exitGame() {
         console.log( 'Exit to Main Menu, closing game session' );
 
+        if ( l.saves ) {
+            l.saves.endSession();
+        }
+
         l.scenograph.controls.deactivate();
         l.scenograph.overlays.deactivate();
 
@@ -45,6 +49,12 @@ export default class routes {
         for ( const actor of l.scenograph.actors.getAll() ) {
             if ( typeof actor.resetFlight === 'function' ) {
                 actor.resetFlight();
+            }
+            if ( typeof actor.setVehicleVisible === 'function' ) {
+                actor.setVehicleVisible( false );
+            }
+            if ( actor.person && actor.person.mesh ) {
+                actor.person.mesh.visible = false;
             }
         }
 

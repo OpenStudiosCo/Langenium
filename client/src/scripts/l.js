@@ -44,6 +44,9 @@ function _init( wait ) {
 	console.log( '\t Version: ' + l.version );
 	console.log( '\t Environment: ' + l.env );
 
+	// Query from the page compile step so deploys bust CDN / browser caches.
+	var assetQuery = window.__ASSET_VERSION__ ? ( '?v=' + window.__ASSET_VERSION__ ) : '';
+
 	// Default modules
 	var modules = [
 		{
@@ -53,7 +56,7 @@ function _init( wait ) {
 		{
 			name: "Game Client",
 			requires: [ 'TWEEN.js' ],
-			files: [ { path: "/main.js", callback: "l.init" } ]
+			files: [ { path: "/main.js" + assetQuery, callback: "l.init" } ]
 		}
 	];
 

@@ -9,7 +9,7 @@ html(lang='en')
 
         include ./partials/game_client/head.pug
 
-        link(rel='stylesheet' href='/assets/game_client.css')
+        link(rel='stylesheet' href='/assets/game_client.css?v=' + assetVersion)
 
     body(onload="_init( 3000 );")
         noscript

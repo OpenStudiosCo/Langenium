@@ -60,6 +60,7 @@ Good architecture requires judgment rather than conformity.
 - Prefer composition where it makes relationships clearer.
 - Extend an existing concept when it naturally accommodates the new responsibility.
 - Introduce a new concept when doing so genuinely improves the architecture.
+- When coupling causes constant issues, prefer ownership that makes the architecture intuitive — for example attaching a vehicle to a player actor rather than embedding player behaviours inside a ship class.
 
 Originality and experimentation are welcome when the result remains coherent and understandable.
 
@@ -93,6 +94,7 @@ Do not confuse historical precedent with architectural intent.
 - Recognise technical debt without automatically reproducing it.
 - Do not perform unrelated refactoring under the guise of consistency.
 - Do not preserve an awkward design merely because it already exists if the task specifically calls for reconsidering it.
+- Do not bolt a major architectural migration onto an unrelated ticket. Large shifts such as ECS belong to their own intentional effort, not to the completion of a feature or demo.
 
 The goal is to evolve the software responsibly, not freeze it in time.
 
@@ -121,8 +123,22 @@ Keep changes relevant to the requested work.
 - Do not rewrite neighbouring systems to accommodate a small feature unless their existing contracts genuinely prevent it.
 - Preserve public interfaces and established behaviour unless a change is intentional.
 - Consider the consequences for other parts of the codebase before changing shared abstractions.
+- Do not hitchhike large architectural migrations onto feature, demo or game-loop work. Changes such as an ECS migration belong to a dedicated effort that sets out to do that refactor properly.
 
 A contribution should leave the codebase more coherent, not merely larger.
+
+### Agent collaboration
+
+When working as a coding agent, prefer narrow tasks that move one responsibility into the right place.
+
+Broad prompts that attempt to 'fix the architecture' in one pass tend to produce functional results that ruin ownership, boundaries and surrounding code. Prefer a small, single-responsibility change — for example moving player behaviours into the player actor — over a sweeping rewrite.
+
+- Functional behaviour is not acceptable if the architecture has been damaged.
+- Avoid drive-by churn that is time-consuming to untangle from neighbouring code.
+- Prefer reverting a ruined change over spending effort to salvage it.
+- Before reverting unsuccessful work, identify which changes belong to the current task. Never discard unrelated or pre-existing modifications.
+- Do not treat near-miss refactors as free wins. If the QA cost exceeds the value, abandon them and return to a coherent baseline.
+- Finish incomplete placements carefully. Do not assume partial agent work is integrated merely because some of it compiled or appeared to run.
 
 ### Resolve conflicting guidance
 
@@ -146,6 +162,8 @@ A change is complete when it has been implemented coherently and verified to a r
 - Do not claim to have tested behaviour that has not been tested.
 - Report what changed, why it fits the architecture and what remains unverified.
 - Identify relevant technical debt without expanding the task to fix everything.
+- Prefer work that is solid for this phase over perfectionism or an endless rewrite.
+- Prefer an early pivot when a path is architecturally wrong, rather than deepening the wrong model.
 
 Prefer concise, meaningful explanations over lengthy reports of routine actions.
 
@@ -153,15 +171,15 @@ Prefer concise, meaningful explanations over lengthy reports of routine actions.
 
 For new work, prefer the conventions demonstrated by:
 
-- `game/src/`
-- `client/src/app/main.js`
-- `client/src/app/scenograph.js`
-- `client/src/styles/overlays/game.styl`
-- `client/src/styles/overlays/ui/common.styl`
+- `game/src/` — shared domain modelling, simulation ownership and elemental composition. Prefer browser-independent implementations when introducing new shared logic; existing modules vary in their degree of presentation coupling.
+- `client/src/app/main.js` — client composition root and how subsystems are wired into the application.
+- `client/src/app/scenograph.js` — scenograph lifecycle, scene presentation and in-world visual organisation.
+- `client/src/styles/overlays/game.styl` — scenograph overlay presentation patterns.
+- `client/src/styles/overlays/ui/window.styl` and `client/src/styles/overlays/ui/dialog.styl` — shared window chrome and dialog styling. `client/src/styles/overlays/ui/common.styl` contains a small set of supplementary UI rules, not the main window chrome.
 
 These represent preferred approaches to domain modelling, client composition, UI organisation and visual presentation.
 
-Prefer them over older menu modules, `TouchControlUI` and `*2` migration leftovers when designing new features.
+Prefer them over older menu modules and `TouchControlUI` when designing new features. The `*2` actor files are not necessarily obsolete: `game/src/actors/base2.ts` and `game/src/actors/player2.ts` form a living World-driven person family and should be extended when that is the relevant sibling architecture.
 
 However, do not mechanically copy these implementations into unrelated subsystems.
 
@@ -203,7 +221,7 @@ Follow the established import approach of the relevant runtime.
 
 ### The `l` singleton
 
-The primary client composition root is `window.l`, bridged through `@/helpers/l.js`.
+The primary client composition root is `window.l`, bridged through `client/src/app/helpers/l.js` (imported as `@/helpers/l.js`).
 
 New client subsystems should normally be integrated into the existing composition tree:
 
@@ -240,6 +258,10 @@ Search for indirect references before changing public methods or properties.
 Client classes own Three.js representation and presentation.
 
 Game classes own simulation state and domain behaviour.
+
+Client classes commonly act as factories or presentation managers over instances. Prefer not extending game classes from client presentation classes.
+
+Simulation state updates belong in shared `game/`. Client presentation should copy or reflect that state onto meshes rather than becoming the owner of the simulation.
 
 The established bridge commonly uses:
 
@@ -339,7 +361,7 @@ There is no single generic entity pipeline that applies to every object in Lange
 Before introducing a new world entity, inspect a comparable implementation and identify how it is created, represented and managed.
 
 - `World.loadObject` currently constructs specific supported types, including `person` and `hangar`. New World-loaded entities may require an explicit loader case.
-- The director contains explicit branches for selected structures and bots. Entities instantiated through that path may require a new director branch.
+- The director contains explicit branches for selected structures and pirate/cargo ship actors. Entities instantiated through that path may require a new director branch.
 - Many models referenced by scene YAML have no corresponding game class.
 - Hangar presentation is largely coordinated through its route rather than a generic entity factory.
 
@@ -351,14 +373,14 @@ Introduce only the layers genuinely required by the entity's responsibilities an
 
 Mirror concepts across layers rather than insisting on identical filenames.
 
-For example, the inventory concept appears as:
+For example, the inventory concept appears across the following layers:
 
 | Layer | Implementation |
 |---|---|
 | Domain | `game/src/items/` |
-| Client UI | `ui/inventory.js` |
-| Template | `partials/ui/item_screen.pug` |
-| Styles | `overlays/ui/item_screen.styl` |
+| Client UI | `client/src/app/ui/inventory.js` |
+| Template | `client/src/templates/partials/ui/item_screen.pug` |
+| Styles | `client/src/styles/overlays/ui/item_screen.styl` |
 
 These elements represent different responsibilities belonging to one conceptual feature.
 
@@ -388,15 +410,15 @@ Avoid inventing new ID conventions when a suitable existing convention is availa
 
 The client uses:
 
-`scenograph/objects/vehicles/`
+`client/src/app/scenograph/objects/vehicles/`
 
 This includes representations such as aircraft and people.
 
 The game uses:
 
-`objects/aircraft/`
+`game/src/objects/aircraft/`
 
-It also includes a top-level `person.ts`.
+It also includes `game/src/objects/person.ts`.
 
 Do not introduce `game/src/objects/vehicles/` merely to make the directory structures identical.
 
@@ -434,7 +456,7 @@ Choose the module structure that communicates responsibility most clearly.
 - Use camelCase for method names.
 - Prefer story-shaped method names that describe meaningful actions.
 - Client UI, template and stylesheet filenames are generally `snake_case`.
-- Some game actor files use camelCase, such as `cargoShip.ts`; follow the local family.
+- Some game actor files use camelCase, such as `game/src/actors/cargoShip.ts`; follow the local family.
 - Properties registered on `l` commonly use `snake_case`, even when their classes use PascalCase.
 
 Examples of meaningful method names:
@@ -554,7 +576,6 @@ Prefer code that communicates the operation through its structure:
 swapWith( fromIndex: number, toInventory: Inventory, toIndex: number ): void {
     const fromItem = this.slots[ fromIndex ];
     const toItem = toInventory.slots[ toIndex ];
-
     this.slots[ fromIndex ] = toItem;
     toInventory.slots[ toIndex ] = fromItem;
 }
@@ -566,9 +587,9 @@ This example illustrates readability and naming, not a complete validated invent
 
 New overlay styles should follow the indented Stylus approach used by:
 
-- `dialog.styl`
-- `window.styl`
-- `item_screen.styl`
+- `client/src/styles/overlays/ui/dialog.styl`
+- `client/src/styles/overlays/ui/window.styl`
+- `client/src/styles/overlays/ui/item_screen.styl`
 
 Avoid reproducing older brace-based formatting from parent stylesheets when creating new overlay features.
 
@@ -590,9 +611,9 @@ The repository includes two existing actor families with different composition a
 
 Examples include:
 
-- `actors/base.ts`
-- `player.ts`
-- Pirate and cargo ship actors.
+- `game/src/actors/base.ts`
+- `game/src/actors/player.ts`
+- `game/src/actors/pirate.ts` and `game/src/actors/cargoShip.ts`
 
 These are typically coupled to mesh-based representations through `mesh.userData.actor`.
 
@@ -600,13 +621,13 @@ These are typically coupled to mesh-based representations through `mesh.userData
 
 Examples include:
 
-- `base2.ts`
-- `player2.ts`
-- `objects/person.ts`
+- `game/src/actors/base2.ts`
+- `game/src/actors/player2.ts`
+- `game/src/objects/person.ts` — a game object that holds a World-driven actor; it is not itself a YUKA actor.
 
 These follow the World-driven person architecture.
 
-Both actor families may create or use YUKA entities. YUKA usage is not the defining distinction between them.
+The actor classes in both families may create or use YUKA entities. YUKA usage is not the defining distinction between them; `game/src/objects/person.ts` holds an actor rather than acting as a YUKA entity itself.
 
 Extend the architectural family already used by the relevant sibling.
 
@@ -697,6 +718,10 @@ When modifying gameplay or interfaces, consider the complete interaction rather 
 Changes should account for relevant controls, visual feedback, input states, transitions and cleanup.
 
 Do not assume a feature is complete merely because the domain operation succeeds.
+
+Completeness also includes atmosphere, setting cues and the player's ability to know what to do next. Immersion and next-action clarity are part of finishing interactive work.
+
+Visibility and fidelity trade-offs may be intentional for immersion. Do not 'fix' them without understanding that intent.
 
 Where applicable, validate its behaviour in the client.
 

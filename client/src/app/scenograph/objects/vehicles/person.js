@@ -18,9 +18,8 @@ export default class Person {
         // Set internal game accessor to the game world actor instance.
         this.game = actorInstance;
 
-        this.default_camera_distance = l.scenograph.width < l.scenograph.height ? -5 : -2.5;
-
-        this.camera_distance = 0;
+        // First-person eye sits on the actor — never chase office room_depth.
+        this.eye_offset = 0;
 
         this.mesh = new THREE.Object3D();
     }
@@ -48,6 +47,8 @@ export default class Person {
             turnRight   :  'D',
         }
         let changing = false;
+        this.game.actor.controls.touchSteer = false;
+
         for ( const [ controlName, keyMapping ] of Object.entries( mappings ) ) {
             if ( l.scenograph.controls.keyboard.pressed( keyMapping ) ) {
                 this.game.actor.controls[ controlName ] = true;
@@ -82,9 +83,11 @@ export default class Person {
                         }
                         if ( l.scenograph.controls.touch.controls.moveLeft ) {
                             this.game.actor.controls.turnLeft = true;
+                            this.game.actor.controls.touchSteer = true;
                         }
                         if ( l.scenograph.controls.touch.controls.moveRight ) {
                             this.game.actor.controls.turnRight = true;
+                            this.game.actor.controls.touchSteer = true;
                         }
                     }
 
@@ -106,63 +109,23 @@ export default class Person {
         this.mesh.rotation.z = this.game.object.rotation.z;
     }
 
-    updateCamera( rY, tY, tZ ) {
-            var radian = ( Math.PI / 180 );
+    updateCamera() {
+        const person = l.scenograph.actors.player.person;
+        const camera = l.scenograph.cameras.player;
+        const heading = person.mesh.rotation.y;
+        const pullBack = person.eye_offset;
 
-            l.scenograph.actors.player.person.camera_distance = l.scenograph.actors.player.person.default_camera_distance + ( l.current_scene.room_depth / 20 );
-            if ( l.scenograph.actors.player.person.airSpeed < 0 ) {
-                l.scenograph.actors.player.person.camera_distance -= l.scenograph.actors.player.person.airSpeed * 4;
-            }
+        // Hangar walk is first-person: eye follows the actor. Office
+        // room_depth used to inflate this offset on rotate and shove
+        // the view out through the bay wall.
+        camera.position.x = person.mesh.position.x + pullBack * Math.sin( heading );
+        camera.position.y = person.mesh.position.y;
+        camera.position.z = person.mesh.position.z + pullBack * Math.cos( heading );
 
-            let xDiff = l.scenograph.actors.player.person.mesh.position.x;
-            let zDiff = l.scenograph.actors.player.person.mesh.position.z;
-
-            l.scenograph.cameras.player.position.x = xDiff + l.scenograph.actors.player.person.camera_distance * Math.sin( l.scenograph.actors.player.person.mesh.rotation.y );
-            l.scenograph.cameras.player.position.z = zDiff + l.scenograph.actors.player.person.camera_distance * Math.cos( l.scenograph.actors.player.person.mesh.rotation.y );
-
-            // if ( rY != 0 ) {
-
-            //     l.scenograph.cameras.player.rotation.y += rY;
-            // }
-            // else {
-            //     // Check there is y difference and the rotation pad isn't being pressed.
-            //     if (
-            //         l.scenograph.cameras.player.rotation.y != l.scenograph.actors.player.person.mesh.rotation.y &&
-            //         ( l.scenograph.controls.touch && !l.scenograph.controls.touch.controls.rotationPad.mouseDown )
-            //     ) {
-
-            //         // Get the difference in y rotation betwen the camera and ship
-            //         let yDiff = l.scenograph.actors.player.person.mesh.rotation.y - l.scenograph.cameras.player.rotation.y;
-
-            //         // Check the y difference is larger than 1/100th of a radian
-            //         if (
-            //             Math.abs( yDiff ) > radian / 100
-            //         ) {
-            //             // Add 1/60th of the difference in rotation, as FPS currently capped to 60.
-            //             l.scenograph.cameras.player.rotation.y += ( l.scenograph.actors.player.person.mesh.rotation.y - l.scenograph.cameras.player.rotation.y ) * 1 / 60;
-            //         }
-            //         else {
-            //             l.scenograph.cameras.player.rotation.y = l.scenograph.actors.player.person.mesh.rotation.y;
-            //         }
-
-            //     }
-
-            // }
-
-            // let xDiff2 = tZ * Math.sin( l.scenograph.actors.player.person.mesh.rotation.y ),
-            //     zDiff2 = tZ * Math.cos( l.scenograph.actors.player.person.mesh.rotation.y );
-
-            // if ( l.scenograph.actors.player.person.mesh.position.y + tY >= 1 ) {
-            //     l.scenograph.cameras.player.position.y += tY;
-            // }
-
-            // l.scenograph.cameras.player.position.x += xDiff2;
-            // l.scenograph.cameras.player.position.z += zDiff2;
-
-            l.scenograph.cameras.player.rotation.x = 0;
-            l.scenograph.cameras.player.rotation.z = 0;
-            l.scenograph.cameras.player.updateProjectionMatrix();
-        }
+        camera.rotation.x = 0;
+        camera.rotation.z = 0;
+        camera.updateProjectionMatrix();
+    }
 
 
     /**
@@ -185,8 +148,8 @@ export default class Person {
             // Sync the mesh to game world state.
             this.sync();
 
-            // Update the persons camera
-            this.updateCamera(this.game.object.rY, this.game.object.tY, this.game.object.tZ);
+            // Update the person's camera
+            this.updateCamera();
             l.scenograph.cameras.player.rotation.y = this.game.object.rotation.y;
 
         }

@@ -24,6 +24,8 @@ export default class BaseActor {
         crouch: boolean;
         turnLeft: boolean;
         turnRight: boolean;
+        // True when left/right turn came from the touch pad (slower than keys).
+        touchSteer: boolean;
     } = {
         changing: false,
         forward: false,
@@ -31,7 +33,8 @@ export default class BaseActor {
         jump: false,
         crouch: false,
         turnLeft: false,
-        turnRight: false
+        turnRight: false,
+        touchSteer: false
     };
 
     constructor( ) {

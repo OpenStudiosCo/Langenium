@@ -73,14 +73,13 @@ export default class Person extends ObjectBase {
             tY = this.verticalSpeed;
         }
 
-        // Turning
+        // Turning — touch steer is half keyboard rate so the pad is less twitchy.
+        const turnScale = this.actor.controls.touchSteer ? 0.5 : 1;
         if (this.actor.controls.turnRight) {
-            rY += radian;
+            rY += radian * turnScale;
         }
-        else {
-            if (this.actor.controls.turnLeft) {
-                rY -= radian;
-            }
+        else if (this.actor.controls.turnLeft) {
+            rY -= radian * turnScale;
         }
 
         // Check if we have significant airspeed

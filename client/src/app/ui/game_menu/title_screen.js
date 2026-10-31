@@ -257,64 +257,38 @@ export default class Title_Screen {
 
     refreshSaveSlots() {
         const list = this.container.querySelector( '[data-save-slots]' );
-        if ( ! list || ! l.saves ) {
+        const template = document.querySelector( '#templates #save_slot' );
+        if ( ! list || ! l.saves || ! template ) {
             return;
         }
 
         list.innerHTML = '';
         l.saves.list().forEach( ( entry ) => {
             const summary = l.saves.slotSummary( entry.payload );
-            const item = document.createElement( 'li' );
+            const item = template.content.firstElementChild.cloneNode( true );
+
             item.className = summary.empty ? 'save_slot empty' : 'save_slot occupied';
+            item.querySelector( '.save_slot_index' ).textContent = String( entry.slot + 1 ).padStart( 2, '0' );
+            item.querySelector( '.save_slot_title' ).textContent = summary.title;
+            item.querySelector( '.save_slot_detail' ).textContent = summary.detail;
 
-            const index = document.createElement( 'span' );
-            index.className = 'save_slot_index';
-            index.textContent = String( entry.slot + 1 ).padStart( 2, '0' );
-
-            const body = document.createElement( 'div' );
-            body.className = 'save_slot_body';
-
-            const title = document.createElement( 'span' );
-            title.className = 'save_slot_title';
-            title.textContent = summary.title;
-
-            const detail = document.createElement( 'span' );
-            detail.className = 'save_slot_detail';
-            detail.textContent = summary.detail;
-
-            body.appendChild( title );
-            body.appendChild( detail );
-
-            const actions = document.createElement( 'div' );
-            actions.className = 'save_slot_actions';
+            const continueButton = item.querySelector( '[data-slot-continue]' );
+            const newButton = item.querySelector( '[data-slot-new]' );
+            const slot = String( entry.slot );
 
             if ( summary.empty ) {
-                const start = document.createElement( 'button' );
-                start.type = 'button';
-                start.className = 'window_action dialog_action';
-                start.dataset.slotNew = String( entry.slot );
-                start.textContent = 'New Game';
-                actions.appendChild( start );
+                continueButton.hidden = true;
+                continueButton.removeAttribute( 'data-slot-continue' );
+                newButton.classList.remove( 'save_slot_new' );
+                newButton.dataset.slotNew = slot;
             }
             else {
-                const cont = document.createElement( 'button' );
-                cont.type = 'button';
-                cont.className = 'window_action dialog_action';
-                cont.dataset.slotContinue = String( entry.slot );
-                cont.textContent = 'Continue';
-                actions.appendChild( cont );
-
-                const fresh = document.createElement( 'button' );
-                fresh.type = 'button';
-                fresh.className = 'window_action dialog_action save_slot_new';
-                fresh.dataset.slotNew = String( entry.slot );
-                fresh.textContent = 'New Game';
-                actions.appendChild( fresh );
+                continueButton.hidden = false;
+                continueButton.dataset.slotContinue = slot;
+                newButton.classList.add( 'save_slot_new' );
+                newButton.dataset.slotNew = slot;
             }
 
-            item.appendChild( index );
-            item.appendChild( body );
-            item.appendChild( actions );
             list.appendChild( item );
         } );
     }

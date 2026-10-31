@@ -1,0 +1,40 @@
+//- Aircraft HUD shell contents (cloned into #hud on overlays.activate).
+#hud-lines
+#hud-aspd(data-id='aspd') AIRSPEED: 0km/h
+#hud-vspd(data-id='vspd') VERT. SPD: 0km/h
+#hud-head(data-id='head') HEADING: 0°
+#hud-elev(data-id='elev') ELEVATION: 0m
+#hud-capacitor-panel
+    #hud-capacitor(data-id='capacitor')
+        .caption
+            span.label-name CAPACITOR
+            span.pct-sep(aria-hidden='true') :
+            .readout
+                .pct 100%
+                .trend.steady(aria-hidden='true')
+        .track
+            .segments
+                - for (var i = 0; i < 20; i++)
+                    .seg
+            .caret
+    .hud-systems
+        .afterburner-controls#hud-afterburner(aria-expanded='true')
+            .afterburner-body
+                button.auto-switch.on(type='button' aria-pressed='true') AUTO
+                .threshold-dial(
+                    role='slider'
+                    aria-valuemin='0'
+                    aria-valuemax='100'
+                    aria-valuenow='25'
+                    aria-label='Afterburner minimum charge'
+                    tabindex='0'
+                )
+                    .face
+                    .needle
+                    .dial-value 25%
+            .afterburner-footer(role='button' aria-label='Afterburner controls' tabindex='0')
+                .afterburner-lamp(aria-hidden='true')
+                .afterburner-label AFTERBURNER
+                .afterburner-chevron(aria-hidden='true')
+        button.inventory-button#hud-inventory(type='button' aria-label='Inventory')
+            include ../ui/inventory_button.pug

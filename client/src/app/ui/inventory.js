@@ -41,22 +41,6 @@ export default class InventoryUI {
     longPress;
     suppressClick;
 
-    /**
-     * Markup shared by the flight HUD button and the person-mode button.
-     */
-    static buttonMarkup() {
-        return [
-            '<svg class="inventory-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">',
-            '<path d="M3.5 8.2 12 4.2l8.5 4v9.6L12 21.8l-8.5-4V8.2z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>',
-            '<path d="M3.5 8.2 12 12.2l8.5-4M12 12.2V21.8M7.2 10l9.6 4.5M7.2 14.2l4.8 2.3" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/>',
-            '</svg>',
-            '<div class="inventory-meta">',
-            '<kbd class="window_hotkey">I</kbd>',
-            '<div class="inventory-label">INVENTORY</div>',
-            '</div>',
-        ].join( '' );
-    }
-
     constructor() {
 
         this.container = document.querySelector( '#item_screen' );
@@ -141,7 +125,12 @@ export default class InventoryUI {
             button.className = 'inventory-button person-inventory-button';
             button.dataset.action = 'toggle-inventory';
             button.setAttribute( 'aria-label', 'Inventory' );
-            button.innerHTML = InventoryUI.buttonMarkup();
+
+            const contents = document.querySelector( '#templates #inventory_button_contents' );
+            if ( contents ) {
+                button.appendChild( contents.content.cloneNode( true ) );
+            }
+
             button.addEventListener( 'click', ( event ) => {
                 event.preventDefault();
                 this.toggleAircraftInventory();

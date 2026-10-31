@@ -10,7 +10,6 @@
  * Internal libs and helpers.
  */
 import l from '@/helpers/l.js';
-import InventoryUI from '@/ui/inventory.js';
 
 /**
  * Vendor libs and base class.
@@ -29,197 +28,37 @@ export default class HeadsUpDisplay {
         this.compactMode = false;
         this.afterburnerTrayOpen = false;
 
-        // Create the vertical lines
-        this.lineElement = document.createElement('div');
-        this.lineElement.id = 'hud-lines';
-        this.container.appendChild(this.lineElement);
+        // Clone the Pug shell only while flight overlays are active.
+        // deactivate() clears #hud, matching the previous createElement lifecycle.
+        const shell = document.querySelector( '#templates #hud_shell' );
+        if ( shell ) {
+            this.container.appendChild( shell.content.cloneNode( true ) );
+        }
 
-        // Create the label to track air speed.
-        this.aspdElement = this.createLabel( 'aspd', 'AIRSPEED: 0km/h');
-        this.container.appendChild(this.aspdElement);
+        this.lineElement = this.container.querySelector( '#hud-lines' );
+        this.aspdElement = this.container.querySelector( '#hud-aspd' );
+        this.vspdElement = this.container.querySelector( '#hud-vspd' );
+        this.headingElement = this.container.querySelector( '#hud-head' );
+        this.elevationElement = this.container.querySelector( '#hud-elev' );
 
-        // Create the label to track vertical speed.
-        this.vspdElement = this.createLabel( 'vspd', 'VERT. SPD: 0km/h');
-        this.container.appendChild(this.vspdElement);
-
-        // Create the label to track air speed.
-        this.headingElement = this.createLabel( 'head', 'HEADING: 0°');
-        this.container.appendChild(this.headingElement);
-
-        // Create the label to track elevation.
-        this.elevationElement = this.createLabel( 'elev', 'ELEVATION: 0m');
-        this.container.appendChild(this.elevationElement);
-
-        // Capacitor gauge + afterburner controls.
-        this.capacitorPanel = this.createCapacitorPanel();
-        this.container.appendChild(this.capacitorPanel);
-        this.capacitorElement = this.capacitorPanel.querySelector('#hud-capacitor');
-        this.capacitorSegments = this.capacitorElement.querySelectorAll('.seg');
-        this.capacitorPctElement = this.capacitorElement.querySelector('.pct');
-        this.capacitorTrend = this.capacitorElement.querySelector('.trend');
-        this.capacitorCaret = this.capacitorElement.querySelector('.caret');
-        this.afterburnerControls = this.capacitorPanel.querySelector('.afterburner-controls');
-        this.afterburnerFooter = this.afterburnerControls.querySelector('.afterburner-footer');
-        this.afterburnerLamp = this.afterburnerControls.querySelector('.afterburner-lamp');
-        this.autoAfterburnerSwitch = this.afterburnerControls.querySelector('.auto-switch');
-        this.thresholdDial = this.afterburnerControls.querySelector('.threshold-dial');
-        this.thresholdDialNeedle = this.thresholdDial.querySelector('.needle');
-        this.thresholdDialValue = this.thresholdDial.querySelector('.dial-value');
+        this.capacitorPanel = this.container.querySelector( '#hud-capacitor-panel' );
+        this.capacitorElement = this.capacitorPanel.querySelector( '#hud-capacitor' );
+        this.capacitorSegments = this.capacitorElement.querySelectorAll( '.seg' );
+        this.capacitorPctElement = this.capacitorElement.querySelector( '.pct' );
+        this.capacitorTrend = this.capacitorElement.querySelector( '.trend' );
+        this.capacitorCaret = this.capacitorElement.querySelector( '.caret' );
+        this.afterburnerControls = this.capacitorPanel.querySelector( '.afterburner-controls' );
+        this.afterburnerFooter = this.afterburnerControls.querySelector( '.afterburner-footer' );
+        this.afterburnerLamp = this.afterburnerControls.querySelector( '.afterburner-lamp' );
+        this.autoAfterburnerSwitch = this.afterburnerControls.querySelector( '.auto-switch' );
+        this.thresholdDial = this.afterburnerControls.querySelector( '.threshold-dial' );
+        this.thresholdDialNeedle = this.thresholdDial.querySelector( '.needle' );
+        this.thresholdDialValue = this.thresholdDial.querySelector( '.dial-value' );
 
         this.bindAfterburnerControls();
         this.bindAfterburnerTray();
         this.bindInventoryButton();
 
-    }
-
-    createLabel( keyName, labelText ) {
-        let labelElement = document.createElement('div');
-        labelElement.innerHTML = labelText;
-        labelElement.id = 'hud-' + keyName;
-        labelElement.dataset.id = keyName;
-        return labelElement;
-    }
-
-    createCapacitorPanel() {
-        let panel = document.createElement('div');
-        panel.id = 'hud-capacitor-panel';
-
-        let gauge = document.createElement('div');
-        gauge.id = 'hud-capacitor';
-        gauge.dataset.id = 'capacitor';
-
-        // Wide: readout on top, name below. Compact: "CAPACITOR: 100%" on one line.
-        let caption = document.createElement( 'div' );
-        caption.className = 'caption';
-
-        let readout = document.createElement( 'div' );
-        readout.className = 'readout';
-
-        let pct = document.createElement( 'div' );
-        pct.className = 'pct';
-        pct.textContent = '100%';
-
-        let trend = document.createElement( 'div' );
-        trend.className = 'trend steady';
-        trend.setAttribute( 'aria-hidden', 'true' );
-
-        readout.appendChild( pct );
-        readout.appendChild( trend );
-
-        let capName = document.createElement( 'span' );
-        capName.className = 'label-name';
-        capName.textContent = 'CAPACITOR';
-
-        let pctSep = document.createElement( 'span' );
-        pctSep.className = 'pct-sep';
-        pctSep.setAttribute( 'aria-hidden', 'true' );
-        pctSep.textContent = ':';
-
-        // DOM order matches compact inline reading: CAPACITOR : 100% ▲
-        caption.appendChild( capName );
-        caption.appendChild( pctSep );
-        caption.appendChild( readout );
-
-        let track = document.createElement( 'div' );
-        track.className = 'track';
-
-        let segments = document.createElement( 'div' );
-        segments.className = 'segments';
-        for ( let i = 0; i < CAPACITOR_SEGMENTS; i++ ) {
-            let seg = document.createElement( 'div' );
-            seg.className = 'seg';
-            segments.appendChild( seg );
-        }
-        track.appendChild( segments );
-
-        let caret = document.createElement( 'div' );
-        caret.className = 'caret';
-        track.appendChild( caret );
-
-        gauge.appendChild( caption );
-        gauge.appendChild( track );
-
-        // Single framed afterburner control: label + auto + threshold dial.
-        let controls = document.createElement('div');
-        controls.className = 'afterburner-controls';
-        controls.id = 'hud-afterburner';
-
-        let body = document.createElement('div');
-        body.className = 'afterburner-body';
-
-        let autoSwitch = document.createElement('button');
-        autoSwitch.type = 'button';
-        autoSwitch.className = 'auto-switch on';
-        autoSwitch.setAttribute( 'aria-pressed', 'true' );
-        autoSwitch.textContent = 'AUTO';
-
-        let dial = document.createElement('div');
-        dial.className = 'threshold-dial';
-        dial.setAttribute( 'role', 'slider' );
-        dial.setAttribute( 'aria-valuemin', '0' );
-        dial.setAttribute( 'aria-valuemax', '100' );
-        dial.setAttribute( 'aria-valuenow', '25' );
-        dial.setAttribute( 'aria-label', 'Afterburner minimum charge' );
-        dial.tabIndex = 0;
-
-        let dialFace = document.createElement('div');
-        dialFace.className = 'face';
-        let dialNeedle = document.createElement('div');
-        dialNeedle.className = 'needle';
-        let dialValue = document.createElement('div');
-        dialValue.className = 'dial-value';
-        dialValue.textContent = '25%';
-        dial.appendChild(dialFace);
-        dial.appendChild(dialNeedle);
-        dial.appendChild(dialValue);
-
-        body.appendChild(autoSwitch);
-        body.appendChild(dial);
-
-        // Status lamp + label under the controls.
-        let footer = document.createElement('div');
-        footer.className = 'afterburner-footer';
-
-        let lamp = document.createElement('div');
-        lamp.className = 'afterburner-lamp';
-        lamp.setAttribute( 'aria-hidden', 'true' );
-
-        let title = document.createElement('div');
-        title.className = 'afterburner-label';
-        title.textContent = 'AFTERBURNER';
-
-        // Affordance: points open-ward when collapsed, close-ward when expanded.
-        let chevron = document.createElement('div');
-        chevron.className = 'afterburner-chevron';
-        chevron.setAttribute( 'aria-hidden', 'true' );
-
-        footer.appendChild(lamp);
-        footer.appendChild(title);
-        footer.appendChild(chevron);
-        footer.setAttribute( 'role', 'button' );
-        footer.setAttribute( 'aria-label', 'Afterburner controls' );
-        footer.tabIndex = 0;
-
-        controls.appendChild(body);
-        controls.appendChild(footer);
-        controls.setAttribute( 'aria-expanded', 'true' );
-
-        let inventoryBtn = document.createElement( 'button' );
-        inventoryBtn.type = 'button';
-        inventoryBtn.className = 'inventory-button';
-        inventoryBtn.id = 'hud-inventory';
-        inventoryBtn.setAttribute( 'aria-label', 'Inventory' );
-        inventoryBtn.innerHTML = InventoryUI.buttonMarkup();
-
-        // Expandable systems strip (afterburner, inventory, future actions).
-        let systems = document.createElement( 'div' );
-        systems.className = 'hud-systems';
-        systems.appendChild( controls );
-        systems.appendChild( inventoryBtn );
-
-        panel.appendChild(gauge);
-        panel.appendChild(systems);
-        return panel;
     }
 
     bindInventoryButton() {

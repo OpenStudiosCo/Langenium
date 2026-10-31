@@ -3,10 +3,13 @@
     z-index: 4;
 
     // Hangar-mode inventory control (HUD is inactive indoors).
+    // Bottom-centre keeps the right half free for touch camera look.
     > .hangar-inventory-button {
         position: absolute;
-        right: @css{ min(3.5dvw, 3.5dvh) };
+        left: 50%;
+        right: auto;
         bottom: @css{ min(3.5dvw, 3.5dvh) };
+        transform: translateX(-50%);
         z-index: 5;
         display: flex;
         flex-direction: column;

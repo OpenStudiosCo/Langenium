@@ -1,0 +1,31 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs>
+        <linearGradient id="map-view-fade" x1="100" y1="100" x2="100" y2="8" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.22"/>
+            <stop offset="55%" stop-color="#ffffff" stop-opacity="0.08"/>
+            <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+        </linearGradient>
+    </defs>
+    <!-- Wedge points "up" in local SVG space; CSS rotate aligns it to camera look yaw. -->
+    <path
+        d="M100 100 L62 12 L138 12 Z"
+        fill="url(#map-view-fade)"
+        stroke="none"
+    />
+    <path
+        d="M100 100 L62 12"
+        fill="none"
+        stroke="#ffffff"
+        stroke-opacity="0.4"
+        stroke-width="1.5"
+        stroke-linecap="round"
+    />
+    <path
+        d="M100 100 L138 12"
+        fill="none"
+        stroke="#ffffff"
+        stroke-opacity="0.4"
+        stroke-width="1.5"
+        stroke-linecap="round"
+    />
+</svg>

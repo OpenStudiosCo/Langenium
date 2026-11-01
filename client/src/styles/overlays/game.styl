@@ -1101,12 +1101,28 @@
             position: absolute;
             left: calc( 50% - 7.5px );
             top: calc( 50% - 7.5px );
+            z-index: 2;
+        }
+
+        #map-view {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+            transform-origin: 50% 50%;
+
+            svg {
+                display: block;
+                width: 100%;
+                height: 100%;
+            }
         }
 
         .marker {
             width: 10px;
             height: 10px;
             position: absolute;
+            z-index: 3;
         }
     }
 

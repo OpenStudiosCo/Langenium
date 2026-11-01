@@ -6,6 +6,7 @@
  */
 
 import { normaliseSpeedDelta, easeOutExpo, easeInQuad, easeInOutExpo } from '../../helpers';
+import Inventory from '../../items/inventory';
 
 export default class BaseAircraft {
     public mesh;
@@ -25,6 +26,7 @@ export default class BaseAircraft {
     public capacitorRechargePerSecond:  number                  = 1 / 180;    // Full recharge takes 3 minutes under cruise.
     public autoAfterburner: boolean                             = true;       // When false, airspeed is capped at cruise.
     public afterburnerThreshold: number                         = 0.25;       // Min charge to initiate afterburner (auto on).
+    public inventory:       Inventory                           = new Inventory( 8 );
     // @todo: Introduce max turn speed for the vehicle
     public heading:         number                              = 0;
     public altitude:        number                              = 0;

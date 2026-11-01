@@ -254,7 +254,7 @@ export default class Dialog {
         actions.forEach( ( action, index ) => {
             const button = document.createElement( 'button' );
             button.type = 'button';
-            button.className = 'dialog_action';
+            button.className = 'dialog_action window_action';
             button.dataset.dialogAction = String( index );
 
             if ( action.key ) {

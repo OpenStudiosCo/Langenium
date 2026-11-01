@@ -1,0 +1,130 @@
+// Shared window chrome for overlays.
+//
+// A modal (#game_dialog, #item_screen, future hangar shop) hosts one or more
+// .window panels. Issue #31 hangar computer / shop UIs should reuse these
+// classes — do not re-slice border-02 / border-05 / border-07 elsewhere.
+
+.window
+    box-sizing: border-box
+    padding: 1.35rem 1.5rem 1.25rem
+    border-style: solid
+    border-color: transparent
+    border-width: 40px
+    border-image-source: url("/assets/borders/border-02.png")
+    border-image-slice: unquote("40 fill")
+    border-image-width: 40px
+    border-image-repeat: round
+    background-color: transparent
+    background-clip: padding-box
+    text-shadow: 0 2px 12px rgba(0, 10, 40, 0.55)
+
+.window_title
+    margin: 0
+    font-family: "Liberation Sans Narrow", "Nimbus Sans Narrow", "Arial Narrow", "Helvetica Condensed", sans-serif
+    font-style: italic
+    font-weight: 700
+    font-size: clamp(1.05rem, 2vw, 1.35rem)
+    letter-spacing: 0.12em
+    line-height: 1.1
+    text-transform: uppercase
+    color: #fff
+
+.window_action
+    display: inline-flex
+    align-items: center
+    justify-content: center
+    box-sizing: border-box
+    margin: 0
+    padding: 0.25rem 0.35rem 0.15rem
+    border-style: solid
+    border-color: transparent
+    border-width: 20px
+    border-image-source: url("/assets/borders/border-05.png")
+    border-image-slice: unquote("80 fill")
+    border-image-width: 40px
+    border-image-repeat: round
+    background-color: transparent
+    background-clip: padding-box
+    color: inherit
+    font-family: "Liberation Sans Narrow", "Nimbus Sans Narrow", "Arial Narrow", "Helvetica Condensed", sans-serif
+    font-style: italic
+    font-weight: 700
+    font-size: clamp(0.9rem, 1.3vw, 1.05rem)
+    letter-spacing: 0.08em
+    line-height: 1.1
+    text-transform: uppercase
+    cursor: pointer
+
+    &:hover,
+    &:focus-visible,
+    &:active
+        border-image-source: url("/assets/borders/border-07.png")
+
+    &:focus-visible
+        outline: none
+
+    &[hidden]
+        display: none !important
+
+    &:disabled
+        opacity: 0.4
+        cursor: default
+
+        &:hover,
+        &:focus-visible,
+        &:active
+            border-image-source: url("/assets/borders/border-05.png")
+
+    // Keycap inside a window action (Esc, E, I, …).
+    kbd,
+    .window_hotkey
+        display: inline-flex
+        align-items: center
+        justify-content: center
+        min-width: 1.35rem
+        height: 1.35rem
+        margin-right: 0.45rem
+        padding: 0 0.28rem
+        color: #fff
+        font-family: ui-monospace, Menlo, Consolas, monospace
+        font-style: normal
+        font-size: 0.72rem
+        font-weight: 700
+        letter-spacing: 0
+        line-height: 1
+        text-transform: none
+        background: rgba(0, 0, 0, 0.35)
+        border: 1px solid rgba(255, 255, 255, 0.45)
+        border-radius: 3px
+
+// Standalone hotkey chip (HUD inventory button, etc.).
+.window_hotkey
+    display: inline-flex
+    align-items: center
+    justify-content: center
+    box-sizing: border-box
+    min-width: 1.35rem
+    height: 1.35rem
+    margin: 0
+    padding: 0 0.28rem
+    color: #fff
+    font-family: ui-monospace, Menlo, Consolas, monospace
+    font-style: normal
+    font-size: 0.72rem
+    font-weight: 700
+    letter-spacing: 0
+    line-height: 1
+    text-transform: none
+    background: rgba(0, 0, 0, 0.35)
+    border: 1px solid rgba(255, 255, 255, 0.45)
+    border-radius: 3px
+
+@media (max-width: 720px)
+    .window
+        border-width: 28px
+        border-image-width: 28px
+        padding: 1rem 1.05rem 0.95rem
+
+    .window_action
+        border-width: 16px
+        border-image-width: 28px

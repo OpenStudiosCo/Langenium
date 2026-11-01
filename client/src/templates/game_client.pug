@@ -9,7 +9,7 @@ html(lang='en')
 
         include ./partials/game_client/head.pug
 
-        link(rel='stylesheet' href='/assets/game_client.css')
+        link(rel='stylesheet' href='/assets/game_client.css?v=' + assetVersion)
 
     body(onload="_init( 3000 );")
         noscript
@@ -22,8 +22,14 @@ html(lang='en')
             #debugging_tools
             #main_menu
             include ./partials/ui/title_screen.pug
-            button#exit_game(type='button' hidden) Exit
+            .session_chrome(hidden)
+                button#save_game.window_action.dialog_action(type='button' aria-label='Save game')
+                    span.save_icon(aria-hidden='true')
+                        include ../assets/ui/save.svg
+                    span.save_label Save
+                button#exit_game.window_action.dialog_action(type='button') Exit
             include ./partials/ui/dialog.pug
+            include ./partials/ui/item_screen.pug
             #object_editor
             #scene_overview
             #preview_materials
@@ -41,6 +47,12 @@ html(lang='en')
                 include ./partials/overlays/scanner-target.pug
             template#map_icons
                 include ./partials/overlays/map-icons.pug
+            template#hud_shell
+                include ./partials/overlays/hud.pug
+            template#inventory_button_contents
+                include ./partials/ui/inventory_button.pug
+            template#save_slot
+                include ./partials/ui/save_slot.pug
         #webgl-wrapper
             canvas#loader_symbols
             canvas#loader_image

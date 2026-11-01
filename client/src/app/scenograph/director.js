@@ -286,12 +286,24 @@ export default class Director {
 
         } );
 
-        this.world.instance.actors.forEach(async actorInstance => {
-            if ( actorInstance.config.class == 'player' ) {
-                await l.scenograph.actors.registerActor( actorInstance );
-            }
-        });
+        // Human player is spawned from defaults / a save slot when Play starts.
 
+    }
+
+    /**
+     * Spawn the World player and bind the scenograph Player.
+     */
+    async spawnPlayer( playerConfig ) {
+        const actorInstance = this.world.spawnPlayer( playerConfig );
+        const player = await l.scenograph.actors.ensurePlayer( actorInstance );
+        l.scenograph.actors.player = player;
+        return player;
+    }
+
+    despawnPlayer() {
+        if ( this.world ) {
+            this.world.despawnPlayer();
+        }
     }
 
     async loadObject( config, object ) {

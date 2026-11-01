@@ -30,13 +30,22 @@
                     span(aria-hidden="true") About
                     | About
     .title_screen_detail
-        section(data-panel="stories" data-path="/stories/" hidden)
-            button.panel_back(type="button" data-action="close-panel") Back
+        section(data-panel="play" data-path="/play/" hidden)
             .panel_body
-                h2
-                    | The Langenium
-                    br
-                    | Prologue Trilogy
+                .panel_header
+                    h2 Save Slots
+                    button.window_action.dialog_action.panel_back(type="button" data-action="close-panel") Back
+                p Choose a slot to continue, or start a new game.
+                ol.save_slots(data-save-slots aria-label="Save slots")
+                    //- Filled by Title_Screen.refreshSaveSlots()
+        section(data-panel="stories" data-path="/stories/" hidden)
+            .panel_body
+                .panel_header
+                    h2
+                        | The Langenium
+                        br
+                        | Prologue Trilogy
+                    button.window_action.dialog_action.panel_back(type="button" data-action="close-panel") Back
                 h3.story_by By Paul Brzeski
                 .story_synopsis
                     p This is a series of short stories that sets up the setting of the Langenium game world. I recommend reading them in order, however, they are told as standalone short stories that can be read on their own.
@@ -63,35 +72,40 @@
                             span.story_time 95 min
                 p.story_note About three and a half hours.
         section.story_reader(data-panel="story-end-of-all-limits" data-path="/stories/langenium-prologue-part-1/" data-return="stories" hidden)
-            button.panel_back(type="button" data-action="close-panel") Back
             .panel_body
-                h2 The End of All Limits
+                .panel_header
+                    h2 The End of All Limits
+                    button.window_action.dialog_action.panel_back(type="button" data-action="close-panel") Back
                 p.story_by By Paul Brzeski
                 .story_text
                     include ./stories/end_of_all_limits.html
         section.story_reader(data-panel="story-hell-on-earth" data-path="/stories/langenium-prologue-part-2/" data-return="stories" hidden)
-            button.panel_back(type="button" data-action="close-panel") Back
             .panel_body
-                h2 Hell on Earth
+                .panel_header
+                    h2 Hell on Earth
+                    button.window_action.dialog_action.panel_back(type="button" data-action="close-panel") Back
                 p.story_by By Paul Brzeski
                 .story_text
                     include ./stories/hell_on_earth.html
         section.story_reader(data-panel="story-extinction-level-event" data-path="/stories/langenium-prologue-part-3/" data-return="stories" hidden)
-            button.panel_back(type="button" data-action="close-panel") Back
             .panel_body
-                h2 Extinction Level Event
+                .panel_header
+                    h2 Extinction Level Event
+                    button.window_action.dialog_action.panel_back(type="button" data-action="close-panel") Back
                 p.story_by By Paul Brzeski
                 .story_text
                     include ./stories/extinction_level_event.html
         section(data-panel="lore" data-path="/lore/" hidden)
-            button.panel_back(type="button" data-action="close-panel") Back
             .panel_body
-                h2 Lore
+                .panel_header
+                    h2 Lore
+                    button.window_action.dialog_action.panel_back(type="button" data-action="close-panel") Back
                 p Coming soon
         section(data-panel="settings" data-path="/settings/" hidden)
-            button.panel_back(type="button" data-action="close-panel") Back
             .panel_body
-                h2 Settings
+                .panel_header
+                    h2 Settings
+                    button.window_action.dialog_action.panel_back(type="button" data-action="close-panel") Back
                 label
                     input(type="checkbox" data-setting="debug")
                     span Debugging mode
@@ -102,9 +116,10 @@
                     input(type="checkbox" data-setting="skipintro")
                     span Skip title sequence
         section(data-panel="about" data-path="/about/" hidden)
-            button.panel_back(type="button" data-action="close-panel") Back
             .panel_body
-                h2 About
+                .panel_header
+                    h2 About
+                    button.window_action.dialog_action.panel_back(type="button" data-action="close-panel") Back
                 p Langenium is an open source game project with the long term goal of producing an MMO in the browser.
                 p Starting in 2012, the current build of Langenium is a culmination of over a decade of work.
                 p Please enjoy this current version of the game!
@@ -115,9 +130,10 @@
                     | p.s. If you are a developer or interested in games development, visit Langenium on 
                     a(href="https://github.com/OpenStudiosCo/Langenium" target="_blank" rel="noopener") Github
         section(data-panel="help" data-path="/help/" hidden)
-            button.panel_back(type="button" data-action="close-panel") Back
             .panel_body
-                h2 Help
+                .panel_header
+                    h2 Help
+                    button.window_action.dialog_action.panel_back(type="button" data-action="close-panel") Back
                 h3 Gameplay
                 p Bots and players use the same scanner and weapons subsystems for combat.
                 h3 PC Controls

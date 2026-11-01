@@ -4,6 +4,7 @@
 import l from '@/helpers/l.js';
 import Config from "@/config.js";
 import Routes from "@/routes.js";
+import Sessions from "@/sessions.js";
 import Scenograph from "@/scenograph.js";
 import UI from "@/ui.js";
 
@@ -11,6 +12,11 @@ import UI from "@/ui.js";
  * Config.
  */
 l.config = new Config();
+
+/**
+ * Single-player session state, lifecycle and save slots.
+ */
+l.sessions = new Sessions();
 
 /**
  * Routes activate game modes and screens.

@@ -22,6 +22,8 @@ interface WorldInstance {
     objects: Record<string, any>;
 }
 
+const PLAYER_NAME = 'Player';
+
 export default class World {
 
     public config: WorldConfig;
@@ -65,8 +67,12 @@ export default class World {
     }
 
     load() {
-        // Load actors and their attached objects.
+        // Load scene NPCs. The human player is spawned on Play from defaults / a save.
         for (const actorConfig of this.config.actors.values()) {
+            if ( actorConfig.class === 'player' ) {
+                continue;
+            }
+
             const actorInstance: any = { config: actorConfig };
             // Set actor class first.
             actorInstance.actor = this.loadActor(actorConfig.class);
@@ -132,6 +138,85 @@ export default class World {
         }
     }
 
+    /**
+     * Insert the human player from defaults or a save overlay.
+     * Replaces any previous player actor in this world instance.
+     */
+    spawnPlayer( playerConfig: any ) {
+        this.despawnPlayer();
+
+        const config = {
+            ...playerConfig,
+            name: playerConfig.name || PLAYER_NAME,
+            class: 'player',
+            model: 'person',
+        };
+
+        const actorInstance: any = { config };
+        actorInstance.actor = this.loadActor( 'player' );
+        actorInstance.object = this.loadObject( config );
+
+        if ( actorInstance.actor && actorInstance.object ) {
+            actorInstance.object.actor = actorInstance.actor;
+        }
+
+        if ( actorInstance.object && config.position ) {
+            actorInstance.object.position.x = config.position.x;
+            actorInstance.object.position.y = config.position.y;
+            actorInstance.object.position.z = config.position.z;
+        }
+        if ( actorInstance.object && config.rotation ) {
+            actorInstance.object.rotation.x = config.rotation.x;
+            actorInstance.object.rotation.y = config.rotation.y;
+            actorInstance.object.rotation.z = config.rotation.z;
+        }
+
+        this.instance.actors.set( config.name, actorInstance );
+        return actorInstance;
+    }
+
+    despawnPlayer() {
+        if ( ! this.instance || ! this.instance.actors ) {
+            return;
+        }
+
+        for ( const [ name, actorInstance ] of this.instance.actors.entries() ) {
+            if ( actorInstance && actorInstance.config && actorInstance.config.class === 'player' ) {
+                this.instance.actors.delete( name );
+            }
+        }
+    }
+
+    getPlayer() {
+        if ( ! this.instance || ! this.instance.actors ) {
+            return null;
+        }
+        return this.instance.actors.get( PLAYER_NAME ) || null;
+    }
+
+    /**
+     * Hangar config for a player's assignment (structure + hangarName).
+     * Layout / pose data for the assigned bay — not inventory ownership.
+     */
+    getHangarConfig( hangarRef: { structure?: string; hangarName?: string } | null ) {
+        if ( ! hangarRef || ! hangarRef.structure || ! hangarRef.hangarName ) {
+            return null;
+        }
+        if ( ! this.instance || ! this.instance.objects ) {
+            return null;
+        }
+
+        const structure = this.instance.objects.get( hangarRef.structure );
+        if ( ! structure || ! structure.hangars ) {
+            return null;
+        }
+
+        const hangarInstance = structure.hangars.find(
+            ( entry: any ) => entry.config && entry.config.name === hangarRef.hangarName
+        );
+        return hangarInstance && hangarInstance.config ? hangarInstance.config : null;
+    }
+
     start() {
         this.running = true;
         this.lastUpdateTime = performance.now();
@@ -179,8 +264,9 @@ export default class World {
         // Get object's proposed AABB at next position
         const actorAABB = actorInstance.object.getAABBNext();
 
-        // Ensure the user is still inside the hangar area.
+        // Ensure the user is still inside the hangar area and clear of obstacles.
         let inside = false;
+        let blocked = false;
         if (actorInstance.config.hangar) {
             this.instance.objects.forEach((objectInstance, objectName) => {
                 if (objectName == actorInstance.config.hangar.structure) {
@@ -195,6 +281,15 @@ export default class World {
                                     }
                                 }
 
+                                const obstacles = hangarInstance.object.obstacles || [];
+                                for (const obstacleAABB of obstacles) {
+                                    // Walking is horizontal; XZ overlap is enough to block.
+                                    if (this.aabbOverlapsXZ(actorAABB, obstacleAABB)) {
+                                        blocked = true;
+                                        break;
+                                    }
+                                }
+
                             }
                         });
                     }
@@ -203,15 +298,19 @@ export default class World {
             });
 
         }
-        if (inside) {
+        if (inside && ! blocked) {
             actorInstance.object.commitNextPosition();
         }
 
     }
 
-    // Checks if actor Bounding Box is within the component Bounding Box
+    // Checks if actor Bounding Box is within the component Bounding Box.
+    // Small slack only: the player spawns on the bay Z edge (halfSize sticks
+    // out past the authored AABB), so zero offset freezes movement. Keep this
+    // well under the old 1.25 so the hangar camera near plane (0.2) does not
+    // slice wall meshes.
     aabbContained(actorBounds, componentBounds) {
-        let offset = 1.25;
+        const offset = 0.4;
         return (
             actorBounds.min.x >= componentBounds.min.x - offset &&
             actorBounds.max.x <= componentBounds.max.x + offset &&
@@ -219,6 +318,17 @@ export default class World {
             actorBounds.max.y <= componentBounds.max.y + offset &&
             actorBounds.min.z >= componentBounds.min.z - offset &&
             actorBounds.max.z <= componentBounds.max.z + offset
+        );
+    }
+
+    // Horizontal overlap for solid hangar obstacles (ignore Y so pedestal
+    // origins that sit below eye height still block walking).
+    aabbOverlapsXZ(a, b) {
+        return (
+            a.min.x <= b.max.x &&
+            a.max.x >= b.min.x &&
+            a.min.z <= b.max.z &&
+            a.max.z >= b.min.z
         );
     }
 

@@ -1,0 +1,36 @@
+# Single-player blueprint. Spawned on New Game; Continue overlays a save slot.
+name: Player
+model: person
+class: player
+hangar:
+  structure: Lambda City
+  # Starting bay only (better outbound view). Flight docking picks by approach side.
+  hangarName: Hangar 2
+  # Facility storage for this structure — shared across Hangar 1 / 2.
+  inventory:
+    - id: langenium_crystal
+      name: Langenium Crystal
+      charge: 0
+      capacity: 10
+      qty: 10
+    - id: langenium_crystal
+      name: Langenium Crystal
+      charge: 5
+      capacity: 10
+# Pose is applied by the hangar route on first entry; these are fallbacks.
+position:
+  x: 0
+  y: 0
+  z: 0
+rotation:
+  x: 0
+  y: 0
+  z: 0
+aircraft:
+  model: valiant
+  inventory:
+    - id: langenium_crystal
+      name: Langenium Crystal
+      charge: 10
+      capacity: 10
+      qty: 5

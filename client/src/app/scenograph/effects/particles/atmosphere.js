@@ -18,7 +18,7 @@ const ATMOSPHERE_COUNT = 12;
 const ATMOSPHERE_NEAR = 4;
 const ATMOSPHERE_FAR = 280;
 const ATMOSPHERE_SPREAD = 0.7;
-const ATMOSPHERE_SIZE = 1.2;
+const ATMOSPHERE_SIZE = 0.6;
 
 const _local = new THREE.Vector3();
 const _world = new THREE.Vector3();

@@ -10,12 +10,12 @@
     }
 
     button {
-        width: 150px;
-        height: 150px;
+        width: 112px;
+        height: 112px;
         background: radial-gradient(rgba(218, 225, 230, 0.15) 5%, rgba(218, 225, 230, 0.35) 95%),
                     url("/assets/images/touchpad/attack.svg") center center no-repeat;
         // border: 2px solid rgba(218, 225, 230, 0.25);
-        border-radius: 90px;
+        border-radius: 68px;
         box-shadow: 0px 0px 5px rgba(194, 200, 204, 0.55);
     }
 
@@ -24,8 +24,8 @@
         margin-top: 0.35rem;
         position: relative;
         display: inline-block;
-        width: 60px;
-        height: 34px;
+        width: 45px;
+        height: 26px;
     }
 
     /* Hide default HTML checkbox */
@@ -51,10 +51,10 @@
     .slider:before {
         position: absolute;
         content: "";
-        height: 26px;
-        width: 26px;
-        left: 4px;
-        bottom: 4px;
+        height: 20px;
+        width: 20px;
+        left: 3px;
+        bottom: 3px;
         background-color: rgba(255,255,255, 0.35);
         -webkit-transition: .4s;
         transition: .4s;
@@ -69,15 +69,15 @@
     }
 
     input:checked + .slider:before {
-        -webkit-transform: translateX(26px);
-        -ms-transform: translateX(26px);
-        transform: translateX(26px);
+        -webkit-transform: translateX(19px);
+        -ms-transform: translateX(19px);
+        transform: translateX(19px);
         background: linear-gradient(rgba(255, 160, 51, 0.7) 95%, rgba(255, 160, 51, 0.35) 5%);
     }
 
     /* Rounded sliders */
     .slider.round {
-        border-radius: 34px;
+        border-radius: 26px;
     }
 
     .slider.round:before {

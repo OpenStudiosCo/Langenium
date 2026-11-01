@@ -1,0 +1,9 @@
+//- One title-screen save slot row; Title_Screen fills text and toggles actions.
+li.save_slot
+    span.save_slot_index
+    .save_slot_body
+        span.save_slot_title
+        span.save_slot_detail
+    .save_slot_actions
+        button.window_action.dialog_action(type='button' data-slot-continue hidden) Continue
+        button.window_action.dialog_action(type='button' data-slot-new) New Game

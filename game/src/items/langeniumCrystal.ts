@@ -6,7 +6,7 @@ import { ItemInstance } from './types';
 
 export const LANGENIUM_CRYSTAL_ID = 'langenium_crystal';
 export const LANGENIUM_CRYSTAL_NAME = 'Langenium Crystal';
-export const YOUNG_CAPACITY_KW = 10000;
+export const DEFAULT_CAPACITY = 10;
 
 export type CrystalChargeState = 'empty' | 'charged' | 'full';
 
@@ -20,9 +20,9 @@ export function createLangeniumCrystal( options: {
 } = {} ): ItemInstance {
     const capacity = options.capacity !== undefined
         ? Math.max( 0, Math.floor( options.capacity ) )
-        : YOUNG_CAPACITY_KW;
+        : DEFAULT_CAPACITY;
     const charge = options.charge !== undefined
-        ? Math.max( 0, Math.min( capacity, Math.floor( options.charge ) ) )
+        ? Math.max( 0, Math.min( capacity, options.charge ) )
         : capacity;
 
     const item: ItemInstance = {
@@ -67,14 +67,30 @@ export function formatPower( item: ItemInstance | null | undefined ): string | n
         return null;
     }
 
-    const capacity = Math.max( 0, Math.floor( item.capacity ) );
+    const capacity = Math.max( 0, item.capacity );
     const charge = item.charge === undefined
         ? 0
-        : Math.max( 0, Math.floor( item.charge ) );
+        : Math.max( 0, Math.min( capacity, item.charge ) );
 
-    return formatKw( charge ) + ' / ' + formatKw( capacity ) + ' kW';
+    const partial = charge > 0 && charge < capacity;
+    const chargeText = formatPowerValue( charge, partial );
+    const capacityText = formatPowerValue( capacity, false );
+
+    return chargeText + ' / ' + capacityText + ' MWh';
 }
 
-function formatKw( value: number ): string {
-    return value.toLocaleString( 'en-GB' );
+/**
+ * Partial charge uses three decimal places; empty / full stay compact.
+ */
+function formatPowerValue( value: number, partial: boolean ): string {
+    if ( partial ) {
+        return value.toLocaleString( 'en-GB', {
+            minimumFractionDigits: 3,
+            maximumFractionDigits: 3,
+        } );
+    }
+
+    return value.toLocaleString( 'en-GB', {
+        maximumFractionDigits: 0,
+    } );
 }

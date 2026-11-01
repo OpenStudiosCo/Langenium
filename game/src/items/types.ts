@@ -9,8 +9,8 @@ export interface ItemInstance {
     name: string;
     // Stack size. Missing / undefined means 1.
     qty?: number;
-    // Stored energy in kW.
+    // Stored energy in MWh.
     charge?: number;
-    // Maximum energy in kW.
+    // Maximum energy in MWh.
     capacity?: number;
 }

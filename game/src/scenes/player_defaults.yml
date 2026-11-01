@@ -10,12 +10,12 @@ hangar:
     - id: langenium_crystal
       name: Langenium Crystal
       charge: 0
-      capacity: 10000
+      capacity: 10
       qty: 10
     - id: langenium_crystal
       name: Langenium Crystal
-      charge: 5000
-      capacity: 10000
+      charge: 5
+      capacity: 10
 # Pose is applied by the hangar route on first entry; these are fallbacks.
 position:
   x: 0
@@ -30,6 +30,6 @@ aircraft:
   inventory:
     - id: langenium_crystal
       name: Langenium Crystal
-      charge: 10000
-      capacity: 10000
+      charge: 10
+      capacity: 10
       qty: 5

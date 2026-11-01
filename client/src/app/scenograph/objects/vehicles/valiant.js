@@ -11,6 +11,7 @@ import * as THREE from 'three';
  */
 import l from '@/helpers/l.js';
 import { brightenMaterial, proceduralMetalMaterial } from '@/scenograph/materials.js';
+import Afterburner from '@/scenograph/effects/afterburner.js';
 import ValiantObject from '#/game/src/objects/aircraft/valiant';
 
 export default class Valiant {
@@ -44,6 +45,9 @@ export default class Valiant {
 
     // Short flame trail used at cruise speeds.
     cruiseTrail;
+
+    // Soft shock-diamond rings along the thruster exhaust.
+    afterburner;
 
     // Twin tilt-rotors (Cylinder / Cylinder001) and their articulation state.
     rotors;
@@ -126,6 +130,7 @@ export default class Valiant {
         this.mesh.userData.targetable = true;
 
         this.createThruster();
+        this.afterburner = new Afterburner( this.thruster.container );
         this.setupRotors();
 
         this.mixer = new THREE.AnimationMixer( this.mesh );
@@ -147,10 +152,10 @@ export default class Valiant {
         this.cruiseTrail.mesh.material.uniforms.headColor.value.w = 0;
         this.cruiseTrail.mesh.material.uniforms.tailColor.value.w = 0;
 
-        // Longer soft cylinder plume for afterburner.
+        // Soft sheath around the shock diamonds (full 16-node buffer).
         this.trail = l.current_scene.effects.trail.createTrail(
             this.mesh, 0, this.trail_position_y, this.trail_position_z,
-            { trailLength: 16, advanceFrequency: 48, headScale: 0.2, nameSuffix: ' Afterburner Trail' }
+            { trailLength: 8, advanceFrequency: 48, headScale: 0.28, nameSuffix: ' Afterburner Trail' }
         );
         this.trail.mesh.visible = false;
         this.trail.mesh.material.uniforms.headColor.value.w = 0;
@@ -582,11 +587,10 @@ export default class Valiant {
         let object = this.mesh.userData.object,
             thrusting = object.airSpeed < 0,
             speed = Math.abs( object.airSpeed ),
-            // Crossfade short flame → cylinder between 380–420 km/h (HUD @ 60 FPS).
+            // Crossfade short flame → afterburner between 380–420 km/h (HUD @ 60 FPS).
             fadeIn = 380 / 60,
             fadeOut = 420 / 60,
             cruiseCap = object.cruiseForward || ( 400 / 60 ),
-            // Keeps afterburner plume length near the earlier soft-cylinder look.
             nodeSpacing = ( 35 / 60 ) * ( 60 / 48 ),
             blendTarget = 0,
             cruiseWeight = 0,
@@ -596,7 +600,29 @@ export default class Valiant {
             cruiseJitter = 0.012,
             traveled = 0,
             steps = 0,
-            i = 0;
+            i = 0,
+            // Warm cruise sheath → electric blue afterburner plume.
+            warmHeadR = 1.0,
+            warmHeadG = 0.83,
+            warmHeadB = 0.58,
+            warmTailR = 0.52,
+            warmTailG = 0.16,
+            warmTailB = 0.14,
+            blueHeadR = 0.45,
+            blueHeadG = 0.75,
+            blueHeadB = 1.0,
+            blueTailR = 0.25,
+            blueTailG = 0.45,
+            blueTailB = 0.95,
+            sheathBlend = 0,
+            headR = 0,
+            headG = 0,
+            headB = 0,
+            tailR = 0,
+            tailG = 0,
+            tailB = 0,
+            // Cruise plume stays on during afterburner (~50%); was fully crossfaded off before.
+            cruiseAlpha = 0;
 
         if ( speed >= fadeOut ) {
             blendTarget = 1;
@@ -612,6 +638,7 @@ export default class Valiant {
 
         cruiseWeight = 1 - this.afterburnerBlend;
         afterburnerWeight = this.afterburnerBlend;
+        cruiseAlpha = 0.8 * cruiseWeight + 0.25 * afterburnerWeight;
 
         // Turbulence only after cruise; gentle at first, then ramps toward maxForward.
         if ( speed > cruiseCap ) {
@@ -635,8 +662,16 @@ export default class Valiant {
 
             this.mesh.updateMatrixWorld( true );
 
-            // Short cruise flame.
-            if ( cruiseWeight > 0.01 ) {
+            sheathBlend = afterburnerWeight;
+            headR = warmHeadR + ( blueHeadR - warmHeadR ) * sheathBlend;
+            headG = warmHeadG + ( blueHeadG - warmHeadG ) * sheathBlend;
+            headB = warmHeadB + ( blueHeadB - warmHeadB ) * sheathBlend;
+            tailR = warmTailR + ( blueTailR - warmTailR ) * sheathBlend;
+            tailG = warmTailG + ( blueTailG - warmTailG ) * sheathBlend;
+            tailB = warmTailB + ( blueTailB - warmTailB ) * sheathBlend;
+
+            // Original cruise plume — stays visible during afterburner (layered under diamonds).
+            if ( cruiseAlpha > 0.01 ) {
                 if ( ! this.cruiseTrail.mesh.visible ) {
                     this.cruiseTrail.reset();
                     this.cruiseTrail.lastAdvanceTime = 0;
@@ -647,8 +682,8 @@ export default class Valiant {
                     this.trail_position_y + ( Math.random() * 2 - 1 ) * cruiseJitter * 0.5,
                     this.trail_position_z
                 );
-                this.cruiseTrail.mesh.material.uniforms.headColor.value.set( 1.0, 0.83, 0.58, 0.8 * cruiseWeight );
-                this.cruiseTrail.mesh.material.uniforms.tailColor.value.set( 0.52, 0.16, 0.14, 0.25 * cruiseWeight );
+                this.cruiseTrail.mesh.material.uniforms.headColor.value.set( headR, headG, headB, cruiseAlpha );
+                this.cruiseTrail.mesh.material.uniforms.tailColor.value.set( tailR, tailG, tailB, 0.3 * cruiseAlpha );
                 this.cruiseTrail.update();
             }
             else {
@@ -657,7 +692,7 @@ export default class Valiant {
                 this.cruiseTrail.mesh.visible = false;
             }
 
-            // Soft afterburner cylinder.
+            // Longer soft sheath wrapping the shock-diamond chain.
             if ( afterburnerWeight > 0.01 ) {
                 if ( ! this.trail.mesh.visible ) {
                     this.trail.reset();
@@ -671,11 +706,12 @@ export default class Valiant {
                     this.trail_position_y + ( Math.random() * 2 - 1 ) * jitter * 0.5,
                     this.trail_position_z
                 );
-                this.trail.mesh.material.uniforms.headColor.value.set( 1.0, 0.83, 0.58, 0.9 * afterburnerWeight );
-                this.trail.mesh.material.uniforms.tailColor.value.set( 0.52, 0.16, 0.14, 0.0 );
+
+                this.trail.mesh.material.uniforms.headColor.value.set( headR, headG, headB, 0.375 * afterburnerWeight );
+                this.trail.mesh.material.uniforms.tailColor.value.set( tailR, tailG, tailB, 0.15 * afterburnerWeight );
 
                 traveled = this.mesh.position.distanceTo( this.trailAnchor );
-                steps = Math.min( 5, Math.floor( traveled / Math.max( 0.05, nodeSpacing ) ) );
+                steps = Math.min( 8, Math.floor( traveled / Math.max( 0.05, nodeSpacing ) ) );
                 for ( i = 0; i < steps; i++ ) {
                     this.trail.advance();
                 }
@@ -690,6 +726,10 @@ export default class Valiant {
                 this.trail.mesh.material.uniforms.tailColor.value.w = 0;
                 this.trail.mesh.visible = false;
             }
+
+            if ( this.afterburner ) {
+                this.afterburner.update( speed, this.afterburnerBlend );
+            }
         }
         else {
             this.cruiseTrail.mesh.material.uniforms.headColor.value.set( 1.0, 0.83, 0.58, 0 );
@@ -699,6 +739,9 @@ export default class Valiant {
             this.trail.mesh.material.uniforms.tailColor.value.set( 0.52, 0.16, 0.14, 0 );
             this.trail.mesh.visible = false;
             this.afterburnerBlend = 0;
+            if ( this.afterburner ) {
+                this.afterburner.update( 0, 0 );
+            }
         }
     }
 

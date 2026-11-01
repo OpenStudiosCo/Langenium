@@ -86,7 +86,7 @@ export default class Trail {
         return circlePoints;
     }
 
-    createTrailMaterial(){
+    createTrailMaterial() {
         // create material for the trail renderer
         const trailMaterial = TrailRenderer.createBaseMaterial();
 

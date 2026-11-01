@@ -4,6 +4,7 @@ model: person
 class: player
 hangar:
   structure: Lambda City
+  # Starting bay only (better outbound view). Flight docking picks by approach side.
   hangarName: Hangar 2
   # Facility storage for this structure — shared across Hangar 1 / 2.
   inventory:

@@ -75,6 +75,61 @@ export default class hangarRoute {
         hangarRoute.bindUpdates();
     }
 
+    /**
+     * Pick the bay on the approach side of the structure.
+     * Nearest hangar pose in XZ — Hangar 1 / 2 face opposite faces of the city.
+     */
+    resolveApproachHangar( hangars, shipPos ) {
+        if ( ! hangars || hangars.length === 0 || ! shipPos ) {
+            return null;
+        }
+
+        let best = null;
+        let bestDist = Infinity;
+        for ( const hangar of hangars ) {
+            if ( ! hangar || ! hangar.position ) {
+                continue;
+            }
+            const dx = shipPos.x - hangar.position.x;
+            const dz = shipPos.z - hangar.position.z;
+            const dist = dx * dx + dz * dz;
+            if ( dist < bestDist ) {
+                bestDist = dist;
+                best = hangar;
+            }
+        }
+        return best;
+    }
+
+    /**
+     * Assign the docking bay for an overworld arrival (or crash return).
+     * Updates actor config so walk containment matches the bay that was loaded.
+     */
+    assignApproachHangar( shipPos ) {
+        if ( ! this.targetStructure || ! this.targetStructure.userData || ! this.targetStructure.userData.config ) {
+            return null;
+        }
+
+        const hangars = this.targetStructure.userData.config.hangars;
+        const bay = this.resolveApproachHangar( hangars, shipPos );
+        if ( ! bay ) {
+            return null;
+        }
+
+        const player = l.scenograph.actors.player;
+        const hangarRef = player
+            && player.actorInstance
+            && player.actorInstance.config
+            && player.actorInstance.config.hangar;
+        if ( hangarRef ) {
+            hangarRef.hangarName = bay.name;
+            if ( this.targetStructure.userData.config.name ) {
+                hangarRef.structure = this.targetStructure.userData.config.name;
+            }
+        }
+        return bay;
+    }
+
     loadHangar() {
       if ( ! this.targetStructure ) {
           this.targetStructure = l.scenograph.objects.structures.platform.instances[0];
@@ -84,7 +139,8 @@ export default class hangarRoute {
 
       const hangars = this.targetStructure.userData.config.hangars;
       const name = l.scenograph.actors.player.actorInstance.config.hangar.hangarName;
-      const hangarConfig = hangars.find( ( hangar ) => hangar.name === name );
+      const hangarConfig = hangars.find( ( hangar ) => hangar.name === name )
+          || hangars[ 0 ];
       const hangarMesh = l.scenograph.objects.structures.hangar.mesh;
       hangarMesh.visible = true;
       hangarMesh.position.set( hangarConfig.position.x, hangarConfig.position.y, hangarConfig.position.z );
@@ -655,7 +711,8 @@ export default class hangarRoute {
     }
 
     /**
-     * Dock at Lambda City and walk the hangar.
+     * Dock at Lambda City and walk the hangar on the approach side.
+     * New Game still seeds Hangar 2 via player defaults; flight entry picks by side.
      */
     enterHangar() {
         if ( l.mode === 'hangar' ) {
@@ -689,6 +746,15 @@ export default class hangarRoute {
             player.person.mesh.visible = true;
         }
         this.targetStructure = l.scenograph.objects.structures.platform.instances[0];
+
+        const ship = player.vehicle
+            && player.vehicle.mesh
+            && player.vehicle.mesh.userData
+            && player.vehicle.mesh.userData.object
+            ? player.vehicle.mesh.userData.object.position
+            : null;
+        this.assignApproachHangar( ship );
+
         this.loadHangar();
         this.promptMode = 'depart';
         l.scenograph.controls.setAircraftChrome( false );

@@ -32,11 +32,19 @@ export default class Map {
         // Map markers, keyed by uuid
         this.markers = {};
 
-        // Create the fov icon
+        this._viewDir = new THREE.Vector3();
+
+        // Create the fov icon (aircraft heading).
         this.fov = document.createElement('div');
         this.fov.id = 'map-fov';
         this.fov.innerHTML = this.icons.fov;
         this.container.appendChild(this.fov);
+
+        // Camera viewing angle (orbit / chase look direction).
+        this.view = document.createElement('div');
+        this.view.id = 'map-view';
+        this.view.innerHTML = this.icons.view_angle;
+        this.container.appendChild(this.view);
 
     }
 
@@ -47,11 +55,23 @@ export default class Map {
 
         icons.aircraft = iconTemplate.querySelector('.aircraft').innerHTML;
         icons.fov = iconTemplate.querySelector('.fov').innerHTML;
+        icons.view_angle = iconTemplate.querySelector('.view_angle').innerHTML;
         icons.ship = iconTemplate.querySelector('.ship').innerHTML;
         icons.special = iconTemplate.querySelector('.special').innerHTML;
         icons.structure = iconTemplate.querySelector('.structure').innerHTML;
 
         return icons;
+    }
+
+    /**
+     * Map-space degrees for a world yaw, matching the existing heading chevron.
+     */
+    yawToMapDegrees( yaw ) {
+        let heading = THREE.MathUtils.radToDeg( yaw ) % 360;
+        if ( heading < 0 ) {
+            heading += 360;
+        }
+        return Math.round( 360 - heading );
     }
 
     /**
@@ -171,16 +191,19 @@ export default class Map {
      * @note All references within this method should be globally accessible.
     **/
     animate() {
-        let heading = THREE.MathUtils.radToDeg( l.scenograph.actors.player.vehicle.mesh.rotation.y );
-        heading = heading % 360;
-        if (heading < 0) {
-            heading += 360;
-        }
-        heading = Math.round(360 - heading);
+        const map = l.scenograph.overlays.map;
+        const ship = l.scenograph.actors.player.vehicle.mesh;
+        const cam = l.scenograph.cameras.player;
 
-        l.scenograph.overlays.map.fov.style.transform = 'rotate(' + heading + 'deg)';
+        map.fov.style.transform = 'rotate(' + map.yawToMapDegrees( ship.rotation.y ) + 'deg)';
 
-        l.scenograph.overlays.map.animateMarkers( );
+        // Viewing wedge follows the camera look direction on the ground plane.
+        // Flip 180° so the open end of the wedge faces the look direction on the map.
+        cam.getWorldDirection( map._viewDir );
+        const lookYaw = Math.atan2( map._viewDir.x, map._viewDir.z );
+        map.view.style.transform = 'rotate(' + ( ( map.yawToMapDegrees( lookYaw ) + 180 ) % 360 ) + 'deg)';
+
+        map.animateMarkers( );
     }
 
 }

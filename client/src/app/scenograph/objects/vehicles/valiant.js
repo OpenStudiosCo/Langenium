@@ -11,6 +11,7 @@ import * as THREE from 'three';
  */
 import l from '@/helpers/l.js';
 import { brightenMaterial, proceduralMetalMaterial } from '@/scenograph/materials.js';
+import Afterburner from '@/scenograph/effects/afterburner.js';
 import ValiantObject from '#/game/src/objects/aircraft/valiant';
 
 export default class Valiant {
@@ -45,6 +46,9 @@ export default class Valiant {
     // Short flame trail used at cruise speeds.
     cruiseTrail;
 
+    // Soft shock-diamond rings along the thruster exhaust.
+    afterburner;
+
     // Twin tilt-rotors (Cylinder / Cylinder001) and their articulation state.
     rotors;
 
@@ -55,8 +59,16 @@ export default class Valiant {
         this.camera_distance = 0;
         this.chaseLookAhead = 12;
         this._chaseLookAt = new THREE.Vector3();
+        this._orbitPivotLocal = null;
+        this._orbitPivotWorld = new THREE.Vector3();
+        this._orbitBox = new THREE.Box3();
         this.afterburnerBlend = 0;
         this.trailAnchor = new THREE.Vector3();
+
+        // Visual climb/dive pitch (radians), lerped in updateMesh.
+        this.elevationPitch = 0;
+        this.elevationPitchMax = 18 * Math.PI / 180;
+        this.elevationPitchSmooth = 5;
 
         this.ready = false;
 
@@ -118,6 +130,7 @@ export default class Valiant {
         this.mesh.userData.targetable = true;
 
         this.createThruster();
+        this.afterburner = new Afterburner( this.thruster.container );
         this.setupRotors();
 
         this.mixer = new THREE.AnimationMixer( this.mesh );
@@ -139,10 +152,10 @@ export default class Valiant {
         this.cruiseTrail.mesh.material.uniforms.headColor.value.w = 0;
         this.cruiseTrail.mesh.material.uniforms.tailColor.value.w = 0;
 
-        // Longer soft cylinder plume for afterburner.
+        // Soft sheath around the shock diamonds (full 16-node buffer).
         this.trail = l.current_scene.effects.trail.createTrail(
             this.mesh, 0, this.trail_position_y, this.trail_position_z,
-            { trailLength: 16, advanceFrequency: 48, headScale: 0.2, nameSuffix: ' Afterburner Trail' }
+            { trailLength: 8, advanceFrequency: 48, headScale: 0.28, nameSuffix: ' Afterburner Trail' }
         );
         this.trail.mesh.visible = false;
         this.trail.mesh.material.uniforms.headColor.value.w = 0;
@@ -433,23 +446,12 @@ export default class Valiant {
 
         this.animateRotors( delta );
 
-        // Rock the ship forward and back when moving horizontally
+        // Rock the ship forward and back when moving horizontally.
+        // Elevation pitch is applied in updateMesh so it survives the sim sync.
         if ( this.mesh.userData.object.controls.throttleDown || this.mesh.userData.object.controls.throttleUp ) {
             let pitchChange = this.mesh.userData.object.controls.throttleUp ? -1 : 1;
             if ( Math.abs( this.mesh.rotation.x ) < 1 / 4 ) {
                 this.mesh.rotation.x += pitchChange / 10 / 180;
-            }
-        }
-
-        // Rock the ship forward and back when moving vertically
-        if (
-            this.mesh.userData.object.controls.moveDown
-            ||
-            this.mesh.userData.object.controls.moveUp
-        ) {
-            let elevationChange = this.mesh.userData.object.controls.moveDown ? -1 : 1;
-            if ( Math.abs( this.mesh.rotation.x ) < 1 / 8 ) {
-                this.mesh.rotation.x += elevationChange / 10 / 180;
             }
         }
     }
@@ -462,42 +464,97 @@ export default class Valiant {
         return distance;
     }
 
-    getChaseCameraPosition( yaw = this.mesh.rotation.y ) {
+    /**
+     * Visual centre of the aircraft in world space (mesh origin is often not the hull centre).
+     */
+    getOrbitPivot() {
+        if ( ! this._orbitPivotLocal && this.mesh ) {
+            this._orbitBox.setFromObject( this.mesh );
+            this._orbitPivotLocal = this._orbitBox.getCenter( new THREE.Vector3() );
+            this.mesh.worldToLocal( this._orbitPivotLocal );
+        }
+
+        if ( ! this._orbitPivotLocal ) {
+            return this.mesh.position;
+        }
+
+        this._orbitPivotWorld.copy( this._orbitPivotLocal );
+        this.mesh.localToWorld( this._orbitPivotWorld );
+        return this._orbitPivotWorld;
+    }
+
+    getChaseCameraPosition( yaw = this.mesh.rotation.y, pitch = 0, aroundCentre = false ) {
         const ship = this.mesh;
+        const maxPitch = 55 * Math.PI / 180;
+        const clampedPitch = Math.max( -maxPitch, Math.min( maxPitch, pitch ) );
+
+        // Rare helper path: sphere around the visual hull centre (OrbitControls owns live user orbit).
+        if ( aroundCentre ) {
+            const pivot = this.getOrbitPivot();
+            const distance = -Math.abs( this.chaseCameraDistance() );
+            const horizontal = distance * Math.cos( clampedPitch );
+            return {
+                x: pivot.x + horizontal * Math.sin( yaw ),
+                y: pivot.y - distance * Math.sin( clampedPitch ),
+                z: pivot.z + horizontal * Math.cos( yaw )
+            };
+        }
+
         const distance = this.chaseCameraDistance();
+        const horizontal = distance * Math.cos( clampedPitch );
         return {
-            x: ship.position.x + distance * Math.sin( yaw ),
-            y: ship.position.y + ( l.scenograph.cameras.playerY - 8.5 ),
-            z: ship.position.z + distance * Math.cos( yaw )
+            x: ship.position.x + horizontal * Math.sin( yaw ),
+            y: ship.position.y + ( l.scenograph.cameras.playerY - 8.5 ) + Math.abs( distance ) * Math.sin( clampedPitch ),
+            z: ship.position.z + horizontal * Math.cos( yaw )
         };
     }
 
-    aimChaseCamera() {
-        const ship = this.mesh;
-        const heading = ship.rotation.y;
-        this._chaseLookAt.set(
-            ship.position.x - Math.sin( heading ) * this.chaseLookAhead,
-            ship.position.y + 1.2,
-            ship.position.z - Math.cos( heading ) * this.chaseLookAhead
-        );
+    aimChaseCamera( aroundCentre = false ) {
+        if ( aroundCentre ) {
+            this._chaseLookAt.copy( this.getOrbitPivot() );
+        }
+        else {
+            const ship = this.mesh;
+            const heading = ship.rotation.y;
+            this._chaseLookAt.set(
+                ship.position.x - Math.sin( heading ) * this.chaseLookAhead,
+                ship.position.y + 1.2,
+                ship.position.z - Math.cos( heading ) * this.chaseLookAhead
+            );
+        }
         l.scenograph.cameras.player.lookAt( this._chaseLookAt );
     }
 
-    applyChaseCamera( yaw = this.mesh.rotation.y ) {
-        const pos = this.getChaseCameraPosition( yaw );
+    applyChaseCamera( yaw = this.mesh.rotation.y, pitch = 0, aroundCentre = false ) {
+        const pos = this.getChaseCameraPosition( yaw, pitch, aroundCentre );
         l.scenograph.cameras.player.position.set( pos.x, pos.y, pos.z );
-        this.aimChaseCamera();
+        this.aimChaseCamera( aroundCentre );
         l.scenograph.cameras.player.updateProjectionMatrix();
     }
 
     // Update the position of the aircraft to spot determined by game logic.
-    updateMesh() {
-        this.mesh.position.x = this.mesh.userData.object.position.x;
-        this.mesh.position.y = this.mesh.userData.object.position.y;
-        this.mesh.position.z = this.mesh.userData.object.position.z;
-        this.mesh.rotation.x = this.mesh.userData.object.rotation.x;
-        this.mesh.rotation.y = this.mesh.userData.object.rotation.y;
-        this.mesh.rotation.z = this.mesh.userData.object.rotation.z;
+    updateMesh( delta = 1 / 60 ) {
+        const object = this.mesh.userData.object;
+
+        this.mesh.position.x = object.position.x;
+        this.mesh.position.y = object.position.y;
+        this.mesh.position.z = object.position.z;
+        this.mesh.rotation.y = object.rotation.y;
+        this.mesh.rotation.z = object.rotation.z;
+
+        // Smooth nose pitch toward climb / dive from vertical speed.
+        let targetPitch = 0;
+        if ( object.verticalSpeed > 0.01 ) {
+            targetPitch = this.elevationPitchMax;
+        }
+        else if ( object.verticalSpeed < -0.01 ) {
+            targetPitch = -this.elevationPitchMax;
+        }
+
+        const blend = 1 - Math.exp( -this.elevationPitchSmooth * Math.max( 0, delta ) );
+        this.elevationPitch += ( targetPitch - this.elevationPitch ) * blend;
+
+        this.mesh.rotation.x = object.rotation.x + this.elevationPitch;
     }
 
     /**
@@ -530,11 +587,10 @@ export default class Valiant {
         let object = this.mesh.userData.object,
             thrusting = object.airSpeed < 0,
             speed = Math.abs( object.airSpeed ),
-            // Crossfade short flame → cylinder between 380–420 km/h (HUD @ 60 FPS).
+            // Crossfade short flame → afterburner between 380–420 km/h (HUD @ 60 FPS).
             fadeIn = 380 / 60,
             fadeOut = 420 / 60,
             cruiseCap = object.cruiseForward || ( 400 / 60 ),
-            // Keeps afterburner plume length near the earlier soft-cylinder look.
             nodeSpacing = ( 35 / 60 ) * ( 60 / 48 ),
             blendTarget = 0,
             cruiseWeight = 0,
@@ -544,7 +600,29 @@ export default class Valiant {
             cruiseJitter = 0.012,
             traveled = 0,
             steps = 0,
-            i = 0;
+            i = 0,
+            // Warm cruise sheath → electric blue afterburner plume.
+            warmHeadR = 1.0,
+            warmHeadG = 0.83,
+            warmHeadB = 0.58,
+            warmTailR = 0.52,
+            warmTailG = 0.16,
+            warmTailB = 0.14,
+            blueHeadR = 0.45,
+            blueHeadG = 0.75,
+            blueHeadB = 1.0,
+            blueTailR = 0.25,
+            blueTailG = 0.45,
+            blueTailB = 0.95,
+            sheathBlend = 0,
+            headR = 0,
+            headG = 0,
+            headB = 0,
+            tailR = 0,
+            tailG = 0,
+            tailB = 0,
+            // Cruise plume stays on during afterburner (~50%); was fully crossfaded off before.
+            cruiseAlpha = 0;
 
         if ( speed >= fadeOut ) {
             blendTarget = 1;
@@ -560,6 +638,7 @@ export default class Valiant {
 
         cruiseWeight = 1 - this.afterburnerBlend;
         afterburnerWeight = this.afterburnerBlend;
+        cruiseAlpha = 0.8 * cruiseWeight + 0.25 * afterburnerWeight;
 
         // Turbulence only after cruise; gentle at first, then ramps toward maxForward.
         if ( speed > cruiseCap ) {
@@ -583,8 +662,16 @@ export default class Valiant {
 
             this.mesh.updateMatrixWorld( true );
 
-            // Short cruise flame.
-            if ( cruiseWeight > 0.01 ) {
+            sheathBlend = afterburnerWeight;
+            headR = warmHeadR + ( blueHeadR - warmHeadR ) * sheathBlend;
+            headG = warmHeadG + ( blueHeadG - warmHeadG ) * sheathBlend;
+            headB = warmHeadB + ( blueHeadB - warmHeadB ) * sheathBlend;
+            tailR = warmTailR + ( blueTailR - warmTailR ) * sheathBlend;
+            tailG = warmTailG + ( blueTailG - warmTailG ) * sheathBlend;
+            tailB = warmTailB + ( blueTailB - warmTailB ) * sheathBlend;
+
+            // Original cruise plume — stays visible during afterburner (layered under diamonds).
+            if ( cruiseAlpha > 0.01 ) {
                 if ( ! this.cruiseTrail.mesh.visible ) {
                     this.cruiseTrail.reset();
                     this.cruiseTrail.lastAdvanceTime = 0;
@@ -595,8 +682,8 @@ export default class Valiant {
                     this.trail_position_y + ( Math.random() * 2 - 1 ) * cruiseJitter * 0.5,
                     this.trail_position_z
                 );
-                this.cruiseTrail.mesh.material.uniforms.headColor.value.set( 1.0, 0.83, 0.58, 0.8 * cruiseWeight );
-                this.cruiseTrail.mesh.material.uniforms.tailColor.value.set( 0.52, 0.16, 0.14, 0.25 * cruiseWeight );
+                this.cruiseTrail.mesh.material.uniforms.headColor.value.set( headR, headG, headB, cruiseAlpha );
+                this.cruiseTrail.mesh.material.uniforms.tailColor.value.set( tailR, tailG, tailB, 0.3 * cruiseAlpha );
                 this.cruiseTrail.update();
             }
             else {
@@ -605,7 +692,7 @@ export default class Valiant {
                 this.cruiseTrail.mesh.visible = false;
             }
 
-            // Soft afterburner cylinder.
+            // Longer soft sheath wrapping the shock-diamond chain.
             if ( afterburnerWeight > 0.01 ) {
                 if ( ! this.trail.mesh.visible ) {
                     this.trail.reset();
@@ -619,11 +706,12 @@ export default class Valiant {
                     this.trail_position_y + ( Math.random() * 2 - 1 ) * jitter * 0.5,
                     this.trail_position_z
                 );
-                this.trail.mesh.material.uniforms.headColor.value.set( 1.0, 0.83, 0.58, 0.9 * afterburnerWeight );
-                this.trail.mesh.material.uniforms.tailColor.value.set( 0.52, 0.16, 0.14, 0.0 );
+
+                this.trail.mesh.material.uniforms.headColor.value.set( headR, headG, headB, 0.375 * afterburnerWeight );
+                this.trail.mesh.material.uniforms.tailColor.value.set( tailR, tailG, tailB, 0.15 * afterburnerWeight );
 
                 traveled = this.mesh.position.distanceTo( this.trailAnchor );
-                steps = Math.min( 5, Math.floor( traveled / Math.max( 0.05, nodeSpacing ) ) );
+                steps = Math.min( 8, Math.floor( traveled / Math.max( 0.05, nodeSpacing ) ) );
                 for ( i = 0; i < steps; i++ ) {
                     this.trail.advance();
                 }
@@ -638,6 +726,10 @@ export default class Valiant {
                 this.trail.mesh.material.uniforms.tailColor.value.w = 0;
                 this.trail.mesh.visible = false;
             }
+
+            if ( this.afterburner ) {
+                this.afterburner.update( speed, this.afterburnerBlend );
+            }
         }
         else {
             this.cruiseTrail.mesh.material.uniforms.headColor.value.set( 1.0, 0.83, 0.58, 0 );
@@ -647,6 +739,9 @@ export default class Valiant {
             this.trail.mesh.material.uniforms.tailColor.value.set( 0.52, 0.16, 0.14, 0 );
             this.trail.mesh.visible = false;
             this.afterburnerBlend = 0;
+            if ( this.afterburner ) {
+                this.afterburner.update( 0, 0 );
+            }
         }
     }
 

@@ -42,6 +42,9 @@ export default class Player {
         // Chase cam yaw, lags behind the ship so turns stay framed.
         this.chaseYaw = 0;
 
+        // True after the player engages OrbitControls until Recentre.
+        this.userOrbitActive = false;
+
         this.setMode();
     }
 
@@ -90,6 +93,14 @@ export default class Player {
         }
 
         this.chaseYaw = this.vehicle?.mesh?.rotation.y ?? 0;
+        this.userOrbitActive = false;
+        if ( l.scenograph.overlays && l.scenograph.overlays.axis_orbit ) {
+            l.scenograph.overlays.axis_orbit.dragging = false;
+            if ( l.scenograph.overlays.axis_orbit.controls ) {
+                l.scenograph.overlays.axis_orbit.syncControlsTarget();
+                l.scenograph.overlays.axis_orbit.controls.update();
+            }
+        }
     }
 
     async load() {
@@ -212,38 +223,45 @@ export default class Player {
 
     }
 
-    getChaseCameraPosition( yaw = this.chaseYaw ) {
-        return this.vehicle.getChaseCameraPosition( yaw );
+    getChaseCameraPosition( yaw = this.chaseYaw, pitch = 0, aroundCentre = false ) {
+        return this.vehicle.getChaseCameraPosition( yaw, pitch, aroundCentre );
     }
 
-    aimChaseCamera() {
-        this.vehicle.aimChaseCamera();
+    aimChaseCamera( aroundCentre = false ) {
+        this.vehicle.aimChaseCamera( aroundCentre );
+    }
+
+    hasUserOrbitFraming() {
+        const axisOrbit = l.scenograph.overlays && l.scenograph.overlays.axis_orbit;
+        const dragging = axisOrbit && axisOrbit.dragging;
+        return this.userOrbitActive || dragging;
     }
 
     updateCamera( rY, tY, tZ ) {
         const ship = this.vehicle.mesh;
         const cam = l.scenograph.cameras.player;
         const heading = ship.rotation.y;
+        const axisOrbit = l.scenograph.overlays && l.scenograph.overlays.axis_orbit;
 
         this.vehicle.camera_distance = this.vehicle.chaseCameraDistance();
 
-        // Lag placement yaw behind the ship so the camera sits outside the turn.
-        let yawError = Math.atan2( Math.sin( heading - this.chaseYaw ), Math.cos( heading - this.chaseYaw ) );
-        this.chaseYaw += yawError * ( rY != 0 ? 0.12 : 0.22 );
-
-        yawError = Math.atan2( Math.sin( heading - this.chaseYaw ), Math.cos( heading - this.chaseYaw ) );
-        const maxLag = 0.45;
-        if ( Math.abs( yawError ) > maxLag ) {
-            this.chaseYaw = heading - Math.sign( yawError ) * maxLag;
+        if ( this.hasUserOrbitFraming() && axisOrbit ) {
+            // OrbitControls owns camera position around the hull pivot.
+            axisOrbit.updatePlayerOrbit();
         }
+        else {
+            // Lag placement yaw behind the ship so the camera sits outside the turn.
+            let yawError = Math.atan2( Math.sin( heading - this.chaseYaw ), Math.cos( heading - this.chaseYaw ) );
+            this.chaseYaw += yawError * ( rY != 0 ? 0.12 : 0.22 );
 
-        const pos = this.vehicle.getChaseCameraPosition( this.chaseYaw );
-        cam.position.set( pos.x, pos.y, pos.z );
+            yawError = Math.atan2( Math.sin( heading - this.chaseYaw ), Math.cos( heading - this.chaseYaw ) );
+            const maxLag = 0.45;
+            if ( Math.abs( yawError ) > maxLag ) {
+                this.chaseYaw = heading - Math.sign( yawError ) * maxLag;
+            }
 
-        const rotationPadDown = l.scenograph.controls.touch
-            && l.scenograph.controls.touch.controls.rotationPad.mouseDown;
-
-        if ( ! rotationPadDown ) {
+            const pos = this.vehicle.getChaseCameraPosition( this.chaseYaw, 0, false );
+            cam.position.set( pos.x, pos.y, pos.z );
             this.vehicle.aimChaseCamera();
         }
 
@@ -296,7 +314,7 @@ export default class Player {
 
         let [ rY, tY, tZ ] = this.vehicle.mesh.userData.object.move( delta );
 
-        this.vehicle.updateMesh();
+        this.vehicle.updateMesh( delta );
 
         this.updateCamera( rY, tY, tZ );
     }

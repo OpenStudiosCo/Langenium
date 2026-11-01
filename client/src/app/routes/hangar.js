@@ -29,9 +29,10 @@ export default class hangarRoute {
         // Set client mode.
         l.mode = 'hangar';
 
-        // Start controls. Move + camera only; climb/weapons stay hidden.
+        // Start controls. Move + axis orbit; climb/weapons stay hidden.
         l.scenograph.controls.activate();
         l.scenograph.controls.setAircraftChrome( false );
+        l.scenograph.controls.setAxisOrbitVisible( true );
 
         l.routes.setDemoVisible( false );
 
@@ -578,6 +579,7 @@ export default class hangarRoute {
         }
         this.departing = true;
         this.hidePrompt();
+        l.scenograph.controls.setAxisOrbitVisible( false );
         if ( l.ui && l.ui.inventory ) {
             l.ui.inventory.hidePersonButton();
             if ( l.ui.inventory.isOpen() ) {
@@ -703,6 +705,7 @@ export default class hangarRoute {
         this.setPlayerCameraNear( 2.5 );
         l.scenograph.overlays.activate();
         l.scenograph.controls.setAircraftChrome( true );
+        l.scenograph.controls.setAxisOrbitVisible( true );
         hangarRoute.watchOverworld();
         if ( l.sessions ) {
             l.sessions.state.noteModes( 'single_player', 'vehicle' );
@@ -742,6 +745,7 @@ export default class hangarRoute {
         const player = l.scenograph.actors.player || l.scenograph.actors.get( 'Player' );
         l.scenograph.actors.player = player;
         player.setMode( 'person' );
+        player.userOrbitActive = false;
         if ( player.person && player.person.mesh ) {
             player.person.mesh.visible = true;
         }
@@ -758,6 +762,7 @@ export default class hangarRoute {
         this.loadHangar();
         this.promptMode = 'depart';
         l.scenograph.controls.setAircraftChrome( false );
+        l.scenograph.controls.setAxisOrbitVisible( true );
         if ( l.sessions ) {
             l.sessions.state.noteModes( 'hangar', 'person' );
             l.sessions.saveNow( 'transition' );

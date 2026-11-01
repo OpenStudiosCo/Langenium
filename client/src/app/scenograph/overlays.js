@@ -10,16 +10,37 @@
  * Internal libs and helpers.
  */
 import l from '@/helpers/l.js';
+import AxisOrbit from '@/scenograph/overlays/axis_orbit.js';
 import HeadsUpDisplay from '@/scenograph/overlays/heads-up-display.js';
 import Map from '@/scenograph/overlays/map.js';
 import Scanners from '@/scenograph/overlays/scanners.js';
 
 export default class Overlays {
+    axis_orbit;
+
     hud;
 
     scanners;
 
     constructor() {}
+
+    /**
+     * Create or show the axis-orbit chrome. Hangar uses this without full flight HUD.
+     */
+    ensureAxisOrbit( show = true ) {
+        if ( show ) {
+            if ( ! this.axis_orbit ) {
+                this.axis_orbit = new AxisOrbit();
+                l.current_scene.animation_queue.push( this.axis_orbit.animate );
+            }
+            this.axis_orbit.setVisible( true );
+            return;
+        }
+
+        if ( this.axis_orbit ) {
+            this.axis_orbit.setVisible( false );
+        }
+    }
 
     activate() {
         // Heads Up Display (HUD).
@@ -33,6 +54,9 @@ export default class Overlays {
         l.current_scene.animation_queue.push(
             l.scenograph.overlays.map.animate
         );
+
+        // Axis orbit control under the minimap (flight and hangar).
+        this.ensureAxisOrbit( true );
 
         // Scanners.
         l.scenograph.overlays.scanners = new Scanners();
@@ -64,6 +88,12 @@ export default class Overlays {
                 this.map.container.style.display = 'none';
             }
             this.map = false;
+        }
+
+        if ( this.axis_orbit ) {
+            drop.add( this.axis_orbit.animate );
+            this.axis_orbit.dispose();
+            this.axis_orbit = false;
         }
 
         if ( this.scanners ) {

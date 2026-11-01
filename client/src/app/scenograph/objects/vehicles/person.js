@@ -148,9 +148,17 @@ export default class Person {
             // Sync the mesh to game world state.
             this.sync();
 
-            // Update the person's camera
-            this.updateCamera();
-            l.scenograph.cameras.player.rotation.y = this.game.object.rotation.y;
+            const player = l.scenograph.actors.player;
+            const axisOrbit = l.scenograph.overlays && l.scenograph.overlays.axis_orbit;
+
+            // Axis orbit owns framing while the player is dragging / locked in user orbit.
+            if ( player && player.hasUserOrbitFraming() && axisOrbit ) {
+                axisOrbit.updatePlayerOrbit();
+            }
+            else {
+                this.updateCamera();
+                l.scenograph.cameras.player.rotation.y = this.game.object.rotation.y;
+            }
 
         }
     }

@@ -31,8 +31,8 @@ export default class routes {
     exitGame() {
         console.log( 'Exit to Main Menu, closing game session' );
 
-        if ( l.saves ) {
-            l.saves.endSession();
+        if ( l.sessions ) {
+            l.sessions.end();
         }
 
         l.scenograph.controls.deactivate();

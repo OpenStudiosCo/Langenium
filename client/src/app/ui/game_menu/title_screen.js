@@ -48,7 +48,7 @@ export default class Title_Screen {
             const slotNew = event.target.closest( '[data-slot-new]' );
             if ( slotNew ) {
                 const slot = Number( slotNew.dataset.slotNew );
-                const occupied = !!l.saves.read( slot );
+                const occupied = !!l.sessions.saves.read( slot );
                 if ( occupied && ! window.confirm( 'Overwrite save slot ' + ( slot + 1 ) + '?' ) ) {
                     return;
                 }
@@ -247,13 +247,13 @@ export default class Title_Screen {
     refreshSaveSlots() {
         const list = this.container.querySelector( '[data-save-slots]' );
         const template = document.querySelector( '#templates #save_slot' );
-        if ( ! list || ! l.saves || ! template ) {
+        if ( ! list || ! l.sessions || ! template ) {
             return;
         }
 
         list.innerHTML = '';
-        l.saves.list().forEach( ( entry ) => {
-            const summary = l.saves.slotSummary( entry.payload );
+        l.sessions.saves.list().forEach( ( entry ) => {
+            const summary = l.sessions.saves.slotSummary( entry.payload );
             const item = template.content.firstElementChild.cloneNode( true );
 
             item.className = summary.empty ? 'save_slot empty' : 'save_slot occupied';
@@ -308,8 +308,7 @@ export default class Title_Screen {
                     return;
                 }
 
-                const existing = mode === 'continue' ? l.saves.read( slot ) : null;
-                const session = await l.saves.startSession( slot, mode );
+                const session = await l.sessions.start( slot, mode );
                 if ( session.appMode === 'single_player' ) {
                     new l.routes.singlePlayer();
                 }
@@ -317,10 +316,7 @@ export default class Title_Screen {
                     new l.routes.hangar();
                 }
                 // Hangar placement overwrites poses; re-apply Continue state afterwards.
-                if ( existing ) {
-                    l.saves.apply( existing );
-                }
-                l.saves.saveNow( 'launch' );
+                l.sessions.afterRouteEnter( session.existing );
 
                 l.ui.menus.main_menu.enterSession( {
                     welcome: mode !== 'continue',
@@ -382,7 +378,7 @@ export default class Title_Screen {
             const launch = async () => {
                 this.launching = false;
 
-                await l.saves.ensurePlayerReady();
+                await l.sessions.ensurePlayerReady();
 
                 if ( story === 'hangar' ) {
                     new l.routes.hangar();

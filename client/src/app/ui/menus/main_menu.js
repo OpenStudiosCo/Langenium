@@ -52,7 +52,7 @@ export default class Main_Menu {
             title: 'Overworld',
         } );
         this.buttons.overworld.on( 'click', async () => {
-            await l.saves.ensurePlayerReady();
+            await l.sessions.ensurePlayerReady();
             this.enterSession();
             new l.routes.singlePlayer();
         } );
@@ -61,7 +61,7 @@ export default class Main_Menu {
             title: 'Hangar',
         } );
         this.buttons.hangar.on( 'click', async () => {
-            await l.saves.ensurePlayerReady();
+            await l.sessions.ensurePlayerReady();
             this.enterSession();
             new l.routes.hangar();
         } );

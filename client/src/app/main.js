@@ -4,7 +4,7 @@
 import l from '@/helpers/l.js';
 import Config from "@/config.js";
 import Routes from "@/routes.js";
-import Saves from "@/saves.js";
+import Sessions from "@/sessions.js";
 import Scenograph from "@/scenograph.js";
 import UI from "@/ui.js";
 
@@ -14,9 +14,9 @@ import UI from "@/ui.js";
 l.config = new Config();
 
 /**
- * Three localStorage save slots for single-player progress.
+ * Single-player session state, lifecycle and save slots.
  */
-l.saves = new Saves();
+l.sessions = new Sessions();
 
 /**
  * Routes activate game modes and screens.

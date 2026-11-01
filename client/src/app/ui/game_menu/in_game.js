@@ -27,14 +27,14 @@ export default class InGame {
 
         if ( this.saveButton ) {
             this.saveButton.addEventListener( 'click', () => {
-                if ( l.saves ) {
-                    l.saves.saveManual();
+                if ( l.sessions ) {
+                    l.sessions.saveManual();
                 }
             } );
         }
 
-        if ( l.saves ) {
-            l.saves.onStatus( ( status ) => this.onSaveStatus( status ) );
+        if ( l.sessions ) {
+            l.sessions.onStatus( ( status ) => this.onSaveStatus( status ) );
         }
     }
 

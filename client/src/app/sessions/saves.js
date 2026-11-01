@@ -1,41 +1,25 @@
 /**
  * @name            Saves
- * @description     Three localStorage save slots for the single-player session.
- * @namespace       l.saves
- * @memberof        l
+ * @description     localStorage slot CRUD and save payload serialisation.
+ * @namespace       l.sessions.saves
+ * @memberof        l.sessions
  */
 
 /**
  * Internal libs and helpers.
  */
 import l from '@/helpers/l.js';
-import PlayerDefaults from '#/game/src/scenes/playerDefaults';
 
 const SLOT_COUNT = 3;
 const META_KEY = 'langenium.saves';
 const slotKey = ( slot ) => 'langenium.save.' + slot;
-const AUTOSAVE_MS = 60000;
 
 export default class Saves {
 
-    activeSlot;
-    autosaveTimer;
-    statusListeners;
+    sessions;
 
-    constructor() {
-        this.activeSlot = null;
-        this.autosaveTimer = null;
-        this.statusListeners = [];
-    }
-
-    onStatus( listener ) {
-        this.statusListeners.push( listener );
-    }
-
-    emitStatus( status, detail ) {
-        for ( const listener of this.statusListeners ) {
-            listener( status, detail );
-        }
+    constructor( sessions ) {
+        this.sessions = sessions;
     }
 
     list() {
@@ -75,7 +59,7 @@ export default class Saves {
             return true;
         }
         catch ( error ) {
-            this.emitStatus( 'error', { slot, error } );
+            this.sessions.emitStatus( 'error', { slot, error } );
             return false;
         }
     }
@@ -86,7 +70,7 @@ export default class Saves {
             return true;
         }
         catch ( error ) {
-            this.emitStatus( 'error', { slot, error } );
+            this.sessions.emitStatus( 'error', { slot, error } );
             return false;
         }
     }
@@ -101,17 +85,6 @@ export default class Saves {
         catch ( error ) {
             // Meta is optional; ignore.
         }
-    }
-
-    cloneDefaults() {
-        return JSON.parse( JSON.stringify( PlayerDefaults ) );
-    }
-
-    getPersonObject() {
-        const player = l.scenograph && l.scenograph.actors && l.scenograph.actors.player;
-        return player && player.actorInstance && player.actorInstance.object
-            ? player.actorInstance.object
-            : null;
     }
 
     getAircraftObject() {
@@ -142,7 +115,7 @@ export default class Saves {
         const aircraft = this.getAircraftObject();
 
         return {
-            slot: this.activeSlot,
+            slot: this.sessions.state.activeSlot,
             appMode: l.mode === 'hangar' ? 'hangar' : 'single_player',
             controlMode: player && player.mode === 'person' ? 'person' : 'vehicle',
             hangar: hangarRef,
@@ -235,41 +208,6 @@ export default class Saves {
     }
 
     /**
-     * New Game: seed facility storage + aircraft cargo from the player
-     * blueprint. Location inventory is hangar.inventory (structure-level,
-     * e.g. Lambda City) — the same bag regardless of bay.
-     */
-    resetForNewGame() {
-        const defaults = this.cloneDefaults();
-
-        const person = this.getPersonObject();
-        if ( person && person.inventory ) {
-            person.inventory.clear();
-            const locationSeed = defaults.hangar && defaults.hangar.inventory;
-            if ( Array.isArray( locationSeed ) ) {
-                person.applyInventory( locationSeed );
-            }
-        }
-
-        const aircraft = this.getAircraftObject();
-        if ( aircraft ) {
-            const aircraftSeed = defaults.aircraft && defaults.aircraft.inventory;
-            if ( aircraft.inventory && typeof aircraft.inventory.applySlots === 'function' ) {
-                aircraft.inventory.applySlots(
-                    Array.isArray( aircraftSeed ) ? aircraftSeed : []
-                );
-            }
-            else if ( aircraft.inventory && typeof aircraft.inventory.clear === 'function' ) {
-                aircraft.inventory.clear();
-            }
-            aircraft.capacitor = 1;
-            aircraft.hitPoints = 100;
-            aircraft.airSpeed = 0;
-            aircraft.verticalSpeed = 0;
-        }
-    }
-
-    /**
      * Apply a save payload onto the live player bags and pose.
      */
     apply( payload ) {
@@ -323,128 +261,6 @@ export default class Saves {
             }
             player.vehicle.updateMesh();
         }
-    }
-
-    /**
-     * Begin a play session from an empty slot (new) or an occupied one (continue).
-     */
-    async startSession( slot, mode ) {
-        const isNew = mode === 'new';
-        const existing = this.read( slot );
-
-        this.emitStatus( 'loading', { slot, mode } );
-
-        const defaults = this.cloneDefaults();
-        if ( ! isNew && existing && existing.hangar ) {
-            defaults.hangar = {
-                structure: existing.hangar.structure,
-                hangarName: existing.hangar.hangarName,
-            };
-            if ( existing.person && existing.person.position ) {
-                defaults.position = { ...existing.person.position };
-                defaults.rotation = { ...existing.person.rotation };
-            }
-        }
-
-        await l.current_scene.spawnPlayer( defaults );
-        this.activeSlot = slot;
-
-        if ( isNew ) {
-            this.resetForNewGame();
-            // Seed an immediate slot so Continue appears if they exit quickly.
-            this.write( slot, this.capture() );
-        }
-        else if ( existing ) {
-            this.apply( existing );
-        }
-
-        this.beginAutosave();
-        return {
-            appMode: isNew ? 'hangar' : ( existing && existing.appMode ) || 'hangar',
-            controlMode: isNew ? 'person' : ( existing && existing.controlMode ) || 'person',
-        };
-    }
-
-    endSession() {
-        this.stopAutosave();
-        if ( this.activeSlot !== null && ( l.mode === 'hangar' || l.mode === 'single_player' ) ) {
-            this.saveNow( 'exit' );
-        }
-        this.activeSlot = null;
-        if ( l.current_scene && typeof l.current_scene.despawnPlayer === 'function' ) {
-            l.current_scene.despawnPlayer();
-        }
-    }
-
-    beginAutosave() {
-        this.stopAutosave();
-        this.autosaveTimer = window.setInterval( () => {
-            if ( this.activeSlot === null ) {
-                return;
-            }
-            if ( l.mode !== 'hangar' && l.mode !== 'single_player' ) {
-                return;
-            }
-            this.saveNow( 'interval' );
-        }, AUTOSAVE_MS );
-    }
-
-    stopAutosave() {
-        if ( this.autosaveTimer ) {
-            window.clearInterval( this.autosaveTimer );
-            this.autosaveTimer = null;
-        }
-    }
-
-    /**
-     * Capture and write the active slot. Used by autosave, transitions, and manual Save.
-     */
-    saveNow( reason ) {
-        if ( this.activeSlot === null ) {
-            return false;
-        }
-        if ( l.mode !== 'hangar' && l.mode !== 'single_player' && reason !== 'exit' ) {
-            return false;
-        }
-
-        this.emitStatus( 'saving', { slot: this.activeSlot, reason } );
-        const ok = this.write( this.activeSlot, this.capture() );
-        if ( ok ) {
-            this.emitStatus( 'saved', {
-                slot: this.activeSlot,
-                reason,
-                manual: reason === 'manual',
-            } );
-        }
-        return ok;
-    }
-
-    saveManual() {
-        return this.saveNow( 'manual' );
-    }
-
-    /**
-     * Ensure a World + scenograph player exists (debug menu / mid-session).
-     */
-    async ensurePlayerReady() {
-        const existing = l.scenograph.actors.get( 'Player' );
-        const worldPlayer = l.current_scene
-            && l.current_scene.world
-            && l.current_scene.world.getPlayer
-            && l.current_scene.world.getPlayer();
-
-        if ( existing && worldPlayer ) {
-            l.scenograph.actors.player = existing;
-            return existing;
-        }
-
-        const defaults = this.cloneDefaults();
-        await l.current_scene.spawnPlayer( defaults );
-        if ( this.activeSlot === null ) {
-            this.activeSlot = 0;
-            this.beginAutosave();
-        }
-        return l.scenograph.actors.player;
     }
 
     /**

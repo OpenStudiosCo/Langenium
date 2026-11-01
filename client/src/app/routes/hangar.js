@@ -648,8 +648,9 @@ export default class hangarRoute {
         l.scenograph.overlays.activate();
         l.scenograph.controls.setAircraftChrome( true );
         hangarRoute.watchOverworld();
-        if ( l.saves ) {
-            l.saves.saveNow( 'transition' );
+        if ( l.sessions ) {
+            l.sessions.state.noteModes( 'single_player', 'vehicle' );
+            l.sessions.saveNow( 'transition' );
         }
     }
 
@@ -691,8 +692,9 @@ export default class hangarRoute {
         this.loadHangar();
         this.promptMode = 'depart';
         l.scenograph.controls.setAircraftChrome( false );
-        if ( l.saves ) {
-            l.saves.saveNow( 'transition' );
+        if ( l.sessions ) {
+            l.sessions.state.noteModes( 'hangar', 'person' );
+            l.sessions.saveNow( 'transition' );
         }
     }
 

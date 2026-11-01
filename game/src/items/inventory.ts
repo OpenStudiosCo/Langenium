@@ -64,7 +64,7 @@ export default class Inventory {
                 return;
             }
 
-            this.set( index, this.cloneItem( entry ) );
+            this.set( index, this.loadItem( entry ) );
         } );
     }
 
@@ -187,14 +187,15 @@ export default class Inventory {
         const move = Math.floor( qty / 2 );
         const keep = qty - move;
         item.qty = keep;
-        this.slots[ dest ] = this.cloneItem( item, move );
+        this.slots[ dest ] = this.loadItem( item, move );
         return true;
     }
 
     /**
-     * Copy an item, optionally overriding qty. Preserves charge / capacity.
+     * Load an item into a bag slot shape, optionally overriding qty.
+     * Preserves charge / capacity.
      */
-    cloneItem( entry: any, qty?: number ): ItemInstance {
+    loadItem( entry: any, qty?: number ): ItemInstance {
         const item: ItemInstance = {
             id: entry.id,
             name: entry.name || entry.id,

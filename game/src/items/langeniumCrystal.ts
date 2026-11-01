@@ -61,6 +61,7 @@ export function chargeState( item: ItemInstance | null | undefined ): CrystalCha
 
 /**
  * Format charge / capacity for the item detail strip.
+ * Whole MWh stay compact (5 / 10 MWh); fractions keep up to three places.
  */
 export function formatPower( item: ItemInstance | null | undefined ): string | null {
     if ( ! item || item.capacity === undefined ) {
@@ -72,25 +73,16 @@ export function formatPower( item: ItemInstance | null | undefined ): string | n
         ? 0
         : Math.max( 0, Math.min( capacity, item.charge ) );
 
-    const partial = charge > 0 && charge < capacity;
-    const chargeText = formatPowerValue( charge, partial );
-    const capacityText = formatPowerValue( capacity, false );
-
-    return chargeText + ' / ' + capacityText + ' MWh';
+    return formatPowerValue( charge ) + ' / ' + formatPowerValue( capacity ) + ' MWh';
 }
 
 /**
- * Partial charge uses three decimal places; empty / full stay compact.
+ * Whole numbers stay compact; fractional MWh keep up to three places.
  */
-function formatPowerValue( value: number, partial: boolean ): string {
-    if ( partial ) {
-        return value.toLocaleString( 'en-GB', {
-            minimumFractionDigits: 3,
-            maximumFractionDigits: 3,
-        } );
-    }
-
+function formatPowerValue( value: number ): string {
+    const whole = Number.isInteger( value );
     return value.toLocaleString( 'en-GB', {
-        maximumFractionDigits: 0,
+        minimumFractionDigits: 0,
+        maximumFractionDigits: whole ? 0 : 3,
     } );
 }

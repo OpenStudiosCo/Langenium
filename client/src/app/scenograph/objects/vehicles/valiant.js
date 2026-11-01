@@ -61,6 +61,11 @@ export default class Valiant {
         this.afterburnerBlend = 0;
         this.trailAnchor = new THREE.Vector3();
 
+        // Visual climb/dive pitch (radians), lerped in updateMesh.
+        this.elevationPitch = 0;
+        this.elevationPitchMax = 18 * Math.PI / 180;
+        this.elevationPitchSmooth = 5;
+
         this.ready = false;
 
         this.demo = isDemo;
@@ -436,23 +441,12 @@ export default class Valiant {
 
         this.animateRotors( delta );
 
-        // Rock the ship forward and back when moving horizontally
+        // Rock the ship forward and back when moving horizontally.
+        // Elevation pitch is applied in updateMesh so it survives the sim sync.
         if ( this.mesh.userData.object.controls.throttleDown || this.mesh.userData.object.controls.throttleUp ) {
             let pitchChange = this.mesh.userData.object.controls.throttleUp ? -1 : 1;
             if ( Math.abs( this.mesh.rotation.x ) < 1 / 4 ) {
                 this.mesh.rotation.x += pitchChange / 10 / 180;
-            }
-        }
-
-        // Rock the ship forward and back when moving vertically
-        if (
-            this.mesh.userData.object.controls.moveDown
-            ||
-            this.mesh.userData.object.controls.moveUp
-        ) {
-            let elevationChange = this.mesh.userData.object.controls.moveDown ? -1 : 1;
-            if ( Math.abs( this.mesh.rotation.x ) < 1 / 8 ) {
-                this.mesh.rotation.x += elevationChange / 10 / 180;
             }
         }
     }
@@ -534,13 +528,28 @@ export default class Valiant {
     }
 
     // Update the position of the aircraft to spot determined by game logic.
-    updateMesh() {
-        this.mesh.position.x = this.mesh.userData.object.position.x;
-        this.mesh.position.y = this.mesh.userData.object.position.y;
-        this.mesh.position.z = this.mesh.userData.object.position.z;
-        this.mesh.rotation.x = this.mesh.userData.object.rotation.x;
-        this.mesh.rotation.y = this.mesh.userData.object.rotation.y;
-        this.mesh.rotation.z = this.mesh.userData.object.rotation.z;
+    updateMesh( delta = 1 / 60 ) {
+        const object = this.mesh.userData.object;
+
+        this.mesh.position.x = object.position.x;
+        this.mesh.position.y = object.position.y;
+        this.mesh.position.z = object.position.z;
+        this.mesh.rotation.y = object.rotation.y;
+        this.mesh.rotation.z = object.rotation.z;
+
+        // Smooth nose pitch toward climb / dive from vertical speed.
+        let targetPitch = 0;
+        if ( object.verticalSpeed > 0.01 ) {
+            targetPitch = this.elevationPitchMax;
+        }
+        else if ( object.verticalSpeed < -0.01 ) {
+            targetPitch = -this.elevationPitchMax;
+        }
+
+        const blend = 1 - Math.exp( -this.elevationPitchSmooth * Math.max( 0, delta ) );
+        this.elevationPitch += ( targetPitch - this.elevationPitch ) * blend;
+
+        this.mesh.rotation.x = object.rotation.x + this.elevationPitch;
     }
 
     /**

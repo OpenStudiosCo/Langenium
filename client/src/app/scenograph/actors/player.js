@@ -314,7 +314,7 @@ export default class Player {
 
         let [ rY, tY, tZ ] = this.vehicle.mesh.userData.object.move( delta );
 
-        this.vehicle.updateMesh();
+        this.vehicle.updateMesh( delta );
 
         this.updateCamera( rY, tY, tZ );
     }

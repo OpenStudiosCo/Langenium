@@ -579,6 +579,7 @@ export default class hangarRoute {
         }
         this.departing = true;
         this.hidePrompt();
+        l.scenograph.controls.setAxisOrbitVisible( false );
         if ( l.ui && l.ui.inventory ) {
             l.ui.inventory.hidePersonButton();
             if ( l.ui.inventory.isOpen() ) {

@@ -10,12 +10,14 @@ export default class InGame {
     container;
     saveButton;
     exit;
+    fullscreenButton;
     saveStatusTimer;
 
     constructor() {
         this.container = document.querySelector( '.session_chrome' );
         this.saveButton = document.getElementById( 'save_game' );
         this.exit = document.getElementById( 'exit_game' );
+        this.fullscreenButton = document.getElementById( 'fullscreen_toggle' );
         this.saveStatusTimer = 0;
 
         if ( this.exit ) {
@@ -33,6 +35,16 @@ export default class InGame {
             } );
         }
 
+        if ( this.fullscreenButton ) {
+            this.fullscreenButton.addEventListener( 'click', () => {
+                this.toggleFullscreen();
+            } );
+            document.addEventListener( 'fullscreenchange', () => {
+                this.syncFullscreenButton();
+            } );
+            this.syncFullscreenButton();
+        }
+
         if ( l.sessions ) {
             l.sessions.onStatus( ( status ) => this.onSaveStatus( status ) );
         }
@@ -45,6 +57,48 @@ export default class InGame {
         else if ( this.exit ) {
             this.exit.hidden = !visible;
         }
+
+        // Same lifecycle as Save/Exit: hidden on the title screen, shown in-session.
+        if ( this.fullscreenButton ) {
+            this.fullscreenButton.hidden = !visible;
+        }
+    }
+
+    /**
+     * Enter or leave the browser full-screen presentation.
+     */
+    toggleFullscreen() {
+        if ( this.isFullscreen() ) {
+            if ( document.exitFullscreen ) {
+                document.exitFullscreen();
+            }
+            return;
+        }
+
+        const root = document.documentElement;
+        if ( root.requestFullscreen ) {
+            root.requestFullscreen();
+        }
+    }
+
+    isFullscreen() {
+        return Boolean( document.fullscreenElement );
+    }
+
+    /**
+     * Match the control label and icon to the current full-screen state.
+     */
+    syncFullscreenButton() {
+        if ( ! this.fullscreenButton ) {
+            return;
+        }
+
+        const active = this.isFullscreen();
+        this.fullscreenButton.classList.toggle( 'is-fullscreen', active );
+        this.fullscreenButton.setAttribute(
+            'aria-label',
+            active ? 'Exit full screen' : 'Enter full screen'
+        );
     }
 
     onSaveStatus( status ) {

@@ -1126,6 +1126,54 @@
         }
     }
 
+    // Persistent game chrome: available in hangar / flight, hidden on title.
+    #fullscreen_toggle {
+        position: absolute;
+        right: @css{ min(2.5dvw, 2.5dvh) };
+        bottom: @css{ min(2.5dvw, 2.5dvh) };
+        z-index: 5;
+        pointer-events: auto;
+        gap: 0;
+        padding: 0.2rem 0.25rem 0.1rem;
+        color: #fff;
+        text-shadow: 0 2px 12px rgba(0, 10, 40, 0.55);
+        -webkit-tap-highlight-color: transparent;
+        user-select: none;
+        -webkit-user-select: none;
+
+        &[hidden] {
+            display: none !important;
+        }
+
+        .fullscreen_icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.35em;
+            height: 1.35em;
+
+            svg {
+                display: block;
+                width: 100%;
+                height: 100%;
+            }
+
+            &.exit {
+                display: none;
+            }
+        }
+
+        &.is-fullscreen {
+            .fullscreen_icon.enter {
+                display: none;
+            }
+
+            .fullscreen_icon.exit {
+                display: inline-flex;
+            }
+        }
+    }
+
     #axis_orbit {
         display: none;
         position: absolute;

@@ -45,14 +45,16 @@ export default class TouchControls {
     }
 
     /**
-     * Climb slider and weapons are aircraft-only. Hangar uses move and overlays.
+     * Climb slider and weapons are aircraft-only. Hangar keeps move + axis orbit.
      */
     setAircraftChrome( show ) {
         this.controls.sliderStick.stickElement.style.display = show ? '' : 'none';
         this.weapons.container.style.display = show ? 'flex' : 'none';
+    }
 
-        if ( l.scenograph.overlays && l.scenograph.overlays.axis_orbit ) {
-            l.scenograph.overlays.axis_orbit.setVisible( show );
+    setAxisOrbitVisible( show ) {
+        if ( l.scenograph.overlays ) {
+            l.scenograph.overlays.ensureAxisOrbit( show );
         }
     }
 
@@ -60,5 +62,6 @@ export default class TouchControls {
         this.controls.enabled = false;
         this.controls.movementPad.padElement.style.display = 'none';
         this.setAircraftChrome( false );
+        this.setAxisOrbitVisible( false );
     }
 }

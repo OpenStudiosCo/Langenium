@@ -24,6 +24,24 @@ export default class Overlays {
 
     constructor() {}
 
+    /**
+     * Create or show the axis-orbit chrome. Hangar uses this without full flight HUD.
+     */
+    ensureAxisOrbit( show = true ) {
+        if ( show ) {
+            if ( ! this.axis_orbit ) {
+                this.axis_orbit = new AxisOrbit();
+                l.current_scene.animation_queue.push( this.axis_orbit.animate );
+            }
+            this.axis_orbit.setVisible( true );
+            return;
+        }
+
+        if ( this.axis_orbit ) {
+            this.axis_orbit.setVisible( false );
+        }
+    }
+
     activate() {
         // Heads Up Display (HUD).
         l.scenograph.overlays.hud = new HeadsUpDisplay();
@@ -37,12 +55,8 @@ export default class Overlays {
             l.scenograph.overlays.map.animate
         );
 
-        // Axis orbit control under the minimap (vehicle / flight chrome).
-        l.scenograph.overlays.axis_orbit = new AxisOrbit();
-        l.current_scene.animation_queue.push(
-            l.scenograph.overlays.axis_orbit.animate
-        );
-        l.scenograph.overlays.axis_orbit.setVisible( l.mode !== 'hangar' );
+        // Axis orbit control under the minimap (flight and hangar).
+        this.ensureAxisOrbit( true );
 
         // Scanners.
         l.scenograph.overlays.scanners = new Scanners();

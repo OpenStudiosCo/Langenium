@@ -21,6 +21,7 @@ const MAX_PITCH = 55 * Math.PI / 180;
 const AXIS_LENGTH = 0.7;
 const LABEL_OFFSET = 0.82;
 const HELPER_CAM_DISTANCE = 2.6;
+const HANGAR_LOOK_SENSITIVITY = 0.005;
 
 export default class AxisOrbit {
 
@@ -36,8 +37,18 @@ export default class AxisOrbit {
         this._pivotDelta = new THREE.Vector3();
         this._lastPivot = new THREE.Vector3();
         this._hasLastPivot = false;
+        this._lookDir = new THREE.Vector3();
         this._labels = [];
         this._viewport = null;
+        this._hangarViewport = null;
+        this._hangarLook = {
+            active: false,
+            pointerId: null,
+            lastX: 0,
+            lastY: 0,
+            yaw: 0,
+            pitch: 0,
+        };
 
         this.scene = new THREE.Scene();
         this.camera = new THREE.PerspectiveCamera( 45, 1, 0.1, 20 );
@@ -68,8 +79,18 @@ export default class AxisOrbit {
 
         this.syncSize();
         this.bindEvents();
+        this.bindHangarLookEvents();
         this.ensureControls();
         this.setVisible( false );
+    }
+
+    isHangarPerson() {
+        const player = l.scenograph.actors.player;
+        return l.mode === 'hangar'
+            && player
+            && player.mode === 'person'
+            && player.person
+            && player.person.mesh;
     }
 
     addAxisLabels() {
@@ -155,6 +176,8 @@ export default class AxisOrbit {
         this.controls.enableDamping = false;
         this.controls.enableRotate = true;
         this.controls.rotateSpeed = 0.6;
+        this.controls.minDistance = 1.5;
+        this.controls.maxDistance = 40;
         // Match prior ±55° elevation from the horizon.
         this.controls.minPolarAngle = ( Math.PI / 2 ) - MAX_PITCH;
         this.controls.maxPolarAngle = ( Math.PI / 2 ) + MAX_PITCH;
@@ -175,6 +198,11 @@ export default class AxisOrbit {
 
     bindEvents() {
         this._onControlsStart = () => {
+            if ( this.isHangarPerson() ) {
+                // Hangar FP look uses its own pointer handlers, not OrbitControls.
+                return;
+            }
+
             if ( ! this.canOrbit() ) {
                 if ( this.controls ) {
                     this.controls.enabled = false;
@@ -192,6 +220,9 @@ export default class AxisOrbit {
         };
 
         this._onControlsEnd = () => {
+            if ( this.isHangarPerson() ) {
+                return;
+            }
             this.dragging = false;
         };
 
@@ -208,6 +239,104 @@ export default class AxisOrbit {
         this.resetButton.addEventListener( 'click', this._onReset );
     }
 
+    bindHangarLookEvents() {
+        this._onHangarPointerDown = ( event ) => {
+            if ( event.button !== 0 || this.container.hidden ) {
+                return;
+            }
+            if ( ! this.isHangarPerson() || ! this.canOrbit() ) {
+                return;
+            }
+            if ( event.target.closest && event.target.closest( 'button, a, input, .axis_orbit_reset' ) ) {
+                return;
+            }
+
+            const playerCam = l.scenograph.cameras && l.scenograph.cameras.player;
+            const pivot = this.getPivot();
+            if ( ! playerCam || ! pivot ) {
+                return;
+            }
+
+            this.dragging = true;
+            this._hangarLook.active = true;
+            this._hangarLook.pointerId = event.pointerId;
+            this._hangarLook.lastX = event.clientX;
+            this._hangarLook.lastY = event.clientY;
+            this._hangarLook.yaw = playerCam.rotation.y;
+            this._hangarLook.pitch = playerCam.rotation.x;
+
+            playerCam.position.copy( pivot );
+            playerCam.rotation.order = 'YXZ';
+
+            if ( this._hangarViewport && this._hangarViewport.setPointerCapture ) {
+                try {
+                    this._hangarViewport.setPointerCapture( event.pointerId );
+                }
+                catch ( error ) {
+                    // Capture is best-effort across browsers.
+                }
+            }
+        };
+
+        this._onHangarPointerMove = ( event ) => {
+            if ( ! this._hangarLook.active || event.pointerId !== this._hangarLook.pointerId ) {
+                return;
+            }
+
+            const dx = event.clientX - this._hangarLook.lastX;
+            const dy = event.clientY - this._hangarLook.lastY;
+            this._hangarLook.lastX = event.clientX;
+            this._hangarLook.lastY = event.clientY;
+
+            this._hangarLook.yaw -= dx * HANGAR_LOOK_SENSITIVITY;
+            this._hangarLook.pitch -= dy * HANGAR_LOOK_SENSITIVITY;
+            this._hangarLook.pitch = Math.max( -MAX_PITCH, Math.min( MAX_PITCH, this._hangarLook.pitch ) );
+
+            this.applyHangarLookCamera();
+        };
+
+        this._onHangarPointerUp = ( event ) => {
+            if ( ! this._hangarLook.active || event.pointerId !== this._hangarLook.pointerId ) {
+                return;
+            }
+
+            this._hangarLook.active = false;
+            this._hangarLook.pointerId = null;
+            this.dragging = false;
+            this.applyHangarLookFacing();
+        };
+    }
+
+    ensureHangarLookListeners() {
+        const viewport = this.resolveViewport();
+        if ( ! viewport ) {
+            return;
+        }
+
+        if ( this._hangarViewport === viewport ) {
+            return;
+        }
+
+        this.teardownHangarLookListeners();
+        this._hangarViewport = viewport;
+        viewport.addEventListener( 'pointerdown', this._onHangarPointerDown );
+        viewport.addEventListener( 'pointermove', this._onHangarPointerMove );
+        viewport.addEventListener( 'pointerup', this._onHangarPointerUp );
+        viewport.addEventListener( 'pointercancel', this._onHangarPointerUp );
+    }
+
+    teardownHangarLookListeners() {
+        if ( ! this._hangarViewport ) {
+            return;
+        }
+
+        this._hangarViewport.removeEventListener( 'pointerdown', this._onHangarPointerDown );
+        this._hangarViewport.removeEventListener( 'pointermove', this._onHangarPointerMove );
+        this._hangarViewport.removeEventListener( 'pointerup', this._onHangarPointerUp );
+        this._hangarViewport.removeEventListener( 'pointercancel', this._onHangarPointerUp );
+        this._hangarViewport = null;
+    }
+
     canOrbit() {
         if ( l.scenograph.controls && l.scenograph.controls.orbit ) {
             // Debug orbit already owns the same canvas listeners.
@@ -215,22 +344,36 @@ export default class AxisOrbit {
         }
 
         const player = l.scenograph.actors.player;
-        if ( ! player || ! player.vehicle || ! player.vehicle.mesh ) {
-            return false;
-        }
-        if ( player.mode !== 'vehicle' ) {
+        if ( ! player ) {
             return false;
         }
         if ( l.ui && l.ui.inventory && l.ui.inventory.blocksInput() ) {
             return false;
         }
 
-        return true;
+        if ( player.mode === 'vehicle' && player.vehicle && player.vehicle.mesh ) {
+            return true;
+        }
+
+        // Hangar walk: orbit around the person.
+        if ( l.mode === 'hangar' && player.mode === 'person' && player.person && player.person.mesh ) {
+            return true;
+        }
+
+        return false;
     }
 
     getPivot() {
         const player = l.scenograph.actors.player;
-        if ( ! player || ! player.vehicle || ! player.vehicle.mesh ) {
+        if ( ! player ) {
+            return null;
+        }
+
+        if ( player.mode === 'person' && player.person && player.person.mesh ) {
+            return player.person.mesh.position;
+        }
+
+        if ( ! player.vehicle || ! player.vehicle.mesh ) {
             return null;
         }
 
@@ -250,6 +393,51 @@ export default class AxisOrbit {
         this._hasLastPivot = true;
     }
 
+    /**
+     * Keep the hangar eye on the person and apply look yaw/pitch in place.
+     */
+    applyHangarLookCamera() {
+        const playerCam = l.scenograph.cameras && l.scenograph.cameras.player;
+        const pivot = this.getPivot();
+        if ( ! playerCam || ! pivot ) {
+            return;
+        }
+
+        playerCam.position.copy( pivot );
+        playerCam.rotation.order = 'YXZ';
+        playerCam.rotation.y = this._hangarLook.yaw;
+        playerCam.rotation.x = this._hangarLook.pitch;
+        playerCam.rotation.z = 0;
+        playerCam.updateProjectionMatrix();
+    }
+
+    /**
+     * Commit hangar look yaw to the person so walk/turn continue from that heading.
+     */
+    applyHangarLookFacing() {
+        const player = l.scenograph.actors.player;
+        const playerCam = l.scenograph.cameras && l.scenograph.cameras.player;
+        if ( ! player || ! player.person || ! playerCam ) {
+            return;
+        }
+
+        const yaw = this._hangarLook.yaw;
+
+        if ( player.person.game && player.person.game.object ) {
+            player.person.game.object.rotation.y = yaw;
+            player.person.game.object.rotation.z = 0;
+        }
+
+        player.person.mesh.rotation.y = yaw;
+        player.person.mesh.rotation.z = 0;
+        this._hangarLook.pitch = 0;
+        player.person.updateCamera();
+        playerCam.rotation.order = 'YXZ';
+        playerCam.rotation.y = yaw;
+        playerCam.rotation.x = 0;
+        playerCam.rotation.z = 0;
+    }
+
     syncControlsTarget() {
         if ( ! this.controls ) {
             return;
@@ -267,6 +455,12 @@ export default class AxisOrbit {
      * Called each frame while user orbit framing is active.
      */
     updatePlayerOrbit() {
+        // Hangar is first-person look-from-eye, not a third-person orbit arm.
+        if ( this.isHangarPerson() ) {
+            this.applyHangarLookCamera();
+            return;
+        }
+
         if ( ! this.controls || ! this.controls.enabled ) {
             return;
         }
@@ -294,7 +488,7 @@ export default class AxisOrbit {
         this.controls.update();
 
         const player = l.scenograph.actors.player;
-        if ( player && player.vehicle ) {
+        if ( player && player.mode === 'vehicle' && player.vehicle ) {
             player.vehicle.aimChaseCamera( true );
             player.chaseYaw = Math.atan2(
                 playerCam.position.x - this.controls.target.x,
@@ -312,11 +506,23 @@ export default class AxisOrbit {
         player.userOrbitActive = false;
         this.dragging = false;
         this._hasLastPivot = false;
+        this._hangarLook.active = false;
+        this._hangarLook.pointerId = null;
 
-        player.chaseYaw = player.vehicle?.mesh?.rotation.y ?? 0;
-
-        if ( player.vehicle ) {
-            player.vehicle.applyChaseCamera( player.chaseYaw, 0, false );
+        if ( this.isHangarPerson() ) {
+            this.applyHangarLookFacing();
+        }
+        else if ( player.mode === 'person' && player.person ) {
+            player.person.updateCamera();
+            if ( l.scenograph.cameras.player ) {
+                l.scenograph.cameras.player.rotation.y = player.person.mesh.rotation.y;
+            }
+        }
+        else {
+            player.chaseYaw = player.vehicle?.mesh?.rotation.y ?? 0;
+            if ( player.vehicle ) {
+                player.vehicle.applyChaseCamera( player.chaseYaw, 0, false );
+            }
         }
 
         // Keep OC spherical state aligned with the restored chase pose for the next engage.
@@ -330,19 +536,27 @@ export default class AxisOrbit {
     }
 
     syncHelperFromPlayer() {
-        const player = l.scenograph.actors.player;
         const mainCam = l.scenograph.cameras && l.scenograph.cameras.player;
-        if ( ! player || ! player.vehicle || ! player.vehicle.mesh || ! mainCam ) {
+        if ( ! mainCam ) {
             return;
         }
 
-        const pivot = player.vehicle.getOrbitPivot
-            ? player.vehicle.getOrbitPivot()
-            : player.vehicle.mesh.position;
+        const pivot = this.getPivot();
+        if ( pivot ) {
+            this._viewOffset.subVectors( mainCam.position, pivot );
+        }
+        else {
+            this._viewOffset.set( 0, 0, 0 );
+        }
 
-        this._viewOffset.subVectors( mainCam.position, pivot );
-        if ( this._viewOffset.lengthSq() < 1e-6 ) {
-            this._viewOffset.set( 0, 0.8, HELPER_CAM_DISTANCE );
+        // First-person (eye on pivot): drive the compass from look direction so
+        // world axes stay aligned as the view turns.
+        if ( this._viewOffset.lengthSq() < 1e-4 ) {
+            mainCam.getWorldDirection( this._viewOffset );
+            if ( this._viewOffset.lengthSq() < 1e-8 ) {
+                this._viewOffset.set( 0, 0, 1 );
+            }
+            this._viewOffset.normalize().multiplyScalar( -HELPER_CAM_DISTANCE );
         }
         else {
             this._viewOffset.normalize().multiplyScalar( HELPER_CAM_DISTANCE );
@@ -376,14 +590,33 @@ export default class AxisOrbit {
 
     setControlsEnabled( show ) {
         this.ensureControls();
+        this.ensureHangarLookListeners();
+        this.syncResetButton();
         if ( ! this.controls ) {
             return;
         }
 
-        const allow = show && this.canOrbit() && ! ( l.scenograph.controls && l.scenograph.controls.orbit );
+        // Hangar FP look owns the viewport drag; keep OrbitControls off there.
+        const allow = show
+            && this.canOrbit()
+            && ! this.isHangarPerson()
+            && ! ( l.scenograph.controls && l.scenograph.controls.orbit );
         // Enabled whenever the chrome is up so the first drag engages user orbit.
         // Chase framing overwrites the camera until userOrbitActive is set on 'start'.
         this.controls.enabled = allow;
+    }
+
+    /**
+     * Recentre is flight-only — hangar look already turns the person with the view.
+     */
+    syncResetButton() {
+        if ( ! this.resetButton ) {
+            return;
+        }
+
+        const showReset = ! this.isHangarPerson();
+        this.resetButton.hidden = ! showReset;
+        this.resetButton.style.display = showReset ? '' : 'none';
     }
 
     setVisible( show ) {
@@ -396,11 +629,14 @@ export default class AxisOrbit {
 
         if ( show ) {
             this.ensureControls();
+            this.ensureHangarLookListeners();
             this.setControlsEnabled( true );
+            this.syncResetButton();
             this.syncSize();
         }
         else {
             this.dragging = false;
+            this._hangarLook.active = false;
             if ( this.controls ) {
                 this.controls.enabled = false;
             }
@@ -409,9 +645,11 @@ export default class AxisOrbit {
 
     dispose() {
         this.dragging = false;
+        this._hangarLook.active = false;
 
         window.removeEventListener( 'resize', this._onResize );
         this.resetButton.removeEventListener( 'click', this._onReset );
+        this.teardownHangarLookListeners();
 
         if ( this.controls ) {
             this.controls.removeEventListener( 'start', this._onControlsStart );

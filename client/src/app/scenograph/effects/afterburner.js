@@ -10,7 +10,7 @@ import * as THREE from 'three';
 const RING_COUNT = 8;
 const RING_PITCH = 0.28;
 const RING_START_Y = 0.7;
-const BASE_RADIUS = 0.22;
+const BASE_RADIUS = 0.44;
 
 let sharedRingTexture = null;
 
@@ -151,7 +151,7 @@ export default class Afterburner {
      * @param {number} blend Afterburner crossfade 0–1.
      */
     update( speed, blend ) {
-        const kmh = speed * 60;
+        const kmh = speed * 240;
         let cycleRate = 0;
         let pulse = 0;
         let opacity = 0;

@@ -93,6 +93,15 @@ export default class Controls {
         }
     }
 
+    setAxisOrbitVisible( show ) {
+        if ( this.touch ) {
+            this.touch.setAxisOrbitVisible( show );
+        }
+        else if ( l.scenograph.overlays ) {
+            l.scenograph.overlays.ensureAxisOrbit( show );
+        }
+    }
+
     /**
      * Animate hook.
      * 

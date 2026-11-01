@@ -52,8 +52,8 @@ export default class Sessions {
 
     /**
      * New Game: seed facility storage + aircraft cargo from the player
-     * blueprint. Location inventory is hangar.inventory (structure-level,
-     * e.g. Lambda City) — the same bag regardless of bay.
+     * blueprint. Location inventory lives on the person (structure-level
+     * storage for e.g. Lambda City) — the same bag regardless of bay.
      */
     resetForNewGame() {
         const defaults = this.cloneDefaults();

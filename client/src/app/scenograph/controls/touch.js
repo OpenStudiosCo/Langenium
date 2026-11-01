@@ -21,8 +21,6 @@ export default class TouchControls {
         let options = {
             delta        :  0.75,       // coefficient of movement
             moveSpeed    :  0.0025,     // speed of movement
-            rotationSpeed:  0.00125,    // look pad yaw/pitch (half the old rate)
-            maxPitch     :  55,         // max camera pitch angle
         }
         this.controls = new TouchControlUI(
             document.querySelector( 'body' ),
@@ -30,7 +28,6 @@ export default class TouchControls {
             options
         );
         this.controls.movementPad.padElement.style.display = 'none';
-        this.controls.rotationPad.padElement.style.display = 'none';
         this.controls.sliderStick.stickElement.style.display = 'none';
 
         this.weapons = new WeaponControls();
@@ -41,26 +38,27 @@ export default class TouchControls {
     activate() {
         this.controls.enabled = true;
         this.controls.movementPad.padElement.style.filter = 'invert(1)';
-        this.controls.rotationPad.padElement.style.filter = 'invert(1)';
         this.controls.sliderStick.stickElement.style.filter = 'invert(1)';
 
         this.controls.movementPad.padElement.style.display = '';
-        this.controls.rotationPad.padElement.style.display = '';
         this.setAircraftChrome( l.mode !== 'hangar' );
     }
 
     /**
-     * Climb slider and weapons are aircraft-only. Hangar uses move, camera, and overlays.
+     * Climb slider and weapons are aircraft-only. Hangar uses move and overlays.
      */
     setAircraftChrome( show ) {
         this.controls.sliderStick.stickElement.style.display = show ? '' : 'none';
         this.weapons.container.style.display = show ? 'flex' : 'none';
+
+        if ( l.scenograph.overlays && l.scenograph.overlays.axis_orbit ) {
+            l.scenograph.overlays.axis_orbit.setVisible( show );
+        }
     }
 
     deactivate() {
         this.controls.enabled = false;
         this.controls.movementPad.padElement.style.display = 'none';
-        this.controls.rotationPad.padElement.style.display = 'none';
         this.setAircraftChrome( false );
     }
 }

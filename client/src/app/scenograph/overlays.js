@@ -10,11 +10,14 @@
  * Internal libs and helpers.
  */
 import l from '@/helpers/l.js';
+import AxisOrbit from '@/scenograph/overlays/axis_orbit.js';
 import HeadsUpDisplay from '@/scenograph/overlays/heads-up-display.js';
 import Map from '@/scenograph/overlays/map.js';
 import Scanners from '@/scenograph/overlays/scanners.js';
 
 export default class Overlays {
+    axis_orbit;
+
     hud;
 
     scanners;
@@ -33,6 +36,13 @@ export default class Overlays {
         l.current_scene.animation_queue.push(
             l.scenograph.overlays.map.animate
         );
+
+        // Axis orbit control under the minimap (vehicle / flight chrome).
+        l.scenograph.overlays.axis_orbit = new AxisOrbit();
+        l.current_scene.animation_queue.push(
+            l.scenograph.overlays.axis_orbit.animate
+        );
+        l.scenograph.overlays.axis_orbit.setVisible( l.mode !== 'hangar' );
 
         // Scanners.
         l.scenograph.overlays.scanners = new Scanners();
@@ -64,6 +74,12 @@ export default class Overlays {
                 this.map.container.style.display = 'none';
             }
             this.map = false;
+        }
+
+        if ( this.axis_orbit ) {
+            drop.add( this.axis_orbit.animate );
+            this.axis_orbit.dispose();
+            this.axis_orbit = false;
         }
 
         if ( this.scanners ) {

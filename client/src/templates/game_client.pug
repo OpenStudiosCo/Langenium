@@ -37,6 +37,9 @@ html(lang='en')
         #game_overlay
             #hud
             #map
+            #axis_orbit(hidden)
+                .axis_orbit_canvas(data-axis-orbit-canvas)
+                button.axis_orbit_reset.window_action(type='button' data-action='reset-orbit' aria-label='Recentre camera') Recentre
             #scanner_targets
         #templates
             script#scene_overview_table(type='html_template_in_a_script_tag')

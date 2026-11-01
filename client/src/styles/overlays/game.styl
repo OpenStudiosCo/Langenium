@@ -1110,6 +1110,44 @@
         }
     }
 
+    #axis_orbit {
+        display: none;
+        position: absolute;
+        left: @css{ min(2.5dvw, 2.5dvh) };
+        top: calc(@css{ min(2.5dvw, 2.5dvh) } + @css{ max(12.5dvw, 12.5dvh) } + 0.5rem);
+        flex-direction: column;
+        align-items: center;
+        gap: 0.35rem;
+        z-index: 2;
+        pointer-events: none;
+
+        .axis_orbit_canvas {
+            width: @css{ max(7.5dvw, 7.5dvh) };
+            height: @css{ max(7.5dvw, 7.5dvh) };
+            background: transparent;
+            overflow: visible;
+            pointer-events: none;
+
+            canvas {
+                display: block;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+            }
+        }
+
+        .axis_orbit_reset {
+            pointer-events: auto;
+            padding: 0.15rem 0.25rem 0.05rem;
+            font-size: clamp(0.7rem, 1vw, 0.85rem);
+            letter-spacing: 0.06em;
+            line-height: 1;
+            border-width: 12px;
+            border-image-width: 24px;
+            color: #fff;
+        }
+    }
+
 }
 
 @keyframes rotate {

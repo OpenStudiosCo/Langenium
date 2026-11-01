@@ -55,6 +55,9 @@ export default class Valiant {
         this.camera_distance = 0;
         this.chaseLookAhead = 12;
         this._chaseLookAt = new THREE.Vector3();
+        this._orbitPivotLocal = null;
+        this._orbitPivotWorld = new THREE.Vector3();
+        this._orbitBox = new THREE.Box3();
         this.afterburnerBlend = 0;
         this.trailAnchor = new THREE.Vector3();
 
@@ -462,31 +465,71 @@ export default class Valiant {
         return distance;
     }
 
-    getChaseCameraPosition( yaw = this.mesh.rotation.y ) {
+    /**
+     * Visual centre of the aircraft in world space (mesh origin is often not the hull centre).
+     */
+    getOrbitPivot() {
+        if ( ! this._orbitPivotLocal && this.mesh ) {
+            this._orbitBox.setFromObject( this.mesh );
+            this._orbitPivotLocal = this._orbitBox.getCenter( new THREE.Vector3() );
+            this.mesh.worldToLocal( this._orbitPivotLocal );
+        }
+
+        if ( ! this._orbitPivotLocal ) {
+            return this.mesh.position;
+        }
+
+        this._orbitPivotWorld.copy( this._orbitPivotLocal );
+        this.mesh.localToWorld( this._orbitPivotWorld );
+        return this._orbitPivotWorld;
+    }
+
+    getChaseCameraPosition( yaw = this.mesh.rotation.y, pitch = 0, aroundCentre = false ) {
         const ship = this.mesh;
+        const maxPitch = 55 * Math.PI / 180;
+        const clampedPitch = Math.max( -maxPitch, Math.min( maxPitch, pitch ) );
+
+        // Rare helper path: sphere around the visual hull centre (OrbitControls owns live user orbit).
+        if ( aroundCentre ) {
+            const pivot = this.getOrbitPivot();
+            const distance = -Math.abs( this.chaseCameraDistance() );
+            const horizontal = distance * Math.cos( clampedPitch );
+            return {
+                x: pivot.x + horizontal * Math.sin( yaw ),
+                y: pivot.y - distance * Math.sin( clampedPitch ),
+                z: pivot.z + horizontal * Math.cos( yaw )
+            };
+        }
+
         const distance = this.chaseCameraDistance();
+        const horizontal = distance * Math.cos( clampedPitch );
         return {
-            x: ship.position.x + distance * Math.sin( yaw ),
-            y: ship.position.y + ( l.scenograph.cameras.playerY - 8.5 ),
-            z: ship.position.z + distance * Math.cos( yaw )
+            x: ship.position.x + horizontal * Math.sin( yaw ),
+            y: ship.position.y + ( l.scenograph.cameras.playerY - 8.5 ) + Math.abs( distance ) * Math.sin( clampedPitch ),
+            z: ship.position.z + horizontal * Math.cos( yaw )
         };
     }
 
-    aimChaseCamera() {
-        const ship = this.mesh;
-        const heading = ship.rotation.y;
-        this._chaseLookAt.set(
-            ship.position.x - Math.sin( heading ) * this.chaseLookAhead,
-            ship.position.y + 1.2,
-            ship.position.z - Math.cos( heading ) * this.chaseLookAhead
-        );
+    aimChaseCamera( aroundCentre = false ) {
+        if ( aroundCentre ) {
+            this._chaseLookAt.copy( this.getOrbitPivot() );
+        }
+        else {
+            const ship = this.mesh;
+            const heading = ship.rotation.y;
+            this._chaseLookAt.set(
+                ship.position.x - Math.sin( heading ) * this.chaseLookAhead,
+                ship.position.y + 1.2,
+                ship.position.z - Math.cos( heading ) * this.chaseLookAhead
+            );
+        }
         l.scenograph.cameras.player.lookAt( this._chaseLookAt );
     }
 
-    applyChaseCamera( yaw = this.mesh.rotation.y ) {
-        const pos = this.getChaseCameraPosition( yaw );
+    applyChaseCamera( yaw = this.mesh.rotation.y, pitch = 0, aroundCentre = false ) {
+        const pos = this.getChaseCameraPosition( yaw, pitch, aroundCentre );
         l.scenograph.cameras.player.position.set( pos.x, pos.y, pos.z );
-        this.aimChaseCamera();
+        this.aimChaseCamera( aroundCentre );
         l.scenograph.cameras.player.updateProjectionMatrix();
     }
 

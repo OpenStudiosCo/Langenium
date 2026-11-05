@@ -15,6 +15,11 @@
     &[hidden]
         display: none !important
 
+    // Portrait phones: drop the open button into the gap between the inventory
+    // side tab and the D-pad so it no longer covers inventory.
+    @media (orientation: portrait)
+        bottom: @css{ calc(6.25rem + min(2.5dvw, 2.5dvh)) }
+
     .game_log_panel
         display: flex
         flex-direction: row

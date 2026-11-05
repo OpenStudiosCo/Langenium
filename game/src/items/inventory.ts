@@ -192,6 +192,56 @@ export default class Inventory {
     }
 
     /**
+     * Peel one unit from a stack into the first free slot of this bag.
+     * Used when a crystal stack begins feeding the capacitor.
+     * Returns the destination slot index, or -1 when peel is impossible.
+     */
+    takeOne( index: number ): number {
+        const item = this.get( index );
+        const qty = this.qtyOf( item );
+        if ( ! item || qty < 2 ) {
+            return -1;
+        }
+
+        const dest = this.firstEmpty();
+        if ( dest === -1 ) {
+            return -1;
+        }
+
+        item.qty = qty - 1;
+        this.slots[ dest ] = this.loadItem( item, 1 );
+        return dest;
+    }
+
+    /**
+     * Fold this slot into the first other slot that stacks with it.
+     * Used when a drained crystal should join an existing empty stack.
+     */
+    mergeWithCompatible( index: number ): boolean {
+        const item = this.get( index );
+        if ( ! item ) {
+            return false;
+        }
+
+        for ( let i = 0; i < this.slots.length; i++ ) {
+            if ( i === index ) {
+                continue;
+            }
+
+            const other = this.slots[ i ];
+            if ( ! this.stacksWith( item, other ) ) {
+                continue;
+            }
+
+            other.qty = this.qtyOf( other ) + this.qtyOf( item );
+            this.slots[ index ] = null;
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Load an item into a bag slot shape, optionally overriding qty.
      * Preserves charge / capacity.
      */

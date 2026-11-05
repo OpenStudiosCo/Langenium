@@ -389,6 +389,10 @@ export default class HeadsUpDisplay {
         l.scenograph.overlays.hud.capacitorElement.classList.toggle( 'draining', trend === 'down' );
         l.scenograph.overlays.hud.capacitorElement.classList.toggle( 'charging', trend === 'up' );
         l.scenograph.overlays.hud.capacitorElement.classList.toggle( 'empty', charge <= 0 );
+        l.scenograph.overlays.hud.capacitorElement.classList.toggle(
+            'low-power',
+            typeof ship.isLowPower === 'function' && ship.isLowPower()
+        );
         l.scenograph.overlays.hud.afterburnerLamp.classList.toggle( 'on', afterburning );
         l.scenograph.overlays.hud.syncAfterburnerControls( ship );
     }

@@ -373,6 +373,36 @@
                 background: rgb(60, 60, 80);
             }
 
+            .low-power-label {
+                display: none;
+                position: absolute;
+                left: 0;
+                right: 0;
+                top: 6%;
+                text-align: center;
+                color: rgb(255, 170, 60);
+                font-family: monospace;
+                font-size: 0.62rem;
+                letter-spacing: 0.16em;
+                line-height: 1;
+                text-shadow: 0 0 4px rgba(0, 0, 0, 0.85);
+            }
+
+            &.low-power {
+                .pct {
+                    color: rgb(255, 170, 60);
+                }
+
+                .low-power-label {
+                    display: block;
+                    animation: hud-low-power-pulse 1.1s ease-in-out infinite;
+                }
+
+                .seg.on {
+                    background: rgb(60, 60, 80);
+                }
+            }
+
             &.auto-off .caret {
                 display: none;
             }
@@ -769,6 +799,11 @@
 
             .readout {
                 display: contents;
+            }
+
+            // Compact bar is too short for the desktop LOW POWER banner.
+            .low-power-label {
+                display: none !important;
             }
 
             .label-name {
@@ -1227,6 +1262,15 @@
         }
     }
 
+}
+
+@keyframes hud-low-power-pulse {
+    0%, 100% {
+        opacity: 0.45;
+    }
+    50% {
+        opacity: 1;
+    }
 }
 
 @keyframes rotate {

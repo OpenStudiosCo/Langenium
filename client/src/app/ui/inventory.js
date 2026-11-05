@@ -40,6 +40,8 @@ export default class InventoryUI {
     locationInventory;
     aircraftInventory;
     selected;
+    liveRefreshQueued;
+    liveRefreshTick;
 
     constructor() {
 
@@ -59,6 +61,8 @@ export default class InventoryUI {
         this.locationInventory = null;
         this.aircraftInventory = null;
         this.selected = null;
+        this.liveRefreshQueued = false;
+        this.liveRefreshTick = 0;
 
         this.intents = new InventoryIntents( this );
         this.contents = new InventoryContents( this );
@@ -146,6 +150,7 @@ export default class InventoryUI {
         this.aircraftWindow.hidden = false;
         this.container.hidden = false;
         this.contents.render();
+        this.ensureLiveRefresh();
 
         const closeButton = this.container.querySelector( '.item_screen_close' );
         if ( closeButton ) {
@@ -170,6 +175,63 @@ export default class InventoryUI {
         this.container.classList.remove( 'transfer' );
         this.locationWindow.hidden = true;
         this.container.hidden = true;
+        this.removeLiveRefresh();
+    }
+
+    /**
+     * Keep crystal charge / peel visible while the modal is open in flight.
+     */
+    ensureLiveRefresh() {
+        if ( ! l.ui || ! l.ui.update_queue ) {
+            return;
+        }
+
+        const present = l.ui.update_queue.some( ( entry ) => {
+            return entry && entry.callback === 'l.ui.inventory.refreshWhileOpen';
+        } );
+        if ( present ) {
+            this.liveRefreshQueued = true;
+            return;
+        }
+
+        l.ui.update_queue.push( {
+            callback: 'l.ui.inventory.refreshWhileOpen',
+            data: [],
+        } );
+        this.liveRefreshQueued = true;
+    }
+
+    removeLiveRefresh() {
+        if ( ! this.liveRefreshQueued || ! l.ui || ! l.ui.update_queue ) {
+            this.liveRefreshQueued = false;
+            return;
+        }
+
+        l.ui.update_queue = l.ui.update_queue.filter( ( entry ) => {
+            return ! entry || entry.callback !== 'l.ui.inventory.refreshWhileOpen';
+        } );
+        this.liveRefreshQueued = false;
+    }
+
+    /**
+     * UI update interval is ~10 Hz; refresh about 3 Hz. Skips while dragging.
+     */
+    refreshWhileOpen() {
+        if ( ! this.open ) {
+            this.removeLiveRefresh();
+            return;
+        }
+
+        if ( this.events && this.events.drag && this.events.drag.active ) {
+            return;
+        }
+
+        this.liveRefreshTick += 1;
+        if ( this.liveRefreshTick % 3 !== 0 ) {
+            return;
+        }
+
+        this.contents.render();
     }
 
     /**

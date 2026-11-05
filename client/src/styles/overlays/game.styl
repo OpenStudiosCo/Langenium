@@ -1035,7 +1035,8 @@
             left: 0;
             right: auto;
             top: auto;
-            bottom: 36%;
+            // Sit above the game-log open button (centred feed reaches the left edge).
+            bottom: 46%;
             flex-direction: column;
             align-items: center;
             gap: 0.28rem;
@@ -1127,7 +1128,8 @@
             position: absolute;
             left: 0;
             right: auto;
-            bottom: 18%;
+            // Keep pace with afterburner so both clear the game-log open button.
+            bottom: 28%;
             box-sizing: border-box;
             width: var(--hud-side-tab-width);
             min-height: 0;

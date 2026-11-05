@@ -6,10 +6,7 @@
 #hud-elev(data-id='elev') ELEVATION: 0m
 #hud-capacitor-panel
     #hud-capacitor(data-id='capacitor')
-        .fuel-badge
-            img.crystal-icon(src='/assets/item_icons/langenium_crystal/empty.webp' alt='')
-            span.crystal-count 0
-            span.low-power-label(aria-hidden='true') LOW POWER
+        span.low-power-label(aria-hidden='true') LOW POWER
         .fuel-rows
             .fuel-row.cap
                 span.row-label CAP
@@ -29,6 +26,9 @@
                             .seg
                 .readout
                     .pct 0%
+        .fuel-badge
+            img.crystal-icon(src='/assets/item_icons/langenium_crystal/empty.webp' alt='')
+            span.crystal-count 0
     .hud-systems
         .afterburner-controls#hud-afterburner(aria-expanded='true')
             .afterburner-body

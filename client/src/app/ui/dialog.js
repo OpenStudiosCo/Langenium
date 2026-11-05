@@ -6,6 +6,8 @@
  * @global
  */
 
+import l from '@/helpers/l.js';
+
 export default class Dialog {
 
     /**
@@ -137,6 +139,14 @@ export default class Dialog {
         this.container.classList.toggle( 'dialog-passive', line.modal === false );
         this.container.classList.remove( 'dialog-written' );
         this.label.textContent = line.speaker ? line.speaker + '. ' + line.text : line.text;
+
+        // Skip instant restores (e.g. help → welcome) so the session log is not duplicated.
+        if ( l.ui && l.ui.gameLog && line.text && ! line.instant ) {
+            const logged = line.speaker
+                ? line.speaker + ': ' + line.text
+                : line.text;
+            l.ui.gameLog.appendText( logged );
+        }
 
         if ( line.speaker ) {
             this.speaker.hidden = false;

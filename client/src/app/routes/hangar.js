@@ -45,6 +45,7 @@ export default class hangarRoute {
         this.loadHangar();
         this.setupPrompt();
         hangarRoute.bindUpdates();
+        this.logHangarArrival( 'entered' );
 
     }
 
@@ -706,6 +707,7 @@ export default class hangarRoute {
         l.scenograph.overlays.activate();
         l.scenograph.controls.setAircraftChrome( true );
         l.scenograph.controls.setAxisOrbitVisible( true );
+        this.logHangarArrival( 'left' );
         hangarRoute.watchOverworld();
         if ( l.sessions ) {
             l.sessions.state.noteModes( 'single_player', 'vehicle' );
@@ -763,10 +765,43 @@ export default class hangarRoute {
         this.promptMode = 'depart';
         l.scenograph.controls.setAircraftChrome( false );
         l.scenograph.controls.setAxisOrbitVisible( true );
+        this.logHangarArrival( 'entered' );
         if ( l.sessions ) {
             l.sessions.state.noteModes( 'hangar', 'person' );
             l.sessions.saveNow( 'transition' );
         }
+    }
+
+    /**
+     * Session log line for docking / undocking, e.g. "Player entered Hangar 2 of Lambda City".
+     */
+    logHangarArrival( action ) {
+        if ( ! l.ui || ! l.ui.gameLog ) {
+            return;
+        }
+
+        const player = l.scenograph && l.scenograph.actors
+            ? ( l.scenograph.actors.player || l.scenograph.actors.get( 'Player' ) )
+            : null;
+        const hangar = player
+            && player.actorInstance
+            && player.actorInstance.config
+            && player.actorInstance.config.hangar
+            ? player.actorInstance.config.hangar
+            : null;
+
+        const bay = hangar && hangar.hangarName ? hangar.hangarName : 'hangar';
+        const structure = hangar && hangar.structure
+            ? hangar.structure
+            : ( this.targetStructure
+                && this.targetStructure.userData
+                && this.targetStructure.userData.config
+                && this.targetStructure.userData.config.name
+                ? this.targetStructure.userData.config.name
+                : 'the city' );
+
+        const verb = action === 'left' ? 'left' : 'entered';
+        l.ui.gameLog.appendEvent( 'Player ' + verb + ' ' + bay + ' of ' + structure );
     }
 
 }

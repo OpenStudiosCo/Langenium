@@ -108,6 +108,9 @@ export default class CrystalFieldPresentation {
         );
 
         if ( collected ) {
+            if ( l.ui && l.ui.gameLog ) {
+                l.ui.gameLog.appendItemEvent( 'Picked up', collected, 1 );
+            }
             for ( const [ cellKey, entry ] of [ ...presentation.active ] ) {
                 if ( ! presentation.field.collected.has( cellKey ) ) {
                     continue;

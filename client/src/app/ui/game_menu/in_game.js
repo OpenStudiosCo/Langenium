@@ -62,6 +62,10 @@ export default class InGame {
         if ( this.fullscreenButton ) {
             this.fullscreenButton.hidden = !visible;
         }
+
+        if ( l.ui && l.ui.gameLog ) {
+            l.ui.gameLog.setVisible( visible );
+        }
     }
 
     /**

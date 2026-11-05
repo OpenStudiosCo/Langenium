@@ -1,0 +1,18 @@
+//- Session game log — compact event feed above controls, full window with tabs.
+#game_log(hidden aria-live='polite')
+    .game_log_panel
+        button.game_log_open.window_action(type='button' data-action='open-game-log' aria-label='Open full game log')
+            span.game_log_open_icon(aria-hidden='true')
+                include ../../../assets/ui/scroll.svg
+        .game_log_feed(data-game-log='feed' tabindex='0')
+
+#game_log_full(hidden)
+    .game_log_full_frame.window(role='dialog' aria-modal='true' aria-labelledby='game_log_full_title')
+        p#game_log_full_title.window_title Game log
+        .game_log_tabs(role='tablist' aria-label='Log sections')
+            button.game_log_tab.is-active(type='button' role='tab' aria-selected='true' data-log-tab='events') Events
+            button.game_log_tab(type='button' role='tab' aria-selected='false' data-log-tab='messages') Messages
+            button.game_log_tab(type='button' role='tab' aria-selected='false' data-log-tab='all') All
+        .game_log_full_body.dialog_text(data-game-log='full' role='tabpanel')
+        .game_log_full_actions
+            button.game_log_full_close.window_action.dialog_action(type='button' data-action='close-game-log') Close

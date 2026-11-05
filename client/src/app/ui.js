@@ -16,6 +16,7 @@ import l from '@/helpers/l.js';
 import Flight_Instruments from '@/ui/flight_instruments.js';
 import Help from '@/ui/help.js';
 import Dialog from '@/ui/dialog.js';
+import GameLog from '@/ui/game_log.js';
 import InventoryUI from '@/ui/inventory.js';
 import Targeting from '@/ui/targeting.js';
 import Game_Menu from '@/ui/game_menu.js';
@@ -39,6 +40,9 @@ export default class UI {
     // Hangar / aircraft inventory panel.
     inventory;
 
+    // Session feed for pickups, dialog, deletes and transfers.
+    gameLog;
+
     // Controls the targeting list and locked UIs.
     targeting;
 
@@ -57,6 +61,7 @@ export default class UI {
 
         this.help = new Help();
         this.dialog = new Dialog();
+        this.gameLog = new GameLog();
         this.inventory = new InventoryUI();
 
         this.score_table = new ScoreTable();

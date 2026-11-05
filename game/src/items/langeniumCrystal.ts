@@ -125,6 +125,23 @@ export function totalCharge( inventory: Inventory ): number {
 }
 
 /**
+ * How many crystal units still hold any charge (qty summed per charged stack).
+ */
+export function chargedUnitCount( inventory: Inventory ): number {
+    let count = 0;
+
+    for ( let i = 0; i < inventory.size; i++ ) {
+        const item = inventory.get( i );
+        if ( ! isCrystal( item ) || slotCharge( item ) <= 0 ) {
+            continue;
+        }
+        count += inventory.qtyOf( item );
+    }
+
+    return count;
+}
+
+/**
  * Prefer a partially drained crystal already in use; otherwise the first with charge.
  */
 export function findDrainSlot( inventory: Inventory ): number {

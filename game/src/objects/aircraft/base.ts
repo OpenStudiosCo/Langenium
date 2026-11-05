@@ -25,12 +25,12 @@ export default class BaseAircraft {
     public capacitor:       number                              = 1;          // 0..1 charge; afterburner while > 0.
     public capacitorDrainPerSecond:     number                  = 1 / 30;     // Full tank lasts 30s under afterburner.
     // Ambient trickle with no crystals (1/5 of the crystal-fed rate).
-    public capacitorRechargePerSecond:  number                  = 1 / 900;
+    public capacitorRechargePerSecond:  number                  = 1 / 450;
     // Limp cruise (above 40 km/h, no crystals) burns residual CAP at twice the ambient trickle.
-    public lowPowerCruiseDrainPerSecond: number                 = 2 / 900;
-    // Crystal feed: ~3 minutes to fill an empty capacitor; 1 MWh ≈ one full fill.
-    public crystalCapacitorChargePerSecond: number              = 1 / 180;
-    public crystalDrainMwhPerSecond:        number              = 1 / 180;
+    public lowPowerCruiseDrainPerSecond: number                 = 2 / 450;
+    // Crystal feed: ~90s to fill an empty capacitor; 1 MWh ≈ one full fill.
+    public crystalCapacitorChargePerSecond: number              = 1 / 90;
+    public crystalDrainMwhPerSecond:        number              = 1 / 90;
     public lowPowerForward: number                              = 40 / 60;    // Free limp speed (~40 km/h HUD @ 60 FPS).
     public lowPowerCeilingY: number                             = 11;         // 10 m above ocean surface at y = 1.
     public autoAfterburner: boolean                             = true;       // When false, airspeed is capped at cruise.

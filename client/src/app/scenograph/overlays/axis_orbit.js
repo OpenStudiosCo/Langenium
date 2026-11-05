@@ -185,9 +185,11 @@ export default class AxisOrbit {
             MIDDLE: null,
             RIGHT: null,
         };
+        // TWO must be DOLLY_PAN or DOLLY_ROTATE — OrbitControls has no TOUCH.DOLLY branch.
+        // Pan stays off via enablePan, so a pinch only dollies.
         this.controls.touches = {
             ONE: THREE.TOUCH.ROTATE,
-            TWO: THREE.TOUCH.DOLLY,
+            TWO: THREE.TOUCH.DOLLY_PAN,
         };
         this.syncZoomLimits();
         this.controls.enabled = false;

@@ -728,7 +728,7 @@ export default class Valiant {
             }
 
             if ( this.afterburner ) {
-                this.afterburner.update( speed, this.afterburnerBlend );
+                this.afterburner.update( speed, this.afterburnerBlend, turbulence );
             }
         }
         else {

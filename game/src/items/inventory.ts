@@ -107,6 +107,24 @@ export default class Inventory {
         return this.slots.findIndex( ( slot ) => slot === null );
     }
 
+    /**
+     * Place an item into the first free slot.
+     * Returns the destination index, or -1 when the bag is full.
+     */
+    place( item: ItemInstance ): number {
+        if ( ! item ) {
+            return -1;
+        }
+
+        const dest = this.firstEmpty();
+        if ( dest === -1 ) {
+            return -1;
+        }
+
+        this.slots[ dest ] = item;
+        return dest;
+    }
+
     remove( index: number ): ItemInstance | null {
         const item = this.get( index );
         if ( ! item ) {

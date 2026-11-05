@@ -41,6 +41,35 @@ export function createLangeniumCrystal( options: {
 }
 
 /**
+ * Sample a charge biased toward 20–30% of capacity.
+ * Triangular distribution over [0, 1] with mode 0.25.
+ */
+export function rollWeightedCharge( capacity: number = DEFAULT_CAPACITY ): number {
+    const max = Math.max( 0, capacity );
+    if ( max <= 0 ) {
+        return 0;
+    }
+
+    const fraction = triangularSample( 0, 0.25, 1 );
+    return Math.max( 0, Math.min( max, fraction * max ) );
+}
+
+/**
+ * Triangular distribution sample on [min, max] with the given mode.
+ */
+function triangularSample( min: number, mode: number, max: number ): number {
+    const u = Math.random();
+    const span = max - min;
+    const left = ( mode - min ) / span;
+
+    if ( u < left ) {
+        return min + Math.sqrt( u * span * ( mode - min ) );
+    }
+
+    return max - Math.sqrt( ( 1 - u ) * span * ( max - mode ) );
+}
+
+/**
  * Icon / presentation state from remaining charge.
  */
 export function chargeState( item: ItemInstance | null | undefined ): CrystalChargeState {

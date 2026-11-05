@@ -386,6 +386,15 @@ export default class Director {
         l.current_scene.objects.ocean.animate
       );
 
+      // Surface crystal pickups streamed around the aircraft in flight.
+      l.current_scene.objects.crystalField = new l.scenograph.objects.environment.crystalField();
+      l.current_scene.scene.add(
+        l.current_scene.objects.crystalField.root
+      );
+      l.current_scene.animation_queue.push(
+        l.current_scene.objects.crystalField.animate
+      );
+
       l.current_scene.objects.logo = new l.scenograph.objects.logo();
       await l.current_scene.objects.logo.load();
       l.current_scene.animation_queue.push(

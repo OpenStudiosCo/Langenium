@@ -21,6 +21,7 @@ import l from '@/helpers/l.js';
 
 // Environment
 import Logo from "@/scenograph/objects/logo";
+import CrystalField from "@/scenograph/objects/environment/crystal_field";
 import Ocean from "@/scenograph/objects/environment/ocean";
 import Sky from "@/scenograph/objects/environment/sky";
 import Sky2 from "@/scenograph/objects/environment/sky2";
@@ -56,6 +57,7 @@ export default class Objects {
 
     constructor() {
         this.environment = {
+            crystalField: CrystalField,
             ocean: Ocean,
             sky: Sky,
         };

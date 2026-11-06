@@ -111,10 +111,6 @@ export default class CrystalField extends BaseSystem {
             return null;
         }
 
-        if ( inventory.firstEmpty() === -1 ) {
-            return null;
-        }
-
         const pickupRadiusSq = PICKUP_RADIUS * PICKUP_RADIUS;
         let nearest: FloatingCrystal | null = null;
         let nearestDistSq = Infinity;

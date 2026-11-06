@@ -7,6 +7,7 @@
 
 import { normaliseSpeedDelta, easeOutExpo, easeInQuad, easeInOutExpo } from '../../helpers';
 import Inventory from '../../items/inventory';
+import { drainIntoCapacitor, totalCharge } from '../../items/langeniumCrystal';
 
 export default class BaseAircraft {
     public mesh;
@@ -23,7 +24,15 @@ export default class BaseAircraft {
     public cruiseForward:   number                              = 400 / 60;   // Cap before afterburner (~400 km/h HUD @ 60 FPS).
     public capacitor:       number                              = 1;          // 0..1 charge; afterburner while > 0.
     public capacitorDrainPerSecond:     number                  = 1 / 30;     // Full tank lasts 30s under afterburner.
-    public capacitorRechargePerSecond:  number                  = 1 / 180;    // Full recharge takes 3 minutes under cruise.
+    // Ambient trickle with no crystals (1/5 of the crystal-fed rate).
+    public capacitorRechargePerSecond:  number                  = 1 / 450;
+    // Limp cruise (above 40 km/h, no crystals) burns residual CAP at twice the ambient trickle.
+    public lowPowerCruiseDrainPerSecond: number                 = 2 / 450;
+    // Crystal feed: ~90s to fill an empty capacitor; 1 MWh ≈ one full fill.
+    public crystalCapacitorChargePerSecond: number              = 1 / 90;
+    public crystalDrainMwhPerSecond:        number              = 1 / 90;
+    public lowPowerForward: number                              = 40 / 60;    // Free limp speed (~40 km/h HUD @ 60 FPS).
+    public lowPowerCeilingY: number                             = 11;         // 10 m above ocean surface at y = 1.
     public autoAfterburner: boolean                             = true;       // When false, airspeed is capped at cruise.
     public afterburnerThreshold: number                         = 0.25;       // Min charge to initiate afterburner (auto on).
     public inventory:       Inventory                           = new Inventory( 8 );
@@ -280,6 +289,30 @@ export default class BaseAircraft {
     }
 
     /**
+     * Ease airspeed down toward a forward speed cap without snapping.
+     */
+    private _easeTowardForwardCap( forwardCap: number, dtSeconds: number ): void {
+        if ( Math.abs( this.airSpeed ) <= forwardCap ) {
+            return;
+        }
+
+        const sign = this.airSpeed < 0 ? -1 : 1;
+        const excess = Math.abs( this.airSpeed ) - forwardCap;
+        this.airSpeed = sign * ( forwardCap + excess * Math.pow( 0.92, dtSeconds * 60 ) );
+        if ( Math.abs( this.airSpeed ) - forwardCap < 0.01 ) {
+            this.airSpeed = sign * forwardCap;
+        }
+    }
+
+    /**
+     * True when no charged crystals remain — limp-home power only.
+     * Free flight at lowPowerForward; residual capacitor can unlock cruise.
+     */
+    public isLowPower(): boolean {
+        return totalCharge( this.inventory ) <= 0;
+    }
+
+    /**
      * Move the aircraft based on velocity, direction and time delta between frames.
      *
      * @param time_delta
@@ -294,19 +327,27 @@ export default class BaseAircraft {
             cruiseCap:          number = Math.min( this.maxForward, this.cruiseForward ),
             canAfterburn:       boolean = false,
             effectiveMaxForward: number = cruiseCap,
-            sign:               number = 0,
-            excess:             number = 0;
+            lowPower:           boolean = this.isLowPower(),
+            crystalTaken:       number = 0,
+            speed:              number = 0;
 
-        // Auto afterburner: initiate only at/above threshold; sustain until empty once above cruise.
-        if ( this.autoAfterburner && this.capacitor > 0 ) {
-            if ( Math.abs( this.airSpeed ) > this.cruiseForward ) {
-                canAfterburn = true;
-            }
-            else if ( this.capacitor >= this.afterburnerThreshold ) {
-                canAfterburn = true;
-            }
+        if ( lowPower ) {
+            // No crystal plant: afterburner offline. Residual CAP unlocks cruise only.
+            canAfterburn = false;
+            effectiveMaxForward = this.capacitor > 0 ? cruiseCap : this.lowPowerForward;
         }
-        effectiveMaxForward = canAfterburn ? this.maxForward : cruiseCap;
+        else {
+            // Auto afterburner: initiate only at/above threshold; sustain until empty once above cruise.
+            if ( this.autoAfterburner && this.capacitor > 0 ) {
+                if ( Math.abs( this.airSpeed ) > this.cruiseForward ) {
+                    canAfterburn = true;
+                }
+                else if ( this.capacitor >= this.afterburnerThreshold ) {
+                    canAfterburn = true;
+                }
+            }
+            effectiveMaxForward = canAfterburn ? this.maxForward : cruiseCap;
+        }
 
         // Update Airspeed (horizontal velocity)
         this.airSpeed = this._changeVelocity(
@@ -320,22 +361,63 @@ export default class BaseAircraft {
             easeOutExpo( 0.987 )
         );
 
-        // Drain capacitor above cruise; recharge while at or under cruise.
-        if ( Math.abs( this.airSpeed ) > this.cruiseForward ) {
-            this.capacitor = Math.max( 0, this.capacitor - this.capacitorDrainPerSecond * dtSeconds );
-            if ( this.capacitor <= 0 && Math.abs( this.airSpeed ) > cruiseCap ) {
-                // Ease back to cruise instead of snapping.
-                sign = this.airSpeed < 0 ? -1 : 1;
-                excess = Math.abs( this.airSpeed ) - cruiseCap;
-                this.airSpeed = sign * ( cruiseCap + excess * Math.pow( 0.92, dtSeconds * 60 ) );
-                if ( Math.abs( this.airSpeed ) - cruiseCap < 0.01 ) {
-                    this.airSpeed = sign * cruiseCap;
+        speed = Math.abs( this.airSpeed );
+
+        if ( lowPower ) {
+            // Afterburner is offline without crystals — ease out of overdrive first.
+            if ( speed > cruiseCap ) {
+                this._easeTowardForwardCap( cruiseCap, dtSeconds );
+                speed = Math.abs( this.airSpeed );
+            }
+
+            if ( speed > this.lowPowerForward ) {
+                // Burning residual CAP to hold cruise; drain at twice ambient trickle.
+                this.capacitor = Math.max(
+                    0,
+                    this.capacitor - this.lowPowerCruiseDrainPerSecond * dtSeconds
+                );
+                if ( this.capacitor <= 0 ) {
+                    this._easeTowardForwardCap( this.lowPowerForward, dtSeconds );
                 }
             }
+            else {
+                // Free limp speed: ambient trickle only.
+                this.capacitor = Math.min(
+                    1,
+                    this.capacitor + this.capacitorRechargePerSecond * dtSeconds
+                );
+            }
         }
-        else {
-            this.capacitor = Math.min( 1, this.capacitor + this.capacitorRechargePerSecond * dtSeconds );
+        else if ( speed > this.cruiseForward ) {
+            // Afterburner burn. Cruise with crystals is stable (no CAP drain).
+            this.capacitor = Math.max( 0, this.capacitor - this.capacitorDrainPerSecond * dtSeconds );
+            if ( this.capacitor <= 0 ) {
+                this._easeTowardForwardCap( cruiseCap, dtSeconds );
+            }
         }
+
+        // Crystal feed tops up the capacitor whenever it is below full.
+        // 1 MWh maps to one full capacitor fill, so remaining headroom is also MWh.
+        if ( this.capacitor < 1 ) {
+            const mwhBudget = Math.min(
+                this.crystalDrainMwhPerSecond * dtSeconds,
+                ( 1 - this.capacitor )
+                    * this.crystalDrainMwhPerSecond
+                    / this.crystalCapacitorChargePerSecond
+            );
+            crystalTaken = drainIntoCapacitor( this.inventory, mwhBudget );
+            if ( crystalTaken > 0 ) {
+                this.capacitor = Math.min(
+                    1,
+                    this.capacitor
+                        + crystalTaken
+                            * this.crystalCapacitorChargePerSecond
+                            / this.crystalDrainMwhPerSecond
+                );
+            }
+        }
+
+        lowPower = this.isLowPower();
 
         // Update Vertical Speed (velocity)
         this.verticalSpeed = this._changeVelocity(
@@ -393,6 +475,27 @@ export default class BaseAircraft {
 
         let xDiff = tZ * Math.sin(this.rotation.y),
             zDiff = tZ * Math.cos(this.rotation.y);
+
+        // Low power: refuse climb above the limp ceiling.
+        if ( lowPower && this.position.y >= this.lowPowerCeilingY && tY > 0 ) {
+            tY = 0;
+            this.verticalSpeed = 0;
+        }
+
+        // Low power above the limp ceiling: settle at twice max descent, never snap.
+        if ( lowPower && this.position.y > this.lowPowerCeilingY ) {
+            const forcedDescent = -this.maxDown * 2;
+
+            if ( tY > forcedDescent ) {
+                tY = forcedDescent;
+                this.verticalSpeed = forcedDescent;
+            }
+
+            if ( this.position.y + tY <= this.lowPowerCeilingY ) {
+                tY = this.lowPowerCeilingY - this.position.y;
+                this.verticalSpeed = 0;
+            }
+        }
 
         // "1" is the floor limit as it's the ocean surface and the camera clips through the water any lower.
         if (this.position.y + tY >= 1 ) {

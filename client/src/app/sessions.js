@@ -92,6 +92,10 @@ export default class Sessions {
         const isNew = mode === 'new';
         const existing = this.saves.read( slot );
 
+        if ( l.ui && l.ui.gameLog ) {
+            l.ui.gameLog.clear();
+        }
+
         this.emitStatus( 'loading', { slot, mode } );
 
         const defaults = this.cloneDefaults();
@@ -146,6 +150,9 @@ export default class Sessions {
             this.saveNow( 'exit' );
         }
         this.state.clear();
+        if ( l.ui && l.ui.gameLog ) {
+            l.ui.gameLog.clear();
+        }
         if ( l.current_scene && typeof l.current_scene.despawnPlayer === 'function' ) {
             l.current_scene.despawnPlayer();
         }

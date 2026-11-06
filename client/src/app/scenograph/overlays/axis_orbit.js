@@ -172,12 +172,11 @@ export default class AxisOrbit {
         this._viewport = viewport;
         this.controls = new OrbitControls( playerCam, viewport );
         this.controls.enablePan = false;
-        this.controls.enableZoom = false;
+        this.controls.enableZoom = true;
         this.controls.enableDamping = false;
         this.controls.enableRotate = true;
         this.controls.rotateSpeed = 0.6;
-        this.controls.minDistance = 1.5;
-        this.controls.maxDistance = 40;
+        this.controls.zoomSpeed = 0.8;
         // Match prior ±55° elevation from the horizon.
         this.controls.minPolarAngle = ( Math.PI / 2 ) - MAX_PITCH;
         this.controls.maxPolarAngle = ( Math.PI / 2 ) + MAX_PITCH;
@@ -186,10 +185,13 @@ export default class AxisOrbit {
             MIDDLE: null,
             RIGHT: null,
         };
+        // TWO must be DOLLY_PAN or DOLLY_ROTATE — OrbitControls has no TOUCH.DOLLY branch.
+        // Pan stays off via enablePan, so a pinch only dollies.
         this.controls.touches = {
             ONE: THREE.TOUCH.ROTATE,
-            TWO: null,
+            TWO: THREE.TOUCH.DOLLY_PAN,
         };
+        this.syncZoomLimits();
         this.controls.enabled = false;
 
         this.controls.addEventListener( 'start', this._onControlsStart );
@@ -215,6 +217,7 @@ export default class AxisOrbit {
                 player.userOrbitActive = true;
             }
             this.dragging = true;
+            this.syncZoomLimits();
             this.syncControlsTarget();
             this.rememberPivot();
         };
@@ -412,7 +415,7 @@ export default class AxisOrbit {
     }
 
     /**
-     * Commit hangar look yaw to the person so walk/turn continue from that heading.
+     * Commit hangar look yaw to the person so walk/strafe continue from that heading.
      */
     applyHangarLookFacing() {
         const player = l.scenograph.actors.player;
@@ -452,6 +455,42 @@ export default class AxisOrbit {
     }
 
     /**
+     * Dolly limits follow the chase camera's hover ↔ max-speed distance envelope.
+     * minDistance is eased down to the live radius so engage cannot push the camera out;
+     * maxDistance stays on the flight envelope so a bad radius cannot blow the dolly out.
+     */
+    syncZoomLimits() {
+        if ( ! this.controls ) {
+            return;
+        }
+
+        const range = this.getZoomDistanceRange();
+        let min = range.min;
+        const max = range.max;
+
+        const playerCam = l.scenograph.cameras && l.scenograph.cameras.player;
+        const pivot = this.getPivot();
+        if ( playerCam && pivot ) {
+            const liveRadius = playerCam.position.distanceTo( pivot );
+            if ( Number.isFinite( liveRadius ) && liveRadius > 0.5 && liveRadius < max * 1.5 ) {
+                min = Math.min( min, liveRadius );
+            }
+        }
+
+        this.controls.minDistance = Math.max( 1.5, min );
+        this.controls.maxDistance = Math.max( this.controls.minDistance, max );
+    }
+
+    getZoomDistanceRange() {
+        const player = l.scenograph.actors.player;
+        if ( player && player.vehicle && typeof player.vehicle.chaseCameraDistanceRange === 'function' ) {
+            return player.vehicle.chaseCameraDistanceRange();
+        }
+
+        return { min: 1.5, max: 120 };
+    }
+
+    /**
      * Called each frame while user orbit framing is active.
      */
     updatePlayerOrbit() {
@@ -471,16 +510,15 @@ export default class AxisOrbit {
             return;
         }
 
-        // Carry the camera with the aircraft so the orbit offset stays locked in place
-        // while the ship translates (OrbitControls alone only moves the look target).
+        this.syncZoomLimits();
+
+        // Carry the camera with the aircraft, then snap the look target to the pivot.
+        // Target is set absolutely (not delta-added) so a stale OC target cannot accumulate.
         if ( this._hasLastPivot ) {
             this._pivotDelta.subVectors( pivot, this._lastPivot );
             playerCam.position.add( this._pivotDelta );
-            this.controls.target.add( this._pivotDelta );
         }
-        else {
-            this.controls.target.copy( pivot );
-        }
+        this.controls.target.copy( pivot );
 
         this._lastPivot.copy( pivot );
         this._hasLastPivot = true;
@@ -527,6 +565,7 @@ export default class AxisOrbit {
 
         // Keep OC spherical state aligned with the restored chase pose for the next engage.
         if ( this.controls ) {
+            this.syncZoomLimits();
             this.syncControlsTarget();
             this.controls.update();
             this.setControlsEnabled( ! this.container.hidden );

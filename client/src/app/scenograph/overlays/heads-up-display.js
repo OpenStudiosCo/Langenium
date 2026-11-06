@@ -10,6 +10,10 @@
  * Internal libs and helpers.
  */
 import l from '@/helpers/l.js';
+import {
+    chargedUnitCount,
+    findDrainSlot,
+} from '#/game/src/items/langeniumCrystal';
 
 /**
  * Vendor libs and base class.
@@ -17,6 +21,8 @@ import l from '@/helpers/l.js';
 import * as THREE from "three";
 
 const CAPACITOR_SEGMENTS = 20;
+const CRYSTAL_ICON_CHARGED = '/assets/item_icons/langenium_crystal/charged.webp';
+const CRYSTAL_ICON_EMPTY = '/assets/item_icons/langenium_crystal/empty.webp';
 
 export default class HeadsUpDisplay {
 
@@ -43,10 +49,16 @@ export default class HeadsUpDisplay {
 
         this.capacitorPanel = this.container.querySelector( '#hud-capacitor-panel' );
         this.capacitorElement = this.capacitorPanel.querySelector( '#hud-capacitor' );
-        this.capacitorSegments = this.capacitorElement.querySelectorAll( '.seg' );
-        this.capacitorPctElement = this.capacitorElement.querySelector( '.pct' );
-        this.capacitorTrend = this.capacitorElement.querySelector( '.trend' );
-        this.capacitorCaret = this.capacitorElement.querySelector( '.caret' );
+        this.capRow = this.capacitorElement.querySelector( '.fuel-row.cap' );
+        this.pwrRow = this.capacitorElement.querySelector( '.fuel-row.pwr' );
+        this.capacitorSegments = this.capRow.querySelectorAll( '.seg' );
+        this.powerSegments = this.pwrRow.querySelectorAll( '.seg' );
+        this.capacitorPctElement = this.capRow.querySelector( '.pct' );
+        this.powerPctElement = this.pwrRow.querySelector( '.pct' );
+        this.capacitorTrend = this.capRow.querySelector( '.trend' );
+        this.capacitorCaret = this.capRow.querySelector( '.caret' );
+        this.crystalIcon = this.capacitorElement.querySelector( '.crystal-icon' );
+        this.crystalCountElement = this.capacitorElement.querySelector( '.crystal-count' );
         this.afterburnerControls = this.capacitorPanel.querySelector( '.afterburner-controls' );
         this.afterburnerFooter = this.afterburnerControls.querySelector( '.afterburner-footer' );
         this.afterburnerLamp = this.afterburnerControls.querySelector( '.afterburner-lamp' );
@@ -364,13 +376,23 @@ export default class HeadsUpDisplay {
         let elevation = Math.round( l.scenograph.actors.player.vehicle.mesh.position.y * 100 ) / 100;
         l.scenograph.overlays.hud.elevationElement.innerHTML = `ELEVATION: ${elevation}m`;
 
+        let hud = l.scenograph.overlays.hud;
         let charge = Math.max( 0, Math.min( 1, ship.capacitor ) );
         let chargePct = Math.round( charge * 100 );
         let lit = Math.round( charge * CAPACITOR_SEGMENTS );
         let afterburning = Math.abs( ship.airSpeed ) > ship.cruiseForward;
         let trend = 'steady';
-        let segments = l.scenograph.overlays.hud.capacitorSegments;
+        let segments = hud.capacitorSegments;
         let i = 0;
+        let inventory = ship.inventory || null;
+        let crystalCount = inventory ? chargedUnitCount( inventory ) : 0;
+        let drainSlot = inventory ? findDrainSlot( inventory ) : -1;
+        let powerCharge = 0;
+        let powerCapacity = 0;
+        let powerPct = 0;
+        let powerLit = 0;
+        let powerInUse = false;
+        let drainItem = null;
 
         for ( i = 0; i < segments.length; i++ ) {
             segments[ i ].classList.toggle( 'on', i < lit );
@@ -383,14 +405,45 @@ export default class HeadsUpDisplay {
             trend = 'up';
         }
 
-        l.scenograph.overlays.hud.capacitorPctElement.textContent = chargePct + '%';
-        l.scenograph.overlays.hud.capacitorTrend.classList.remove( 'up', 'down', 'steady' );
-        l.scenograph.overlays.hud.capacitorTrend.classList.add( trend );
-        l.scenograph.overlays.hud.capacitorElement.classList.toggle( 'draining', trend === 'down' );
-        l.scenograph.overlays.hud.capacitorElement.classList.toggle( 'charging', trend === 'up' );
-        l.scenograph.overlays.hud.capacitorElement.classList.toggle( 'empty', charge <= 0 );
-        l.scenograph.overlays.hud.afterburnerLamp.classList.toggle( 'on', afterburning );
-        l.scenograph.overlays.hud.syncAfterburnerControls( ship );
+        if ( inventory && drainSlot >= 0 ) {
+            drainItem = inventory.get( drainSlot );
+            if ( drainItem ) {
+                powerCapacity = drainItem.capacity === undefined ? 0 : Math.max( 0, drainItem.capacity );
+                powerCharge = drainItem.charge === undefined
+                    ? 0
+                    : Math.max( 0, Math.min( powerCapacity, drainItem.charge ) );
+            }
+        }
+
+        if ( powerCapacity > 0 ) {
+            powerPct = Math.round( ( powerCharge / powerCapacity ) * 100 );
+            powerLit = Math.round( ( powerCharge / powerCapacity ) * CAPACITOR_SEGMENTS );
+        }
+
+        powerInUse = charge < 1 && drainSlot >= 0;
+
+        for ( i = 0; i < hud.powerSegments.length; i++ ) {
+            hud.powerSegments[ i ].classList.toggle( 'on', i < powerLit );
+        }
+
+        hud.capacitorPctElement.textContent = chargePct + '%';
+        hud.powerPctElement.textContent = powerPct + '%';
+        hud.capacitorTrend.classList.remove( 'up', 'down', 'steady' );
+        hud.capacitorTrend.classList.add( trend );
+        hud.capacitorElement.classList.toggle( 'draining', trend === 'down' );
+        hud.capacitorElement.classList.toggle( 'charging', trend === 'up' );
+        hud.capacitorElement.classList.toggle( 'empty', charge <= 0 );
+        hud.capacitorElement.classList.toggle(
+            'low-power',
+            typeof ship.isLowPower === 'function' && ship.isLowPower()
+        );
+        hud.pwrRow.classList.toggle( 'in-use', powerInUse );
+        hud.crystalCountElement.textContent = String( crystalCount );
+        if ( hud.crystalIcon ) {
+            hud.crystalIcon.src = crystalCount > 0 ? CRYSTAL_ICON_CHARGED : CRYSTAL_ICON_EMPTY;
+        }
+        hud.afterburnerLamp.classList.toggle( 'on', afterburning );
+        hud.syncAfterburnerControls( ship );
     }
 
     /**

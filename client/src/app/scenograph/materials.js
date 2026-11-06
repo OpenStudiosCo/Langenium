@@ -272,3 +272,39 @@ export function renderTargetToImage( renderTarget, textureWidth, textureHeight )
   return img;
 
 }
+
+/**
+ * Soft radial glow for floating Langenium crystals — dusty rose quartz.
+ *
+ * Shared across crystal field sprites; do not dispose per mesh.
+ */
+let crystalGlowTexture = null;
+
+export function getCrystalGlowTexture() {
+  if ( crystalGlowTexture ) {
+    return crystalGlowTexture;
+  }
+
+  const size = 64;
+  const canvas = document.createElement( 'canvas' );
+  canvas.width = size;
+  canvas.height = size;
+  const context = canvas.getContext( '2d' );
+  const gradient = context.createRadialGradient(
+    size / 2,
+    size / 2,
+    0,
+    size / 2,
+    size / 2,
+    size / 2
+  );
+  gradient.addColorStop( 0, 'rgba(255,245,248,1)' );
+  gradient.addColorStop( 0.35, 'rgba(232,160,180,0.55)' );
+  gradient.addColorStop( 1, 'rgba(140,60,90,0)' );
+  context.fillStyle = gradient;
+  context.fillRect( 0, 0, size, size );
+
+  crystalGlowTexture = new THREE.CanvasTexture( canvas );
+  crystalGlowTexture.needsUpdate = true;
+  return crystalGlowTexture;
+}

@@ -107,6 +107,43 @@ export default class Inventory {
         return this.slots.findIndex( ( slot ) => slot === null );
     }
 
+    /**
+     * First occupied slot that can absorb this stack, or -1.
+     */
+    firstCompatible( item: ItemInstance | null ): number {
+        if ( ! item ) {
+            return -1;
+        }
+
+        return this.slots.findIndex( ( slot ) => this.stacksWith( item, slot ) );
+    }
+
+    /**
+     * Place an item into a compatible stack when possible, otherwise the
+     * first free slot. Returns the destination index, or -1 when the bag
+     * cannot accept it.
+     */
+    place( item: ItemInstance ): number {
+        if ( ! item ) {
+            return -1;
+        }
+
+        const stackDest = this.firstCompatible( item );
+        if ( stackDest !== -1 ) {
+            const existing = this.slots[ stackDest ];
+            existing.qty = this.qtyOf( existing ) + this.qtyOf( item );
+            return stackDest;
+        }
+
+        const dest = this.firstEmpty();
+        if ( dest === -1 ) {
+            return -1;
+        }
+
+        this.slots[ dest ] = item;
+        return dest;
+    }
+
     remove( index: number ): ItemInstance | null {
         const item = this.get( index );
         if ( ! item ) {
@@ -149,7 +186,8 @@ export default class Inventory {
     }
 
     /**
-     * Move this slot into the first free slot of another bag.
+     * Move this slot into another bag, stacking onto a compatible slot
+     * when possible, otherwise into the first free slot.
      * Used by the context-menu "Transfer to …" action.
      */
     transferToFirstEmpty( fromIndex: number, toInventory: Inventory ): boolean {
@@ -158,14 +196,17 @@ export default class Inventory {
             return false;
         }
 
+        const stackDest = toInventory.firstCompatible( item );
+        if ( stackDest !== -1 ) {
+            return this.transferTo( fromIndex, toInventory, stackDest );
+        }
+
         const dest = toInventory.firstEmpty();
         if ( dest === -1 ) {
             return false;
         }
 
-        toInventory.slots[ dest ] = item;
-        this.slots[ fromIndex ] = null;
-        return true;
+        return this.transferTo( fromIndex, toInventory, dest );
     }
 
     /**
@@ -189,6 +230,56 @@ export default class Inventory {
         item.qty = keep;
         this.slots[ dest ] = this.loadItem( item, move );
         return true;
+    }
+
+    /**
+     * Peel one unit from a stack into the first free slot of this bag.
+     * Used when a crystal stack begins feeding the capacitor.
+     * Returns the destination slot index, or -1 when peel is impossible.
+     */
+    takeOne( index: number ): number {
+        const item = this.get( index );
+        const qty = this.qtyOf( item );
+        if ( ! item || qty < 2 ) {
+            return -1;
+        }
+
+        const dest = this.firstEmpty();
+        if ( dest === -1 ) {
+            return -1;
+        }
+
+        item.qty = qty - 1;
+        this.slots[ dest ] = this.loadItem( item, 1 );
+        return dest;
+    }
+
+    /**
+     * Fold this slot into the first other slot that stacks with it.
+     * Used when a drained crystal should join an existing empty stack.
+     */
+    mergeWithCompatible( index: number ): boolean {
+        const item = this.get( index );
+        if ( ! item ) {
+            return false;
+        }
+
+        for ( let i = 0; i < this.slots.length; i++ ) {
+            if ( i === index ) {
+                continue;
+            }
+
+            const other = this.slots[ i ];
+            if ( ! this.stacksWith( item, other ) ) {
+                continue;
+            }
+
+            other.qty = this.qtyOf( other ) + this.qtyOf( item );
+            this.slots[ index ] = null;
+            return true;
+        }
+
+        return false;
     }
 
     /**

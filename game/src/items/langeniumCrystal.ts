@@ -2,6 +2,7 @@
  * Langenium crystal items — charge, capacity, and display helpers.
  */
 
+import Inventory from './inventory';
 import { ItemInstance } from './types';
 
 export const LANGENIUM_CRYSTAL_ID = 'langenium_crystal';
@@ -37,6 +38,35 @@ export function createLangeniumCrystal( options: {
     }
 
     return item;
+}
+
+/**
+ * Sample a charge biased toward 20–30% of capacity.
+ * Triangular distribution over [0, 1] with mode 0.25.
+ */
+export function rollWeightedCharge( capacity: number = DEFAULT_CAPACITY ): number {
+    const max = Math.max( 0, capacity );
+    if ( max <= 0 ) {
+        return 0;
+    }
+
+    const fraction = triangularSample( 0, 0.25, 1 );
+    return Math.max( 0, Math.min( max, fraction * max ) );
+}
+
+/**
+ * Triangular distribution sample on [min, max] with the given mode.
+ */
+function triangularSample( min: number, mode: number, max: number ): number {
+    const u = Math.random();
+    const span = max - min;
+    const left = ( mode - min ) / span;
+
+    if ( u < left ) {
+        return min + Math.sqrt( u * span * ( mode - min ) );
+    }
+
+    return max - Math.sqrt( ( 1 - u ) * span * ( max - mode ) );
 }
 
 /**
@@ -85,4 +115,132 @@ function formatPowerValue( value: number ): string {
         minimumFractionDigits: 0,
         maximumFractionDigits: whole ? 0 : 3,
     } );
+}
+
+function isCrystal( item: ItemInstance | null | undefined ): boolean {
+    return !! item && item.id === LANGENIUM_CRYSTAL_ID;
+}
+
+function slotCharge( item: ItemInstance ): number {
+    if ( item.charge === undefined ) {
+        return 0;
+    }
+    return Math.max( 0, item.charge );
+}
+
+function slotCapacity( item: ItemInstance ): number {
+    if ( item.capacity === undefined ) {
+        return 0;
+    }
+    return Math.max( 0, item.capacity );
+}
+
+/**
+ * Sum remaining charge across crystal slots.
+ * Charge is per-stack (not multiplied by qty); only one unit drains at a time.
+ */
+export function totalCharge( inventory: Inventory ): number {
+    let total = 0;
+
+    for ( let i = 0; i < inventory.size; i++ ) {
+        const item = inventory.get( i );
+        if ( ! isCrystal( item ) ) {
+            continue;
+        }
+        total += slotCharge( item );
+    }
+
+    return total;
+}
+
+/**
+ * How many crystal units still hold any charge (qty summed per charged stack).
+ */
+export function chargedUnitCount( inventory: Inventory ): number {
+    let count = 0;
+
+    for ( let i = 0; i < inventory.size; i++ ) {
+        const item = inventory.get( i );
+        if ( ! isCrystal( item ) || slotCharge( item ) <= 0 ) {
+            continue;
+        }
+        count += inventory.qtyOf( item );
+    }
+
+    return count;
+}
+
+/**
+ * Prefer a partially drained crystal already in use; otherwise the first with charge.
+ */
+export function findDrainSlot( inventory: Inventory ): number {
+    let firstCharged = -1;
+
+    for ( let i = 0; i < inventory.size; i++ ) {
+        const item = inventory.get( i );
+        if ( ! isCrystal( item ) ) {
+            continue;
+        }
+
+        const charge = slotCharge( item );
+        if ( charge <= 0 ) {
+            continue;
+        }
+
+        const capacity = slotCapacity( item );
+        if ( capacity > 0 && charge < capacity ) {
+            return i;
+        }
+
+        if ( firstCharged === -1 ) {
+            firstCharged = i;
+        }
+    }
+
+    return firstCharged;
+}
+
+/**
+ * Drain up to mwhNeeded from a single crystal into the capacitor budget.
+ * Peels one unit from a stack first; skips the tick when the bag is full.
+ * Returns MWh actually taken.
+ */
+export function drainIntoCapacitor( inventory: Inventory, mwhNeeded: number ): number {
+    if ( mwhNeeded <= 0 ) {
+        return 0;
+    }
+
+    let slot = findDrainSlot( inventory );
+    if ( slot < 0 ) {
+        return 0;
+    }
+
+    let item = inventory.get( slot );
+    if ( ! item ) {
+        return 0;
+    }
+
+    if ( inventory.qtyOf( item ) >= 2 ) {
+        const dest = inventory.takeOne( slot );
+        if ( dest < 0 ) {
+            return 0;
+        }
+        slot = dest;
+        item = inventory.get( slot );
+        if ( ! item ) {
+            return 0;
+        }
+    }
+
+    const charge = slotCharge( item );
+    const taken = Math.min( charge, mwhNeeded );
+    const remaining = charge - taken;
+    item.charge = remaining > 0 ? remaining : 0;
+
+    // Depleted crystals fold into any matching empty stack.
+    if ( item.charge <= 0 ) {
+        inventory.mergeWithCompatible( slot );
+    }
+
+    return taken;
 }

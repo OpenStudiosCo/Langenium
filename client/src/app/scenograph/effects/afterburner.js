@@ -8,7 +8,7 @@
 import * as THREE from 'three';
 
 const RING_COUNT = 8;
-const RING_PITCH = 0.28;
+const RING_PITCH = 0.56;
 const RING_START_Y = 0.7;
 const BASE_RADIUS = 0.44;
 
@@ -149,8 +149,9 @@ export default class Afterburner {
     /**
      * @param {number} speed Absolute airspeed in sim units (HUD km/h ≈ speed × 60).
      * @param {number} blend Afterburner crossfade 0–1.
+     * @param {number} topSpeedT 0 at cruise, 1 at maxForward.
      */
-    update( speed, blend ) {
+    update( speed, blend, topSpeedT = 0 ) {
         const kmh = speed * 240;
         let cycleRate = 0;
         let pulse = 0;
@@ -160,6 +161,7 @@ export default class Afterburner {
         let ring = null;
         let warmT = 0;
         let blueT = 0;
+        let topRamp = Math.max( 0, Math.min( 1, topSpeedT ) );
 
         if ( blend < 0.01 ) {
             if ( this.visible ) {
@@ -185,10 +187,12 @@ export default class Afterburner {
             this._colour.copy( this._red ).lerp( this._blue, blueT );
         }
 
+        // 2× previous afterburner pulse; ramps to 2× that again at top speed.
         cycleRate = 2.2 + Math.min( 4, speed * 0.35 );
         if ( kmh > 800 ) {
             cycleRate += 1.5;
         }
+        cycleRate *= 2 * ( 1 + topRamp );
         this.phase += cycleRate * ( 1 / 60 );
 
         for ( i = 0; i < this.rings.length; i++ ) {

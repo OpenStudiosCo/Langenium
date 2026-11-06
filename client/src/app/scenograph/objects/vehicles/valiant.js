@@ -62,6 +62,9 @@ export default class Valiant {
         this._orbitPivotLocal = null;
         this._orbitPivotWorld = new THREE.Vector3();
         this._orbitBox = new THREE.Box3();
+        this._orbitMeshBox = new THREE.Box3();
+        this._orbitInvRoot = new THREE.Matrix4();
+        this._orbitChildToRoot = new THREE.Matrix4();
         this.afterburnerBlend = 0;
         this.trailAnchor = new THREE.Vector3();
 
@@ -465,13 +468,92 @@ export default class Valiant {
     }
 
     /**
+     * Hover-to-max-speed chase radii used as orbit zoom limits.
+     * Forward flight pulls the chase camera back; those extents bound dolly in/out.
+     */
+    chaseCameraDistanceRange() {
+        const room = ( l.current_scene && l.current_scene.room_depth )
+            ? l.current_scene.room_depth / 2
+            : 0;
+        const hover = this.default_camera_distance + room;
+        const object = this.mesh && this.mesh.userData && this.mesh.userData.object;
+        const maxForward = ( object && object.maxForward ) || ( 3.7 * 5 );
+        // airSpeed < 0 is forward; chaseCameraDistance adds |airSpeed| * 4 when thrusting.
+        const atMaxForward = hover + ( maxForward * 4 );
+        const near = Math.abs( hover );
+        const far = Math.abs( atMaxForward );
+
+        return {
+            min: Math.min( near, far ),
+            max: Math.max( near, far ),
+        };
+    }
+
+    /**
+     * Whether a mesh should be ignored when locating the orbit hull centre.
+     * Runtime FX and the rear thruster ring bias the pivot away from the body.
+     */
+    isOrbitPivotExcluded( child ) {
+        if ( child.name === 'Torus' || child.name === 'Gear002' ) {
+            return true;
+        }
+
+        let node = child;
+        while ( node && node !== this.mesh ) {
+            if ( this.thruster && node === this.thruster.container ) {
+                return true;
+            }
+            if ( node.name && /trail/i.test( node.name ) ) {
+                return true;
+            }
+            node = node.parent;
+        }
+
+        return false;
+    }
+
+    /**
+     * Hull centre in mesh-local space from geometry bounds.
+     * Must not use a world-axis AABB: at non-zero heading that bakes a wrong
+     * local offset and leaves the ship off-centre for the rest of the session.
+     */
+    computeLocalOrbitPivot() {
+        if ( ! this.mesh ) {
+            return null;
+        }
+
+        this._orbitBox.makeEmpty();
+        this.mesh.updateWorldMatrix( true, true );
+        this._orbitInvRoot.copy( this.mesh.matrixWorld ).invert();
+
+        this.mesh.traverse( ( child ) => {
+            if ( ! child.isMesh || ! child.geometry || this.isOrbitPivotExcluded( child ) ) {
+                return;
+            }
+
+            if ( ! child.geometry.boundingBox ) {
+                child.geometry.computeBoundingBox();
+            }
+
+            this._orbitMeshBox.copy( child.geometry.boundingBox );
+            this._orbitChildToRoot.multiplyMatrices( this._orbitInvRoot, child.matrixWorld );
+            this._orbitMeshBox.applyMatrix4( this._orbitChildToRoot );
+            this._orbitBox.union( this._orbitMeshBox );
+        } );
+
+        if ( this._orbitBox.isEmpty() ) {
+            return null;
+        }
+
+        return this._orbitBox.getCenter( new THREE.Vector3() );
+    }
+
+    /**
      * Visual centre of the aircraft in world space (mesh origin is often not the hull centre).
      */
     getOrbitPivot() {
         if ( ! this._orbitPivotLocal && this.mesh ) {
-            this._orbitBox.setFromObject( this.mesh );
-            this._orbitPivotLocal = this._orbitBox.getCenter( new THREE.Vector3() );
-            this.mesh.worldToLocal( this._orbitPivotLocal );
+            this._orbitPivotLocal = this.computeLocalOrbitPivot();
         }
 
         if ( ! this._orbitPivotLocal ) {
@@ -728,7 +810,7 @@ export default class Valiant {
             }
 
             if ( this.afterburner ) {
-                this.afterburner.update( speed, this.afterburnerBlend );
+                this.afterburner.update( speed, this.afterburnerBlend, turbulence );
             }
         }
         else {

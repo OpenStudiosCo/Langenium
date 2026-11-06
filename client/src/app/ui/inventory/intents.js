@@ -81,19 +81,29 @@ export default class InventoryIntents {
      * Issue a simulation intent through the game Terminal when available.
      */
     transferSlot( fromBag, fromIndex, toBag, toIndex ) {
+        const snapshot = this.snapshotItem( fromBag, fromIndex );
         const terminal = this.getTerminal();
-        if ( terminal && typeof terminal.transferSlot === 'function' ) {
-            return terminal.transferSlot( fromBag, fromIndex, toBag, toIndex );
+        const ok = terminal && typeof terminal.transferSlot === 'function'
+            ? terminal.transferSlot( fromBag, fromIndex, toBag, toIndex )
+            : fromBag.transferTo( fromIndex, toBag, toIndex );
+
+        if ( ok && snapshot ) {
+            this.logTransfer( snapshot, toBag );
         }
-        return fromBag.transferTo( fromIndex, toBag, toIndex );
+        return ok;
     }
 
     transferToFirstEmpty( fromBag, fromIndex, toBag ) {
+        const snapshot = this.snapshotItem( fromBag, fromIndex );
         const terminal = this.getTerminal();
-        if ( terminal && typeof terminal.transferToFirstEmpty === 'function' ) {
-            return terminal.transferToFirstEmpty( fromBag, fromIndex, toBag );
+        const ok = terminal && typeof terminal.transferToFirstEmpty === 'function'
+            ? terminal.transferToFirstEmpty( fromBag, fromIndex, toBag )
+            : fromBag.transferToFirstEmpty( fromIndex, toBag );
+
+        if ( ok && snapshot ) {
+            this.logTransfer( snapshot, toBag );
         }
-        return fromBag.transferToFirstEmpty( fromIndex, toBag );
+        return ok;
     }
 
     split( inventory, index ) {
@@ -105,11 +115,76 @@ export default class InventoryIntents {
     }
 
     remove( inventory, index ) {
+        const snapshot = this.snapshotItem( inventory, index );
         const terminal = this.getTerminal();
-        if ( terminal && typeof terminal.removeItem === 'function' ) {
-            return terminal.removeItem( inventory, index );
+        const ok = terminal && typeof terminal.removeItem === 'function'
+            ? terminal.removeItem( inventory, index )
+            : inventory.remove( index ) !== null;
+
+        if ( ok && snapshot && l.ui && l.ui.gameLog ) {
+            l.ui.gameLog.appendItemEvent( 'Deleted', snapshot.item, snapshot.qty );
         }
-        return inventory.remove( index ) !== null;
+        return ok;
+    }
+
+    /**
+     * Copy item fields needed for the game log before a bag mutates.
+     */
+    snapshotItem( inventory, index ) {
+        if ( ! inventory || typeof inventory.get !== 'function' ) {
+            return null;
+        }
+
+        const item = inventory.get( index );
+        if ( ! item ) {
+            return null;
+        }
+
+        const qty = typeof inventory.qtyOf === 'function'
+            ? inventory.qtyOf( item )
+            : ( item.qty === undefined ? 1 : item.qty );
+
+        return {
+            item: {
+                id: item.id,
+                name: item.name,
+                charge: item.charge,
+                capacity: item.capacity,
+                qty,
+            },
+            qty,
+        };
+    }
+
+    /**
+     * Describe a successful hangar ↔ aircraft move in the session log.
+     */
+    logTransfer( snapshot, toBag ) {
+        if ( ! l.ui || ! l.ui.gameLog || ! snapshot ) {
+            return;
+        }
+
+        const destination = this.destinationLabel( toBag );
+        if ( ! destination ) {
+            return;
+        }
+
+        l.ui.gameLog.appendItemEvent(
+            'Transferred',
+            snapshot.item,
+            snapshot.qty,
+            'to ' + destination
+        );
+    }
+
+    destinationLabel( bag ) {
+        if ( bag === this.ui.locationInventory ) {
+            return 'hangar';
+        }
+        if ( bag === this.ui.aircraftInventory ) {
+            return 'aircraft';
+        }
+        return null;
     }
 
 }

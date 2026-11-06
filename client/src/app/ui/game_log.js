@@ -239,6 +239,24 @@ export default class GameLog {
         }
     }
 
+    /**
+     * Wipe the session feed so the next playthrough starts empty.
+     */
+    clear() {
+        this.entries = [];
+        this.nextId = 1;
+        this.stickToBottom = true;
+
+        if ( this.compactFeed ) {
+            this.compactFeed.textContent = '';
+        }
+        if ( this.fullBody ) {
+            this.fullBody.textContent = '';
+        }
+
+        this.hideFull();
+    }
+
     pushEntry( spec ) {
         const entry = {
             id: this.nextId++,

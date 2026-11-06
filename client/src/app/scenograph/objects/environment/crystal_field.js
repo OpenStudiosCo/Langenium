@@ -1,10 +1,11 @@
 /**
- * Overworld floating crystal pickups — presentation over World crystal positions.
+ * Overworld floating crystal pickups — scenograph over World crystal positions.
  */
 
 import * as THREE from 'three';
 
 import l from '@/helpers/l.js';
+import { getCrystalGlowTexture } from '@/scenograph/materials.js';
 import { DEFAULT_CAPACITY } from '#/game/src/items/langeniumCrystal';
 
 const CRYSTAL_SIZE = 6;
@@ -20,18 +21,16 @@ const CRYSTAL_BODY_COLOUR = 0xf2c8d4;
 const CRYSTAL_GLOW_COLOUR = 0xe8a0b4;
 const CRYSTAL_LIGHT_COLOUR = 0xf0a8bc;
 
-let glowTexture = null;
+export default class CrystalField {
 
-export default class CrystalFieldPresentation {
-
-    root;
+    instance;
     active;
     sharedGeometry;
     time;
 
     constructor() {
-        this.root = new THREE.Group();
-        this.root.name = 'Crystal Field';
+        this.instance = new THREE.Group();
+        this.instance.name = 'Crystal Field';
         this.active = new Map();
         this.sharedGeometry = new THREE.OctahedronGeometry( CRYSTAL_SIZE, 0 );
         this.time = 0;
@@ -44,63 +43,63 @@ export default class CrystalFieldPresentation {
      * therefore must only reference global objects or properties.
      *
      * @method animate
-     * @memberof CrystalFieldPresentation
+     * @memberof CrystalField
      * @global
      * @note All references within this method should be globally accessible.
      */
     animate( delta ) {
-        const presentation = l.current_scene.objects.crystalField;
-        if ( ! presentation ) {
+        const crystalField = l.current_scene.objects.crystalField;
+        if ( ! crystalField ) {
             return;
         }
 
         if ( l.mode !== 'single_player' && l.mode !== 'multi_player' ) {
-            presentation.clearMeshes();
+            crystalField.clearMeshes();
             return;
         }
 
         const world = l.current_scene.world;
         if ( ! world || ! world.crystalField ) {
-            presentation.clearMeshes();
+            crystalField.clearMeshes();
             return;
         }
 
         const player = l.scenograph.actors.player;
         if ( ! player || ! player.vehicle || ! player.vehicle.mesh ) {
-            presentation.clearMeshes();
+            crystalField.clearMeshes();
             return;
         }
 
         const aircraft = player.vehicle.mesh.userData.object;
         if ( ! aircraft || ! aircraft.inventory ) {
-            presentation.clearMeshes();
+            crystalField.clearMeshes();
             return;
         }
 
         const position = player.vehicle.mesh.position;
         const dt = typeof delta === 'number' && delta > 0 ? delta : 1 / 60;
-        presentation.time += dt;
+        crystalField.time += dt;
 
         const crystals = world.crystalField.streamAround( position.x, position.z );
         const seen = new Set();
 
         for ( const crystal of crystals ) {
             seen.add( crystal.cellKey );
-            let entry = presentation.active.get( crystal.cellKey );
+            let entry = crystalField.active.get( crystal.cellKey );
             if ( ! entry ) {
-                entry = presentation.createMesh( crystal );
-                presentation.active.set( crystal.cellKey, entry );
-                presentation.root.add( entry.mesh );
+                entry = crystalField.createMesh( crystal );
+                crystalField.active.set( crystal.cellKey, entry );
+                crystalField.instance.add( entry.mesh );
             }
-            presentation.updateMesh( entry, crystal, dt, position );
+            crystalField.updateMesh( entry, crystal, dt, position );
         }
 
-        for ( const [ cellKey, entry ] of presentation.active ) {
+        for ( const [ cellKey, entry ] of crystalField.active ) {
             if ( seen.has( cellKey ) ) {
                 continue;
             }
-            presentation.disposeMesh( entry );
-            presentation.active.delete( cellKey );
+            crystalField.disposeMesh( entry );
+            crystalField.active.delete( cellKey );
         }
 
         const collected = world.crystalField.tryPickup(
@@ -114,12 +113,12 @@ export default class CrystalFieldPresentation {
             if ( l.ui && l.ui.gameLog ) {
                 l.ui.gameLog.appendItemEvent( 'Picked up', collected, 1 );
             }
-            for ( const [ cellKey, entry ] of [ ...presentation.active ] ) {
+            for ( const [ cellKey, entry ] of [ ...crystalField.active ] ) {
                 if ( ! world.crystalField.isCollected( cellKey ) ) {
                     continue;
                 }
-                presentation.disposeMesh( entry );
-                presentation.active.delete( cellKey );
+                crystalField.disposeMesh( entry );
+                crystalField.active.delete( cellKey );
             }
         }
     }
@@ -155,7 +154,7 @@ export default class CrystalFieldPresentation {
         group.add( body );
 
         const glowMaterial = new THREE.SpriteMaterial( {
-            map: getGlowTexture(),
+            map: getCrystalGlowTexture(),
             color: new THREE.Color( CRYSTAL_GLOW_COLOUR ),
             transparent: true,
             opacity: 0.55 + fill * 0.35,
@@ -235,35 +234,6 @@ export default class CrystalFieldPresentation {
         this.active.clear();
     }
 
-}
-
-function getGlowTexture() {
-    if ( glowTexture ) {
-        return glowTexture;
-    }
-
-    const size = 64;
-    const canvas = document.createElement( 'canvas' );
-    canvas.width = size;
-    canvas.height = size;
-    const context = canvas.getContext( '2d' );
-    const gradient = context.createRadialGradient(
-        size / 2,
-        size / 2,
-        0,
-        size / 2,
-        size / 2,
-        size / 2
-    );
-    gradient.addColorStop( 0, 'rgba(255,245,248,1)' );
-    gradient.addColorStop( 0.35, 'rgba(232,160,180,0.55)' );
-    gradient.addColorStop( 1, 'rgba(140,60,90,0)' );
-    context.fillStyle = gradient;
-    context.fillRect( 0, 0, size, size );
-
-    glowTexture = new THREE.CanvasTexture( canvas );
-    glowTexture.needsUpdate = true;
-    return glowTexture;
 }
 
 function hashPhase( cellKey ) {

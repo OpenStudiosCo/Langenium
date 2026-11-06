@@ -386,10 +386,10 @@ export default class Director {
         l.current_scene.objects.ocean.animate
       );
 
-      // Crystal field presentation — positions come from the world sim.
+      // Crystal field — positions come from the world sim.
       l.current_scene.objects.crystalField = new l.scenograph.objects.environment.crystalField();
       l.current_scene.scene.add(
-        l.current_scene.objects.crystalField.root
+        l.current_scene.objects.crystalField.instance
       );
       l.current_scene.animation_queue.push(
         l.current_scene.objects.crystalField.animate

@@ -20,9 +20,11 @@ export default class Person extends ObjectBase {
     // Object world parameters
     public hitPoints:       number                              = 100;
     public airSpeed:        number                              = 0;
+    public strafeSpeed:     number                              = 0;
     public verticalSpeed:   number                              = 0;
     public maxForward:      number                              = 16 / 60;    // 8 km/h @ 60 FPS
     public maxBackward:     number                              = 16 / 60;
+    public maxStrafe:       number                              = 16 / 60;
     public maxUp:           number                              = 4 / 60;
     public maxDown:         number                              = 16 / 60;  // gravity?
 
@@ -45,13 +47,13 @@ export default class Person extends ObjectBase {
         this.nextPosition = { ...this.position }; // start with current position
 
         let stepSize:           number = .025 * normaliseSpeedDelta( time_delta ),
-            rY:                 number = 0,
+            tX:                 number = 0,
             tZ:                 number = 0,
             tY:                 number = 0,
-            radian:             number = - (Math.PI / 180) * stepSize * 100;
+            heading:            number = this.rotation.y;
 
         if ( this.actor.controls.forward || this.actor.controls.back ){
-            // Update Airspeed (horizontal velocity)
+            // Update Airspeed (horizontal velocity along facing)
             this.airSpeed = changeVelocity(
                 stepSize * easeInOutExpo( 1 - ( Math.abs ( this.airSpeed ) / this.maxForward ) ),
                 stepSize,
@@ -65,6 +67,23 @@ export default class Person extends ObjectBase {
         }
         else {
             this.airSpeed = 0;
+        }
+
+        if ( this.actor.controls.strafeLeft || this.actor.controls.strafeRight ) {
+            // Lateral walk — same inverted velocity convention as forward/back.
+            this.strafeSpeed = changeVelocity(
+                stepSize * easeInOutExpo( 1 - ( Math.abs ( this.strafeSpeed ) / this.maxStrafe ) ),
+                stepSize,
+                this.strafeSpeed,
+                this.actor.controls.strafeRight,
+                this.actor.controls.strafeLeft,
+                this.maxStrafe,
+                this.maxStrafe,
+                easeOutExpo( 0.987 )
+            );
+        }
+        else {
+            this.strafeSpeed = 0;
         }
 
         // Update Vertical Speed (velocity)
@@ -84,33 +103,17 @@ export default class Person extends ObjectBase {
             tY = this.verticalSpeed;
         }
 
-        // Turning — touch steer is half keyboard rate so the pad is less twitchy.
-        const turnScale = this.actor.controls.touchSteer ? 0.5 : 1;
-        if (this.actor.controls.turnRight) {
-            rY += radian * turnScale;
-        }
-        else if (this.actor.controls.turnLeft) {
-            rY -= radian * turnScale;
-        }
-
-        // Check if we have significant airspeed
         if (Math.abs(this.airSpeed) > 0.01) {
-
-            // Set change in Z position based on airspeed
             tZ = this.airSpeed;
-
         }
 
-        if (rY != 0) {
-            if (Math.abs(this.rotation.z) < Math.PI / 4) {
-                this.rotation.z += rY / Math.PI;
-            }
-
-            this.rotation.y += rY;
+        if (Math.abs(this.strafeSpeed) > 0.01) {
+            tX = this.strafeSpeed;
         }
 
-        let xDiff = tZ * Math.sin(this.rotation.y),
-            zDiff = tZ * Math.cos(this.rotation.y);
+        // Forward along facing; strafe along facing's right (negative speed = right).
+        const xDiff = tZ * Math.sin( heading ) - tX * Math.cos( heading );
+        const zDiff = tZ * Math.cos( heading ) + tX * Math.sin( heading );
 
         // "1" is the floor limit as it's the ocean surface and the camera clips through the water any lower.
         if (this.nextPosition.y + tY >= 1 ) {
@@ -122,7 +125,7 @@ export default class Person extends ObjectBase {
         this.nextPosition.x += xDiff;
         this.nextPosition.z += zDiff;
 
-        this.rY = rY;
+        this.rY = 0;
         this.tY = tY;
         this.tZ = tZ;
 

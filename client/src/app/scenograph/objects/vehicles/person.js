@@ -33,8 +33,8 @@ export default class Person {
             controls.back = false;
             controls.jump = false;
             controls.crouch = false;
-            controls.turnLeft = false;
-            controls.turnRight = false;
+            controls.strafeLeft = false;
+            controls.strafeRight = false;
             return;
         }
 
@@ -43,11 +43,10 @@ export default class Person {
             back        :  'S',
             jump        :  ' ',
             crouch      :  'shift',
-            turnLeft    :  'A',
-            turnRight   :  'D',
+            strafeLeft  :  'A',
+            strafeRight :  'D',
         }
         let changing = false;
-        this.game.actor.controls.touchSteer = false;
 
         for ( const [ controlName, keyMapping ] of Object.entries( mappings ) ) {
             if ( l.scenograph.controls.keyboard.pressed( keyMapping ) ) {
@@ -82,12 +81,10 @@ export default class Person {
                             this.game.actor.controls.crouch = true;
                         }
                         if ( l.scenograph.controls.touch.controls.moveLeft ) {
-                            this.game.actor.controls.turnLeft = true;
-                            this.game.actor.controls.touchSteer = true;
+                            this.game.actor.controls.strafeLeft = true;
                         }
                         if ( l.scenograph.controls.touch.controls.moveRight ) {
-                            this.game.actor.controls.turnRight = true;
-                            this.game.actor.controls.touchSteer = true;
+                            this.game.actor.controls.strafeRight = true;
                         }
                     }
 

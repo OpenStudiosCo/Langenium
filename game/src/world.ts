@@ -262,7 +262,13 @@ export default class World {
             }
             if (actorInstance.object) {
                 actorInstance.object.update(this.fixedDelta);
-                if (actorInstance.actor.controls.forward || actorInstance.actor.controls.back) {
+                const controls = actorInstance.actor.controls;
+                if (
+                    controls.forward
+                    || controls.back
+                    || controls.strafeLeft
+                    || controls.strafeRight
+                ) {
                     this.checkHangarCollisions(actorInstance);
                 }
             }

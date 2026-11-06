@@ -415,7 +415,7 @@ export default class AxisOrbit {
     }
 
     /**
-     * Commit hangar look yaw to the person so walk/turn continue from that heading.
+     * Commit hangar look yaw to the person so walk/strafe continue from that heading.
      */
     applyHangarLookFacing() {
         const player = l.scenograph.actors.player;

@@ -386,7 +386,7 @@ export default class Director {
         l.current_scene.objects.ocean.animate
       );
 
-      // Surface crystal pickups streamed around the aircraft in flight.
+      // Crystal field presentation — positions come from the world sim.
       l.current_scene.objects.crystalField = new l.scenograph.objects.environment.crystalField();
       l.current_scene.scene.add(
         l.current_scene.objects.crystalField.root

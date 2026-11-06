@@ -1,11 +1,10 @@
 /**
- * Overworld floating crystal pickups — shimmering surface finds streamed around the aircraft.
+ * Overworld floating crystal pickups — presentation over World crystal positions.
  */
 
 import * as THREE from 'three';
 
 import l from '@/helpers/l.js';
-import CrystalField from '#/game/src/objects/crystalField';
 import { DEFAULT_CAPACITY } from '#/game/src/items/langeniumCrystal';
 
 const CRYSTAL_SIZE = 6;
@@ -25,14 +24,12 @@ let glowTexture = null;
 
 export default class CrystalFieldPresentation {
 
-    field;
     root;
     active;
     sharedGeometry;
     time;
 
     constructor() {
-        this.field = new CrystalField();
         this.root = new THREE.Group();
         this.root.name = 'Crystal Field';
         this.active = new Map();
@@ -57,7 +54,13 @@ export default class CrystalFieldPresentation {
             return;
         }
 
-        if ( l.mode !== 'single_player' ) {
+        if ( l.mode !== 'single_player' && l.mode !== 'multi_player' ) {
+            presentation.clearMeshes();
+            return;
+        }
+
+        const world = l.current_scene.world;
+        if ( ! world || ! world.crystalField ) {
             presentation.clearMeshes();
             return;
         }
@@ -78,18 +81,18 @@ export default class CrystalFieldPresentation {
         const dt = typeof delta === 'number' && delta > 0 ? delta : 1 / 60;
         presentation.time += dt;
 
-        const spawns = presentation.field.streamAround( position.x, position.z );
+        const crystals = world.crystalField.streamAround( position.x, position.z );
         const seen = new Set();
 
-        for ( const spawn of spawns ) {
-            seen.add( spawn.cellKey );
-            let entry = presentation.active.get( spawn.cellKey );
+        for ( const crystal of crystals ) {
+            seen.add( crystal.cellKey );
+            let entry = presentation.active.get( crystal.cellKey );
             if ( ! entry ) {
-                entry = presentation.createMesh( spawn );
-                presentation.active.set( spawn.cellKey, entry );
+                entry = presentation.createMesh( crystal );
+                presentation.active.set( crystal.cellKey, entry );
                 presentation.root.add( entry.mesh );
             }
-            presentation.updateMesh( entry, spawn, dt, position );
+            presentation.updateMesh( entry, crystal, dt, position );
         }
 
         for ( const [ cellKey, entry ] of presentation.active ) {
@@ -100,7 +103,7 @@ export default class CrystalFieldPresentation {
             presentation.active.delete( cellKey );
         }
 
-        const collected = presentation.field.tryPickup(
+        const collected = world.crystalField.tryPickup(
             aircraft.inventory,
             position.x,
             position.y,
@@ -112,7 +115,7 @@ export default class CrystalFieldPresentation {
                 l.ui.gameLog.appendItemEvent( 'Picked up', collected, 1 );
             }
             for ( const [ cellKey, entry ] of [ ...presentation.active ] ) {
-                if ( ! presentation.field.collected.has( cellKey ) ) {
+                if ( ! world.crystalField.isCollected( cellKey ) ) {
                     continue;
                 }
                 presentation.disposeMesh( entry );
@@ -121,14 +124,14 @@ export default class CrystalFieldPresentation {
         }
     }
 
-    createMesh( spawn ) {
-        const fill = Math.max( 0, Math.min( 1, spawn.charge / DEFAULT_CAPACITY ) );
+    createMesh( crystal ) {
+        const fill = Math.max( 0, Math.min( 1, crystal.charge / DEFAULT_CAPACITY ) );
         const group = new THREE.Group();
         group.name = 'Floating Crystal';
-        group.position.set( spawn.x, spawn.y + CRYSTAL_SIZE, spawn.z );
-        group.userData.cellKey = spawn.cellKey;
-        group.userData.baseY = spawn.y + CRYSTAL_SIZE;
-        group.userData.phase = hashPhase( spawn.cellKey );
+        group.position.set( crystal.position.x, crystal.position.y + CRYSTAL_SIZE, crystal.position.z );
+        group.userData.cellKey = crystal.cellKey;
+        group.userData.baseY = crystal.position.y + CRYSTAL_SIZE;
+        group.userData.phase = hashPhase( crystal.cellKey );
 
         // Draw after the transparent ocean (renderOrder 1) and stay on layer 0 so the
         // water mirror pass can reflect them; layer 11 also feeds bloom.
@@ -185,25 +188,25 @@ export default class CrystalFieldPresentation {
         };
     }
 
-    updateMesh( entry, spawn, dt, aircraftPosition ) {
+    updateMesh( entry, crystal, dt, aircraftPosition ) {
         const phase = entry.mesh.userData.phase || 0;
         const bob = Math.sin( this.time * BOB_SPEED + phase ) * BOB_AMPLITUDE;
-        entry.mesh.position.x = spawn.x;
-        entry.mesh.position.z = spawn.z;
+        entry.mesh.position.x = crystal.position.x;
+        entry.mesh.position.z = crystal.position.z;
         entry.mesh.position.y = entry.mesh.userData.baseY + bob;
         entry.body.rotation.y += SPIN_SPEED * dt;
         entry.body.rotation.x = Math.sin( this.time * 0.5 + phase ) * 0.2;
 
-        const fill = spawn.charge / DEFAULT_CAPACITY;
+        const fill = crystal.charge / DEFAULT_CAPACITY;
         const pulse = 0.75 + 0.25 * Math.sin( this.time * 3.2 + phase );
         entry.bodyMaterial.opacity = ( 0.7 + fill * 0.25 ) * pulse;
         entry.glowMaterial.opacity = ( 0.45 + fill * 0.4 ) * pulse;
         entry.light.intensity = ( 2 + fill * 3 ) * pulse;
 
         // Grow the shimmer with distance so crystals stay spottable from altitude.
-        const dx = spawn.x - aircraftPosition.x;
-        const dy = spawn.y - aircraftPosition.y;
-        const dz = spawn.z - aircraftPosition.z;
+        const dx = crystal.position.x - aircraftPosition.x;
+        const dy = crystal.position.y - aircraftPosition.y;
+        const dz = crystal.position.z - aircraftPosition.z;
         const distance = Math.sqrt( dx * dx + dy * dy + dz * dz );
         const glowScale = Math.min(
             GLOW_MAX,

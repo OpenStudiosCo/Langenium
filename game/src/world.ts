@@ -12,6 +12,8 @@ import ActorPlayer from './actors/player2';
 import ObjectHangar from './objects/structures/hangar';
 import ObjectPerson from './objects/person';
 
+import CrystalField from './systems/crystalField';
+
 interface WorldConfig {
     actors: Record<string, any>;
     objects: Record<string, any>;
@@ -28,6 +30,11 @@ export default class World {
 
     public config: WorldConfig;
     public instance: WorldInstance;
+
+    /**
+     * Overworld crystal field system — seeds, streams and harvests floating crystals.
+     */
+    public crystalField: CrystalField;
 
     private accumulator = 0;
     private running = false;
@@ -56,6 +63,8 @@ export default class World {
             actors: new Map<string, any>(),
             objects: new Map<string, any>()
         };
+
+        this.crystalField = new CrystalField();
 
         this.lastUpdateTime = performance.now();
         this.fixedDelta = 16; // ~60 FPS for logic

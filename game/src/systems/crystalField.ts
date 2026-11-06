@@ -1,10 +1,17 @@
 /**
- * Overworld crystal field — seeded surface pickups streamed around the aircraft.
+ * Crystal Field System
+ *
+ * Seeds floating crystals across the overworld on a deterministic cell grid,
+ * streams those near an aircraft and harvests them into its bag on contact.
+ *
+ * Owned by World rather than a vehicle. Presentation reads crystal positions
+ * from here and does not decide where crystals exist.
  */
 
+import BaseSystem from './base';
+import FloatingCrystal from '../objects/floatingCrystal';
 import Inventory from '../items/inventory';
 import {
-    createLangeniumCrystal,
     DEFAULT_CAPACITY,
     rollWeightedCharge,
 } from '../items/langeniumCrystal';
@@ -15,16 +22,6 @@ export const PICKUP_RADIUS = 100;
 export const SPAWN_CHANCE = 0.4;
 export const STREAM_RADIUS = 25000;
 export const EXCLUSION_RADIUS = 4000;
-
-export interface CrystalSpawn {
-    cellKey: string;
-    cellX: number;
-    cellZ: number;
-    x: number;
-    y: number;
-    z: number;
-    charge: number;
-}
 
 interface ExclusionZone {
     x: number;
@@ -39,14 +36,18 @@ const DEFAULT_EXCLUSIONS: ExclusionZone[] = [
     { x: -20000, z: 20000, radius: EXCLUSION_RADIUS * 0.5 },
 ];
 
-export default class CrystalField {
+export default class CrystalField extends BaseSystem {
 
     public readonly collected: Set<string> = new Set();
 
     private exclusions: ExclusionZone[];
-    private chargeByCell: Map<string, number> = new Map();
+
+    // Seeded crystals kept per cell so each keeps its charge while streamed.
+    private crystalsByCell: Map<string, FloatingCrystal> = new Map();
 
     constructor( exclusions: ExclusionZone[] = DEFAULT_EXCLUSIONS ) {
+        super();
+
         this.exclusions = exclusions;
     }
 
@@ -58,35 +59,42 @@ export default class CrystalField {
     }
 
     /**
+     * Whether a cell's crystal has already been harvested.
+     */
+    isCollected( cellKey: string ): boolean {
+        return this.collected.has( cellKey );
+    }
+
+    /**
      * Crystals that should exist near the aircraft this frame.
      */
-    streamAround( aircraftX: number, aircraftZ: number ): CrystalSpawn[] {
+    streamAround( aircraftX: number, aircraftZ: number ): FloatingCrystal[] {
         const cellRadius = Math.ceil( STREAM_RADIUS / CELL_SIZE );
         const originCellX = Math.floor( aircraftX / CELL_SIZE );
         const originCellZ = Math.floor( aircraftZ / CELL_SIZE );
         const streamRadiusSq = STREAM_RADIUS * STREAM_RADIUS;
-        const spawns: CrystalSpawn[] = [];
+        const crystals: FloatingCrystal[] = [];
 
         for ( let dz = -cellRadius; dz <= cellRadius; dz++ ) {
             for ( let dx = -cellRadius; dx <= cellRadius; dx++ ) {
                 const cellX = originCellX + dx;
                 const cellZ = originCellZ + dz;
-                const spawn = this.spawnForCell( cellX, cellZ );
-                if ( ! spawn ) {
+                const crystal = this.crystalForCell( cellX, cellZ );
+                if ( ! crystal ) {
                     continue;
                 }
 
-                const offsetX = spawn.x - aircraftX;
-                const offsetZ = spawn.z - aircraftZ;
+                const offsetX = crystal.position.x - aircraftX;
+                const offsetZ = crystal.position.z - aircraftZ;
                 if ( offsetX * offsetX + offsetZ * offsetZ > streamRadiusSq ) {
                     continue;
                 }
 
-                spawns.push( spawn );
+                crystals.push( crystal );
             }
         }
 
-        return spawns;
+        return crystals;
     }
 
     /**
@@ -108,19 +116,19 @@ export default class CrystalField {
         }
 
         const pickupRadiusSq = PICKUP_RADIUS * PICKUP_RADIUS;
-        let nearest: CrystalSpawn | null = null;
+        let nearest: FloatingCrystal | null = null;
         let nearestDistSq = Infinity;
 
         const candidates = this.streamAround( aircraftX, aircraftZ );
-        for ( const spawn of candidates ) {
-            const dx = spawn.x - aircraftX;
-            const dy = spawn.y - aircraftY;
-            const dz = spawn.z - aircraftZ;
+        for ( const crystal of candidates ) {
+            const dx = crystal.position.x - aircraftX;
+            const dy = crystal.position.y - aircraftY;
+            const dz = crystal.position.z - aircraftZ;
             const distSq = dx * dx + dy * dy + dz * dz;
             if ( distSq > pickupRadiusSq || distSq >= nearestDistSq ) {
                 continue;
             }
-            nearest = spawn;
+            nearest = crystal;
             nearestDistSq = distSq;
         }
 
@@ -128,28 +136,29 @@ export default class CrystalField {
             return null;
         }
 
-        const item = createLangeniumCrystal( {
-            charge: nearest.charge,
-            capacity: DEFAULT_CAPACITY,
-        } );
-
+        const item = nearest.harvest();
         const slot = inventory.place( item );
         if ( slot < 0 ) {
             return null;
         }
 
         this.collected.add( nearest.cellKey );
-        this.chargeByCell.delete( nearest.cellKey );
+        this.crystalsByCell.delete( nearest.cellKey );
         return item;
     }
 
     /**
      * Deterministic crystal for a cell, or null when empty / collected / excluded.
      */
-    private spawnForCell( cellX: number, cellZ: number ): CrystalSpawn | null {
+    private crystalForCell( cellX: number, cellZ: number ): FloatingCrystal | null {
         const key = this.cellKey( cellX, cellZ );
         if ( this.collected.has( key ) ) {
             return null;
+        }
+
+        const seeded = this.crystalsByCell.get( key );
+        if ( seeded ) {
+            return seeded;
         }
 
         const chanceRoll = hash01( cellX, cellZ, 1 );
@@ -159,30 +168,20 @@ export default class CrystalField {
 
         const jitterX = hash01( cellX, cellZ, 2 );
         const jitterZ = hash01( cellX, cellZ, 3 );
-        const x = ( cellX + jitterX ) * CELL_SIZE;
-        const z = ( cellZ + jitterZ ) * CELL_SIZE;
-        const y = 0;
+        const position = {
+            x: ( cellX + jitterX ) * CELL_SIZE,
+            y: 0,
+            z: ( cellZ + jitterZ ) * CELL_SIZE,
+        };
 
-        if ( this.isExcluded( x, z ) ) {
+        if ( this.isExcluded( position.x, position.z ) ) {
             return null;
         }
 
-        let charge = this.chargeByCell.get( key );
-        if ( charge === undefined ) {
-            // Roll once and cache so a crystal keeps its charge while streamed.
-            charge = rollWeightedCharge( DEFAULT_CAPACITY );
-            this.chargeByCell.set( key, charge );
-        }
-
-        return {
-            cellKey: key,
-            cellX,
-            cellZ,
-            x,
-            y,
-            z,
-            charge,
-        };
+        const charge = rollWeightedCharge( DEFAULT_CAPACITY );
+        const crystal = new FloatingCrystal( key, cellX, cellZ, position, charge );
+        this.crystalsByCell.set( key, crystal );
+        return crystal;
     }
 
     private isExcluded( x: number, z: number ): boolean {

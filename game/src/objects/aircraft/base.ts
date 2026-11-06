@@ -482,18 +482,26 @@ export default class BaseAircraft {
             this.verticalSpeed = 0;
         }
 
+        // Low power above the limp ceiling: settle at twice max descent, never snap.
+        if ( lowPower && this.position.y > this.lowPowerCeilingY ) {
+            const forcedDescent = -this.maxDown * 2;
+
+            if ( tY > forcedDescent ) {
+                tY = forcedDescent;
+                this.verticalSpeed = forcedDescent;
+            }
+
+            if ( this.position.y + tY <= this.lowPowerCeilingY ) {
+                tY = this.lowPowerCeilingY - this.position.y;
+                this.verticalSpeed = 0;
+            }
+        }
+
         // "1" is the floor limit as it's the ocean surface and the camera clips through the water any lower.
         if (this.position.y + tY >= 1 ) {
             this.position.y += tY;
         } else {
             this.verticalSpeed = 0;
-        }
-
-        if ( lowPower && this.position.y > this.lowPowerCeilingY ) {
-            this.position.y = this.lowPowerCeilingY;
-            if ( this.verticalSpeed > 0 ) {
-                this.verticalSpeed = 0;
-            }
         }
 
         this.position.x += xDiff;

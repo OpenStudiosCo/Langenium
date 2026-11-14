@@ -39,9 +39,17 @@ export default function (eleventyConfig) {
 
   eleventyConfig.addGlobalData( 'assetVersion', getAssetVersion );
 
+  // Empty string keeps root-absolute paths for GitHub Pages. Set ASSET_BASE=. for relative builds.
+  const assetBase = process.env.ASSET_BASE || '';
+  eleventyConfig.addGlobalData( 'assetBase', assetBase );
+  eleventyConfig.addNunjucksFilter( 'assetUrl', ( path ) => assetUrl( assetBase, path ) );
+  eleventyConfig.addJavaScriptFunction( 'assetUrl', ( path ) => assetUrl( assetBase, path ) );
+  eleventyConfig.addShortcode( 'assetUrl', ( path ) => assetUrl( assetBase, path ) );
+
   eleventyConfig.addPlugin( pugPlugin, {
     filters: {
-      stylus: pugStylus()
+      stylus: pugStylus(),
+      assetUrl: ( path ) => assetUrl( assetBase, path ),
     }
   } );
 

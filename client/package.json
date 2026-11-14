@@ -17,7 +17,9 @@
     "dev": "npm-run-all clean build:* -p dev:*",
     "dev:11ty": "eleventy --serve",
     "dev:esbuild": "node watch.mjs",
-    "dev:stylus": "node_modules/.bin/stylus -w src/styles/game_client.styl --out ../docs/assets/game_client.css"
+    "dev:stylus": "node_modules/.bin/stylus -w src/styles/game_client.styl --out ../docs/assets/game_client.css",
+    "package:itch": "node scripts/package-itch.mjs",
+    "deploy:itch": "npm run build && npm run package:itch && node scripts/deploy-itch.mjs"
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.0.0",

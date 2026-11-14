@@ -8,3 +8,8 @@ docs
 
 # Deployed env file
 .env
+
+# itch.io local deploy
+dist-itch
+client/.env.itch
+

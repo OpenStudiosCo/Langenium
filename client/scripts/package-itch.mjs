@@ -104,6 +104,7 @@ function shouldRemove( filePath ) {
 
 /**
  * Turn a site-root path (/assets/...) into a path relative to the file being rewritten.
+ * Trailing slashes are preserved so concatenations like '/assets/item_icons/' + id keep working.
  */
 function relativeFromFile( filePath, rootAbsolutePath ) {
     const normalised = rootAbsolutePath.replace( /^https?:\/\/langenium\.com/, '' );
@@ -112,12 +113,17 @@ function relativeFromFile( filePath, rootAbsolutePath ) {
         return rootAbsolutePath;
     }
 
+    const hadTrailingSlash = normalised.endsWith( '/' );
     const target = join( outDir, normalised.slice( 1 ) );
     const fromDir = dirname( filePath );
     let rel = relative( fromDir, target ).replace( /\\/g, '/' );
 
     if ( ! rel.startsWith( '.' ) ) {
         rel = `./${ rel }`;
+    }
+
+    if ( hadTrailingSlash && ! rel.endsWith( '/' ) ) {
+        rel += '/';
     }
 
     return rel;

@@ -82,10 +82,33 @@ export default class Title_Screen {
         this.show();
 
         const path = this.currentPath();
-        history.replaceState( { menu: path, depth: 0 }, '', path );
+        history.replaceState( { menu: path, depth: 0 }, '', this.menuHref( path ) );
         if ( path !== '/' ) {
             this.apply( path );
         }
+    }
+
+    /**
+     * itch.io (and other subdirectory hosts) rewrite l.url to '.'. Absolute
+     * menu paths like /play/ would leave the game folder and break relative
+     * assets, so those builds keep the document URL and store the menu in the hash.
+     */
+    usesHashMenu() {
+        return l.url === '.';
+    }
+
+    /**
+     * History URL for a logical menu path (/ , /play/ , …).
+     */
+    menuHref( path ) {
+        path = path || '/';
+
+        if ( ! this.usesHashMenu() ) {
+            return path;
+        }
+
+        const base = location.pathname + location.search;
+        return path === '/' ? base : base + '#' + path;
     }
 
     show() {
@@ -136,6 +159,24 @@ export default class Title_Screen {
      * Menu pages are directories, so the working URL keeps its trailing slash.
      */
     currentPath() {
+        if ( this.usesHashMenu() ) {
+            let hash = ( location.hash || '' ).replace( /^#/, '' );
+
+            if ( ! hash || hash === '/' ) {
+                return '/';
+            }
+
+            if ( hash.charAt( 0 ) !== '/' ) {
+                hash = '/' + hash;
+            }
+
+            if ( hash.length > 1 && ! hash.endsWith( '/' ) ) {
+                hash += '/';
+            }
+
+            return hash;
+        }
+
         let path = location.pathname || '/';
 
         if ( path === '/index.html' || path === '/index' ) {
@@ -167,7 +208,7 @@ export default class Title_Screen {
 
         if ( path !== this.currentPath() ) {
             this.depth += 1;
-            history.pushState( { menu: path, depth: this.depth }, '', path );
+            history.pushState( { menu: path, depth: this.depth }, '', this.menuHref( path ) );
         }
 
         this.apply( path );
@@ -356,7 +397,7 @@ export default class Title_Screen {
         }
 
         this.depth = 0;
-        history.replaceState( { menu: '/', depth: 0 }, '', '/' );
+        history.replaceState( { menu: '/', depth: 0 }, '', this.menuHref( '/' ) );
     }
 
     /**

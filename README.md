@@ -141,7 +141,36 @@ Unlike the `master` branch, the `gh-pages` branch tracks build artefacts so they
 2. Merge in the latest updates to go out
     - `git merge master`
 3. Build the game client
-    - `npm run build`
+    - `cd client && npm run build`
+
+### Updating the itch.io HTML5 build
+
+The itch package is a relative-URL copy of the client build (`dist-itch/`), pushed with [Butler](https://itch.io/docs/butler/).
+
+One-time setup:
+
+1. Install Butler — see [Installing butler](https://itch.io/docs/butler/installing)
+2. Authenticate: `butler login`
+3. Set the project target (format `user/game`):
+    - `export ITCH_TARGET=user/game`
+    - or create `client/.env.itch` with `ITCH_TARGET=user/game` (gitignored; never commit credentials)
+4. On the itch project page: kind **HTML**, channel tagged **HTML5 / Playable in browser**
+
+Deploy:
+
+```bash
+cd client
+npm run deploy:itch
+```
+
+That builds the client, packages `docs/` into `dist-itch/` (rewrites asset URLs, drops `CNAME` / secrets, keeps Matomo), then runs `butler push`.
+
+Package only (for local testing with a static server):
+
+```bash
+cd client
+npm run build && npm run package:itch
+```
 
 ### Updating Node dependencies
 We recommend using a tool like [NPM Check Updates](https://www.npmjs.com/package/npm-check-updates) to maintain package.json files 

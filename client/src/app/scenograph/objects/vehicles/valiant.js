@@ -46,7 +46,7 @@ export default class Valiant {
     // Short flame trail used at cruise speeds.
     cruiseTrail;
 
-    // Soft shock-diamond rings along the thruster exhaust.
+    // Bicone shock diamonds + pinched plume sheath along the thruster exhaust.
     afterburner;
 
     // Twin tilt-rotors (Cylinder / Cylinder001) and their articulation state.
@@ -729,11 +729,17 @@ export default class Valiant {
         jitter = turbulence * turbulence * 0.045;
 
         if ( thrusting ) {
-            // Cones keep cruise scale; cylinders open with afterburner.
+            // Cones stay as the hot nozzle core; cylinders stay short so diamonds read clearly.
             this.animateThruster( object.airSpeed, this.thruster.centralConeBurner, .5, 0 );
-            this.animateThruster( object.airSpeed, this.thruster.outerCylBurner, .5, this.afterburnerBlend );
-            this.thruster.innerCylBurner.scale.y = 1 + this.afterburnerBlend * 1.4;
-            this.thruster.innerCylBurner.position.y = this.afterburnerBlend * 0.55;
+            this.animateThruster( object.airSpeed, this.thruster.outerCylBurner, .5, this.afterburnerBlend * 0.25 );
+            this.thruster.innerCylBurner.scale.y = 1 + this.afterburnerBlend * 0.35;
+            this.thruster.innerCylBurner.position.y = this.afterburnerBlend * 0.12;
+
+            // Fade the solid video tube as afterburner takes over (avoids laser-beam look).
+            this.setThrusterOpacity( this.thruster.outerCylBurner, 1 - this.afterburnerBlend * 0.72 );
+            this.setThrusterOpacity( this.thruster.innerCylBurner, 1 - this.afterburnerBlend * 0.78 );
+            this.setThrusterOpacity( this.thruster.centralConeBurner, 1 - this.afterburnerBlend * 0.15 );
+            this.setThrusterOpacity( this.thruster.rearConeBurner, 1 );
 
             this.spinThruster( object.airSpeed, this.thruster.rearConeBurner, -1 );
             this.spinThruster( object.airSpeed, this.thruster.centralConeBurner, 1 );
@@ -789,8 +795,9 @@ export default class Valiant {
                     this.trail_position_z
                 );
 
-                this.trail.mesh.material.uniforms.headColor.value.set( headR, headG, headB, 0.375 * afterburnerWeight );
-                this.trail.mesh.material.uniforms.tailColor.value.set( tailR, tailG, tailB, 0.15 * afterburnerWeight );
+                // Faint world-space wake; local pinched sheath + diamonds carry the plume.
+                this.trail.mesh.material.uniforms.headColor.value.set( headR, headG, headB, 0.18 * afterburnerWeight );
+                this.trail.mesh.material.uniforms.tailColor.value.set( tailR, tailG, tailB, 0.06 * afterburnerWeight );
 
                 traveled = this.mesh.position.distanceTo( this.trailAnchor );
                 steps = Math.min( 8, Math.floor( traveled / Math.max( 0.05, nodeSpacing ) ) );
@@ -820,6 +827,10 @@ export default class Valiant {
             this.trail.mesh.material.uniforms.headColor.value.set( 1.0, 0.83, 0.58, 0 );
             this.trail.mesh.material.uniforms.tailColor.value.set( 0.52, 0.16, 0.14, 0 );
             this.trail.mesh.visible = false;
+            this.setThrusterOpacity( this.thruster.outerCylBurner, 1 );
+            this.setThrusterOpacity( this.thruster.innerCylBurner, 1 );
+            this.setThrusterOpacity( this.thruster.centralConeBurner, 1 );
+            this.setThrusterOpacity( this.thruster.rearConeBurner, 1 );
             this.afterburnerBlend = 0;
             if ( this.afterburner ) {
                 this.afterburner.update( 0, 0 );
@@ -832,6 +843,30 @@ export default class Valiant {
         let cruiseSpeed = Math.min( Math.abs( airSpeed ), 4.5 );
         burnerMesh.scale.y = 1 + cruiseSpeed * ratio + afterburnerBoost * ratio * 2.8;
         burnerMesh.position.y = cruiseSpeed * ratio * 0.5 + afterburnerBoost * ratio * 1.25;
+    }
+
+    /**
+     * Set opacity on a thruster mesh (handles cylinder multi-material arrays).
+     * @param {THREE.Mesh} burnerMesh
+     * @param {number} opacity
+     */
+    setThrusterOpacity( burnerMesh, opacity ) {
+        let materials = burnerMesh.material;
+        let i = 0;
+        let material = null;
+
+        if ( ! Array.isArray( materials ) ) {
+            materials = [ materials ];
+        }
+
+        for ( i = 0; i < materials.length; i++ ) {
+            material = materials[ i ];
+            if ( ! material || material.visible === false ) {
+                continue;
+            }
+            material.transparent = true;
+            material.opacity = Math.max( 0, Math.min( 1, opacity ) );
+        }
     }
 
     spinThruster( airSpeed, burnerMesh, rotation_factor ) {
